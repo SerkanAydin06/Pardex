@@ -22,6 +22,10 @@ function send(ws, payload) {
   }
 }
 
+function sendError(ws, code, message) {
+  send(ws, { type: "error", code, message });
+}
+
 function safeName(value) {
   const text = String(value || "Pardus").trim().replace(/\s+/g, " ");
   return (text || "Pardus").slice(0, 24);
@@ -51,6 +55,7 @@ function roomPayload(room) {
     game_server_url: gameServerUrl(room.gameId),
     host_id: room.hostId,
     max_players: room.maxPlayers,
+    launching: Boolean(room.launching),
     members: room.members.map((member) => ({
       user_id: member.userId,
       display_name: member.displayName,
@@ -86,6 +91,7 @@ function leaveCurrentRoom(userId, notifySelf = true) {
     rooms.delete(room.code);
   } else {
     if (room.hostId === userId) room.hostId = room.members[0].userId;
+    if (room.launching) room.launching = false;
     broadcastRoom(room);
   }
 
@@ -106,7 +112,11 @@ function joinRoom(client, code) {
   const normalized = String(code || "").trim().toUpperCase();
   const room = rooms.get(normalized);
   if (!room) {
-    send(client.ws, { type: "error", code: "ROOM_NOT_FOUND", message: "Oda bulunamadı." });
+    sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
+    return;
+  }
+  if (room.launching) {
+    sendError(client.ws, "ROOM_IN_GAME", "Bu oda oyunu başlatıyor.");
     return;
   }
   if (client.roomCode === normalized) {
@@ -114,7 +124,7 @@ function joinRoom(client, code) {
     return;
   }
   if (room.members.length >= room.maxPlayers) {
-    send(client.ws, { type: "error", code: "ROOM_FULL", message: "Oda dolu." });
+    sendError(client.ws, "ROOM_FULL", "Oda dolu.");
     return;
   }
 
@@ -139,6 +149,7 @@ function createRoom(client, message) {
     gameId,
     hostId: client.userId,
     maxPlayers,
+    launching: false,
     members: [{
       userId: client.userId,
       displayName: client.displayName,
@@ -149,6 +160,50 @@ function createRoom(client, message) {
   rooms.set(code, room);
   client.roomCode = code;
   broadcastRoom(room);
+}
+
+function startRoomGame(client) {
+  if (!client.roomCode) {
+    sendError(client.ws, "NO_ROOM", "Önce bir odaya katılmalısın.");
+    return;
+  }
+
+  const room = rooms.get(client.roomCode);
+  if (!room) {
+    sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
+    return;
+  }
+  if (room.hostId !== client.userId) {
+    sendError(client.ws, "NOT_HOST", "Oyunu yalnız oda kurucusu başlatabilir.");
+    return;
+  }
+  if (room.launching) return;
+  if (room.members.length < 2) {
+    sendError(client.ws, "NOT_ENOUGH_PLAYERS", "Oyunu başlatmak için en az 2 oyuncu gerekli.");
+    return;
+  }
+  if (!room.members.every((member) => member.ready)) {
+    sendError(client.ws, "PLAYERS_NOT_READY", "Tüm oyuncular hazır olmalı.");
+    return;
+  }
+  if (!gameServerUrl(room.gameId)) {
+    sendError(client.ws, "GAME_SERVER_UNAVAILABLE", "Bu oyun için PARDEX oyun sunucusu hazır değil.");
+    return;
+  }
+
+  room.launching = true;
+  broadcastRoom(room);
+  const payload = {
+    type: "game_start",
+    game_id: room.gameId,
+    room: roomPayload(room),
+    started_by: client.userId,
+    started_at: Date.now(),
+  };
+  for (const member of room.members) {
+    const memberClient = clients.get(member.userId);
+    if (memberClient) send(memberClient.ws, payload);
+  }
 }
 
 function allowMessage(client) {
@@ -164,11 +219,7 @@ function allowMessage(client) {
     return false;
   }
   if (client.rateMessageCount > RATE_LIMIT_MESSAGES) {
-    send(client.ws, {
-      type: "error",
-      code: "RATE_LIMIT",
-      message: "Çok fazla istek gönderildi. Lütfen kısa süre bekle.",
-    });
+    sendError(client.ws, "RATE_LIMIT", "Çok fazla istek gönderildi. Lütfen kısa süre bekle.");
     return false;
   }
   return true;
@@ -181,7 +232,7 @@ function handleMessage(client, raw) {
   try {
     message = JSON.parse(raw.toString("utf8"));
   } catch {
-    send(client.ws, { type: "error", code: "BAD_JSON", message: "Geçersiz mesaj." });
+    sendError(client.ws, "BAD_JSON", "Geçersiz mesaj.");
     return;
   }
 
@@ -207,18 +258,21 @@ function handleMessage(client, raw) {
     case "set_ready": {
       if (!client.roomCode) return;
       const room = rooms.get(client.roomCode);
-      if (!room) return;
+      if (!room || room.launching) return;
       const member = room.members.find((item) => item.userId === client.userId);
       if (!member) return;
       member.ready = Boolean(message.ready);
       broadcastRoom(room);
       break;
     }
+    case "start_game":
+      startRoomGame(client);
+      break;
     case "ping":
       send(client.ws, { type: "pong", time: Date.now() });
       break;
     default:
-      send(client.ws, { type: "error", code: "UNKNOWN_MESSAGE", message: "Bilinmeyen istek." });
+      sendError(client.ws, "UNKNOWN_MESSAGE", "Bilinmeyen istek.");
   }
 }
 
