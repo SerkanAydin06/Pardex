@@ -124,7 +124,7 @@ theme_override_colors/font_color = Color(0.9, 0.93, 0.98, 1)
 theme_override_colors/font_placeholder_color = Color(0.38, 0.44, 0.53, 1)
 theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("Input")
-placeholder_text = "ws://127.0.0.1:8765"
+placeholder_text = "wss://pardex-online-production.up.railway.app"
 
 [node name="ConnectButton" type="Button" parent="OnlinePanel/VBox/ServerRow"]
 layout_mode = 2
@@ -166,37 +166,3 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.38, 0.86, 0.62, 1)
 theme_override_font_sizes/font_size = 14
 text = "●  TAM EKRAN AKTİF"
-
-[node name="ApplicationPanel" type="PanelContainer" parent="."]
-layout_mode = 2
-theme_override_styles/panel = SubResource("Panel")
-
-[node name="Row" type="HBoxContainer" parent="ApplicationPanel"]
-layout_mode = 2
-theme_override_constants/separation = 20
-
-[node name="Text" type="VBoxContainer" parent="ApplicationPanel/Row"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 5
-
-[node name="Title" type="Label" parent="ApplicationPanel/Row/Text"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.92, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 18
-text = "PARDEX'i kapat"
-
-[node name="Description" type="Label" parent="ApplicationPanel/Row/Text"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.48, 0.54, 0.63, 1)
-theme_override_font_sizes/font_size = 13
-text = "Uygulamadan güvenli şekilde çık."
-
-[node name="ExitButton" type="Button" parent="ApplicationPanel/Row"]
-layout_mode = 2
-custom_minimum_size = Vector2(150, 0)
-focus_mode = 0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("Button")
-text = "ÇIKIŞ"
