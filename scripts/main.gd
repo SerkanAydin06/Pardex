@@ -69,6 +69,9 @@ func _wire_actions() -> void:
     var save_profile_button := _settings_content.get_node("ProfilePanel/VBox/ProfileRow/SaveProfileButton") as Button
     save_profile_button.pressed.connect(_save_profile_from_settings)
 
+    var exit_button := _settings_content.get_node("ApplicationPanel/Row/ExitButton") as Button
+    exit_button.pressed.connect(func(): get_tree().quit())
+
 func _prepare_game_cards() -> void:
     _set_game_card(
         %VexStatus,
