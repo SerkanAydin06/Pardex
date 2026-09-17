@@ -2,28 +2,25 @@
 
 PARDEX, VEX, Korsanların Hazinesi ve Fırtına Vadisi gibi oyunları tek uygulamada toplayacak Godot 4.7 tabanlı game hub / launcher projesidir.
 
-## v0.1.0
+## Mevcut durum
 
-- Kütüphane ana ekranı
+- 1920×1080 tam ekran ana uygulama
+- Kütüphane ekranı
 - VEX, Korsanların Hazinesi ve Fırtına Vadisi kartları
-- Yerel oyun yolu algılama altyapısı
-- Oyun executable'ını başlatabilen OYNA davranışı
-- Arkadaşlar / Odalar / Ayarlar için PARDEX Online'a hazır navigasyon iskeleti
-- 1920x1080 tabanlı responsive Control arayüzü
+- Oyunlar tamamlanmadığı için kartlarda geliştirme durumu gösterimi
+- Ayrı Arkadaşlar ekranı
+- Ayrı Odalar ekranı
+- Ayrı Ayarlar ekranı
+- Yerel profil adı kaydı
+- Uygulama içinden güvenli çıkış
+- PARDEX Online entegrasyonu için hazırlanmış arayüz iskeleti
 
-## Yerel oyun yolları
+## Oyunların durumu
 
-PARDEX ilk açılışta `user://pardex_games.cfg` oluşturur. Örnek:
+Oyunlar hâlâ geliştirme aşamasında olduğu için şu anda Windows `.exe` exportları PARDEX'e bağlanmıyor. Export, kurulum, güncelleme ve `OYNA` akışı oyunlar yeterince hazır olduğunda eklenecek.
 
-```ini
-[games]
-vex="C:/Games/VEX/VEX.exe"
-korsanlar="C:/Games/Korsanlar/KorsanlarinHazinesi.exe"
-firtina="C:/Games/FirtinaVadisi/FirtinaVadisi.exe"
-```
+Bu nedenle oyuncuların şu aşamada Godot projesi veya GitHub dosyalarıyla çalışması hedeflenmiyor. Son kullanıcıya ileride yalnızca PARDEX'in kurulabilir Windows sürümü verilecek.
 
-Yol tanımlı ve dosya mevcutsa kartın düğmesi `OYNA` olur.
+## Sıradaki teknik aşama
 
-## Sıradaki aşama
-
-İlk online entegrasyon Korsanların Hazinesi ile yapılacak. PARDEX Online katmanı hesap, arkadaş, oda ve session bilgisini yönetecek; oyun mevcut NetworkManager yapısına bu oturum üzerinden bağlanacak.
+PARDEX Online katmanı hesap, arkadaş, oda ve session bilgisini yönetecek. İlk gerçek oyun entegrasyonu Korsanların Hazinesi ile yapılacak; mevcut multiplayer yapısı PARDEX oturum bilgisine bağlanacak.
