@@ -5,7 +5,8 @@
   "description": "PARDEX Online oda ve oturum sunucusu",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node smoke-test.js"
   },
   "dependencies": {
     "ws": "^8.18.0"
