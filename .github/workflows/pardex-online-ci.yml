@@ -33,3 +33,6 @@ jobs:
 
       - name: Run two-client smoke test
         run: npm test
+
+      - name: Build deployable container
+        run: docker build -t pardex-online-ci .
