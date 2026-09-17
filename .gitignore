@@ -1,0 +1,16 @@
+# Godot generated data
+.godot/
+
+# Local editor / OS files
+.DS_Store
+Thumbs.db
+
+# Local PARDEX builds and exports
+build/
+builds/
+dist/
+exports/
+
+# IDE settings
+.vscode/
+.idea/
