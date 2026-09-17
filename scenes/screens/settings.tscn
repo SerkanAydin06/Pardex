@@ -12,9 +12,9 @@ corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
 content_margin_left = 26.0
-content_margin_top = 24.0
+content_margin_top = 22.0
 content_margin_right = 26.0
-content_margin_bottom = 24.0
+content_margin_bottom = 22.0
 
 [sub_resource type="StyleBoxFlat" id="Input"]
 bg_color = Color(0.03, 0.041, 0.062, 1)
@@ -46,7 +46,7 @@ content_margin_bottom = 11.0
 [node name="SettingsContent" type="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 20
+theme_override_constants/separation = 16
 
 [node name="ProfilePanel" type="PanelContainer" parent="."]
 layout_mode = 2
@@ -54,19 +54,13 @@ theme_override_styles/panel = SubResource("Panel")
 
 [node name="VBox" type="VBoxContainer" parent="ProfilePanel"]
 layout_mode = 2
-theme_override_constants/separation = 13
+theme_override_constants/separation = 10
 
 [node name="Section" type="Label" parent="ProfilePanel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "PROFİL"
-
-[node name="Title" type="Label" parent="ProfilePanel/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 22
-text = "Görünen ad"
 
 [node name="Description" type="Label" parent="ProfilePanel/VBox"]
 layout_mode = 2
@@ -97,13 +91,63 @@ theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("Button")
 text = "KAYDET"
 
+[node name="OnlinePanel" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("Panel")
+
+[node name="VBox" type="VBoxContainer" parent="OnlinePanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Section" type="Label" parent="OnlinePanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
+theme_override_font_sizes/font_size = 13
+text = "PARDEX ONLINE"
+
+[node name="Description" type="Label" parent="OnlinePanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
+theme_override_font_sizes/font_size = 14
+text = "Geliştirme aşamasında bağlanılacak WebSocket sunucusunu burada belirleyebilirsin. Yayın sürümünde bu adres otomatik olacak."
+autowrap_mode = 2
+
+[node name="ServerRow" type="HBoxContainer" parent="OnlinePanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ServerUrlEdit" type="LineEdit" parent="OnlinePanel/VBox/ServerRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.93, 0.98, 1)
+theme_override_colors/font_placeholder_color = Color(0.38, 0.44, 0.53, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("Input")
+placeholder_text = "ws://127.0.0.1:8765"
+
+[node name="ConnectButton" type="Button" parent="OnlinePanel/VBox/ServerRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(170, 0)
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("Button")
+text = "BAĞLAN"
+
+[node name="State" type="Label" parent="OnlinePanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.7, 0.32, 1)
+theme_override_font_sizes/font_size = 14
+text = "●  ÇEVRİMDIŞI"
+
 [node name="DisplayPanel" type="PanelContainer" parent="."]
 layout_mode = 2
 theme_override_styles/panel = SubResource("Panel")
 
 [node name="VBox" type="VBoxContainer" parent="DisplayPanel"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 8
 
 [node name="Section" type="Label" parent="DisplayPanel/VBox"]
 layout_mode = 2
@@ -114,54 +158,14 @@ text = "GÖRÜNTÜ"
 [node name="Title" type="Label" parent="DisplayPanel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 19
 text = "1920 × 1080 Tam Ekran"
-
-[node name="Description" type="Label" parent="DisplayPanel/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
-theme_override_font_sizes/font_size = 14
-text = "PARDEX şu anda 1920×1080 temel çözünürlükte tam ekran çalışacak şekilde ayarlı."
 
 [node name="State" type="Label" parent="DisplayPanel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.38, 0.86, 0.62, 1)
 theme_override_font_sizes/font_size = 14
 text = "●  TAM EKRAN AKTİF"
-
-[node name="OnlinePanel" type="PanelContainer" parent="."]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_styles/panel = SubResource("Panel")
-
-[node name="VBox" type="VBoxContainer" parent="OnlinePanel"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Section" type="Label" parent="OnlinePanel/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
-theme_override_font_sizes/font_size = 13
-text = "PARDEX ONLINE"
-
-[node name="Title" type="Label" parent="OnlinePanel/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 22
-text = "Bağlantı altyapısı"
-
-[node name="Description" type="Label" parent="OnlinePanel/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
-theme_override_font_sizes/font_size = 14
-text = "Hesap, arkadaş, oda ve oyun oturumu servisleri sonraki aşamada bu uygulamaya bağlanacak."
-autowrap_mode = 2
-
-[node name="State" type="Label" parent="OnlinePanel/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.7, 0.32, 1)
-theme_override_font_sizes/font_size = 14
-text = "●  GELİŞTİRİLİYOR"
 
 [node name="ApplicationPanel" type="PanelContainer" parent="."]
 layout_mode = 2
