@@ -6,7 +6,8 @@ signal room_state_changed(room: Dictionary)
 signal room_left()
 signal online_error(message: String)
 
-const DEFAULT_SERVER_URL := "ws://127.0.0.1:8765"
+const DEFAULT_SERVER_URL := "wss://pardex-online-production.up.railway.app"
+const LEGACY_LOCAL_SERVER_URL := "ws://127.0.0.1:8765"
 const RECONNECT_DELAY := 3.0
 const HEARTBEAT_INTERVAL := 20.0
 const SERVER_TIMEOUT := 60.0
@@ -74,7 +75,10 @@ func _process(delta: float) -> void:
 
 func configure(url: String, player_name: String) -> void:
     var normalized_url := url.strip_edges()
-    server_url = normalized_url if not normalized_url.is_empty() else DEFAULT_SERVER_URL
+    if normalized_url.is_empty() or normalized_url == LEGACY_LOCAL_SERVER_URL:
+        server_url = DEFAULT_SERVER_URL
+    else:
+        server_url = normalized_url
 
     var normalized_name := player_name.strip_edges()
     display_name = normalized_name.left(24) if not normalized_name.is_empty() else "Pardus"
