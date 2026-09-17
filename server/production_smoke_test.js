@@ -1,3 +1,4 @@
+// Live PARDEX room-to-game launch smoke test.
 const WebSocket = require("ws");
 
 const URL = process.env.PARDEX_ONLINE_URL || "wss://pardex-online-production.up.railway.app";
