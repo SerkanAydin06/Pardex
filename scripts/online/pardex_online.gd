@@ -5,6 +5,7 @@ signal welcome_received(user_id: String, display_name: String)
 signal room_state_changed(room: Dictionary)
 signal room_left()
 signal online_error(message: String)
+signal game_start_requested(payload: Dictionary)
 
 const DEFAULT_SERVER_URL := "wss://pardex-online-production.up.railway.app"
 const LEGACY_LOCAL_SERVER_URL := "ws://127.0.0.1:8765"
@@ -171,6 +172,12 @@ func set_ready(is_ready: bool) -> void:
         "ready": is_ready,
     })
 
+func request_start_game() -> void:
+    if not is_online() or current_room.is_empty():
+        online_error.emit("Oyunu başlatmak için aktif bir PARDEX odası gerekli.")
+        return
+    _send({"type": "start_game"})
+
 func is_online() -> bool:
     return (
         _socket != null
@@ -238,6 +245,12 @@ func _handle_packet(packet: String) -> void:
             if typeof(room_data) == TYPE_DICTIONARY:
                 current_room = (room_data as Dictionary).duplicate(true)
                 room_state_changed.emit(current_room.duplicate(true))
+        "game_start":
+            var room_data = message.get("room", {})
+            if typeof(room_data) == TYPE_DICTIONARY:
+                current_room = (room_data as Dictionary).duplicate(true)
+                room_state_changed.emit(current_room.duplicate(true))
+            game_start_requested.emit(message.duplicate(true))
         "left_room":
             current_room.clear()
             room_left.emit()
