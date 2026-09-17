@@ -1,0 +1,31 @@
+name: PARDEX Online Production Smoke
+
+on:
+  push:
+    paths:
+      - "server/production_smoke_test.js"
+      - ".github/workflows/pardex-production-smoke.yml"
+  workflow_dispatch:
+
+jobs:
+  production-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Test live PARDEX Online
+        env:
+          PARDEX_ONLINE_URL: wss://pardex-online-production.up.railway.app
+        run: node production_smoke_test.js
