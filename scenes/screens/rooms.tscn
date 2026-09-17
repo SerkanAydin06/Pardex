@@ -1,0 +1,204 @@
+[gd_scene load_steps=4 format=3]
+
+[sub_resource type="StyleBoxFlat" id="Panel"]
+bg_color = Color(0.045, 0.058, 0.086, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.11, 0.145, 0.2, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+content_margin_left = 24.0
+content_margin_top = 22.0
+content_margin_right = 24.0
+content_margin_bottom = 22.0
+
+[sub_resource type="StyleBoxFlat" id="ActionCard"]
+bg_color = Color(0.052, 0.068, 0.1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.13, 0.18, 0.25, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+content_margin_left = 26.0
+content_margin_top = 26.0
+content_margin_right = 26.0
+content_margin_bottom = 26.0
+
+[sub_resource type="StyleBoxFlat" id="Button"]
+bg_color = Color(0.16, 0.41, 0.96, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 20.0
+content_margin_top = 11.0
+content_margin_right = 20.0
+content_margin_bottom = 11.0
+
+[node name="RoomsContent" type="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 22
+
+[node name="Intro" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+theme_override_styles/panel = SubResource("Panel")
+
+[node name="Row" type="HBoxContainer" parent="Intro"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Text" type="VBoxContainer" parent="Intro/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Eyebrow" type="Label" parent="Intro/Row/Text"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
+theme_override_font_sizes/font_size = 13
+text = "ÇEVRİMİÇİ OTURUMLAR"
+
+[node name="Title" type="Label" parent="Intro/Row/Text"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 26
+text = "Aynı odaya gir, aynı oyuna bağlan."
+
+[node name="Body" type="Label" parent="Intro/Row/Text"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.56, 0.62, 0.72, 1)
+theme_override_font_sizes/font_size = 14
+text = "Oda oluşturma, oda koduyla katılma ve hazır durumu burada yönetilecek.\nİlk gerçek bağlantı Korsanların Hazinesi ile yapılacak."
+
+[node name="Mark" type="Label" parent="Intro/Row"]
+custom_minimum_size = Vector2(190, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.52, 0.75, 0.6)
+theme_override_font_sizes/font_size = 80
+text = "◇"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Actions" type="HBoxContainer" parent="."]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 280)
+theme_override_constants/separation = 20
+
+[node name="CreateCard" type="PanelContainer" parent="Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("ActionCard")
+
+[node name="VBox" type="VBoxContainer" parent="Actions/CreateCard"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Icon" type="Label" parent="Actions/CreateCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.43, 0.79, 1, 1)
+theme_override_font_sizes/font_size = 44
+text = "+"
+
+[node name="Title" type="Label" parent="Actions/CreateCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "Oda Oluştur"
+
+[node name="Body" type="Label" parent="Actions/CreateCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
+theme_override_font_sizes/font_size = 14
+text = "Bir oyun seç, oyuncu sınırını belirle ve arkadaşlarını davet et."
+autowrap_mode = 2
+
+[node name="Flex" type="Control" parent="Actions/CreateCard/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CreateRoomButton" type="Button" parent="Actions/CreateCard/VBox"]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("Button")
+text = "ODA OLUŞTUR"
+
+[node name="JoinCard" type="PanelContainer" parent="Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("ActionCard")
+
+[node name="VBox" type="VBoxContainer" parent="Actions/JoinCard"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Icon" type="Label" parent="Actions/JoinCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
+theme_override_font_sizes/font_size = 38
+text = "#"
+
+[node name="Title" type="Label" parent="Actions/JoinCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "Oda Koduyla Katıl"
+
+[node name="Body" type="Label" parent="Actions/JoinCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
+theme_override_font_sizes/font_size = 14
+text = "Arkadaşının paylaştığı kısa oda koduyla doğrudan oturuma bağlan."
+autowrap_mode = 2
+
+[node name="RoomCode" type="LineEdit" parent="Actions/JoinCard/VBox"]
+layout_mode = 2
+placeholder_text = "Örn. K7P2Q"
+max_length = 8
+
+[node name="Flex" type="Control" parent="Actions/JoinCard/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="JoinRoomButton" type="Button" parent="Actions/JoinCard/VBox"]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("Button")
+text = "KATIL"
+
+[node name="ActiveRooms" type="PanelContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("Panel")
+
+[node name="VBox" type="VBoxContainer" parent="ActiveRooms"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="ActiveRooms/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.87, 0.94, 1)
+theme_override_font_sizes/font_size = 18
+text = "AKTİF ODALAR"
+
+[node name="Empty" type="Label" parent="ActiveRooms/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.44, 0.5, 0.59, 1)
+theme_override_font_sizes/font_size = 14
+text = "PARDEX Online sunucusu bağlandığında davet edildiğin ve açık odalar burada listelenecek."
+vertical_alignment = 1
+horizontal_alignment = 1
