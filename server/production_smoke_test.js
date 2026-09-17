@@ -1,7 +1,7 @@
 const WebSocket = require("ws");
 
 const URL = process.env.PARDEX_ONLINE_URL || "wss://pardex-online-production.up.railway.app";
-const EXPECTED_GAME_SERVER_URL = process.env.PARDEX_GAME_SERVER_URL || "";
+const EXPECTED_GAME_SERVER_URL = process.env.PARDEX_GAME_SERVER_URL || "wss://korsan-game-production.up.railway.app";
 const TIMEOUT_MS = 15000;
 
 function connect(name) {
@@ -73,7 +73,7 @@ async function main() {
     const created = await roomCreated;
     const code = created.room.code;
     if (!code) throw new Error("Room code missing");
-    if (EXPECTED_GAME_SERVER_URL && created.room.game_server_url !== EXPECTED_GAME_SERVER_URL) {
+    if (created.room.game_server_url !== EXPECTED_GAME_SERVER_URL) {
       throw new Error(
         `Game server assignment mismatch: expected ${EXPECTED_GAME_SERVER_URL}, got ${created.room.game_server_url || "<empty>"}`
       );
@@ -106,7 +106,7 @@ async function main() {
     await Promise.all([aSeesReady, bSeesReady]);
 
     console.log(
-      `PARDEX Online production smoke test passed: ${URL} room=${code} game_server=${created.room.game_server_url || "<none>"}`
+      `PARDEX Online production smoke test passed: ${URL} room=${code} game_server=${created.room.game_server_url}`
     );
   } finally {
     a.ws.close();
