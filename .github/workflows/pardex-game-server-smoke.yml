@@ -1,0 +1,27 @@
+name: PARDEX Game Server Smoke
+
+on:
+  push:
+    paths:
+      - "scripts/ci/test_game_server.gd"
+      - ".github/workflows/pardex-game-server-smoke.yml"
+  workflow_dispatch:
+
+jobs:
+  game-server-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: solarlabyrinth/action-setup-godot@v3
+        with:
+          version: 4.7.2-stable
+          csharp: false
+          export-templates: false
+
+      - name: Test live Korsan game server
+        env:
+          PARDEX_GAME_SERVER_URL: wss://korsan-game-production.up.railway.app
+        run: godot --headless --path . --script res://scripts/ci/test_game_server.gd
