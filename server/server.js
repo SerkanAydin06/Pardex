@@ -6,9 +6,14 @@ const PORT = Number(process.env.PORT || 8765);
 const HOST = process.env.HOST || "0.0.0.0";
 const ROOM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const MAX_ROOM_SIZE = 8;
+const MAX_PAYLOAD_BYTES = 16 * 1024;
+const RATE_WINDOW_MS = 10_000;
+const RATE_LIMIT_MESSAGES = 40;
+const RATE_HARD_LIMIT_MESSAGES = 60;
 
 const clients = new Map();
 const rooms = new Map();
+let shuttingDown = false;
 
 function send(ws, payload) {
   if (ws.readyState === WebSocket.OPEN) {
@@ -139,7 +144,32 @@ function createRoom(client, message) {
   broadcastRoom(room);
 }
 
+function allowMessage(client) {
+  const now = Date.now();
+  if (now - client.rateWindowStartedAt >= RATE_WINDOW_MS) {
+    client.rateWindowStartedAt = now;
+    client.rateMessageCount = 0;
+  }
+
+  client.rateMessageCount += 1;
+  if (client.rateMessageCount > RATE_HARD_LIMIT_MESSAGES) {
+    client.ws.close(1008, "Rate limit exceeded");
+    return false;
+  }
+  if (client.rateMessageCount > RATE_LIMIT_MESSAGES) {
+    send(client.ws, {
+      type: "error",
+      code: "RATE_LIMIT",
+      message: "Çok fazla istek gönderildi. Lütfen kısa süre bekle.",
+    });
+    return false;
+  }
+  return true;
+}
+
 function handleMessage(client, raw) {
+  if (!allowMessage(client)) return;
+
   let message;
   try {
     message = JSON.parse(raw.toString("utf8"));
@@ -187,8 +217,13 @@ function handleMessage(client, raw) {
 
 const httpServer = http.createServer((req, res) => {
   if (req.url === "/health") {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ ok: true, rooms: rooms.size, clients: clients.size }));
+    const status = shuttingDown ? 503 : 200;
+    res.writeHead(status, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({
+      ok: !shuttingDown,
+      rooms: rooms.size,
+      clients: clients.size,
+    }));
     return;
   }
 
@@ -196,14 +231,24 @@ const httpServer = http.createServer((req, res) => {
   res.end("PARDEX Online server\n");
 });
 
-const wss = new WebSocketServer({ server: httpServer });
+const wss = new WebSocketServer({
+  server: httpServer,
+  maxPayload: MAX_PAYLOAD_BYTES,
+});
 
 wss.on("connection", (ws) => {
+  if (shuttingDown) {
+    ws.close(1012, "Service restarting");
+    return;
+  }
+
   const userId = crypto.randomUUID();
   const client = {
     userId,
     displayName: "Pardus",
     roomCode: "",
+    rateWindowStartedAt: Date.now(),
+    rateMessageCount: 0,
     ws,
   };
   clients.set(userId, client);
@@ -215,6 +260,24 @@ wss.on("connection", (ws) => {
   });
   ws.on("error", () => {});
 });
+
+function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(`PARDEX Online shutting down (${signal})`);
+
+  for (const client of clients.values()) {
+    client.ws.close(1012, "PARDEX Online restarting");
+  }
+
+  wss.close(() => {});
+  httpServer.close(() => process.exit(0));
+
+  setTimeout(() => process.exit(1), 5000).unref();
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
 
 httpServer.listen(PORT, HOST, () => {
   console.log(`PARDEX Online listening on ${HOST}:${PORT}`);
