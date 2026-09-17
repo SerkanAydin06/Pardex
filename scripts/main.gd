@@ -2,7 +2,7 @@ extends Control
 
 const APP_VERSION := "0.1.0"
 const SETTINGS_PATH := "user://pardex.cfg"
-const DEFAULT_SERVER_URL := "ws://127.0.0.1:8765"
+const DEFAULT_SERVER_URL := "wss://pardex-online-production.up.railway.app"
 const FRIENDS_SCENE := preload("res://scenes/screens/friends.tscn")
 const ROOMS_SCENE := preload("res://scenes/screens/rooms.tscn")
 const SETTINGS_SCENE := preload("res://scenes/screens/settings.tscn")
@@ -26,6 +26,7 @@ var _display_name := "Pardus"
 var _server_url := DEFAULT_SERVER_URL
 var _nav_selected_style: StyleBox
 var _nav_normal_style: StyleBox
+var _game_launch_in_progress := false
 
 func _ready() -> void:
     version_label.text = "PARDEX v%s" % APP_VERSION
@@ -66,31 +67,33 @@ func _wire_actions() -> void:
     %FriendsButton.pressed.connect(_show_friends)
     %RoomsButton.pressed.connect(_show_rooms)
     %SettingsButton.pressed.connect(_show_settings)
+    %ExitButton.pressed.connect(func(): get_tree().quit())
 
     var create_room_button := _rooms_content.get_node("Actions/CreateCard/VBox/CreateRoomButton") as Button
     var room_code_edit := _rooms_content.get_node("Actions/JoinCard/VBox/RoomCode") as LineEdit
     var join_room_button := _rooms_content.get_node("Actions/JoinCard/VBox/JoinRoomButton") as Button
     var ready_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/ReadyButton") as Button
+    var start_game_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/StartGameButton") as Button
     var leave_room_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/LeaveRoomButton") as Button
 
     create_room_button.pressed.connect(func(): PardexOnline.create_room("korsanlar", 4))
     join_room_button.pressed.connect(func(): PardexOnline.join_room(room_code_edit.text))
     room_code_edit.text_submitted.connect(func(_value: String): PardexOnline.join_room(room_code_edit.text))
     ready_button.pressed.connect(_toggle_ready)
+    start_game_button.pressed.connect(PardexOnline.request_start_game)
     leave_room_button.pressed.connect(PardexOnline.leave_room)
 
     var save_profile_button := _settings_content.get_node("ProfilePanel/VBox/ProfileRow/SaveProfileButton") as Button
     var connect_button := _settings_content.get_node("OnlinePanel/VBox/ServerRow/ConnectButton") as Button
-    var exit_button := _settings_content.get_node("ApplicationPanel/Row/ExitButton") as Button
     save_profile_button.pressed.connect(_save_profile_from_settings)
     connect_button.pressed.connect(_save_online_settings_and_connect)
-    exit_button.pressed.connect(func(): get_tree().quit())
 
 func _wire_online_signals() -> void:
     PardexOnline.connection_state_changed.connect(_update_connection_ui)
     PardexOnline.room_state_changed.connect(_render_room)
     PardexOnline.room_left.connect(_render_empty_room)
     PardexOnline.online_error.connect(_show_toast)
+    PardexOnline.game_start_requested.connect(_on_game_start_requested)
 
 func _prepare_game_cards() -> void:
     _set_game_card(
@@ -104,8 +107,8 @@ func _prepare_game_cards() -> void:
         %KorsanStatus,
         %KorsanPath,
         %KorsanPlayButton,
-        "ONLINE ENTEGRASYON SIRASINDA",
-        "İlk PARDEX Online bağlantısı bu oyunla yapılacak"
+        "PARDEX ONLINE BAĞLI",
+        "Online oda ve dedicated oyun sunucusu hazır"
     )
     _set_game_card(
         %FirtinaStatus,
@@ -198,7 +201,7 @@ func _load_settings() -> void:
         _display_name = "Pardus"
 
     _server_url = str(config.get_value("online", "server_url", DEFAULT_SERVER_URL)).strip_edges()
-    if _server_url.is_empty():
+    if _server_url.is_empty() or _server_url == "ws://127.0.0.1:8765":
         _server_url = DEFAULT_SERVER_URL
 
 func _save_settings() -> int:
@@ -294,8 +297,10 @@ func _toggle_ready() -> void:
 func _render_room(room: Dictionary) -> void:
     var room_code_label := _rooms_content.get_node("CurrentRoom/VBox/Header/CurrentRoomCode") as Label
     var room_summary := _rooms_content.get_node("CurrentRoom/VBox/RoomSummary") as Label
+    var launch_hint := _rooms_content.get_node("CurrentRoom/VBox/LaunchHint") as Label
     var members_box := _rooms_content.get_node("CurrentRoom/VBox/MembersVBox") as VBoxContainer
     var ready_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/ReadyButton") as Button
+    var start_game_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/StartGameButton") as Button
     var leave_room_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/LeaveRoomButton") as Button
 
     room_code_label.text = str(room.get("code", "—"))
@@ -308,6 +313,7 @@ func _render_room(room: Dictionary) -> void:
         child.queue_free()
 
     var self_is_ready := false
+    var all_ready := members.size() >= 2
     var host_id := str(room.get("host_id", ""))
     for member_data in members:
         if typeof(member_data) != TYPE_DICTIONARY:
@@ -316,13 +322,14 @@ func _render_room(room: Dictionary) -> void:
         var member_id := str(member.get("user_id", ""))
         var member_name := str(member.get("display_name", "Oyuncu"))
         var member_ready := bool(member.get("ready", false))
+        all_ready = all_ready and member_ready
 
         var row := HBoxContainer.new()
         row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
         var name_label := Label.new()
         name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-        name_label.text = member_name + ("  ★ Host" if member_id == host_id else "")
+        name_label.text = member_name + ("  ★ Kurucu" if member_id == host_id else "")
         name_label.add_theme_font_size_override("font_size", 15)
         name_label.add_theme_color_override("font_color", Color(0.88, 0.92, 0.98, 1))
         row.add_child(name_label)
@@ -340,9 +347,39 @@ func _render_room(room: Dictionary) -> void:
         if member_id == PardexOnline.user_id:
             self_is_ready = member_ready
 
-    ready_button.disabled = false
+    var is_host := host_id == PardexOnline.user_id
+    var has_game_server := str(room.get("game_server_url", "")).begins_with("ws")
+    var launching := bool(room.get("launching", false))
+
+    ready_button.disabled = launching
     leave_room_button.disabled = false
     ready_button.text = "HAZIRLIĞI KALDIR" if self_is_ready else "HAZIR"
+
+    start_game_button.visible = is_host
+    start_game_button.disabled = not (is_host and all_ready and has_game_server and not launching)
+    if launching:
+        start_game_button.text = "OYUN BAŞLATILIYOR…"
+        launch_hint.text = "PARDEX oturumu başlatıldı • Oyuncular oyuna aktarılıyor"
+        launch_hint.add_theme_color_override("font_color", Color(0.38, 0.86, 0.62, 1))
+    elif not has_game_server:
+        start_game_button.text = "SUNUCU BEKLENİYOR"
+        launch_hint.text = "Korsan oyun sunucusu henüz atanmadı."
+        launch_hint.add_theme_color_override("font_color", Color(0.9, 0.7, 0.32, 1))
+    elif members.size() < 2:
+        start_game_button.text = "OYUNCU BEKLENİYOR"
+        launch_hint.text = "Oyunu başlatmak için en az 2 oyuncu gerekli."
+        launch_hint.add_theme_color_override("font_color", Color(0.58, 0.63, 0.72, 1))
+    elif not all_ready:
+        start_game_button.text = "HERKES HAZIR DEĞİL"
+        launch_hint.text = "Tüm oyuncular HAZIR olduğunda kurucu oyunu başlatabilir."
+        launch_hint.add_theme_color_override("font_color", Color(0.58, 0.63, 0.72, 1))
+    else:
+        start_game_button.text = "OYUNU BAŞLAT"
+        launch_hint.text = "Tüm oyuncular hazır • Korsan oyun sunucusu bağlı"
+        launch_hint.add_theme_color_override("font_color", Color(0.38, 0.86, 0.62, 1))
+
+    if not is_host and not launching:
+        launch_hint.text = "Kurucu tüm oyuncular hazır olduğunda oyunu başlatacak."
 
 func _render_empty_room() -> void:
     if _rooms_content == null:
@@ -350,12 +387,16 @@ func _render_empty_room() -> void:
 
     var room_code_label := _rooms_content.get_node("CurrentRoom/VBox/Header/CurrentRoomCode") as Label
     var room_summary := _rooms_content.get_node("CurrentRoom/VBox/RoomSummary") as Label
+    var launch_hint := _rooms_content.get_node("CurrentRoom/VBox/LaunchHint") as Label
     var members_box := _rooms_content.get_node("CurrentRoom/VBox/MembersVBox") as VBoxContainer
     var ready_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/ReadyButton") as Button
+    var start_game_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/StartGameButton") as Button
     var leave_room_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/LeaveRoomButton") as Button
 
     room_code_label.text = "—"
     room_summary.text = "Henüz bir odada değilsin."
+    launch_hint.text = "Bir oda oluştur veya oda koduyla arkadaşına katıl."
+    launch_hint.add_theme_color_override("font_color", Color(0.44, 0.5, 0.59, 1))
     for child in members_box.get_children():
         child.queue_free()
 
@@ -370,7 +411,78 @@ func _render_empty_room() -> void:
 
     ready_button.text = "HAZIR"
     ready_button.disabled = true
+    start_game_button.visible = false
+    start_game_button.disabled = true
     leave_room_button.disabled = true
+    _game_launch_in_progress = false
+
+func _on_game_start_requested(payload: Dictionary) -> void:
+    if _game_launch_in_progress:
+        return
+    if str(payload.get("game_id", "")) != "korsanlar":
+        _show_toast("Bu oyun için PARDEX launch desteği henüz hazır değil.")
+        return
+    if not PardexOnline.has_game_server_assignment():
+        _show_toast("Korsan oyun sunucusu atanamadı.")
+        return
+
+    _game_launch_in_progress = true
+    _launch_korsan_development_project()
+
+func _launch_korsan_development_project() -> void:
+    if not OS.has_feature("editor"):
+        _game_launch_in_progress = false
+        _show_toast("Oyun oturumu hazır. Windows oyun paketi tamamlandığında PARDEX buradan açacak.")
+        return
+
+    var project_path := _find_korsan_project_path()
+    if project_path.is_empty():
+        _game_launch_in_progress = false
+        _show_toast("Oturum hazır; Korsanların Hazinesi geliştirme projesi PARDEX'in yan klasöründe bulunamadı.")
+        return
+
+    var launch_args := PackedStringArray(["--path", project_path, "--"])
+    for argument in PardexOnline.build_game_launch_args("korsanlar"):
+        launch_args.append(argument)
+
+    var pid := OS.create_process(OS.get_executable_path(), launch_args)
+    if pid <= 0:
+        _game_launch_in_progress = false
+        _show_toast("Korsanların Hazinesi başlatılamadı.")
+        return
+
+    _show_toast("Korsanların Hazinesi PARDEX oturumuyla başlatıldı.")
+
+func _find_korsan_project_path() -> String:
+    var override_path := OS.get_environment("PARDEX_KORSAN_PROJECT").strip_edges()
+    if not override_path.is_empty() and FileAccess.file_exists(override_path.path_join("project.godot")):
+        return override_path
+
+    var pardex_root := ProjectSettings.globalize_path("res://").trim_suffix("/").trim_suffix("\\")
+    var parent_dir := pardex_root.get_base_dir()
+    var exact_candidates := [
+        parent_dir.path_join("Korsanlarin-Hazinesi"),
+        parent_dir.path_join("Korsanlarin-Hazinesi-main"),
+        parent_dir.path_join("Korsanların Hazinesi"),
+    ]
+    for candidate in exact_candidates:
+        if FileAccess.file_exists(str(candidate).path_join("project.godot")):
+            return str(candidate)
+
+    var directory := DirAccess.open(parent_dir)
+    if directory == null:
+        return ""
+    directory.list_dir_begin()
+    var entry := directory.get_next()
+    while not entry.is_empty():
+        if directory.current_is_dir() and "korsan" in entry.to_lower():
+            var candidate := parent_dir.path_join(entry)
+            if FileAccess.file_exists(candidate.path_join("project.godot")):
+                directory.list_dir_end()
+                return candidate
+        entry = directory.get_next()
+    directory.list_dir_end()
+    return ""
 
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed("ui_cancel") and _current_content != library_content:
