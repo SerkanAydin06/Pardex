@@ -30,28 +30,27 @@ func _process(delta: float) -> void:
         return
 
     _socket.poll()
-    var ready_state := _socket.get_ready_state()
+    var socket_state := _socket.get_ready_state()
 
-    if ready_state == WebSocketPeer.STATE_OPEN:
+    if socket_state == WebSocketPeer.STATE_OPEN:
         if connection_state != "online":
             _set_connection_state("online")
         if not _hello_sent:
             _hello_sent = true
-            _send({
-                "type": "hello",
-                "display_name": display_name,
-            })
+            _send_hello()
         while _socket.get_available_packet_count() > 0:
             var packet := _socket.get_packet().get_string_from_utf8()
             _handle_packet(packet)
-    elif ready_state == WebSocketPeer.STATE_CLOSING:
+    elif socket_state == WebSocketPeer.STATE_CLOSING:
         _set_connection_state("connecting")
-    elif ready_state == WebSocketPeer.STATE_CLOSED:
+    elif socket_state == WebSocketPeer.STATE_CLOSED:
         var was_manual := _manual_disconnect
         _socket = null
         _hello_sent = false
         user_id = ""
-        current_room.clear()
+        if not current_room.is_empty():
+            current_room.clear()
+            room_left.emit()
         _set_connection_state("offline")
         if was_manual:
             _manual_disconnect = false
@@ -62,6 +61,12 @@ func configure(url: String, player_name: String) -> void:
 
     var normalized_name := player_name.strip_edges()
     display_name = normalized_name.left(24) if not normalized_name.is_empty() else "Pardus"
+
+func update_display_name(player_name: String) -> void:
+    var normalized_name := player_name.strip_edges()
+    display_name = normalized_name.left(24) if not normalized_name.is_empty() else "Pardus"
+    if is_online():
+        _send_hello()
 
 func connect_server() -> void:
     if _socket != null and _socket.get_ready_state() in [
@@ -74,13 +79,27 @@ func connect_server() -> void:
     _hello_sent = false
     _reconnect_elapsed = 0.0
     _socket = WebSocketPeer.new()
-    var error := _socket.connect_to_url(server_url)
-    if error != OK:
+    var connection_error := _socket.connect_to_url(server_url)
+    if connection_error != OK:
         _socket = null
         _set_connection_state("offline")
         online_error.emit("PARDEX Online sunucusuna bağlantı başlatılamadı.")
         return
     _set_connection_state("connecting")
+
+func reconnect_server() -> void:
+    _manual_disconnect = false
+    _hello_sent = false
+    _reconnect_elapsed = 0.0
+    if _socket != null:
+        _socket.close(1000, "PARDEX reconnect")
+    _socket = null
+    user_id = ""
+    if not current_room.is_empty():
+        current_room.clear()
+        room_left.emit()
+    _set_connection_state("offline")
+    connect_server()
 
 func disconnect_server() -> void:
     _manual_disconnect = true
@@ -117,12 +136,12 @@ func leave_room() -> void:
         return
     _send({"type": "leave_room"})
 
-func set_ready(ready: bool) -> void:
+func set_ready(is_ready: bool) -> void:
     if not is_online() or current_room.is_empty():
         return
     _send({
         "type": "set_ready",
-        "ready": ready,
+        "ready": is_ready,
     })
 
 func is_online() -> bool:
@@ -134,6 +153,12 @@ func is_online() -> bool:
 
 func is_in_room() -> bool:
     return not current_room.is_empty()
+
+func _send_hello() -> void:
+    _send({
+        "type": "hello",
+        "display_name": display_name,
+    })
 
 func _send(payload: Dictionary) -> void:
     if _socket == null or _socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
@@ -155,9 +180,9 @@ func _handle_packet(packet: String) -> void:
             display_name = str(message.get("display_name", display_name))
             welcome_received.emit(user_id, display_name)
         "room_state":
-            var room = message.get("room", {})
-            if typeof(room) == TYPE_DICTIONARY:
-                current_room = (room as Dictionary).duplicate(true)
+            var room_data = message.get("room", {})
+            if typeof(room_data) == TYPE_DICTIONARY:
+                current_room = (room_data as Dictionary).duplicate(true)
                 room_state_changed.emit(current_room.duplicate(true))
         "left_room":
             current_room.clear()
