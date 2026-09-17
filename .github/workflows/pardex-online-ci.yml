@@ -30,3 +30,6 @@ jobs:
 
       - name: Check server syntax
         run: node --check server.js
+
+      - name: Run two-client smoke test
+        run: npm test
