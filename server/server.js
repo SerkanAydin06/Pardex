@@ -4,6 +4,7 @@ const crypto = require("crypto");
 
 const PORT = Number(process.env.PORT || 8765);
 const HOST = process.env.HOST || "0.0.0.0";
+const KORSAN_GAME_SERVER_URL = String(process.env.KORSAN_GAME_SERVER_URL || "").trim();
 const ROOM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const MAX_ROOM_SIZE = 8;
 const MAX_PAYLOAD_BYTES = 16 * 1024;
@@ -26,6 +27,11 @@ function safeName(value) {
   return (text || "Pardus").slice(0, 24);
 }
 
+function gameServerUrl(gameId) {
+  if (gameId === "korsanlar") return KORSAN_GAME_SERVER_URL;
+  return "";
+}
+
 function roomCode() {
   for (let attempt = 0; attempt < 50; attempt += 1) {
     let code = "";
@@ -42,6 +48,7 @@ function roomPayload(room) {
   return {
     code: room.code,
     game_id: room.gameId,
+    game_server_url: gameServerUrl(room.gameId),
     host_id: room.hostId,
     max_players: room.maxPlayers,
     members: room.members.map((member) => ({
@@ -223,6 +230,7 @@ const httpServer = http.createServer((req, res) => {
       ok: !shuttingDown,
       rooms: rooms.size,
       clients: clients.size,
+      korsanGameServerAssigned: Boolean(KORSAN_GAME_SERVER_URL),
     }));
     return;
   }
