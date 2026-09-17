@@ -80,11 +80,25 @@ function leaveCurrentRoom(userId, notifySelf = true) {
   if (notifySelf) send(client.ws, { type: "left_room", code: previousCode });
 }
 
+function syncClientNameToRoom(client) {
+  if (!client.roomCode) return;
+  const room = rooms.get(client.roomCode);
+  if (!room) return;
+  const member = room.members.find((item) => item.userId === client.userId);
+  if (!member) return;
+  member.displayName = client.displayName;
+  broadcastRoom(room);
+}
+
 function joinRoom(client, code) {
   const normalized = String(code || "").trim().toUpperCase();
   const room = rooms.get(normalized);
   if (!room) {
     send(client.ws, { type: "error", code: "ROOM_NOT_FOUND", message: "Oda bulunamadı." });
+    return;
+  }
+  if (client.roomCode === normalized) {
+    broadcastRoom(room);
     return;
   }
   if (room.members.length >= room.maxPlayers) {
@@ -142,6 +156,7 @@ function handleMessage(client, raw) {
         user_id: client.userId,
         display_name: client.displayName,
       });
+      syncClientNameToRoom(client);
       break;
     case "create_room":
       createRoom(client, message);
