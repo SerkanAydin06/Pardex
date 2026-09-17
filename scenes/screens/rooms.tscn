@@ -78,7 +78,7 @@ text = "Aynı odaya gir, aynı oyuna bağlan."
 layout_mode = 2
 theme_override_colors/font_color = Color(0.56, 0.62, 0.72, 1)
 theme_override_font_sizes/font_size = 14
-text = "Oda kodları ve oyuncu durumları artık PARDEX Online sunucusuyla senkronize edilir."
+text = "Oda kodları, hazır durumları ve oyun başlatma PARDEX Online üzerinden senkronize edilir."
 
 [node name="ConnectionStatus" type="Label" parent="Intro/Row"]
 custom_minimum_size = Vector2(220, 0)
@@ -91,7 +91,7 @@ vertical_alignment = 1
 
 [node name="Actions" type="HBoxContainer" parent="."]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 232)
+custom_minimum_size = Vector2(0, 220)
 theme_override_constants/separation = 20
 
 [node name="CreateCard" type="PanelContainer" parent="Actions"]
@@ -119,7 +119,7 @@ text = "Oda Oluştur"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
 theme_override_font_sizes/font_size = 14
-text = "Şimdilik Korsanların Hazinesi için 4 kişilik bir test odası aç."
+text = "Korsanların Hazinesi için 4 kişilik online oda aç."
 autowrap_mode = 2
 
 [node name="Flex" type="Control" parent="Actions/CreateCard/VBox"]
@@ -210,6 +210,12 @@ theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
 theme_override_font_sizes/font_size = 13
 text = "Henüz bir odada değilsin."
 
+[node name="LaunchHint" type="Label" parent="CurrentRoom/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
+theme_override_font_sizes/font_size = 13
+text = "Oyun başlatma durumu burada görünecek."
+
 [node name="MembersTitle" type="Label" parent="CurrentRoom/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.78, 0.86, 1)
@@ -243,6 +249,18 @@ theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("Button")
 text = "HAZIR"
 disabled = true
+
+[node name="StartGameButton" type="Button" parent="CurrentRoom/VBox/RoomActions"]
+layout_mode = 2
+custom_minimum_size = Vector2(250, 0)
+size_flags_horizontal = 3
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("Button")
+text = "OYUNU BAŞLAT"
+disabled = true
+visible = false
 
 [node name="LeaveRoomButton" type="Button" parent="CurrentRoom/VBox/RoomActions"]
 layout_mode = 2
