@@ -59,6 +59,18 @@ function waitFor(ws, predicate, label) {
   });
 }
 
+async function markReady(client, observer, userId, code) {
+  const observerReady = waitFor(
+    observer.ws,
+    (msg) => msg.type === "room_state"
+      && msg.room?.code === code
+      && msg.room.members.some((m) => m.user_id === userId && m.ready === true),
+    `ready sync for ${userId}`
+  );
+  client.ws.send(JSON.stringify({ type: "set_ready", ready: true }));
+  await observerReady;
+}
+
 async function main() {
   const a = await connect("CI-A");
   const b = await connect("CI-B");
@@ -92,21 +104,31 @@ async function main() {
     b.ws.send(JSON.stringify({ type: "join_room", code }));
     await Promise.all([aSeesTwo, bJoined]);
 
-    const aSeesReady = waitFor(
+    await markReady(a, b, a.userId, code);
+    await markReady(b, a, b.userId, code);
+
+    const aStart = waitFor(
       a.ws,
-      (msg) => msg.type === "room_state" && msg.room?.code === code && msg.room.members.some((m) => m.user_id === b.userId && m.ready === true),
-      "ready sync on host"
+      (msg) => msg.type === "game_start" && msg.room?.code === code,
+      "game start on host"
     );
-    const bSeesReady = waitFor(
+    const bStart = waitFor(
       b.ws,
-      (msg) => msg.type === "room_state" && msg.room?.code === code && msg.room.members.some((m) => m.user_id === b.userId && m.ready === true),
-      "ready sync on joiner"
+      (msg) => msg.type === "game_start" && msg.room?.code === code,
+      "game start on joiner"
     );
-    b.ws.send(JSON.stringify({ type: "set_ready", ready: true }));
-    await Promise.all([aSeesReady, bSeesReady]);
+    a.ws.send(JSON.stringify({ type: "start_game" }));
+    const [hostStart, joinerStart] = await Promise.all([aStart, bStart]);
+
+    if (!hostStart.room.launching || !joinerStart.room.launching) {
+      throw new Error("Room did not enter launching state");
+    }
+    if (hostStart.room.game_server_url !== EXPECTED_GAME_SERVER_URL) {
+      throw new Error("Game start payload lost the assigned game server URL");
+    }
 
     console.log(
-      `PARDEX Online production smoke test passed: ${URL} room=${code} game_server=${created.room.game_server_url}`
+      `PARDEX production flow passed: ${URL} room=${code} game_server=${hostStart.room.game_server_url}`
     );
   } finally {
     a.ws.close();
