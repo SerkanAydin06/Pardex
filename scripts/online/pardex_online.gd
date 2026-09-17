@@ -8,6 +8,8 @@ signal online_error(message: String)
 
 const DEFAULT_SERVER_URL := "ws://127.0.0.1:8765"
 const RECONNECT_DELAY := 3.0
+const HEARTBEAT_INTERVAL := 20.0
+const SERVER_TIMEOUT := 60.0
 
 var server_url := DEFAULT_SERVER_URL
 var display_name := "Pardus"
@@ -17,6 +19,8 @@ var connection_state := "offline"
 
 var _socket: WebSocketPeer
 var _reconnect_elapsed := 0.0
+var _heartbeat_elapsed := 0.0
+var _server_silence_elapsed := 0.0
 var _manual_disconnect := false
 var _hello_sent := false
 
@@ -38,8 +42,19 @@ func _process(delta: float) -> void:
         if not _hello_sent:
             _hello_sent = true
             _send_hello()
+
+        _heartbeat_elapsed += delta
+        _server_silence_elapsed += delta
+        if _heartbeat_elapsed >= HEARTBEAT_INTERVAL:
+            _heartbeat_elapsed = 0.0
+            _send({"type": "ping"})
+        if _server_silence_elapsed >= SERVER_TIMEOUT:
+            _socket.close(4000, "PARDEX heartbeat timeout")
+            return
+
         while _socket.get_available_packet_count() > 0:
             var packet := _socket.get_packet().get_string_from_utf8()
+            _server_silence_elapsed = 0.0
             _handle_packet(packet)
     elif socket_state == WebSocketPeer.STATE_CLOSING:
         _set_connection_state("connecting")
@@ -47,6 +62,8 @@ func _process(delta: float) -> void:
         var was_manual := _manual_disconnect
         _socket = null
         _hello_sent = false
+        _heartbeat_elapsed = 0.0
+        _server_silence_elapsed = 0.0
         user_id = ""
         if not current_room.is_empty():
             current_room.clear()
@@ -78,6 +95,8 @@ func connect_server() -> void:
     _manual_disconnect = false
     _hello_sent = false
     _reconnect_elapsed = 0.0
+    _heartbeat_elapsed = 0.0
+    _server_silence_elapsed = 0.0
     _socket = WebSocketPeer.new()
     var connection_error := _socket.connect_to_url(server_url)
     if connection_error != OK:
@@ -91,6 +110,8 @@ func reconnect_server() -> void:
     _manual_disconnect = false
     _hello_sent = false
     _reconnect_elapsed = 0.0
+    _heartbeat_elapsed = 0.0
+    _server_silence_elapsed = 0.0
     if _socket != null:
         _socket.close(1000, "PARDEX reconnect")
     _socket = null
@@ -103,6 +124,8 @@ func reconnect_server() -> void:
 
 func disconnect_server() -> void:
     _manual_disconnect = true
+    _heartbeat_elapsed = 0.0
+    _server_silence_elapsed = 0.0
     if _socket != null:
         _socket.close(1000, "PARDEX closed")
     else:
