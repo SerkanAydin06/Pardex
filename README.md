@@ -22,8 +22,20 @@ PARDEX, VEX, Korsanların Hazinesi ve Fırtına Vadisi gibi oyunları tek uygula
 - Sunucuda mesaj boyutu ve temel hız sınırı koruması
 - Graceful shutdown desteği
 - Docker ile deploy edilebilir sunucu paketi
+- Railway üzerinde çalışan production PARDEX Online servisi
 - GitHub Actions üzerinde sunucu sözdizimi, iki istemcili smoke test ve Docker build kontrolü
 - GitHub Actions üzerinde Godot 4.7.2 sahne/script doğrulaması
+- Canlı `wss://` endpoint'e karşı iki istemcili production smoke test
+
+## Canlı PARDEX Online
+
+Production WebSocket adresi:
+
+```text
+wss://pardex-online-production.up.railway.app
+```
+
+Railway production servisi `/health` health check ile izlenir. PARDEX istemcisi eski yerel varsayılan `ws://127.0.0.1:8765` ayarını görürse otomatik olarak resmi production servisine yönelir.
 
 ## Oyunların durumu
 
@@ -31,7 +43,7 @@ Oyunlar hâlâ geliştirme aşamasında olduğu için şu anda Windows `.exe` ex
 
 İlk gerçek oyun entegrasyonu Korsanların Hazinesi ile yapılacak.
 
-## PARDEX Online geliştirme testi
+## Yerel geliştirme testi
 
 Yerel sunucuyu çalıştırmak için:
 
@@ -41,13 +53,13 @@ npm install
 npm start
 ```
 
-Varsayılan istemci adresi:
+Yerel geliştirme adresi:
 
 ```text
 ws://127.0.0.1:8765
 ```
 
-Aynı ağdaki başka bir bilgisayar sunucu bilgisayarının LAN IP adresini kullanabilir.
+Aynı ağdaki başka bir bilgisayar sunucu bilgisayarının LAN IP adresini kullanabilir. Production kullanımında son kullanıcı sunucu adresi girmeyecek; PARDEX doğrudan resmi online servise bağlanır.
 
 ## İnternet dağıtımı
 
@@ -57,8 +69,6 @@ PARDEX Online sunucusu `server/` klasöründen Docker ile dağıtıma hazırdır
 server/DEPLOYMENT.md
 ```
 
-Canlı sunucu yayınlandığında istemci `wss://` adresine bağlanacak. Üretim adresi kesinleşince son kullanıcıdan sunucu adresi istenmeyecek; PARDEX doğrudan resmi online servise bağlanacak.
-
 ## Sıradaki teknik aşama
 
-PARDEX Online sunucusunu internette yayınlamak ve iki farklı ağdaki iki PARDEX istemcisini aynı oda koduyla buluşturmak. Bu doğrulandıktan sonra Korsanların Hazinesi'nin mevcut multiplayer katmanı PARDEX oturum bilgisine bağlanacak.
+Canlı PARDEX oda/session altyapısını Korsanların Hazinesi'nin mevcut multiplayer katmanına bağlamak. Hedef, PARDEX'te aynı odaya giren oyuncuların oyunu açtıklarında aynı Korsanların Hazinesi oturumuna otomatik aktarılmasıdır.
