@@ -28,4 +28,5 @@ jobs:
       - name: Test live PARDEX Online
         env:
           PARDEX_ONLINE_URL: wss://pardex-online-production.up.railway.app
+          PARDEX_GAME_SERVER_URL: wss://korsan-game-production.up.railway.app
         run: node production_smoke_test.js
