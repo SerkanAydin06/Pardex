@@ -46,10 +46,10 @@ content_margin_bottom = 11.0
 [node name="RoomsContent" type="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 22
+theme_override_constants/separation = 18
 
 [node name="Intro" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(0, 150)
+custom_minimum_size = Vector2(0, 132)
 layout_mode = 2
 theme_override_styles/panel = SubResource("Panel")
 
@@ -66,7 +66,7 @@ theme_override_constants/separation = 8
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
-text = "ÇEVRİMİÇİ OTURUMLAR"
+text = "PARDEX ONLINE / ODALAR"
 
 [node name="Title" type="Label" parent="Intro/Row/Text"]
 layout_mode = 2
@@ -78,20 +78,20 @@ text = "Aynı odaya gir, aynı oyuna bağlan."
 layout_mode = 2
 theme_override_colors/font_color = Color(0.56, 0.62, 0.72, 1)
 theme_override_font_sizes/font_size = 14
-text = "Oda oluşturma, oda koduyla katılma ve hazır durumu burada yönetilecek.\nİlk gerçek bağlantı Korsanların Hazinesi ile yapılacak."
+text = "Oda kodları ve oyuncu durumları artık PARDEX Online sunucusuyla senkronize edilir."
 
-[node name="Mark" type="Label" parent="Intro/Row"]
-custom_minimum_size = Vector2(190, 0)
+[node name="ConnectionStatus" type="Label" parent="Intro/Row"]
+custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.3, 0.52, 0.75, 0.6)
-theme_override_font_sizes/font_size = 80
-text = "◇"
-horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.9, 0.7, 0.32, 1)
+theme_override_font_sizes/font_size = 14
+text = "●  ÇEVRİMDIŞI"
+horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="Actions" type="HBoxContainer" parent="."]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 280)
+custom_minimum_size = Vector2(0, 232)
 theme_override_constants/separation = 20
 
 [node name="CreateCard" type="PanelContainer" parent="Actions"]
@@ -101,12 +101,12 @@ theme_override_styles/panel = SubResource("ActionCard")
 
 [node name="VBox" type="VBoxContainer" parent="Actions/CreateCard"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="Icon" type="Label" parent="Actions/CreateCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.43, 0.79, 1, 1)
-theme_override_font_sizes/font_size = 44
+theme_override_font_sizes/font_size = 34
 text = "+"
 
 [node name="Title" type="Label" parent="Actions/CreateCard/VBox"]
@@ -119,7 +119,7 @@ text = "Oda Oluştur"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
 theme_override_font_sizes/font_size = 14
-text = "Bir oyun seç, oyuncu sınırını belirle ve arkadaşlarını davet et."
+text = "Şimdilik Korsanların Hazinesi için 4 kişilik bir test odası aç."
 autowrap_mode = 2
 
 [node name="Flex" type="Control" parent="Actions/CreateCard/VBox"]
@@ -141,12 +141,12 @@ theme_override_styles/panel = SubResource("ActionCard")
 
 [node name="VBox" type="VBoxContainer" parent="Actions/JoinCard"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="Icon" type="Label" parent="Actions/JoinCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
-theme_override_font_sizes/font_size = 38
+theme_override_font_sizes/font_size = 32
 text = "#"
 
 [node name="Title" type="Label" parent="Actions/JoinCard/VBox"]
@@ -159,7 +159,7 @@ text = "Oda Koduyla Katıl"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
 theme_override_font_sizes/font_size = 14
-text = "Arkadaşının paylaştığı kısa oda koduyla doğrudan oturuma bağlan."
+text = "Arkadaşının paylaştığı 5 karakterlik kodu gir."
 autowrap_mode = 2
 
 [node name="RoomCode" type="LineEdit" parent="Actions/JoinCard/VBox"]
@@ -179,26 +179,75 @@ theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("Button")
 text = "KATIL"
 
-[node name="ActiveRooms" type="PanelContainer" parent="."]
+[node name="CurrentRoom" type="PanelContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("Panel")
 
-[node name="VBox" type="VBoxContainer" parent="ActiveRooms"]
+[node name="VBox" type="VBoxContainer" parent="CurrentRoom"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="ActiveRooms/VBox"]
+[node name="Header" type="HBoxContainer" parent="CurrentRoom/VBox"]
 layout_mode = 2
+
+[node name="Title" type="Label" parent="CurrentRoom/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.82, 0.87, 0.94, 1)
 theme_override_font_sizes/font_size = 18
-text = "AKTİF ODALAR"
+text = "MEVCUT ODA"
 
-[node name="Empty" type="Label" parent="ActiveRooms/VBox"]
+[node name="CurrentRoomCode" type="Label" parent="CurrentRoom/VBox/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
+theme_override_font_sizes/font_size = 20
+text = "—"
+
+[node name="RoomSummary" type="Label" parent="CurrentRoom/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
+theme_override_font_sizes/font_size = 13
+text = "Henüz bir odada değilsin."
+
+[node name="MembersTitle" type="Label" parent="CurrentRoom/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.78, 0.86, 1)
+theme_override_font_sizes/font_size = 14
+text = "OYUNCULAR"
+
+[node name="MembersVBox" type="VBoxContainer" parent="CurrentRoom/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="Empty" type="Label" parent="CurrentRoom/VBox/MembersVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_colors/font_color = Color(0.44, 0.5, 0.59, 1)
 theme_override_font_sizes/font_size = 14
-text = "PARDEX Online sunucusu bağlandığında davet edildiğin ve açık odalar burada listelenecek."
-vertical_alignment = 1
+text = "Oda oluşturduğunda veya bir odaya katıldığında oyuncular burada görünecek."
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RoomActions" type="HBoxContainer" parent="CurrentRoom/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ReadyButton" type="Button" parent="CurrentRoom/VBox/RoomActions"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("Button")
+text = "HAZIR"
+disabled = true
+
+[node name="LeaveRoomButton" type="Button" parent="CurrentRoom/VBox/RoomActions"]
+layout_mode = 2
+custom_minimum_size = Vector2(170, 0)
+focus_mode = 0
+theme_override_font_sizes/font_size = 14
+text = "ODADAN ÇIK"
+disabled = true
