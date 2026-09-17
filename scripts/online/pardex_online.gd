@@ -181,6 +181,33 @@ func is_online() -> bool:
 func is_in_room() -> bool:
     return not current_room.is_empty()
 
+func has_game_server_assignment() -> bool:
+    var game_server_url := str(current_room.get("game_server_url", "")).strip_edges()
+    return game_server_url.begins_with("ws://") or game_server_url.begins_with("wss://")
+
+func get_game_server_url() -> String:
+    return str(current_room.get("game_server_url", "")).strip_edges()
+
+func is_room_host() -> bool:
+    return not user_id.is_empty() and str(current_room.get("host_id", "")) == user_id
+
+func build_game_launch_args(expected_game_id: String) -> PackedStringArray:
+    var args := PackedStringArray()
+    if current_room.is_empty() or user_id.is_empty():
+        return args
+    var room_game_id := str(current_room.get("game_id", ""))
+    if room_game_id != expected_game_id:
+        return args
+
+    args.append("--pardex")
+    args.append("--pardex-session=%s" % str(current_room.get("code", "")))
+    args.append("--pardex-player=%s" % user_id)
+    args.append("--pardex-name=%s" % display_name)
+    args.append("--pardex-role=%s" % ("host" if is_room_host() else "client"))
+    args.append("--pardex-online-server=%s" % server_url)
+    args.append("--pardex-game-server=%s" % get_game_server_url())
+    return args
+
 func _send_hello() -> void:
     _send({
         "type": "hello",
