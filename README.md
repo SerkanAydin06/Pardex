@@ -7,20 +7,43 @@ PARDEX, VEX, Korsanların Hazinesi ve Fırtına Vadisi gibi oyunları tek uygula
 - 1920×1080 tam ekran ana uygulama
 - Kütüphane ekranı
 - VEX, Korsanların Hazinesi ve Fırtına Vadisi kartları
-- Oyunlar tamamlanmadığı için kartlarda geliştirme durumu gösterimi
-- Ayrı Arkadaşlar ekranı
-- Ayrı Odalar ekranı
-- Ayrı Ayarlar ekranı
+- Ayrı Arkadaşlar / Odalar / Ayarlar ekranları
 - Yerel profil adı kaydı
 - Uygulama içinden güvenli çıkış
-- PARDEX Online entegrasyonu için hazırlanmış arayüz iskeleti
+- Godot tarafında `PardexOnline` WebSocket istemcisi
+- Node.js tabanlı PARDEX Online oda sunucusu
+- Oda oluşturma ve 5 karakterlik oda kodu
+- Oda koduyla katılma
+- Oyuncu listesi ve host bilgisi
+- Hazır / hazır değil senkronizasyonu
+- Odadan çıkma ve host devri
+- Ayarlardan geliştirme sunucusu adresi değiştirme
+- GitHub Actions üzerinde sunucu sözdizimi ve iki istemcili smoke test altyapısı
 
 ## Oyunların durumu
 
 Oyunlar hâlâ geliştirme aşamasında olduğu için şu anda Windows `.exe` exportları PARDEX'e bağlanmıyor. Export, kurulum, güncelleme ve `OYNA` akışı oyunlar yeterince hazır olduğunda eklenecek.
 
-Bu nedenle oyuncuların şu aşamada Godot projesi veya GitHub dosyalarıyla çalışması hedeflenmiyor. Son kullanıcıya ileride yalnızca PARDEX'in kurulabilir Windows sürümü verilecek.
+İlk gerçek oyun entegrasyonu Korsanların Hazinesi ile yapılacak.
+
+## PARDEX Online geliştirme testi
+
+Yerel sunucuyu çalıştırmak için:
+
+```bash
+cd server
+npm install
+npm start
+```
+
+Varsayılan istemci adresi:
+
+```text
+ws://127.0.0.1:8765
+```
+
+Aynı ağdaki başka bir bilgisayar sunucu bilgisayarının LAN IP adresini kullanabilir. Farklı internet ağlarından gerçek kullanım için sunucu daha sonra internette erişilebilir bir VPS / bulut sunucusuna taşınacak ve yayın istemcisi `wss://` üzerinden bağlanacak.
 
 ## Sıradaki teknik aşama
 
-PARDEX Online katmanı hesap, arkadaş, oda ve session bilgisini yönetecek. İlk gerçek oyun entegrasyonu Korsanların Hazinesi ile yapılacak; mevcut multiplayer yapısı PARDEX oturum bilgisine bağlanacak.
+PARDEX Online sunucusunu internet üzerinde yayınlamak, ardından iki farklı ağdaki iki PARDEX istemcisini aynı oda koduyla buluşturmak. Bu doğrulandıktan sonra Korsanların Hazinesi'nin mevcut multiplayer katmanı PARDEX oturum bilgisine bağlanacak.
