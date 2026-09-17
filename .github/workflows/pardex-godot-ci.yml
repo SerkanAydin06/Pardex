@@ -1,0 +1,32 @@
+name: PARDEX Godot CI
+
+on:
+  push:
+    paths:
+      - "project.godot"
+      - "scenes/**"
+      - "scripts/**"
+      - ".github/workflows/pardex-godot-ci.yml"
+  pull_request:
+    paths:
+      - "project.godot"
+      - "scenes/**"
+      - "scripts/**"
+      - ".github/workflows/pardex-godot-ci.yml"
+
+jobs:
+  validate-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: solarlabyrinth/action-setup-godot@v3
+        with:
+          version: 4.7.2-stable
+          csharp: false
+          export-templates: false
+
+      - name: Validate PARDEX resources
+        run: godot --headless --path . --script res://scripts/ci/validate_project.gd
