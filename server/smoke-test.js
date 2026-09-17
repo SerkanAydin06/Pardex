@@ -1,10 +1,10 @@
 const assert = require("assert");
 const { spawn } = require("child_process");
-const path = require("path");
 const WebSocket = require("ws");
 
 const PORT = 9876;
 const URL = `ws://127.0.0.1:${PORT}`;
+const GAME_SERVER_URL = "ws://127.0.0.1:9999";
 
 function waitForMessage(ws, predicate, timeoutMs = 4000) {
   return new Promise((resolve, reject) => {
@@ -61,10 +61,25 @@ async function waitForServerReady(server) {
   });
 }
 
+async function setReadyAndWait(client, observer, userId) {
+  const readyPromise = waitForMessage(
+    observer.ws,
+    (message) => message.type === "room_state"
+      && message.room?.members?.some((member) => member.user_id === userId && member.ready === true)
+  );
+  client.ws.send(JSON.stringify({ type: "set_ready", ready: true }));
+  await readyPromise;
+}
+
 async function main() {
   const server = spawn(process.execPath, ["server.js"], {
     cwd: __dirname,
-    env: { ...process.env, HOST: "127.0.0.1", PORT: String(PORT) },
+    env: {
+      ...process.env,
+      HOST: "127.0.0.1",
+      PORT: String(PORT),
+      KORSAN_GAME_SERVER_URL: GAME_SERVER_URL,
+    },
     stdio: ["ignore", "pipe", "pipe"],
   });
 
@@ -90,6 +105,7 @@ async function main() {
     const roomCode = created.room.code;
     assert.match(roomCode, /^[A-Z2-9]{5}$/);
     assert.strictEqual(created.room.host_id, first.userId);
+    assert.strictEqual(created.room.game_server_url, GAME_SERVER_URL);
 
     const firstJoinPromise = waitForMessage(
       first.ws,
@@ -100,24 +116,23 @@ async function main() {
       (message) => message.type === "room_state" && message.room?.members?.length === 2
     );
     second.ws.send(JSON.stringify({ type: "join_room", code: roomCode }));
-    const [firstJoined, secondJoined] = await Promise.all([firstJoinPromise, secondJoinPromise]);
-    assert.strictEqual(firstJoined.room.code, roomCode);
-    assert.strictEqual(secondJoined.room.code, roomCode);
+    await Promise.all([firstJoinPromise, secondJoinPromise]);
 
-    const firstReadyPromise = waitForMessage(
-      first.ws,
-      (message) => message.type === "room_state"
-        && message.room?.members?.some((member) => member.user_id === second.userId && member.ready === true)
-    );
-    const secondReadyPromise = waitForMessage(
-      second.ws,
-      (message) => message.type === "room_state"
-        && message.room?.members?.some((member) => member.user_id === second.userId && member.ready === true)
-    );
-    second.ws.send(JSON.stringify({ type: "set_ready", ready: true }));
-    await Promise.all([firstReadyPromise, secondReadyPromise]);
+    await setReadyAndWait(first, second, first.userId);
+    await setReadyAndWait(second, first, second.userId);
 
-    console.log("PARDEX Online smoke test passed");
+    const firstStartPromise = waitForMessage(first.ws, (message) => message.type === "game_start");
+    const secondStartPromise = waitForMessage(second.ws, (message) => message.type === "game_start");
+    first.ws.send(JSON.stringify({ type: "start_game" }));
+    const [firstStart, secondStart] = await Promise.all([firstStartPromise, secondStartPromise]);
+
+    assert.strictEqual(firstStart.room.code, roomCode);
+    assert.strictEqual(secondStart.room.code, roomCode);
+    assert.strictEqual(firstStart.room.game_server_url, GAME_SERVER_URL);
+    assert.strictEqual(firstStart.room.launching, true);
+    assert.strictEqual(secondStart.room.launching, true);
+
+    console.log("PARDEX Online smoke test passed: create -> join -> ready -> start");
   } finally {
     if (first?.ws) first.ws.close();
     if (second?.ws) second.ws.close();
