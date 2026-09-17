@@ -11,6 +11,16 @@ builds/
 dist/
 exports/
 
+# Node / PARDEX Online server
+node_modules/
+server/node_modules/
+npm-debug.log*
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+
 # IDE settings
 .vscode/
 .idea/
