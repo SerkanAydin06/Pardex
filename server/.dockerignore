@@ -1,0 +1,5 @@
+node_modules
+npm-debug.log*
+smoke-test.js
+README.md
+.env
