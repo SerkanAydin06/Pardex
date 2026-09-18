@@ -484,7 +484,7 @@ func _find_korsan_project_path() -> String:
 
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed("ui_cancel") and _current_content != library_content:
-        _show_library(false)
+        _show_library()
         get_viewport().set_input_as_handled()
 
 func _show_toast(message: String) -> void:
