@@ -39,7 +39,7 @@ func _ready() -> void:
     _prepare_game_cards()
     _wire_actions()
     _wire_online_signals()
-    _show_library(false)
+    _show_library()
     _render_empty_room()
     _update_connection_ui(PardexOnline.connection_state)
     toast_panel.hide()
@@ -63,7 +63,7 @@ func _create_secondary_screens() -> void:
     _settings_content.hide()
 
 func _wire_actions() -> void:
-    %LibraryButton.pressed.connect(func(): _show_library(true))
+    %LibraryButton.pressed.connect(_show_library)
     %FriendsButton.pressed.connect(_show_friends)
     %RoomsButton.pressed.connect(_show_rooms)
     %SettingsButton.pressed.connect(_show_settings)
@@ -131,15 +131,13 @@ func _set_game_card(
     action_button.text = "GELİŞTİRİLİYOR"
     action_button.disabled = true
 
-func _show_library(show_message := true) -> void:
+func _show_library() -> void:
     _show_content(
         library_content,
         "Kütüphane",
         "Tüm oyunların tek merkezde.",
         %LibraryButton
     )
-    if show_message:
-        _show_toast("Kütüphane")
 
 func _show_friends() -> void:
     _show_content(
