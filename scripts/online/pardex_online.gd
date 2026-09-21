@@ -28,6 +28,7 @@ var _heartbeat_elapsed := 0.0
 var _server_silence_elapsed := 0.0
 var _manual_disconnect := false
 var _hello_sent := false
+var _no_delay_configured := false
 
 func _process(delta: float) -> void:
     if _socket == null:
@@ -42,6 +43,9 @@ func _process(delta: float) -> void:
     var socket_state := _socket.get_ready_state()
 
     if socket_state == WebSocketPeer.STATE_OPEN:
+        if not _no_delay_configured:
+            _socket.set_no_delay(true)
+            _no_delay_configured = true
         if connection_state != "online":
             _set_connection_state("online")
         if not _hello_sent:
@@ -67,6 +71,7 @@ func _process(delta: float) -> void:
         var was_manual := _manual_disconnect
         _socket = null
         _hello_sent = false
+        _no_delay_configured = false
         _heartbeat_elapsed = 0.0
         _server_silence_elapsed = 0.0
         user_id = ""
@@ -102,12 +107,12 @@ func connect_server() -> void:
 
     _manual_disconnect = false
     _hello_sent = false
+    _no_delay_configured = false
     _reconnect_elapsed = 0.0
     _heartbeat_elapsed = 0.0
     _server_silence_elapsed = 0.0
     _socket = WebSocketPeer.new()
     _socket.outbound_buffer_size = WEBSOCKET_OUTBOUND_BUFFER_SIZE
-    _socket.set_no_delay(true)
     var connection_error := _socket.connect_to_url(server_url)
     if connection_error != OK:
         _socket = null
@@ -119,6 +124,7 @@ func connect_server() -> void:
 func reconnect_server() -> void:
     _manual_disconnect = false
     _hello_sent = false
+    _no_delay_configured = false
     _reconnect_elapsed = 0.0
     _heartbeat_elapsed = 0.0
     _server_silence_elapsed = 0.0
