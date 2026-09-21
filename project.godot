@@ -20,6 +20,11 @@ config/icon="res://assets/icon.svg"
 [autoload]
 
 PardexOnline="*res://scripts/online/pardex_online.gd"
+PardexVoice="*res://scripts/online/pardex_voice.gd"
+
+[audio]
+
+driver/enable_input=true
 
 [display]
 
