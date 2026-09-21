@@ -6,6 +6,7 @@ signal room_state_changed(room: Dictionary)
 signal room_left()
 signal online_error(message: String)
 signal game_start_requested(payload: Dictionary)
+signal voice_frame_received(user_id: String, sequence: int, pcm_base64: String)
 
 const DEFAULT_SERVER_URL := "wss://pardex-online-production.up.railway.app"
 const LEGACY_LOCAL_SERVER_URL := "ws://127.0.0.1:8765"
@@ -178,6 +179,26 @@ func request_start_game() -> void:
         return
     _send({"type": "start_game"})
 
+
+func set_voice_muted(is_muted: bool) -> void:
+    if not is_online() or current_room.is_empty():
+        return
+    _send({
+        "type": "voice_state",
+        "muted": is_muted,
+    })
+
+
+func send_voice_frame(sequence: int, pcm_base64: String) -> void:
+    if not is_online() or current_room.is_empty() or pcm_base64.is_empty():
+        return
+    _send({
+        "type": "voice_frame",
+        "seq": sequence,
+        "pcm": pcm_base64,
+    })
+
+
 func is_online() -> bool:
     return (
         _socket != null
@@ -251,6 +272,12 @@ func _handle_packet(packet: String) -> void:
                 current_room = (room_data as Dictionary).duplicate(true)
                 room_state_changed.emit(current_room.duplicate(true))
             game_start_requested.emit(message.duplicate(true))
+        "voice_frame":
+            var sender_id := str(message.get("user_id", ""))
+            var sequence := int(message.get("seq", 0))
+            var pcm_base64 := str(message.get("pcm", ""))
+            if not sender_id.is_empty() and not pcm_base64.is_empty():
+                voice_frame_received.emit(sender_id, sequence, pcm_base64)
         "left_room":
             current_room.clear()
             room_left.emit()
