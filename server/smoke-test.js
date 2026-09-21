@@ -118,6 +118,40 @@ async function main() {
     second.ws.send(JSON.stringify({ type: "join_room", code: roomCode }));
     await Promise.all([firstJoinPromise, secondJoinPromise]);
 
+    const mutedStatePromise = waitForMessage(
+      first.ws,
+      (message) => message.type === "room_state"
+        && message.room?.members?.some(
+          (member) => member.user_id === second.userId && member.voice_muted === true
+        )
+    );
+    second.ws.send(JSON.stringify({ type: "voice_state", muted: true }));
+    await mutedStatePromise;
+
+    const unmutedStatePromise = waitForMessage(
+      first.ws,
+      (message) => message.type === "room_state"
+        && message.room?.members?.some(
+          (member) => member.user_id === second.userId && member.voice_muted === false
+        )
+    );
+    second.ws.send(JSON.stringify({ type: "voice_state", muted: false }));
+    await unmutedStatePromise;
+
+    const voiceRelayPromise = waitForMessage(
+      first.ws,
+      (message) => message.type === "voice_frame"
+        && message.user_id === second.userId
+        && message.seq === 7
+        && message.pcm === "AQIDBA=="
+    );
+    second.ws.send(JSON.stringify({
+      type: "voice_frame",
+      seq: 7,
+      pcm: "AQIDBA==",
+    }));
+    await voiceRelayPromise;
+
     await setReadyAndWait(first, second, first.userId);
     await setReadyAndWait(second, first, second.userId);
 
@@ -132,7 +166,7 @@ async function main() {
     assert.strictEqual(firstStart.room.launching, true);
     assert.strictEqual(secondStart.room.launching, true);
 
-    console.log("PARDEX Online smoke test passed: create -> join -> ready -> start");
+    console.log("PARDEX Online smoke test passed: create -> join -> voice -> ready -> start");
   } finally {
     if (first?.ws) first.ws.close();
     if (second?.ws) second.ws.close();
