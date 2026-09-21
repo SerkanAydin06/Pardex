@@ -14,6 +14,7 @@ const RATE_HARD_LIMIT_MESSAGES = 60;
 const VOICE_RATE_WINDOW_MS = 1_000;
 const VOICE_RATE_LIMIT_MESSAGES = 20;
 const MAX_VOICE_BASE64_CHARS = 6_000;
+const VOICE_RELAY_BUFFER_LIMIT_BYTES = 64 * 1024;
 
 const clients = new Map();
 const rooms = new Map();
@@ -27,6 +28,12 @@ function send(ws, payload) {
 
 function sendError(ws, code, message) {
   send(ws, { type: "error", code, message });
+}
+
+function sendVoice(ws, payload) {
+  if (ws.readyState !== WebSocket.OPEN) return;
+  if (ws.bufferedAmount >= VOICE_RELAY_BUFFER_LIMIT_BYTES) return;
+  ws.send(JSON.stringify(payload));
 }
 
 function safeName(value) {
@@ -261,7 +268,7 @@ function relayVoiceFrame(client, message) {
   for (const roomMember of room.members) {
     if (roomMember.userId === client.userId) continue;
     const target = clients.get(roomMember.userId);
-    if (target) send(target.ws, payload);
+    if (target) sendVoice(target.ws, payload);
   }
 }
 
