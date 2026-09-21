@@ -221,8 +221,13 @@ func _on_voice_frame_received(user_id: String, sequence: int, pcm_base64: String
     var playback := _ensure_remote_playback(user_id)
     if playback == null:
         return
+
+    # AudioStreamGeneratorPlayback.clear_buffer() cannot be called while the
+    # playback is active in Godot 4.7. If a network burst fills the jitter
+    # buffer, drop the newest packet instead of resetting the live stream.
+    # This keeps latency bounded and avoids audio-thread error spam.
     if not playback.can_push_buffer(frames.size()):
-        playback.clear_buffer()
+        return
     playback.push_buffer(frames)
 
     var rms := sqrt(square_sum / float(maxi(1, frames.size())))
