@@ -235,7 +235,7 @@ theme_override_styles/pressed = SubResource("Button")
 text = "KATIL"
 
 [node name="CurrentRoom" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(0, 300)
+custom_minimum_size = Vector2(0, 360)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("Panel")
@@ -295,6 +295,47 @@ theme_override_font_sizes/font_size = 14
 text = "Oda oluşturduğunda veya bir odaya katıldığında oyuncular burada görünecek."
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="VoiceBar" type="HBoxContainer" parent="CurrentRoom/VBox"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="VoiceStatus" type="Label" parent="CurrentRoom/VBox/VoiceBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
+theme_override_font_sizes/font_size = 13
+text = "🎙  SES KANALI • ODA BEKLENİYOR"
+vertical_alignment = 1
+
+[node name="MicButton" type="Button" parent="CurrentRoom/VBox/VoiceBar"]
+custom_minimum_size = Vector2(190, 44)
+layout_mode = 2
+focus_mode = 0
+clip_text = true
+theme_override_colors/font_color = Color(0.93, 1, 0.98, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("ReadyButton")
+theme_override_styles/hover = SubResource("ReadyButtonHover")
+theme_override_styles/pressed = SubResource("ReadyButtonHover")
+theme_override_styles/disabled = SubResource("ReadyButton")
+text = "MİKROFONU KAPAT"
+disabled = true
+
+[node name="DeafenButton" type="Button" parent="CurrentRoom/VBox/VoiceBar"]
+custom_minimum_size = Vector2(170, 44)
+layout_mode = 2
+focus_mode = 0
+clip_text = true
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("Button")
+theme_override_styles/hover = SubResource("Button")
+theme_override_styles/pressed = SubResource("Button")
+theme_override_styles/disabled = SubResource("Button")
+text = "SESLERİ KAPAT"
+disabled = true
 
 [node name="RoomActions" type="HBoxContainer" parent="CurrentRoom/VBox"]
 custom_minimum_size = Vector2(0, 52)
