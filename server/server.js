@@ -11,6 +11,9 @@ const MAX_PAYLOAD_BYTES = 16 * 1024;
 const RATE_WINDOW_MS = 10_000;
 const RATE_LIMIT_MESSAGES = 40;
 const RATE_HARD_LIMIT_MESSAGES = 60;
+const VOICE_RATE_WINDOW_MS = 1_000;
+const VOICE_RATE_LIMIT_MESSAGES = 20;
+const MAX_VOICE_BASE64_CHARS = 6_000;
 
 const clients = new Map();
 const rooms = new Map();
@@ -60,6 +63,7 @@ function roomPayload(room) {
       user_id: member.userId,
       display_name: member.displayName,
       ready: member.ready,
+      voice_muted: Boolean(member.voiceMuted),
     })),
   };
 }
@@ -133,6 +137,7 @@ function joinRoom(client, code) {
     userId: client.userId,
     displayName: client.displayName,
     ready: false,
+    voiceMuted: false,
   });
   client.roomCode = room.code;
   broadcastRoom(room);
@@ -154,6 +159,7 @@ function createRoom(client, message) {
       userId: client.userId,
       displayName: client.displayName,
       ready: false,
+      voiceMuted: false,
     }],
   };
 
@@ -206,6 +212,59 @@ function startRoomGame(client) {
   }
 }
 
+function allowVoiceFrame(client) {
+  const now = Date.now();
+  if (now - client.voiceRateWindowStartedAt >= VOICE_RATE_WINDOW_MS) {
+    client.voiceRateWindowStartedAt = now;
+    client.voiceRateMessageCount = 0;
+  }
+
+  client.voiceRateMessageCount += 1;
+  if (client.voiceRateMessageCount > VOICE_RATE_LIMIT_MESSAGES) {
+    return false;
+  }
+  return true;
+}
+
+function setVoiceState(client, muted) {
+  if (!client.roomCode) return;
+  const room = rooms.get(client.roomCode);
+  if (!room) return;
+  const member = room.members.find((item) => item.userId === client.userId);
+  if (!member) return;
+  member.voiceMuted = Boolean(muted);
+  broadcastRoom(room);
+}
+
+function relayVoiceFrame(client, message) {
+  if (!client.roomCode) return;
+  const room = rooms.get(client.roomCode);
+  if (!room) return;
+
+  const member = room.members.find((item) => item.userId === client.userId);
+  if (!member || member.voiceMuted) return;
+
+  const pcm = String(message.pcm || "");
+  if (!pcm || pcm.length > MAX_VOICE_BASE64_CHARS) return;
+
+  const sequence = Number.isFinite(Number(message.seq))
+    ? Math.max(0, Math.floor(Number(message.seq)))
+    : 0;
+
+  const payload = {
+    type: "voice_frame",
+    user_id: client.userId,
+    seq: sequence,
+    pcm,
+  };
+
+  for (const roomMember of room.members) {
+    if (roomMember.userId === client.userId) continue;
+    const target = clients.get(roomMember.userId);
+    if (target) send(target.ws, payload);
+  }
+}
+
 function allowMessage(client) {
   const now = Date.now();
   if (now - client.rateWindowStartedAt >= RATE_WINDOW_MS) {
@@ -226,8 +285,6 @@ function allowMessage(client) {
 }
 
 function handleMessage(client, raw) {
-  if (!allowMessage(client)) return;
-
   let message;
   try {
     message = JSON.parse(raw.toString("utf8"));
@@ -235,6 +292,14 @@ function handleMessage(client, raw) {
     sendError(client.ws, "BAD_JSON", "Geçersiz mesaj.");
     return;
   }
+
+  if (message.type === "voice_frame") {
+    if (!allowVoiceFrame(client)) return;
+    relayVoiceFrame(client, message);
+    return;
+  }
+
+  if (!allowMessage(client)) return;
 
   switch (message.type) {
     case "hello":
@@ -268,6 +333,9 @@ function handleMessage(client, raw) {
     case "start_game":
       startRoomGame(client);
       break;
+    case "voice_state":
+      setVoiceState(client, message.muted);
+      break;
     case "ping":
       send(client.ws, { type: "pong", time: Date.now() });
       break;
@@ -285,6 +353,7 @@ const httpServer = http.createServer((req, res) => {
       rooms: rooms.size,
       clients: clients.size,
       korsanGameServerAssigned: Boolean(KORSAN_GAME_SERVER_URL),
+      voiceRelay: true,
     }));
     return;
   }
@@ -311,6 +380,8 @@ wss.on("connection", (ws) => {
     roomCode: "",
     rateWindowStartedAt: Date.now(),
     rateMessageCount: 0,
+    voiceRateWindowStartedAt: Date.now(),
+    voiceRateMessageCount: 0,
     ws,
   };
   clients.set(userId, client);
