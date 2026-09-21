@@ -13,28 +13,28 @@ var output_muted := true
 
 
 func _ready() -> void:
-    voice_channel_state_changed.emit(false)
-    voice_settings_changed.emit(microphone_muted, output_muted)
+	voice_channel_state_changed.emit(false)
+	voice_settings_changed.emit(microphone_muted, output_muted)
 
 
 func toggle_microphone() -> void:
-    microphone_muted = true
-    voice_settings_changed.emit(microphone_muted, output_muted)
+	microphone_muted = true
+	voice_settings_changed.emit(microphone_muted, output_muted)
 
 
 func set_microphone_muted(_value: bool) -> void:
-    microphone_muted = true
-    voice_settings_changed.emit(microphone_muted, output_muted)
+	microphone_muted = true
+	voice_settings_changed.emit(microphone_muted, output_muted)
 
 
 func toggle_output_muted() -> void:
-    output_muted = true
-    voice_settings_changed.emit(microphone_muted, output_muted)
+	output_muted = true
+	voice_settings_changed.emit(microphone_muted, output_muted)
 
 
 func is_user_speaking(_user_id: String) -> bool:
-    return false
+	return false
 
 
 func is_channel_active() -> bool:
-    return false
+	return false

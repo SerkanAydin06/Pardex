@@ -31,288 +31,288 @@ var _hello_sent := false
 var _no_delay_configured := false
 
 func _process(delta: float) -> void:
-    if _socket == null:
-        if not _manual_disconnect and connection_state == "offline":
-            _reconnect_elapsed += delta
-            if _reconnect_elapsed >= RECONNECT_DELAY:
-                _reconnect_elapsed = 0.0
-                connect_server()
-        return
+	if _socket == null:
+		if not _manual_disconnect and connection_state == "offline":
+			_reconnect_elapsed += delta
+			if _reconnect_elapsed >= RECONNECT_DELAY:
+				_reconnect_elapsed = 0.0
+				connect_server()
+		return
 
-    _socket.poll()
-    var socket_state := _socket.get_ready_state()
+	_socket.poll()
+	var socket_state := _socket.get_ready_state()
 
-    if socket_state == WebSocketPeer.STATE_OPEN:
-        if not _no_delay_configured:
-            _socket.set_no_delay(true)
-            _no_delay_configured = true
-        if connection_state != "online":
-            _set_connection_state("online")
-        if not _hello_sent:
-            _hello_sent = true
-            _send_hello()
+	if socket_state == WebSocketPeer.STATE_OPEN:
+		if not _no_delay_configured:
+			_socket.set_no_delay(true)
+			_no_delay_configured = true
+		if connection_state != "online":
+			_set_connection_state("online")
+		if not _hello_sent:
+			_hello_sent = true
+			_send_hello()
 
-        _heartbeat_elapsed += delta
-        _server_silence_elapsed += delta
-        if _heartbeat_elapsed >= HEARTBEAT_INTERVAL:
-            _heartbeat_elapsed = 0.0
-            _send({"type": "ping"})
-        if _server_silence_elapsed >= SERVER_TIMEOUT:
-            _socket.close(4000, "PARDEX heartbeat timeout")
-            return
+		_heartbeat_elapsed += delta
+		_server_silence_elapsed += delta
+		if _heartbeat_elapsed >= HEARTBEAT_INTERVAL:
+			_heartbeat_elapsed = 0.0
+			_send({"type": "ping"})
+		if _server_silence_elapsed >= SERVER_TIMEOUT:
+			_socket.close(4000, "PARDEX heartbeat timeout")
+			return
 
-        while _socket.get_available_packet_count() > 0:
-            var packet := _socket.get_packet().get_string_from_utf8()
-            _server_silence_elapsed = 0.0
-            _handle_packet(packet)
-    elif socket_state == WebSocketPeer.STATE_CLOSING:
-        _set_connection_state("connecting")
-    elif socket_state == WebSocketPeer.STATE_CLOSED:
-        var was_manual := _manual_disconnect
-        _socket = null
-        _hello_sent = false
-        _no_delay_configured = false
-        _heartbeat_elapsed = 0.0
-        _server_silence_elapsed = 0.0
-        user_id = ""
-        if not current_room.is_empty():
-            current_room.clear()
-            room_left.emit()
-        _set_connection_state("offline")
-        if was_manual:
-            _manual_disconnect = false
+		while _socket.get_available_packet_count() > 0:
+			var packet := _socket.get_packet().get_string_from_utf8()
+			_server_silence_elapsed = 0.0
+			_handle_packet(packet)
+	elif socket_state == WebSocketPeer.STATE_CLOSING:
+		_set_connection_state("connecting")
+	elif socket_state == WebSocketPeer.STATE_CLOSED:
+		var was_manual := _manual_disconnect
+		_socket = null
+		_hello_sent = false
+		_no_delay_configured = false
+		_heartbeat_elapsed = 0.0
+		_server_silence_elapsed = 0.0
+		user_id = ""
+		if not current_room.is_empty():
+			current_room.clear()
+			room_left.emit()
+		_set_connection_state("offline")
+		if was_manual:
+			_manual_disconnect = false
 
 func configure(url: String, player_name: String) -> void:
-    var normalized_url := url.strip_edges()
-    if normalized_url.is_empty() or normalized_url == LEGACY_LOCAL_SERVER_URL:
-        server_url = DEFAULT_SERVER_URL
-    else:
-        server_url = normalized_url
+	var normalized_url := url.strip_edges()
+	if normalized_url.is_empty() or normalized_url == LEGACY_LOCAL_SERVER_URL:
+		server_url = DEFAULT_SERVER_URL
+	else:
+		server_url = normalized_url
 
-    var normalized_name := player_name.strip_edges()
-    display_name = normalized_name.left(24) if not normalized_name.is_empty() else "Pardus"
+	var normalized_name := player_name.strip_edges()
+	display_name = normalized_name.left(24) if not normalized_name.is_empty() else "Pardus"
 
 func update_display_name(player_name: String) -> void:
-    var normalized_name := player_name.strip_edges()
-    display_name = normalized_name.left(24) if not normalized_name.is_empty() else "Pardus"
-    if is_online():
-        _send_hello()
+	var normalized_name := player_name.strip_edges()
+	display_name = normalized_name.left(24) if not normalized_name.is_empty() else "Pardus"
+	if is_online():
+		_send_hello()
 
 func connect_server() -> void:
-    if _socket != null and _socket.get_ready_state() in [
-        WebSocketPeer.STATE_CONNECTING,
-        WebSocketPeer.STATE_OPEN,
-    ]:
-        return
+	if _socket != null and _socket.get_ready_state() in [
+		WebSocketPeer.STATE_CONNECTING,
+		WebSocketPeer.STATE_OPEN,
+	]:
+		return
 
-    _manual_disconnect = false
-    _hello_sent = false
-    _no_delay_configured = false
-    _reconnect_elapsed = 0.0
-    _heartbeat_elapsed = 0.0
-    _server_silence_elapsed = 0.0
-    _socket = WebSocketPeer.new()
-    _socket.outbound_buffer_size = WEBSOCKET_OUTBOUND_BUFFER_SIZE
-    var connection_error := _socket.connect_to_url(server_url)
-    if connection_error != OK:
-        _socket = null
-        _set_connection_state("offline")
-        online_error.emit("PARDEX Online sunucusuna bağlantı başlatılamadı.")
-        return
-    _set_connection_state("connecting")
+	_manual_disconnect = false
+	_hello_sent = false
+	_no_delay_configured = false
+	_reconnect_elapsed = 0.0
+	_heartbeat_elapsed = 0.0
+	_server_silence_elapsed = 0.0
+	_socket = WebSocketPeer.new()
+	_socket.outbound_buffer_size = WEBSOCKET_OUTBOUND_BUFFER_SIZE
+	var connection_error := _socket.connect_to_url(server_url)
+	if connection_error != OK:
+		_socket = null
+		_set_connection_state("offline")
+		online_error.emit("PARDEX Online sunucusuna bağlantı başlatılamadı.")
+		return
+	_set_connection_state("connecting")
 
 func reconnect_server() -> void:
-    _manual_disconnect = false
-    _hello_sent = false
-    _no_delay_configured = false
-    _reconnect_elapsed = 0.0
-    _heartbeat_elapsed = 0.0
-    _server_silence_elapsed = 0.0
-    if _socket != null:
-        _socket.close(1000, "PARDEX reconnect")
-    _socket = null
-    user_id = ""
-    if not current_room.is_empty():
-        current_room.clear()
-        room_left.emit()
-    _set_connection_state("offline")
-    connect_server()
+	_manual_disconnect = false
+	_hello_sent = false
+	_no_delay_configured = false
+	_reconnect_elapsed = 0.0
+	_heartbeat_elapsed = 0.0
+	_server_silence_elapsed = 0.0
+	if _socket != null:
+		_socket.close(1000, "PARDEX reconnect")
+	_socket = null
+	user_id = ""
+	if not current_room.is_empty():
+		current_room.clear()
+		room_left.emit()
+	_set_connection_state("offline")
+	connect_server()
 
 func disconnect_server() -> void:
-    _manual_disconnect = true
-    _heartbeat_elapsed = 0.0
-    _server_silence_elapsed = 0.0
-    if _socket != null:
-        _socket.close(1000, "PARDEX closed")
-    else:
-        _set_connection_state("offline")
+	_manual_disconnect = true
+	_heartbeat_elapsed = 0.0
+	_server_silence_elapsed = 0.0
+	if _socket != null:
+		_socket.close(1000, "PARDEX closed")
+	else:
+		_set_connection_state("offline")
 
 func create_room(game_id := "korsanlar", max_players := 4) -> void:
-    if not is_online():
-        online_error.emit("PARDEX Online bağlantısı yok.")
-        return
-    _send({
-        "type": "create_room",
-        "game_id": game_id,
-        "max_players": clampi(max_players, 2, 8),
-    })
+	if not is_online():
+		online_error.emit("PARDEX Online bağlantısı yok.")
+		return
+	_send({
+		"type": "create_room",
+		"game_id": game_id,
+		"max_players": clampi(max_players, 2, 8),
+	})
 
 func join_room(code: String) -> void:
-    var normalized_code := code.strip_edges().to_upper()
-    if normalized_code.is_empty():
-        online_error.emit("Oda kodu boş bırakılamaz.")
-        return
-    if not is_online():
-        online_error.emit("PARDEX Online bağlantısı yok.")
-        return
-    _send({
-        "type": "join_room",
-        "code": normalized_code,
-    })
+	var normalized_code := code.strip_edges().to_upper()
+	if normalized_code.is_empty():
+		online_error.emit("Oda kodu boş bırakılamaz.")
+		return
+	if not is_online():
+		online_error.emit("PARDEX Online bağlantısı yok.")
+		return
+	_send({
+		"type": "join_room",
+		"code": normalized_code,
+	})
 
 func leave_room() -> void:
-    if not is_online():
-        return
-    _send({"type": "leave_room"})
+	if not is_online():
+		return
+	_send({"type": "leave_room"})
 
 func set_ready(is_ready: bool) -> void:
-    if not is_online() or current_room.is_empty():
-        return
-    _send({
-        "type": "set_ready",
-        "ready": is_ready,
-    })
+	if not is_online() or current_room.is_empty():
+		return
+	_send({
+		"type": "set_ready",
+		"ready": is_ready,
+	})
 
 func request_start_game() -> void:
-    if not is_online() or current_room.is_empty():
-        online_error.emit("Oyunu başlatmak için aktif bir PARDEX odası gerekli.")
-        return
-    _send({"type": "start_game"})
+	if not is_online() or current_room.is_empty():
+		online_error.emit("Oyunu başlatmak için aktif bir PARDEX odası gerekli.")
+		return
+	_send({"type": "start_game"})
 
 
 func set_voice_muted(is_muted: bool) -> void:
-    if not is_online() or current_room.is_empty():
-        return
-    _send({
-        "type": "voice_state",
-        "muted": is_muted,
-    })
+	if not is_online() or current_room.is_empty():
+		return
+	_send({
+		"type": "voice_state",
+		"muted": is_muted,
+	})
 
 
 func send_voice_frame(sequence: int, pcm_base64: String) -> void:
-    if not is_online() or current_room.is_empty() or pcm_base64.is_empty():
-        return
+	if not is_online() or current_room.is_empty() or pcm_base64.is_empty():
+		return
 
-    # Voice is real-time data: once the socket queue grows, old audio has
-    # already lost its value. Drop new voice frames before the WebSocket
-    # outbound buffer fills so control messages (ready/leave/start/ping)
-    # always keep headroom and Godot never hits ERR_OUT_OF_MEMORY here.
-    if (
-        _socket != null
-        and _socket.get_current_outbound_buffered_amount() >= VOICE_OUTBOUND_QUEUE_LIMIT
-    ):
-        return
+	# Voice is real-time data: once the socket queue grows, old audio has
+	# already lost its value. Drop new voice frames before the WebSocket
+	# outbound buffer fills so control messages (ready/leave/start/ping)
+	# always keep headroom and Godot never hits ERR_OUT_OF_MEMORY here.
+	if (
+		_socket != null
+		and _socket.get_current_outbound_buffered_amount() >= VOICE_OUTBOUND_QUEUE_LIMIT
+	):
+		return
 
-    _send({
-        "type": "voice_frame",
-        "seq": sequence,
-        "pcm": pcm_base64,
-    })
+	_send({
+		"type": "voice_frame",
+		"seq": sequence,
+		"pcm": pcm_base64,
+	})
 
 
 func is_online() -> bool:
-    return (
-        _socket != null
-        and _socket.get_ready_state() == WebSocketPeer.STATE_OPEN
-        and connection_state == "online"
-    )
+	return (
+		_socket != null
+		and _socket.get_ready_state() == WebSocketPeer.STATE_OPEN
+		and connection_state == "online"
+	)
 
 func is_in_room() -> bool:
-    return not current_room.is_empty()
+	return not current_room.is_empty()
 
 func has_game_server_assignment() -> bool:
-    var game_server_url := str(current_room.get("game_server_url", "")).strip_edges()
-    return game_server_url.begins_with("ws://") or game_server_url.begins_with("wss://")
+	var game_server_url := str(current_room.get("game_server_url", "")).strip_edges()
+	return game_server_url.begins_with("ws://") or game_server_url.begins_with("wss://")
 
 func get_game_server_url() -> String:
-    return str(current_room.get("game_server_url", "")).strip_edges()
+	return str(current_room.get("game_server_url", "")).strip_edges()
 
 func is_room_host() -> bool:
-    return not user_id.is_empty() and str(current_room.get("host_id", "")) == user_id
+	return not user_id.is_empty() and str(current_room.get("host_id", "")) == user_id
 
 func build_game_launch_args(expected_game_id: String) -> PackedStringArray:
-    var args := PackedStringArray()
-    if current_room.is_empty() or user_id.is_empty():
-        return args
-    var room_game_id := str(current_room.get("game_id", ""))
-    if room_game_id != expected_game_id:
-        return args
+	var args := PackedStringArray()
+	if current_room.is_empty() or user_id.is_empty():
+		return args
+	var room_game_id := str(current_room.get("game_id", ""))
+	if room_game_id != expected_game_id:
+		return args
 
-    args.append("--pardex")
-    args.append("--pardex-session=%s" % str(current_room.get("code", "")))
-    args.append("--pardex-player=%s" % user_id)
-    args.append("--pardex-name=%s" % display_name)
-    args.append("--pardex-role=%s" % ("host" if is_room_host() else "client"))
-    args.append("--pardex-online-server=%s" % server_url)
-    args.append("--pardex-game-server=%s" % get_game_server_url())
-    return args
+	args.append("--pardex")
+	args.append("--pardex-session=%s" % str(current_room.get("code", "")))
+	args.append("--pardex-player=%s" % user_id)
+	args.append("--pardex-name=%s" % display_name)
+	args.append("--pardex-role=%s" % ("host" if is_room_host() else "client"))
+	args.append("--pardex-online-server=%s" % server_url)
+	args.append("--pardex-game-server=%s" % get_game_server_url())
+	return args
 
 func _send_hello() -> void:
-    _send({
-        "type": "hello",
-        "display_name": display_name,
-    })
+	_send({
+		"type": "hello",
+		"display_name": display_name,
+	})
 
 func _send(payload: Dictionary) -> Error:
-    if _socket == null or _socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
-        return ERR_UNAVAILABLE
+	if _socket == null or _socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
+		return ERR_UNAVAILABLE
 
-    var result := _socket.send_text(JSON.stringify(payload))
-    if result != OK and str(payload.get("type", "")) != "voice_frame":
-        push_warning("PARDEX WebSocket send failed: %s" % error_string(result))
-    return result
+	var result := _socket.send_text(JSON.stringify(payload))
+	if result != OK and str(payload.get("type", "")) != "voice_frame":
+		push_warning("PARDEX WebSocket send failed: %s" % error_string(result))
+	return result
 
 func _handle_packet(packet: String) -> void:
-    var parsed = JSON.parse_string(packet)
-    if typeof(parsed) != TYPE_DICTIONARY:
-        online_error.emit("Sunucudan geçersiz veri alındı.")
-        return
+	var parsed = JSON.parse_string(packet)
+	if typeof(parsed) != TYPE_DICTIONARY:
+		online_error.emit("Sunucudan geçersiz veri alındı.")
+		return
 
-    var message: Dictionary = parsed
-    var message_type := str(message.get("type", ""))
+	var message: Dictionary = parsed
+	var message_type := str(message.get("type", ""))
 
-    match message_type:
-        "welcome":
-            user_id = str(message.get("user_id", ""))
-            display_name = str(message.get("display_name", display_name))
-            welcome_received.emit(user_id, display_name)
-        "room_state":
-            var room_data = message.get("room", {})
-            if typeof(room_data) == TYPE_DICTIONARY:
-                current_room = (room_data as Dictionary).duplicate(true)
-                room_state_changed.emit(current_room.duplicate(true))
-        "game_start":
-            var room_data = message.get("room", {})
-            if typeof(room_data) == TYPE_DICTIONARY:
-                current_room = (room_data as Dictionary).duplicate(true)
-                room_state_changed.emit(current_room.duplicate(true))
-            game_start_requested.emit(message.duplicate(true))
-        "voice_frame":
-            var sender_id := str(message.get("user_id", ""))
-            var sequence := int(message.get("seq", 0))
-            var pcm_base64 := str(message.get("pcm", ""))
-            if not sender_id.is_empty() and not pcm_base64.is_empty():
-                voice_frame_received.emit(sender_id, sequence, pcm_base64)
-        "left_room":
-            current_room.clear()
-            room_left.emit()
-        "error":
-            online_error.emit(str(message.get("message", "Bilinmeyen PARDEX Online hatası.")))
-        "pong":
-            pass
+	match message_type:
+		"welcome":
+			user_id = str(message.get("user_id", ""))
+			display_name = str(message.get("display_name", display_name))
+			welcome_received.emit(user_id, display_name)
+		"room_state":
+			var room_data = message.get("room", {})
+			if typeof(room_data) == TYPE_DICTIONARY:
+				current_room = (room_data as Dictionary).duplicate(true)
+				room_state_changed.emit(current_room.duplicate(true))
+		"game_start":
+			var room_data = message.get("room", {})
+			if typeof(room_data) == TYPE_DICTIONARY:
+				current_room = (room_data as Dictionary).duplicate(true)
+				room_state_changed.emit(current_room.duplicate(true))
+			game_start_requested.emit(message.duplicate(true))
+		"voice_frame":
+			var sender_id := str(message.get("user_id", ""))
+			var sequence := int(message.get("seq", 0))
+			var pcm_base64 := str(message.get("pcm", ""))
+			if not sender_id.is_empty() and not pcm_base64.is_empty():
+				voice_frame_received.emit(sender_id, sequence, pcm_base64)
+		"left_room":
+			current_room.clear()
+			room_left.emit()
+		"error":
+			online_error.emit(str(message.get("message", "Bilinmeyen PARDEX Online hatası.")))
+		"pong":
+			pass
 
 func _set_connection_state(new_state: String) -> void:
-    if connection_state == new_state:
-        return
-    connection_state = new_state
-    connection_state_changed.emit(connection_state)
+	if connection_state == new_state:
+		return
+	connection_state = new_state
+	connection_state_changed.emit(connection_state)
