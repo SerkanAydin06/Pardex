@@ -105,6 +105,27 @@ async function main() {
     b.ws.send(JSON.stringify({ type: "join_room", code }));
     await Promise.all([aSeesTwo, bJoined]);
 
+    const voiceState = waitFor(
+      a.ws,
+      (msg) => msg.type === "room_state"
+        && msg.room?.code === code
+        && msg.room.members.some((m) => m.user_id === b.userId && m.voice_muted === false),
+      "voice state sync"
+    );
+    b.ws.send(JSON.stringify({ type: "voice_state", muted: false }));
+    await voiceState;
+
+    const voiceRelay = waitFor(
+      a.ws,
+      (msg) => msg.type === "voice_frame"
+        && msg.user_id === b.userId
+        && msg.seq === 3
+        && msg.pcm === "AQIDBA==",
+      "voice relay"
+    );
+    b.ws.send(JSON.stringify({ type: "voice_frame", seq: 3, pcm: "AQIDBA==" }));
+    await voiceRelay;
+
     await markReady(a, b, a.userId, code);
     await markReady(b, a, b.userId, code);
 
@@ -129,7 +150,7 @@ async function main() {
     }
 
     console.log(
-      `PARDEX production flow passed: ${URL} room=${code} game_server=${hostStart.room.game_server_url}`
+      `PARDEX production flow passed: ${URL} room=${code} voice=ok game_server=${hostStart.room.game_server_url}`
     );
   } finally {
     a.ws.close();
