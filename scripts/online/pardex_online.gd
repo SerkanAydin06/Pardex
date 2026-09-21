@@ -13,6 +13,8 @@ const LEGACY_LOCAL_SERVER_URL := "ws://127.0.0.1:8765"
 const RECONNECT_DELAY := 3.0
 const HEARTBEAT_INTERVAL := 20.0
 const SERVER_TIMEOUT := 60.0
+const WEBSOCKET_OUTBOUND_BUFFER_SIZE := 262144
+const VOICE_OUTBOUND_QUEUE_LIMIT := 32768
 
 var server_url := DEFAULT_SERVER_URL
 var display_name := "Pardus"
@@ -104,6 +106,8 @@ func connect_server() -> void:
     _heartbeat_elapsed = 0.0
     _server_silence_elapsed = 0.0
     _socket = WebSocketPeer.new()
+    _socket.outbound_buffer_size = WEBSOCKET_OUTBOUND_BUFFER_SIZE
+    _socket.set_no_delay(true)
     var connection_error := _socket.connect_to_url(server_url)
     if connection_error != OK:
         _socket = null
@@ -192,6 +196,17 @@ func set_voice_muted(is_muted: bool) -> void:
 func send_voice_frame(sequence: int, pcm_base64: String) -> void:
     if not is_online() or current_room.is_empty() or pcm_base64.is_empty():
         return
+
+    # Voice is real-time data: once the socket queue grows, old audio has
+    # already lost its value. Drop new voice frames before the WebSocket
+    # outbound buffer fills so control messages (ready/leave/start/ping)
+    # always keep headroom and Godot never hits ERR_OUT_OF_MEMORY here.
+    if (
+        _socket != null
+        and _socket.get_current_outbound_buffered_amount() >= VOICE_OUTBOUND_QUEUE_LIMIT
+    ):
+        return
+
     _send({
         "type": "voice_frame",
         "seq": sequence,
@@ -242,10 +257,14 @@ func _send_hello() -> void:
         "display_name": display_name,
     })
 
-func _send(payload: Dictionary) -> void:
+func _send(payload: Dictionary) -> Error:
     if _socket == null or _socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
-        return
-    _socket.send_text(JSON.stringify(payload))
+        return ERR_UNAVAILABLE
+
+    var result := _socket.send_text(JSON.stringify(payload))
+    if result != OK and str(payload.get("type", "")) != "voice_frame":
+        push_warning("PARDEX WebSocket send failed: %s" % error_string(result))
+    return result
 
 func _handle_packet(packet: String) -> void:
     var parsed = JSON.parse_string(packet)
