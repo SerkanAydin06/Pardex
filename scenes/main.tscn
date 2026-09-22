@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://c4ee5q51bjoxw"]
 
 [ext_resource type="Script" uid="uid://b862qcsk55r27" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="Texture2D" path="res://assets/icon.svg" id="2_logo"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon_library.svg" id="8_nav_library"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon_friends.svg" id="9_nav_friends"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon_rooms.svg" id="10_nav_rooms"]
-[ext_resource type="Texture2D" path="res://assets/ui/icon_settings.svg" id="11_nav_settings"]
+[ext_resource type="Texture2D" path="res://assets/icon.png" id="2_logo"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_library.png" id="8_nav_library"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_friends.png" id="9_nav_friends"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_rooms.png" id="10_nav_rooms"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_settings.png" id="11_nav_settings"]
 [ext_resource type="Texture2D" path="res://assets/ui/icon_exit.png" id="12_nav_exit"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
