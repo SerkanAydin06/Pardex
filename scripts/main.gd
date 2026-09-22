@@ -23,7 +23,6 @@ const SETTINGS_SCENE := preload("res://scenes/screens/settings.tscn")
 
 var _friends_content: VBoxContainer
 var _rooms_content: VBoxContainer
-var _rooms_scroll: ScrollContainer
 var _settings_content: VBoxContainer
 var _current_content: Control
 var _display_name := "Pardus"
@@ -65,20 +64,9 @@ func _create_secondary_screens() -> void:
     content_parent.add_child(_friends_content)
     _friends_content.hide()
 
-    # Rooms can be taller than the available launcher area. Keep the shared
-    # page header fixed and scroll only the room content instead of allowing
-    # its minimum height to push the header out of alignment.
-    _rooms_scroll = ScrollContainer.new()
-    _rooms_scroll.name = "RoomsScroll"
-    _rooms_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    _rooms_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-    _rooms_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-    content_parent.add_child(_rooms_scroll)
-
     _rooms_content = ROOMS_SCENE.instantiate() as VBoxContainer
-    _rooms_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    _rooms_scroll.add_child(_rooms_content)
-    _rooms_scroll.hide()
+    content_parent.add_child(_rooms_content)
+    _rooms_content.hide()
 
     _settings_content = SETTINGS_SCENE.instantiate() as VBoxContainer
     content_parent.add_child(_settings_content)
@@ -173,7 +161,7 @@ func _show_friends() -> void:
 
 func _show_rooms() -> void:
     _show_content(
-        _rooms_scroll,
+        _rooms_content,
         "Odalar",
         "Ortak oyun oturumlarını buradan yönet.",
         %RoomsButton
@@ -197,7 +185,7 @@ func _show_settings() -> void:
 func _show_content(content: Control, title: String, subtitle: String, selected_button: Button) -> void:
     library_content.hide()
     _friends_content.hide()
-    _rooms_scroll.hide()
+    _rooms_content.hide()
     _settings_content.hide()
 
     content.show()
