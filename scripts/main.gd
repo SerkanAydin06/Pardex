@@ -42,6 +42,7 @@ var _game_card_hovered: Dictionary = {}
 var _game_card_tweens: Dictionary = {}
 var _sidebar_hover_tweens: Dictionary = {}
 var _online_pulse_tween: Tween
+var _brand_glow_tween: Tween
 
 func _ready() -> void:
 	_nav_selected_style = %LibraryButton.get_theme_stylebox("normal")
@@ -54,6 +55,7 @@ func _ready() -> void:
 	_prepare_game_cards()
 	_wire_actions()
 	_wire_sidebar_polish()
+	_start_brand_letter_glow()
 	_wire_online_signals()
 	_show_library()
 	_render_empty_room()
@@ -140,6 +142,35 @@ func _start_online_pulse() -> void:
 	_online_pulse_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	_online_pulse_tween.tween_property(connection_label, "modulate", Color(1.0, 1.0, 1.0, 0.72), 1.4)
 	_online_pulse_tween.tween_property(connection_label, "modulate", Color.WHITE, 1.4)
+
+
+func _start_brand_letter_glow() -> void:
+	if _brand_glow_tween != null and _brand_glow_tween.is_valid():
+		_brand_glow_tween.kill()
+
+	var letters: Array[Label] = [%BrandP, %BrandA, %BrandR, %BrandD, %BrandE, %BrandX]
+	for letter in letters:
+		_set_brand_letter_glow(0.0, letter)
+
+	_brand_glow_tween = create_tween().set_loops()
+	_brand_glow_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_brand_glow_tween.tween_interval(2.5)
+
+	for letter in letters:
+		_brand_glow_tween.tween_method(_set_brand_letter_glow.bind(letter), 0.0, 1.0, 0.10)
+		_brand_glow_tween.tween_method(_set_brand_letter_glow.bind(letter), 1.0, 0.0, 0.14)
+		_brand_glow_tween.tween_interval(0.035)
+
+	_brand_glow_tween.tween_interval(7.0)
+
+
+func _set_brand_letter_glow(amount: float, letter: Label) -> void:
+	var base_color := Color(0.9, 0.96, 1.0, 1.0)
+	var glow_color := Color(0.60, 0.96, 1.0, 1.0)
+	var shadow_color := Color(0.08, 0.78, 1.0, 0.78 * amount)
+
+	letter.add_theme_color_override("font_color", base_color.lerp(glow_color, amount))
+	letter.add_theme_color_override("font_shadow_color", shadow_color)
 
 
 func _wire_online_signals() -> void:
