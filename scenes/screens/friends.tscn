@@ -1,18 +1,72 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=10 format=3]
 
 [sub_resource type="StyleBoxFlat" id="Panel"]
-bg_color = Color(0.037, 0.052, 0.077, 1)
+bg_color = Color(0.018, 0.032, 0.052, 0.96)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.10, 0.16, 0.22, 1)
+border_color = Color(0.075, 0.20, 0.28, 0.96)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
-shadow_color = Color(0, 0, 0, 0.18)
-shadow_size = 7
+shadow_color = Color(0, 0, 0, 0.30)
+shadow_size = 11
+shadow_offset = Vector2(0, 4)
+content_margin_left = 24.0
+content_margin_top = 22.0
+content_margin_right = 24.0
+content_margin_bottom = 22.0
+
+[sub_resource type="StyleBoxFlat" id="IntroPanel"]
+bg_color = Color(0.014, 0.046, 0.069, 0.97)
+border_width_left = 3
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.12, 0.58, 0.76, 0.92)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.34)
+shadow_size = 12
+shadow_offset = Vector2(0, 4)
+content_margin_left = 26.0
+content_margin_top = 22.0
+content_margin_right = 24.0
+content_margin_bottom = 22.0
+
+[sub_resource type="StyleBoxFlat" id="PreviewChip"]
+bg_color = Color(0.025, 0.12, 0.16, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.12, 0.52, 0.66, 0.90)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 12.0
+content_margin_top = 7.0
+content_margin_right = 12.0
+content_margin_bottom = 7.0
+
+[sub_resource type="StyleBoxFlat" id="ListPanel"]
+bg_color = Color(0.013, 0.026, 0.043, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.06, 0.15, 0.22, 0.96)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.24)
+shadow_size = 9
 shadow_offset = Vector2(0, 3)
 content_margin_left = 24.0
 content_margin_top = 22.0
@@ -20,12 +74,12 @@ content_margin_right = 24.0
 content_margin_bottom = 22.0
 
 [sub_resource type="StyleBoxFlat" id="Search"]
-bg_color = Color(0.022, 0.034, 0.052, 1)
+bg_color = Color(0.010, 0.024, 0.040, 0.96)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.10, 0.16, 0.23, 1)
+border_color = Color(0.08, 0.21, 0.30, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
@@ -36,12 +90,12 @@ content_margin_right = 14.0
 content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxFlat" id="SearchFocus"]
-bg_color = Color(0.024, 0.041, 0.061, 1)
+bg_color = Color(0.014, 0.035, 0.055, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.24, 0.61, 0.84, 1)
+border_color = Color(0.22, 0.74, 0.93, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
@@ -52,7 +106,7 @@ content_margin_right = 14.0
 content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxFlat" id="Button"]
-bg_color = Color(0.105, 0.43, 0.72, 1)
+bg_color = Color(0.075, 0.42, 0.68, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
@@ -63,7 +117,7 @@ content_margin_right = 18.0
 content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxFlat" id="ButtonHover"]
-bg_color = Color(0.14, 0.51, 0.82, 1)
+bg_color = Color(0.10, 0.56, 0.82, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
@@ -92,16 +146,16 @@ content_margin_bottom = 10.0
 [node name="FriendsContent" type="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 16
+theme_override_constants/separation = 14
 
 [node name="Intro" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(0, 140)
+custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
-theme_override_styles/panel = SubResource("Panel")
+theme_override_styles/panel = SubResource("IntroPanel")
 
 [node name="Row" type="HBoxContainer" parent="Intro"]
 layout_mode = 2
-theme_override_constants/separation = 26
+theme_override_constants/separation = 22
 
 [node name="Text" type="VBoxContainer" parent="Intro/Row"]
 layout_mode = 2
@@ -117,21 +171,22 @@ text = "PARDEX ONLINE"
 [node name="Title" type="Label" parent="Intro/Row/Text"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 28
 text = "Arkadaşların burada olacak."
 
 [node name="Body" type="Label" parent="Intro/Row/Text"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.56, 0.62, 0.72, 1)
+theme_override_colors/font_color = Color(0.63, 0.70, 0.79, 1)
 theme_override_font_sizes/font_size = 14
 text = "Çevrimiçi durum, hangi oyunda oldukları ve davetler bu ekrandan yönetilecek.\nSunucu bağlantısı tamamlanana kadar ekran geliştirme önizlemesidir."
 
 [node name="Badge" type="Label" parent="Intro/Row"]
-custom_minimum_size = Vector2(150, 0)
+custom_minimum_size = Vector2(166, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.32, 0.55, 0.75, 0.65)
-theme_override_font_sizes/font_size = 48
-text = "● ● ●"
+theme_override_colors/font_color = Color(0.42, 0.88, 1, 0.82)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("PreviewChip")
+text = "●  ONLINE SOSYAL"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -152,7 +207,7 @@ editable = false
 
 [node name="AddFriendButton" type="Button" parent="Toolbar"]
 layout_mode = 2
-custom_minimum_size = Vector2(168, 0)
+custom_minimum_size = Vector2(178, 44)
 focus_mode = 0
 disabled = true
 theme_override_colors/font_color = Color(0.85, 0.9, 0.98, 1)
@@ -166,7 +221,7 @@ text = "ARKADAŞ EKLE"
 [node name="ListPanel" type="PanelContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("Panel")
+theme_override_styles/panel = SubResource("ListPanel")
 
 [node name="EmptyState" type="VBoxContainer" parent="ListPanel"]
 layout_mode = 2
@@ -175,21 +230,21 @@ theme_override_constants/separation = 10
 
 [node name="Icon" type="Label" parent="ListPanel/EmptyState"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.24, 0.34, 0.47, 1)
-theme_override_font_sizes/font_size = 46
-text = "◎"
+theme_override_colors/font_color = Color(0.20, 0.63, 0.80, 0.75)
+theme_override_font_sizes/font_size = 50
+text = "◉"
 horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="ListPanel/EmptyState"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.85, 0.92, 1)
-theme_override_font_sizes/font_size = 19
-text = "Arkadaş listesi henüz çevrimiçi değil"
+theme_override_font_sizes/font_size = 20
+text = "Sosyal merkez hazırlanıyor"
 horizontal_alignment = 1
 
 [node name="Body" type="Label" parent="ListPanel/EmptyState"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.47, 0.53, 0.62, 1)
 theme_override_font_sizes/font_size = 14
-text = "PARDEX Online hesabı ve sunucu bağlantısı eklendiğinde arkadaşların burada görünecek."
+text = "Arkadaşların, çevrimiçi durumları ve oyun davetleri burada tek merkezde görünecek."
 horizontal_alignment = 1
