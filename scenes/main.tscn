@@ -13,6 +13,54 @@
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.012, 0.021, 0.033, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleMainSurface"]
+bg_color = Color(0.007, 0.016, 0.028, 0.66)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.075, 0.18, 0.26, 0.78)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+shadow_color = Color(0, 0, 0, 0.30)
+shadow_size = 14
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleHeaderPanel"]
+content_margin_left = 18.0
+content_margin_top = 13.0
+content_margin_right = 18.0
+content_margin_bottom = 13.0
+bg_color = Color(0.014, 0.032, 0.052, 0.84)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.085, 0.24, 0.34, 0.90)
+corner_radius_top_left = 13
+corner_radius_top_right = 13
+corner_radius_bottom_right = 13
+corner_radius_bottom_left = 13
+shadow_color = Color(0, 0, 0, 0.24)
+shadow_size = 8
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleSectionBar"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.012, 0.029, 0.047, 0.78)
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.07, 0.18, 0.25, 0.82)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
 [sub_resource type="StyleBoxFlat" id="StyleSidebar"]
 bg_color = Color(0.006, 0.014, 0.025, 0.18)
 border_width_right = 1
@@ -156,19 +204,28 @@ content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
-bg_color = Color(0.03, 0.065, 0.095, 1)
+bg_color = Color(0.012, 0.032, 0.052, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.1, 0.38, 0.53, 1)
+border_color = Color(0.13, 0.48, 0.62, 0.96)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
-shadow_color = Color(0, 0, 0, 0.32)
-shadow_size = 14
+shadow_color = Color(0, 0, 0, 0.42)
+shadow_size = 16
 shadow_offset = Vector2(0, 5)
+
+[sub_resource type="Shader" id="ShaderHeroRounded"]
+code = "shader_type canvas_item;\nuniform float aspect = 4.55;\nuniform float radius = 0.065;\nuniform float feather = 0.008;\nvoid fragment() {\n    vec2 p = (UV - vec2(0.5)) * vec2(aspect, 1.0);\n    vec2 b = vec2(aspect * 0.5 - radius, 0.5 - radius);\n    vec2 q = abs(p) - b;\n    float d = length(max(q, vec2(0.0))) + min(max(q.x, q.y), 0.0) - radius;\n    float mask = 1.0 - smoothstep(-feather, feather, d);\n    vec4 tex = texture(TEXTURE, UV);\n    COLOR = tex;\n    COLOR.a *= mask;\n}"
+
+[sub_resource type="ShaderMaterial" id="MaterialHeroRounded"]
+shader = SubResource("ShaderHeroRounded")
+shader_parameter/aspect = 4.55
+shader_parameter/radius = 0.065
+shader_parameter/feather = 0.008
 
 [sub_resource type="StyleBoxFlat" id="StyleHeroAction"]
 content_margin_left = 13.0
@@ -223,18 +280,18 @@ content_margin_left = 18.0
 content_margin_top = 18.0
 content_margin_right = 18.0
 content_margin_bottom = 18.0
-bg_color = Color(0.037, 0.052, 0.077, 1)
+bg_color = Color(0.025, 0.039, 0.058, 0.96)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.1, 0.15, 0.21, 1)
+border_color = Color(0.085, 0.19, 0.27, 0.95)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
-shadow_color = Color(0, 0, 0, 0.2)
-shadow_size = 8
+shadow_color = Color(0, 0, 0, 0.30)
+shadow_size = 10
 shadow_offset = Vector2(0, 3)
 
 [sub_resource type="StyleBoxFlat" id="StyleArtVex"]
@@ -312,12 +369,12 @@ content_margin_left = 18.0
 content_margin_top = 18.0
 content_margin_right = 18.0
 content_margin_bottom = 18.0
-bg_color = Color(0.045, 0.058, 0.076, 1)
+bg_color = Color(0.029, 0.041, 0.055, 0.98)
 border_width_left = 2
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.47, 0.37, 0.16, 0.95)
+border_color = Color(0.78, 0.56, 0.16, 0.95)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
@@ -467,7 +524,7 @@ theme_override_constants/margin_bottom = 22
 
 [node name="SidebarVBox" type="VBoxContainer" parent="Sidebar/SidebarMargin" unique_id=1583966239]
 layout_mode = 2
-theme_override_constants/separation = 9
+theme_override_constants/separation = 10
 
 [node name="Brand" type="HBoxContainer" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=297795637]
 layout_mode = 2
@@ -642,14 +699,24 @@ theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 30
 theme_override_constants/margin_bottom = 24
 
+[node name="MainSurface" type="Panel" parent="MainMargin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleMainSurface")
+
 [node name="MainVBox" type="VBoxContainer" parent="MainMargin" unique_id=869066663]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="Header" type="HBoxContainer" parent="MainMargin/MainVBox" unique_id=783684047]
+[node name="Header" type="PanelContainer" parent="MainMargin/MainVBox" unique_id=783684047]
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleHeaderPanel")
 
-[node name="HeaderText" type="VBoxContainer" parent="MainMargin/MainVBox/Header" unique_id=888277628]
+[node name="HeaderRow" type="HBoxContainer" parent="MainMargin/MainVBox/Header"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HeaderText" type="VBoxContainer" parent="MainMargin/MainVBox/Header/HeaderRow" unique_id=888277628]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 3
@@ -658,17 +725,17 @@ theme_override_constants/separation = 3
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 32
 text = "Kütüphane"
 
 [node name="PageSubtitle" type="Label" parent="MainMargin/MainVBox/Header/HeaderText" unique_id=530326816]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.5, 0.56, 0.66, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.58, 0.67, 0.77, 1)
+theme_override_font_sizes/font_size = 13
 text = "Tüm oyunlarını tek merkezden yönet."
 
-[node name="LibrarySearch" type="LineEdit" parent="MainMargin/MainVBox/Header" unique_id=1303464810]
+[node name="LibrarySearch" type="LineEdit" parent="MainMargin/MainVBox/Header/HeaderRow" unique_id=1303464810]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(330, 44)
 layout_mode = 2
@@ -680,12 +747,12 @@ theme_override_styles/focus = SubResource("StyleSearchFocus")
 placeholder_text = "⌕   Oyunlarda ara..."
 clear_button_enabled = true
 
-[node name="ConnectionPill" type="PanelContainer" parent="MainMargin/MainVBox/Header" unique_id=1336106454]
+[node name="ConnectionPill" type="PanelContainer" parent="MainMargin/MainVBox/Header/HeaderRow" unique_id=1336106454]
 custom_minimum_size = Vector2(172, 44)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StylePill")
 
-[node name="ConnectionLabel" type="Label" parent="MainMargin/MainVBox/Header/ConnectionPill" unique_id=1262917151]
+[node name="ConnectionLabel" type="Label" parent="MainMargin/MainVBox/Header/HeaderRow/ConnectionPill" unique_id=1262917151]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.48, 0.91, 0.72, 1)
 theme_override_font_sizes/font_size = 13
@@ -704,6 +771,7 @@ clip_contents = true
 theme_override_styles/panel = SubResource("StyleHero")
 
 [node name="HeroImage" type="TextureRect" parent="MainMargin/MainVBox/LibraryContent/Hero"]
+material = SubResource("MaterialHeroRounded")
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("13_top_banner")
@@ -713,7 +781,7 @@ stretch_mode = 6
 [node name="HeroShade" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/Hero"]
 layout_mode = 2
 mouse_filter = 2
-color = Color(0.005, 0.018, 0.032, 0.16)
+color = Color(0.005, 0.018, 0.032, 0.24)
 
 [node name="HeroContent" type="MarginContainer" parent="MainMargin/MainVBox/LibraryContent/Hero"]
 layout_mode = 2
@@ -729,7 +797,7 @@ theme_override_constants/separation = 24
 [node name="HeroText" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow" unique_id=715223022]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 9
+theme_override_constants/separation = 10
 
 [node name="HeroEyebrow" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText" unique_id=1614088281]
 layout_mode = 2
@@ -878,24 +946,28 @@ theme_override_font_sizes/font_size = 8
 text = "GELİŞİM"
 horizontal_alignment = 1
 
-[node name="SectionHeader" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent" unique_id=482314275]
+[node name="SectionHeader" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent" unique_id=482314275]
 layout_mode = 2
-theme_override_constants/separation = 9
+theme_override_styles/panel = SubResource("StyleSectionBar")
 
-[node name="Accent" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/SectionHeader" unique_id=624783426]
-custom_minimum_size = Vector2(28, 3)
+[node name="SectionRow" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent/SectionHeader"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Accent" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/SectionHeader/SectionRow" unique_id=624783426]
+custom_minimum_size = Vector2(30, 3)
 layout_mode = 2
 size_flags_vertical = 4
-color = Color(0.3, 0.88, 1, 1)
+color = Color(0.28, 0.92, 1, 1)
 
-[node name="SectionTitle" type="Label" parent="MainMargin/MainVBox/LibraryContent/SectionHeader" unique_id=913930626]
+[node name="SectionTitle" type="Label" parent="MainMargin/MainVBox/LibraryContent/SectionHeader/SectionRow" unique_id=913930626]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.84, 0.88, 0.94, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.88, 0.93, 0.98, 1)
+theme_override_font_sizes/font_size = 14
 text = "O Y U N   K Ü T Ü P H A N E S İ"
 
-[node name="GameCount" type="Label" parent="MainMargin/MainVBox/LibraryContent/SectionHeader" unique_id=671243092]
+[node name="GameCount" type="Label" parent="MainMargin/MainVBox/LibraryContent/SectionHeader/SectionRow" unique_id=671243092]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.42, 0.52, 0.64, 1)
@@ -912,17 +984,17 @@ columns = 3
 
 [node name="VexCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=1790321724]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 378)
+custom_minimum_size = Vector2(0, 366)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleCard")
 
 [node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard" unique_id=1559008233]
 layout_mode = 2
-theme_override_constants/separation = 9
+theme_override_constants/separation = 10
 
 [node name="Art" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox" unique_id=486302366]
-custom_minimum_size = Vector2(0, 158)
+custom_minimum_size = Vector2(0, 150)
 clip_contents = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleArtVex")
@@ -989,17 +1061,17 @@ text = "BAĞLA"
 
 [node name="KorsanCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=984548125]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 378)
+custom_minimum_size = Vector2(0, 366)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleCardOnline")
 
 [node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard" unique_id=348700139]
 layout_mode = 2
-theme_override_constants/separation = 9
+theme_override_constants/separation = 10
 
 [node name="Art" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox" unique_id=234829534]
-custom_minimum_size = Vector2(0, 158)
+custom_minimum_size = Vector2(0, 150)
 clip_contents = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleArtKorsan")
@@ -1065,17 +1137,17 @@ text = "▶  OYNA"
 
 [node name="FirtinaCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=765973551]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 378)
+custom_minimum_size = Vector2(0, 366)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleCard")
 
 [node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard" unique_id=1063823684]
 layout_mode = 2
-theme_override_constants/separation = 9
+theme_override_constants/separation = 10
 
 [node name="Art" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox" unique_id=717860700]
-custom_minimum_size = Vector2(0, 158)
+custom_minimum_size = Vector2(0, 150)
 clip_contents = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleArtFirtina")
