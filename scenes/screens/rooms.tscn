@@ -215,7 +215,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="JoinRoomButton" type="Button" parent="Actions/JoinCard/VBox"]
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 focus_mode = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
