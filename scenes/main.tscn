@@ -827,6 +827,7 @@ theme_override_constants/v_separation = 16
 columns = 3
 
 [node name="VexCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=1790321724]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 350)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -935,6 +936,7 @@ theme_override_colors/font_disabled_color = Color(0.39, 0.45, 0.54, 1)
 text = "BAĞLA"
 
 [node name="KorsanCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=984548125]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 350)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1042,6 +1044,7 @@ theme_override_styles/pressed = SubResource("StyleGoldButtonHover")
 text = "▶  OYNA"
 
 [node name="FirtinaCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=765973551]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 350)
 layout_mode = 2
 size_flags_horizontal = 3
