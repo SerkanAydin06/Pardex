@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d0hxktok6mx0u"
-path="res://.godot/imported/icon_friends.svg-6ebc628773af31ef8720f685b1258bf9.ctex"
+uid="uid://ncee80n0ptvt"
+path="res://.godot/imported/icon_friends.png-be8825c7d9d34467d155fc9273c4b54f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/icon_friends.svg"
-dest_files=["res://.godot/imported/icon_friends.svg-6ebc628773af31ef8720f685b1258bf9.ctex"]
+source_file="res://assets/ui/icon_friends.png"
+dest_files=["res://.godot/imported/icon_friends.png-be8825c7d9d34467d155fc9273c4b54f.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false
