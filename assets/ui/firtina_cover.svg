@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#06121d"/><stop offset=".55" stop-color="#0b3650"/><stop offset="1" stop-color="#020b12"/></linearGradient><filter id="gl"><feGaussianBlur stdDeviation="5"/></filter></defs>
+<rect width="800" height="500" fill="url(#bg)"/>
+<path d="M0 365L100 260l65 62 94-142 78 121 76-92 82 113 69-59 136 115 100-82v204H0z" fill="#082032"/>
+<path d="M420 285h135v-110h22v110h44v-150h24v150h82v80H420z" fill="#06111a"/>
+<path d="M520 145l16-34 16 34zm82-40l17-42 18 42zm62 54l13-29 13 29z" fill="#173e54"/>
+<path d="M124 30l64 96-43-9 27 77" fill="none" stroke="#9be8ff" stroke-width="8" filter="url(#gl)"/>
+<path d="M704 38l-57 87 39-12-19 73" fill="none" stroke="#a8eeff" stroke-width="7" filter="url(#gl)"/>
+<g transform="translate(250 296)" fill="#03080d"><circle cy="-22" r="14"/><path d="M-17-8h34l32 134h-96z"/><path d="M-8 113l-28 69h16l30-68z"/><path d="M14 113l25 69h16l-23-70z"/></g>
+<text x="300" y="407" fill="#e5f8ff" font-family="Georgia,serif" font-size="58" font-weight="700" letter-spacing="2">FIRTINA VADİSİ</text>
+<text x="405" y="452" fill="#9dd8eb" font-family="Arial,sans-serif" font-size="17" letter-spacing="7">KAYIP DİYARLAR</text>
+</svg>
