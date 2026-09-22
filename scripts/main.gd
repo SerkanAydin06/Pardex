@@ -328,8 +328,8 @@ func _refresh_display_settings_ui() -> void:
     elif mode == DisplayServer.WINDOW_MODE_MAXIMIZED:
         state_label.text = "●  BÜYÜTÜLMÜŞ PENCERE"
     else:
-        var size := DisplayServer.window_get_size()
-        state_label.text = "●  PENCERE MODU • %d × %d" % [size.x, size.y]
+        var window_size := DisplayServer.window_get_size()
+        state_label.text = "●  PENCERE MODU • %d × %d" % [window_size.x, window_size.y]
     state_label.add_theme_color_override("font_color", Color(0.38, 0.86, 0.62, 1))
 
 
