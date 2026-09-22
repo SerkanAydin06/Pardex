@@ -18,7 +18,7 @@ const SETTINGS_SCENE := preload("res://scenes/screens/settings.tscn")
 @onready var profile_name_label: Label = $Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/ProfileText/UserName
 @onready var avatar_label: Label = $Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/Avatar
 @onready var online_state_label: Label = $Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/ProfileText/OnlineState
-@onready var connection_label: Label = $MainMargin/MainVBox/Header/ConnectionPill/ConnectionLabel
+@onready var connection_label: Label = $MainMargin/MainVBox/Header/HeaderRow/ConnectionPill/ConnectionLabel
 @onready var library_search: LineEdit = %LibrarySearch
 @onready var game_count_label: Label = %GameCount
 
