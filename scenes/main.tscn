@@ -728,7 +728,7 @@ theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 32
 text = "Kütüphane"
 
-[node name="PageSubtitle" type="Label" parent="MainMargin/MainVBox/Header/HeaderText" unique_id=530326816]
+[node name="PageSubtitle" type="Label" parent="MainMargin/MainVBox/Header/HeaderRow/HeaderText" unique_id=530326816]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.58, 0.67, 0.77, 1)
