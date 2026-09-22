@@ -379,7 +379,6 @@ func _apply_profile() -> void:
     avatar_label.text = _display_name.left(1).to_upper()
 
 func _update_connection_ui(state: String) -> void:
-    var room_connection_label := _rooms_content.get_node("Intro/Row/ConnectionStatus") as Label
     var settings_state_label := _settings_content.get_node("OnlinePanel/VBox/State") as Label
     var create_room_button := _rooms_content.get_node("Actions/CreateCard/VBox/CreateRoomButton") as Button
     var join_room_button := _rooms_content.get_node("Actions/JoinCard/VBox/JoinRoomButton") as Button
@@ -397,8 +396,6 @@ func _update_connection_ui(state: String) -> void:
     connection_label.add_theme_color_override("font_color", color)
     online_state_label.text = text
     online_state_label.add_theme_color_override("font_color", color)
-    room_connection_label.text = text
-    room_connection_label.add_theme_color_override("font_color", color)
     settings_state_label.text = text
     settings_state_label.add_theme_color_override("font_color", color)
 
