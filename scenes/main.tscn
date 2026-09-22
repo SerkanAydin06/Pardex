@@ -284,6 +284,22 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
+[sub_resource type="StyleBoxFlat" id="StyleMetric"]
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
+bg_color = Color(0.02, 0.055, 0.078, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.08, 0.25, 0.34, 0.9)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [sub_resource type="StyleBoxFlat" id="StyleSearch"]
 content_margin_left = 38.0
 content_margin_top = 10.0
@@ -709,7 +725,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 18
 
 [node name="Hero" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent" unique_id=1358431032]
-custom_minimum_size = Vector2(0, 202)
+custom_minimum_size = Vector2(0, 216)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleHero")
 
@@ -776,23 +792,96 @@ theme_override_styles/hover = SubResource("StyleHeroActionHover")
 text = "ODALAR OLUŞTUR"
 
 [node name="HeroRight" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow"]
-custom_minimum_size = Vector2(250, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 2
+theme_override_constants/separation = 7
 
 [node name="Mark" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.23, 0.72, 0.91, 0.28)
-theme_override_font_sizes/font_size = 82
+theme_override_colors/font_color = Color(0.23, 0.72, 0.91, 0.24)
+theme_override_font_sizes/font_size = 64
 text = "P"
 horizontal_alignment = 1
 
 [node name="Label" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.37, 0.65, 0.78, 1)
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 9
 text = "DESKTOP GAME HUB  //  ONLINE"
+horizontal_alignment = 1
+
+[node name="Metrics" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Games" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleMetric")
+
+[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Games"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Value" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Games/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "3"
+horizontal_alignment = 1
+
+[node name="Caption" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Games/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.53, 0.65, 1)
+theme_override_font_sizes/font_size = 8
+text = "OYUN"
+horizontal_alignment = 1
+
+[node name="Ready" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleMetric")
+
+[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Ready"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Value" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Ready/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.38, 0.9, 0.64, 1)
+theme_override_font_sizes/font_size = 15
+text = "1"
+horizontal_alignment = 1
+
+[node name="Caption" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Ready/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.53, 0.65, 1)
+theme_override_font_sizes/font_size = 8
+text = "ONLINE"
+horizontal_alignment = 1
+
+[node name="Dev" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleMetric")
+
+[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Dev"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Value" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Dev/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.7, 0.38, 1)
+theme_override_font_sizes/font_size = 15
+text = "2"
+horizontal_alignment = 1
+
+[node name="Caption" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Dev/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.53, 0.65, 1)
+theme_override_font_sizes/font_size = 8
+text = "GELİŞİM"
 horizontal_alignment = 1
 
 [node name="SectionHeader" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent"]
@@ -802,6 +891,7 @@ theme_override_constants/separation = 9
 [node name="Accent" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/SectionHeader"]
 custom_minimum_size = Vector2(28, 3)
 layout_mode = 2
+size_flags_vertical = 4
 color = Color(0.30, 0.88, 1, 1)
 
 [node name="SectionTitle" type="Label" parent="MainMargin/MainVBox/LibraryContent/SectionHeader" unique_id=913930626]
@@ -822,13 +912,13 @@ horizontal_alignment = 2
 [node name="GameGrid" type="GridContainer" parent="MainMargin/MainVBox/LibraryContent" unique_id=942368590]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/h_separation = 16
-theme_override_constants/v_separation = 16
+theme_override_constants/h_separation = 18
+theme_override_constants/v_separation = 18
 columns = 3
 
 [node name="VexCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=1790321724]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 350)
+custom_minimum_size = Vector2(0, 378)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleCard")
@@ -838,7 +928,7 @@ layout_mode = 2
 theme_override_constants/separation = 9
 
 [node name="Art" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox"]
-custom_minimum_size = Vector2(0, 142)
+custom_minimum_size = Vector2(0, 158)
 layout_mode = 2
 clip_contents = true
 theme_override_styles/panel = SubResource("StyleArtVex")
@@ -901,14 +991,14 @@ horizontal_alignment = 1
 [node name="Title" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox" unique_id=1809277446]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 20
 text = "VEX"
 
 [node name="Genre" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox" unique_id=1305026954]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
-theme_override_font_sizes/font_size = 13
-text = "Aksiyon • Godot 4.7"
+theme_override_font_sizes/font_size = 12
+text = "AKSİYON   •   GODOT 4.7"
 
 [node name="VexPath" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox" unique_id=492251823]
 unique_name_in_owner = true
@@ -937,7 +1027,7 @@ text = "BAĞLA"
 
 [node name="KorsanCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=984548125]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 350)
+custom_minimum_size = Vector2(0, 378)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleCardOnline")
@@ -947,7 +1037,7 @@ layout_mode = 2
 theme_override_constants/separation = 9
 
 [node name="Art" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox"]
-custom_minimum_size = Vector2(0, 142)
+custom_minimum_size = Vector2(0, 158)
 layout_mode = 2
 clip_contents = true
 theme_override_styles/panel = SubResource("StyleArtKorsan")
@@ -1010,14 +1100,14 @@ horizontal_alignment = 1
 [node name="Title" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox" unique_id=2045617748]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 20
 text = "Korsanların Hazinesi"
 
 [node name="Genre" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox" unique_id=790923583]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
-theme_override_font_sizes/font_size = 13
-text = "Masa Oyunu • 1–4 Oyuncu"
+theme_override_font_sizes/font_size = 12
+text = "MASA OYUNU   •   1–4 OYUNCU"
 
 [node name="KorsanPath" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox" unique_id=486971852]
 unique_name_in_owner = true
@@ -1045,7 +1135,7 @@ text = "▶  OYNA"
 
 [node name="FirtinaCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=765973551]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 350)
+custom_minimum_size = Vector2(0, 378)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleCard")
@@ -1055,7 +1145,7 @@ layout_mode = 2
 theme_override_constants/separation = 9
 
 [node name="Art" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox"]
-custom_minimum_size = Vector2(0, 142)
+custom_minimum_size = Vector2(0, 158)
 layout_mode = 2
 clip_contents = true
 theme_override_styles/panel = SubResource("StyleArtFirtina")
@@ -1118,14 +1208,14 @@ horizontal_alignment = 1
 [node name="Title" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox" unique_id=2007660749]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 20
 text = "Fırtına Vadisi"
 
 [node name="Genre" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox" unique_id=625385527]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
-theme_override_font_sizes/font_size = 13
-text = "Prototype • Godot 4.7"
+theme_override_font_sizes/font_size = 12
+text = "MACERA   •   GODOT 4.7"
 
 [node name="FirtinaPath" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox" unique_id=1659347159]
 unique_name_in_owner = true
