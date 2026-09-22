@@ -27,10 +27,10 @@ corner_radius_top_left = 18
 corner_radius_top_right = 18
 corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
-content_margin_left = 26.0
-content_margin_top = 26.0
-content_margin_right = 26.0
-content_margin_bottom = 26.0
+content_margin_left = 20.0
+content_margin_top = 18.0
+content_margin_right = 20.0
+content_margin_bottom = 18.0
 
 [sub_resource type="StyleBoxFlat" id="Button"]
 bg_color = Color(0.16, 0.41, 0.96, 1)
@@ -130,7 +130,7 @@ text = "Oda kodları, hazır durumları ve oyun başlatma PARDEX Online üzerind
 
 [node name="Actions" type="HBoxContainer" parent="."]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 220)
+custom_minimum_size = Vector2(0, 178)
 theme_override_constants/separation = 20
 
 [node name="CreateCard" type="PanelContainer" parent="Actions"]
@@ -140,24 +140,24 @@ theme_override_styles/panel = SubResource("ActionCard")
 
 [node name="VBox" type="VBoxContainer" parent="Actions/CreateCard"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 7
 
 [node name="Icon" type="Label" parent="Actions/CreateCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.43, 0.79, 1, 1)
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 28
 text = "+"
 
 [node name="Title" type="Label" parent="Actions/CreateCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 19
 text = "Oda Oluştur"
 
 [node name="Body" type="Label" parent="Actions/CreateCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 text = "Korsanların Hazinesi için 4 kişilik online oda aç."
 autowrap_mode = 2
 
@@ -166,7 +166,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="CreateRoomButton" type="Button" parent="Actions/CreateCard/VBox"]
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 focus_mode = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
@@ -183,29 +183,29 @@ theme_override_styles/panel = SubResource("ActionCard")
 
 [node name="VBox" type="VBoxContainer" parent="Actions/JoinCard"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 7
 
 [node name="Icon" type="Label" parent="Actions/JoinCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 27
 text = "#"
 
 [node name="Title" type="Label" parent="Actions/JoinCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 19
 text = "Oda Koduyla Katıl"
 
 [node name="Body" type="Label" parent="Actions/JoinCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 text = "Arkadaşının paylaştığı 5 karakterlik kodu gir."
 autowrap_mode = 2
 
 [node name="RoomCode" type="LineEdit" parent="Actions/JoinCard/VBox"]
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 placeholder_text = "Örn. K7P2Q"
 max_length = 5
