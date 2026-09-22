@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://bulpldt8jeoeq" path="res://assets/ui/icon_rooms.png" id="10_nav_rooms"]
 [ext_resource type="Texture2D" uid="uid://djset5qpnsunj" path="res://assets/ui/icon_settings.png" id="11_nav_settings"]
 [ext_resource type="Texture2D" uid="uid://c8aammb0an7o7" path="res://assets/ui/icon_exit.png" id="12_nav_exit"]
+[ext_resource type="Texture2D" uid="uid://74fojcgks3it" path="res://assets/ui/top_banner.png" id="13_top_banner"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.012, 0.021, 0.033, 1)
@@ -136,10 +137,10 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleHero"]
-content_margin_left = 30.0
-content_margin_top = 24.0
-content_margin_right = 30.0
-content_margin_bottom = 24.0
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
 bg_color = Color(0.03, 0.065, 0.095, 1)
 border_width_left = 1
 border_width_top = 1
@@ -652,43 +653,63 @@ size_flags_vertical = 3
 theme_override_constants/separation = 18
 
 [node name="Hero" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent" unique_id=1358431032]
-custom_minimum_size = Vector2(0, 216)
+custom_minimum_size = Vector2(0, 244)
 layout_mode = 2
+clip_contents = true
 theme_override_styles/panel = SubResource("StyleHero")
 
-[node name="HeroRow" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero" unique_id=391817466]
+[node name="HeroImage" type="TextureRect" parent="MainMargin/MainVBox/LibraryContent/Hero"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("13_top_banner")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HeroShade" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/Hero"]
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.005, 0.018, 0.032, 0.16)
+
+[node name="HeroContent" type="MarginContainer" parent="MainMargin/MainVBox/LibraryContent/Hero"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 22
+
+[node name="HeroRow" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent" unique_id=391817466]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="HeroText" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow" unique_id=715223022]
+[node name="HeroText" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow" unique_id=715223022]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 9
 
-[node name="HeroEyebrow" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroText" unique_id=1614088281]
+[node name="HeroEyebrow" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText" unique_id=1614088281]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "PARDEX / GAME HUB"
 
-[node name="HeroTitle" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroText" unique_id=1240548734]
+[node name="HeroTitle" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText" unique_id=1240548734]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.97, 1, 1)
-theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.98, 0.99, 1, 1)
+theme_override_font_sizes/font_size = 30
 text = "Oyun dünyalarının tek kapısı"
 
-[node name="HeroBody" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroText" unique_id=1090598853]
+[node name="HeroBody" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText" unique_id=1090598853]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.58, 0.68, 0.78, 1)
+theme_override_colors/font_color = Color(0.77, 0.84, 0.92, 1)
 theme_override_font_sizes/font_size = 14
 text = "Oyunlarını başlat, arkadaşlarına katıl, çevrimiçi odalarını yönet.
 PARDEX ile tüm oyun deneyimin tek bir yerde."
 
-[node name="QuickActions" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroText" unique_id=1153843039]
+[node name="QuickActions" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText" unique_id=1153843039]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="HeroPlayButton" type="Button" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroText/QuickActions" unique_id=1937718524]
+[node name="HeroPlayButton" type="Button" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText/QuickActions" unique_id=1937718524]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
@@ -698,7 +719,7 @@ theme_override_styles/normal = SubResource("StyleHeroAction")
 theme_override_styles/hover = SubResource("StyleHeroActionHover")
 text = "OYNA"
 
-[node name="HeroFriendsButton" type="Button" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroText/QuickActions" unique_id=54154444]
+[node name="HeroFriendsButton" type="Button" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText/QuickActions" unique_id=54154444]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
@@ -708,7 +729,7 @@ theme_override_styles/normal = SubResource("StyleHeroAction")
 theme_override_styles/hover = SubResource("StyleHeroActionHover")
 text = "ARKADAŞLARINLA BULUŞ"
 
-[node name="HeroRoomsButton" type="Button" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroText/QuickActions" unique_id=445556409]
+[node name="HeroRoomsButton" type="Button" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText/QuickActions" unique_id=445556409]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
@@ -718,93 +739,94 @@ theme_override_styles/normal = SubResource("StyleHeroAction")
 theme_override_styles/hover = SubResource("StyleHeroActionHover")
 text = "ODALAR OLUŞTUR"
 
-[node name="HeroRight" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow" unique_id=1774059899]
+[node name="HeroRight" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow" unique_id=1774059899]
+visible = false
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 theme_override_constants/separation = 7
 alignment = 1
 
-[node name="Mark" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight" unique_id=1717465999]
+[node name="Mark" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight" unique_id=1717465999]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.23, 0.72, 0.91, 0.24)
 theme_override_font_sizes/font_size = 64
 text = "P"
 horizontal_alignment = 1
 
-[node name="Label" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight" unique_id=2090565029]
+[node name="Label" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight" unique_id=2090565029]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.37, 0.65, 0.78, 1)
 theme_override_font_sizes/font_size = 9
 text = "DESKTOP GAME HUB  //  ONLINE"
 horizontal_alignment = 1
 
-[node name="Metrics" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight" unique_id=1024805604]
+[node name="Metrics" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight" unique_id=1024805604]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="Games" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics" unique_id=1639470318]
+[node name="Games" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics" unique_id=1639470318]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleMetric")
 
-[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Games" unique_id=1312144984]
+[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Games" unique_id=1312144984]
 layout_mode = 2
 theme_override_constants/separation = 1
 
-[node name="Value" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Games/VBox" unique_id=671094153]
+[node name="Value" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Games/VBox" unique_id=671094153]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.93, 1, 1)
 theme_override_font_sizes/font_size = 15
 text = "3"
 horizontal_alignment = 1
 
-[node name="Caption" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Games/VBox" unique_id=1879448834]
+[node name="Caption" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Games/VBox" unique_id=1879448834]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.53, 0.65, 1)
 theme_override_font_sizes/font_size = 8
 text = "OYUN"
 horizontal_alignment = 1
 
-[node name="Ready" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics" unique_id=1852471641]
+[node name="Ready" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics" unique_id=1852471641]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleMetric")
 
-[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Ready" unique_id=1395440988]
+[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Ready" unique_id=1395440988]
 layout_mode = 2
 theme_override_constants/separation = 1
 
-[node name="Value" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Ready/VBox" unique_id=1330970012]
+[node name="Value" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Ready/VBox" unique_id=1330970012]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.38, 0.9, 0.64, 1)
 theme_override_font_sizes/font_size = 15
 text = "1"
 horizontal_alignment = 1
 
-[node name="Caption" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Ready/VBox" unique_id=299082609]
+[node name="Caption" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Ready/VBox" unique_id=299082609]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.53, 0.65, 1)
 theme_override_font_sizes/font_size = 8
 text = "ONLINE"
 horizontal_alignment = 1
 
-[node name="Dev" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics" unique_id=969945778]
+[node name="Dev" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics" unique_id=969945778]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleMetric")
 
-[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Dev" unique_id=1061214477]
+[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Dev" unique_id=1061214477]
 layout_mode = 2
 theme_override_constants/separation = 1
 
-[node name="Value" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Dev/VBox" unique_id=1782049203]
+[node name="Value" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Dev/VBox" unique_id=1782049203]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.86, 0.7, 0.38, 1)
 theme_override_font_sizes/font_size = 15
 text = "2"
 horizontal_alignment = 1
 
-[node name="Caption" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroRow/HeroRight/Metrics/Dev/VBox" unique_id=993044595]
+[node name="Caption" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Dev/VBox" unique_id=993044595]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.53, 0.65, 1)
 theme_override_font_sizes/font_size = 8
