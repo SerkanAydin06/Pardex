@@ -3,6 +3,9 @@ extends Control
 const APP_VERSION := "0.1.0"
 const SETTINGS_PATH := "user://pardex.cfg"
 const DEFAULT_SERVER_URL := "wss://pardex-online-production.up.railway.app"
+const DEFAULT_WINDOW_SIZE := Vector2i(1440, 900)
+const MIN_WINDOW_SIZE := Vector2i(1100, 700)
+const WINDOW_STATE_SAVE_INTERVAL := 1.0
 const FRIENDS_SCENE := preload("res://scenes/screens/friends.tscn")
 const ROOMS_SCENE := preload("res://scenes/screens/rooms.tscn")
 const SETTINGS_SCENE := preload("res://scenes/screens/settings.tscn")
@@ -28,6 +31,11 @@ var _nav_selected_style: StyleBox
 var _nav_normal_style: StyleBox
 var _game_launch_in_progress := false
 var _toast_revision := 0
+var _start_fullscreen := false
+var _saved_window_size := DEFAULT_WINDOW_SIZE
+var _saved_window_position := Vector2i(-1, -1)
+var _saved_window_maximized := false
+var _window_state_save_elapsed := 0.0
 
 func _ready() -> void:
     version_label.text = "PARDEX v%s" % APP_VERSION
@@ -36,6 +44,7 @@ func _ready() -> void:
 
     _create_secondary_screens()
     _load_settings()
+    _apply_window_preferences()
     _apply_profile()
     _prepare_game_cards()
     _wire_actions()
@@ -68,7 +77,7 @@ func _wire_actions() -> void:
     %FriendsButton.pressed.connect(_show_friends)
     %RoomsButton.pressed.connect(_show_rooms)
     %SettingsButton.pressed.connect(_show_settings)
-    %ExitButton.pressed.connect(func(): get_tree().quit())
+    %ExitButton.pressed.connect(_quit_application)
 
     var create_room_button := _rooms_content.get_node("Actions/CreateCard/VBox/CreateRoomButton") as Button
     var room_code_edit := _rooms_content.get_node("Actions/JoinCard/VBox/RoomCode") as LineEdit
@@ -86,8 +95,10 @@ func _wire_actions() -> void:
 
     var save_profile_button := _settings_content.get_node("ProfilePanel/VBox/ProfileRow/SaveProfileButton") as Button
     var connect_button := _settings_content.get_node("OnlinePanel/VBox/ServerRow/ConnectButton") as Button
+    var fullscreen_toggle := _settings_content.get_node("DisplayPanel/VBox/FullscreenOnStart") as CheckButton
     save_profile_button.pressed.connect(_save_profile_from_settings)
     connect_button.pressed.connect(_save_online_settings_and_connect)
+    fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
 
 func _wire_online_signals() -> void:
     PardexOnline.connection_state_changed.connect(_update_connection_ui)
@@ -161,6 +172,9 @@ func _show_settings() -> void:
     var server_url_edit := _settings_content.get_node("OnlinePanel/VBox/ServerRow/ServerUrlEdit") as LineEdit
     profile_name_edit.text = _display_name
     server_url_edit.text = _server_url
+    var fullscreen_toggle := _settings_content.get_node("DisplayPanel/VBox/FullscreenOnStart") as CheckButton
+    fullscreen_toggle.set_pressed_no_signal(_start_fullscreen)
+    _refresh_display_settings_ui()
     _show_content(
         _settings_content,
         "Ayarlar",
@@ -203,11 +217,126 @@ func _load_settings() -> void:
     if _server_url.is_empty() or _server_url == "ws://127.0.0.1:8765":
         _server_url = DEFAULT_SERVER_URL
 
-func _save_settings() -> int:
+    _start_fullscreen = bool(config.get_value("display", "start_fullscreen", false))
+    _saved_window_size = Vector2i(
+        maxi(MIN_WINDOW_SIZE.x, int(config.get_value("display", "window_width", DEFAULT_WINDOW_SIZE.x))),
+        maxi(MIN_WINDOW_SIZE.y, int(config.get_value("display", "window_height", DEFAULT_WINDOW_SIZE.y)))
+    )
+    _saved_window_position = Vector2i(
+        int(config.get_value("display", "window_x", -1)),
+        int(config.get_value("display", "window_y", -1))
+    )
+    _saved_window_maximized = bool(config.get_value("display", "maximized", false))
+
+func _save_settings(capture_window := true) -> int:
+    if capture_window:
+        _capture_window_state()
+
     var config := ConfigFile.new()
+    config.load(SETTINGS_PATH)
     config.set_value("profile", "display_name", _display_name)
     config.set_value("online", "server_url", _server_url)
+    config.set_value("display", "start_fullscreen", _start_fullscreen)
+    config.set_value("display", "window_width", _saved_window_size.x)
+    config.set_value("display", "window_height", _saved_window_size.y)
+    config.set_value("display", "window_x", _saved_window_position.x)
+    config.set_value("display", "window_y", _saved_window_position.y)
+    config.set_value("display", "maximized", _saved_window_maximized)
     return config.save(SETTINGS_PATH)
+
+
+func _apply_window_preferences() -> void:
+    get_window().min_size = MIN_WINDOW_SIZE
+    if _start_fullscreen:
+        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+        return
+    _restore_windowed_state()
+
+
+func _restore_windowed_state() -> void:
+    DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
+    var screen := DisplayServer.window_get_current_screen()
+    var usable := DisplayServer.screen_get_usable_rect(screen)
+    var target_size := Vector2i(
+        mini(_saved_window_size.x, usable.size.x),
+        mini(_saved_window_size.y, usable.size.y)
+    )
+    target_size.x = maxi(target_size.x, mini(MIN_WINDOW_SIZE.x, usable.size.x))
+    target_size.y = maxi(target_size.y, mini(MIN_WINDOW_SIZE.y, usable.size.y))
+    DisplayServer.window_set_size(target_size)
+
+    var target_position := _saved_window_position
+    var probe_position := target_position + Vector2i(40, 40)
+    if target_position.x < 0 or target_position.y < 0 or not usable.has_point(probe_position):
+        var offset_x := roundi(float(usable.size.x - target_size.x) / 2.0)
+        var offset_y := roundi(float(usable.size.y - target_size.y) / 2.0)
+        target_position = usable.position + Vector2i(offset_x, offset_y)
+    DisplayServer.window_set_position(target_position)
+
+    if _saved_window_maximized:
+        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
+
+
+func _capture_window_state() -> void:
+    var mode := DisplayServer.window_get_mode()
+    if mode == DisplayServer.WINDOW_MODE_WINDOWED:
+        _saved_window_size = DisplayServer.window_get_size()
+        _saved_window_position = DisplayServer.window_get_position()
+        _saved_window_maximized = false
+    elif mode == DisplayServer.WINDOW_MODE_MAXIMIZED:
+        _saved_window_maximized = true
+
+
+func _window_state_changed() -> bool:
+    var mode := DisplayServer.window_get_mode()
+    if mode == DisplayServer.WINDOW_MODE_WINDOWED:
+        return (
+            _saved_window_maximized
+            or DisplayServer.window_get_size() != _saved_window_size
+            or DisplayServer.window_get_position() != _saved_window_position
+        )
+    if mode == DisplayServer.WINDOW_MODE_MAXIMIZED:
+        return not _saved_window_maximized
+    return false
+
+
+func _on_fullscreen_toggled(enabled: bool) -> void:
+    if enabled == _start_fullscreen:
+        return
+
+    if enabled:
+        _capture_window_state()
+        _start_fullscreen = true
+        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+    else:
+        _start_fullscreen = false
+        _restore_windowed_state()
+
+    _save_settings(false)
+    _refresh_display_settings_ui()
+
+
+func _refresh_display_settings_ui() -> void:
+    if _settings_content == null:
+        return
+
+    var state_label := _settings_content.get_node("DisplayPanel/VBox/State") as Label
+    var mode := DisplayServer.window_get_mode()
+    if mode == DisplayServer.WINDOW_MODE_FULLSCREEN:
+        state_label.text = "●  TAM EKRAN"
+    elif mode == DisplayServer.WINDOW_MODE_MAXIMIZED:
+        state_label.text = "●  BÜYÜTÜLMÜŞ PENCERE"
+    else:
+        var size := DisplayServer.window_get_size()
+        state_label.text = "●  PENCERE MODU • %d × %d" % [size.x, size.y]
+    state_label.add_theme_color_override("font_color", Color(0.38, 0.86, 0.62, 1))
+
+
+func _quit_application() -> void:
+    _capture_window_state()
+    _save_settings(false)
+    get_tree().quit()
 
 func _save_profile_from_settings() -> void:
     var profile_name_edit := _settings_content.get_node("ProfilePanel/VBox/ProfileRow/ProfileNameEdit") as LineEdit
@@ -489,6 +618,21 @@ func _find_korsan_project_path() -> String:
         entry = directory.get_next()
     directory.list_dir_end()
     return ""
+
+func _process(delta: float) -> void:
+    if _start_fullscreen:
+        return
+
+    _window_state_save_elapsed += delta
+    if _window_state_save_elapsed < WINDOW_STATE_SAVE_INTERVAL:
+        return
+    _window_state_save_elapsed = 0.0
+
+    if _window_state_changed():
+        _capture_window_state()
+        _save_settings(false)
+        _refresh_display_settings_ui()
+
 
 func _unhandled_input(event: InputEvent) -> void:
     if event.is_action_pressed("ui_cancel") and _current_content != library_content:
