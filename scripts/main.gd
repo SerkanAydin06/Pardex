@@ -38,6 +38,9 @@ var _saved_window_size := DEFAULT_WINDOW_SIZE
 var _saved_window_position := Vector2i(-1, -1)
 var _saved_window_maximized := false
 var _window_state_save_elapsed := 0.0
+var _game_cards: Array[Control] = []
+var _game_card_hovered: Dictionary = {}
+var _game_card_tweens: Dictionary = {}
 
 func _ready() -> void:
 	version_label.text = "PARDEX v%s" % APP_VERSION
@@ -436,24 +439,51 @@ func _update_connection_ui(state: String) -> void:
 	join_room_button.disabled = not online
 
 func _wire_game_card_hover(card: Control) -> void:
-	card.mouse_entered.connect(func():
-		card.pivot_offset = card.size * 0.5
-		var tween := create_tween()
-		tween.set_parallel(true)
-		tween.set_trans(Tween.TRANS_QUAD)
-		tween.set_ease(Tween.EASE_OUT)
+	if card in _game_cards:
+		return
+	_game_cards.append(card)
+	_game_card_hovered[card] = false
+	card.pivot_offset = card.size * 0.5
+
+
+func _update_game_card_hover_states() -> void:
+	if library_content == null or not library_content.visible:
+		for card in _game_cards:
+			_set_game_card_hover(card, false)
+		return
+
+	var mouse_position := get_viewport().get_mouse_position()
+	for card in _game_cards:
+		if not is_instance_valid(card) or not card.visible:
+			continue
+		var is_inside := card.get_global_rect().has_point(mouse_position)
+		_set_game_card_hover(card, is_inside)
+
+
+func _set_game_card_hover(card: Control, hovered: bool) -> void:
+	if not is_instance_valid(card):
+		return
+	if bool(_game_card_hovered.get(card, false)) == hovered:
+		return
+
+	_game_card_hovered[card] = hovered
+	card.pivot_offset = card.size * 0.5
+
+	var previous_tween: Tween = _game_card_tweens.get(card) as Tween
+	if previous_tween != null and previous_tween.is_valid():
+		previous_tween.kill()
+
+	var tween := create_tween()
+	_game_card_tweens[card] = tween
+	tween.set_parallel(true)
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	if hovered:
 		tween.tween_property(card, "scale", Vector2(1.008, 1.008), 0.12)
 		tween.tween_property(card, "modulate", Color(1.025, 1.025, 1.025, 1), 0.12)
-	)
-	card.mouse_exited.connect(func():
-		card.pivot_offset = card.size * 0.5
-		var tween := create_tween()
-		tween.set_parallel(true)
-		tween.set_trans(Tween.TRANS_QUAD)
-		tween.set_ease(Tween.EASE_OUT)
+	else:
 		tween.tween_property(card, "scale", Vector2.ONE, 0.14)
 		tween.tween_property(card, "modulate", Color.WHITE, 0.14)
-	)
 
 
 func _open_korsan_rooms() -> void:
@@ -695,6 +725,8 @@ func _find_korsan_project_path() -> String:
 	return ""
 
 func _process(delta: float) -> void:
+	_update_game_card_hover_states()
+
 	if _start_fullscreen:
 		return
 
