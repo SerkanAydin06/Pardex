@@ -721,7 +721,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 3
 
-[node name="PageTitle" type="Label" parent="MainMargin/MainVBox/Header/HeaderText" unique_id=787998527]
+[node name="PageTitle" type="Label" parent="MainMargin/MainVBox/Header/HeaderRow/HeaderText" unique_id=787998527]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
