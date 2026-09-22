@@ -42,6 +42,34 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="StyleBoxFlat" id="StyleNavDanger"]
+content_margin_left = 18.0
+content_margin_top = 11.0
+content_margin_right = 14.0
+content_margin_bottom = 11.0
+bg_color = Color(0.12, 0.028, 0.035, 0.55)
+border_width_left = 3
+border_color = Color(0.68, 0.16, 0.20, 0.75)
+corner_radius_top_left = 8
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleNavDangerHover"]
+content_margin_left = 18.0
+content_margin_top = 11.0
+content_margin_right = 14.0
+content_margin_bottom = 11.0
+bg_color = Color(0.24, 0.045, 0.055, 0.88)
+border_width_left = 3
+border_color = Color(1, 0.29, 0.34, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 8
+shadow_color = Color(0.9, 0.08, 0.12, 0.16)
+shadow_size = 7
+
 [sub_resource type="StyleBoxFlat" id="StyleHero"]
 content_margin_left = 30.0
 content_margin_top = 24.0
@@ -542,6 +570,23 @@ theme_override_styles/hover = SubResource("StyleNavHover")
 text = "  Ayarlar"
 alignment = 0
 
+[node name="ExitButton" type="Button" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=2055885732]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.96, 0.40, 0.43, 1)
+theme_override_colors/font_hover_color = Color(1, 0.72, 0.72, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleNavDanger")
+theme_override_styles/hover = SubResource("StyleNavDangerHover")
+theme_override_styles/pressed = SubResource("StyleNavDangerHover")
+text = "↪  Çıkış"
+alignment = 0
+
+
+
+
+
 [node name="SidebarFlex" type="Control" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=1853488818]
 layout_mode = 2
 size_flags_vertical = 3
@@ -579,21 +624,6 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.38, 0.86, 0.62, 1)
 theme_override_font_sizes/font_size = 12
 text = "●  Yerel mod"
-
-
-
-[node name="ExitButton" type="Button" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=2055885732]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(0.88, 0.48, 0.48, 1)
-theme_override_colors/font_hover_color = Color(1, 0.65, 0.65, 1)
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleNav")
-theme_override_styles/hover = SubResource("StyleNavHover")
-text = "↪  Çıkış"
-alignment = 0
 
 
 
