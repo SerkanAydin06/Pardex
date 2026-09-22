@@ -80,6 +80,14 @@ func _wire_actions() -> void:
 	%RoomsButton.pressed.connect(_show_rooms)
 	%SettingsButton.pressed.connect(_show_settings)
 	%ExitButton.pressed.connect(_quit_application)
+	%HeroPlayButton.pressed.connect(_open_korsan_rooms)
+	%HeroFriendsButton.pressed.connect(_show_friends)
+	%HeroRoomsButton.pressed.connect(_show_rooms)
+	%KorsanPlayButton.pressed.connect(_open_korsan_rooms)
+	library_search.text_changed.connect(_filter_library)
+	_wire_game_card_hover(%VexCard)
+	_wire_game_card_hover(%KorsanCard)
+	_wire_game_card_hover(%FirtinaCard)
 
 	var create_room_button := _rooms_content.get_node("Actions/CreateCard/VBox/CreateRoomButton") as Button
 	var room_code_edit := _rooms_content.get_node("Actions/JoinCard/VBox/RoomCode") as LineEdit
@@ -110,51 +118,54 @@ func _wire_online_signals() -> void:
 	PardexOnline.game_start_requested.connect(_on_game_start_requested)
 
 func _prepare_game_cards() -> void:
-	_set_game_card(
+	_configure_game_card(
 		%VexStatus,
 		%VexPath,
 		%VexPlayButton,
 		"GELİŞTİRİLİYOR",
-        "Windows sürümü oyun tamamlanınca hazırlanacak"
+		"Windows sürümü oyun tamamlandığında hazırlanacak.",
+		false
 	)
-	_set_game_card(
+	_configure_game_card(
 		%KorsanStatus,
 		%KorsanPath,
 		%KorsanPlayButton,
-		"PARDEX ONLINE BAĞLI",
-        "Online oda ve dedicated oyun sunucusu hazır"
+		"PARDEX ONLINE HAZIR",
+		"Online oda ve dedicated oyun sunucusu hazır.",
+		true
 	)
-	_set_game_card(
+	_configure_game_card(
 		%FirtinaStatus,
 		%FirtinaPath,
 		%FirtinaPlayButton,
 		"GELİŞTİRİLİYOR",
-        "Windows sürümü oyun tamamlanınca hazırlanacak"
+		"Windows sürümü oyun tamamlandığında hazırlanacak.",
+		false
 	)
 
-func _set_game_card(
+
+func _configure_game_card(
 	status_label: Label,
 	detail_label: Label,
 	action_button: Button,
 	status_text: String,
-	detail_text: String
+	detail_text: String,
+	playable: bool
 ) -> void:
 	status_label.text = status_text
-	var status_color := Color(0.58, 0.64, 0.73, 1)
-	if "ONLINE" in status_text:
-		status_color = Color(0.38, 0.86, 0.62, 1)
-	elif "GELİŞTİRİLİYOR" in status_text:
-		status_color = Color(0.76, 0.64, 0.40, 1)
-	status_label.add_theme_color_override("font_color", status_color)
+	status_label.add_theme_color_override(
+		"font_color",
+		Color(0.38, 0.9, 0.64, 1) if playable else Color(0.74, 0.78, 0.86, 1)
+	)
 	detail_label.text = detail_text
-	action_button.text = "GELİŞTİRİLİYOR"
-	action_button.disabled = true
+	action_button.disabled = not playable
+	action_button.text = "▶  OYNA" if playable else "YAKINDA"
 
 func _show_library() -> void:
 	_show_content(
 		library_content,
 		"Kütüphane",
-		"Tüm oyunların tek merkezde.",
+		"Tüm oyunlarını tek merkezden yönet.",
 		%LibraryButton
 	)
 
@@ -194,6 +205,10 @@ func _show_content(content: Control, title: String, subtitle: String, selected_b
 	_friends_content.hide()
 	_rooms_content.hide()
 	_settings_content.hide()
+
+	library_search.visible = content == library_content
+	if content != library_content:
+		library_search.release_focus()
 
 	content.show()
 	content.modulate.a = 0.0
@@ -404,7 +419,12 @@ func _update_connection_ui(state: String) -> void:
 		text = "●  ÇEVRİMİÇİ"
 		color = Color(0.38, 0.86, 0.62, 1)
 
-	connection_label.text = text
+	var header_text := text
+	if state == "online":
+		header_text = "●  PARDEX ONLINE AKTİF"
+	elif state == "connecting":
+		header_text = "●  PARDEX BAĞLANIYOR"
+	connection_label.text = header_text
 	connection_label.add_theme_color_override("font_color", color)
 	online_state_label.text = text
 	online_state_label.add_theme_color_override("font_color", color)
@@ -533,6 +553,8 @@ func _render_room(room: Dictionary) -> void:
 	var is_host := host_id == PardexOnline.user_id
 	var has_game_server := str(room.get("game_server_url", "")).begins_with("ws")
 	var launching := bool(room.get("launching", false))
+	if not launching:
+		_game_launch_in_progress = false
 
 	ready_button.disabled = launching
 	leave_room_button.disabled = false
