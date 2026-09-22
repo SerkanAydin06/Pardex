@@ -166,7 +166,23 @@ async function main() {
     assert.strictEqual(firstStart.room.launching, true);
     assert.strictEqual(secondStart.room.launching, true);
 
-    console.log("PARDEX Online smoke test passed: create -> join -> voice -> ready -> start");
+    const hostRollbackPromise = waitForMessage(
+      first.ws,
+      (message) => message.type === "room_state"
+        && message.room?.code === roomCode
+        && message.room.launching === false
+        && message.room.members.some((member) => member.user_id === second.userId && member.ready === false)
+    );
+    const joinerRollbackPromise = waitForMessage(
+      second.ws,
+      (message) => message.type === "room_state"
+        && message.room?.code === roomCode
+        && message.room.launching === false
+    );
+    second.ws.send(JSON.stringify({ type: "launch_failed" }));
+    await Promise.all([hostRollbackPromise, joinerRollbackPromise]);
+
+    console.log("PARDEX Online smoke test passed: create -> join -> voice -> ready -> start -> rollback");
   } finally {
     if (first?.ws) first.ws.close();
     if (second?.ws) second.ws.close();
