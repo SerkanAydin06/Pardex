@@ -9,6 +9,13 @@
 [ext_resource type="Texture2D" uid="uid://c8aammb0an7o7" path="res://assets/ui/icon_exit.png" id="12_nav_exit"]
 [ext_resource type="Texture2D" uid="uid://74fojcgks3it" path="res://assets/ui/top_banner.png" id="13_top_banner"]
 [ext_resource type="Texture2D" uid="uid://d3i1b1a4uerot" path="res://assets/ui/left_banner.png" id="14_left_banner"]
+[ext_resource type="Texture2D" path="res://assets/ui/hero_play.png" id="15_hero_play"]
+[ext_resource type="Texture2D" path="res://assets/ui/hero_friends.png" id="16_hero_friends"]
+[ext_resource type="Texture2D" path="res://assets/ui/hero_rooms.png" id="17_hero_rooms"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_search.png" id="18_search"]
+[ext_resource type="Texture2D" path="res://assets/ui/placeholder_vex.png" id="19_vex_placeholder"]
+[ext_resource type="Texture2D" path="res://assets/ui/placeholder_korsan.png" id="20_korsan_placeholder"]
+[ext_resource type="Texture2D" path="res://assets/ui/placeholder_firtina.png" id="21_firtina_placeholder"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.012, 0.021, 0.033, 1)
@@ -311,7 +318,7 @@ content_margin_left = 10.0
 content_margin_top = 5.0
 content_margin_right = 10.0
 content_margin_bottom = 5.0
-bg_color = Color(0.07, 0.09, 0.16, 0.88)
+bg_color = Color(0.025, 0.04, 0.075, 0.94)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
@@ -400,7 +407,7 @@ content_margin_left = 10.0
 content_margin_top = 5.0
 content_margin_right = 10.0
 content_margin_bottom = 5.0
-bg_color = Color(0.035, 0.25, 0.15, 0.92)
+bg_color = Color(0.025, 0.22, 0.13, 0.95)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
@@ -744,8 +751,24 @@ theme_override_colors/font_placeholder_color = Color(0.42, 0.52, 0.64, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleSearch")
 theme_override_styles/focus = SubResource("StyleSearchFocus")
-placeholder_text = "⌕   Oyunlarda ara..."
+placeholder_text = "Oyunlarda ara..."
 clear_button_enabled = true
+[node name="SearchIcon" type="TextureRect" parent="MainMargin/MainVBox/Header/HeaderRow/LibrarySearch"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 13.0
+offset_top = -9.0
+offset_right = 31.0
+offset_bottom = 9.0
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("18_search")
+expand_mode = 1
+stretch_mode = 5
+modulate = Color(0.72, 0.88, 1, 0.94)
+
 
 [node name="ConnectionPill" type="PanelContainer" parent="MainMargin/MainVBox/Header/HeaderRow" unique_id=1336106454]
 custom_minimum_size = Vector2(172, 44)
@@ -805,11 +828,16 @@ theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "PARDEX / GAME HUB"
 
-[node name="HeroTitle" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText" unique_id=1240548734]
+[node name="HeroTitle" type="RichTextLabel" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText" unique_id=1240548734]
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.98, 0.99, 1, 1)
-theme_override_font_sizes/font_size = 30
-text = "Oyun dünyalarının tek kapısı"
+mouse_filter = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+theme_override_colors/default_color = Color(0.98, 0.99, 1, 1)
+theme_override_font_sizes/normal_font_size = 30
+text = "[b]Oyun dünyalarının [color=#55E7FF]tek kapısı[/color][/b]"
 
 [node name="HeroBody" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText" unique_id=1090598853]
 layout_mode = 2
@@ -826,8 +854,11 @@ theme_override_constants/separation = 8
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
+icon = ExtResource("15_hero_play")
+icon_max_width = 18
+expand_icon = true
 theme_override_colors/font_color = Color(0.74, 0.91, 1, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 theme_override_styles/normal = SubResource("StyleHeroAction")
 theme_override_styles/hover = SubResource("StyleHeroActionHover")
 text = "OYNA"
@@ -836,8 +867,11 @@ text = "OYNA"
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
+icon = ExtResource("16_hero_friends")
+icon_max_width = 18
+expand_icon = true
 theme_override_colors/font_color = Color(0.74, 0.91, 1, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 theme_override_styles/normal = SubResource("StyleHeroAction")
 theme_override_styles/hover = SubResource("StyleHeroActionHover")
 text = "ARKADAŞLARINLA BULUŞ"
@@ -846,8 +880,11 @@ text = "ARKADAŞLARINLA BULUŞ"
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
+icon = ExtResource("17_hero_rooms")
+icon_max_width = 18
+expand_icon = true
 theme_override_colors/font_color = Color(0.74, 0.91, 1, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 theme_override_styles/normal = SubResource("StyleHeroAction")
 theme_override_styles/hover = SubResource("StyleHeroActionHover")
 text = "ODALAR OLUŞTUR"
@@ -1001,6 +1038,19 @@ theme_override_styles/panel = SubResource("StyleArtVex")
 
 [node name="ArtContent" type="Control" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox/Art" unique_id=1559673130]
 layout_mode = 2
+[node name="VexPlaceholder" type="TextureRect" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox/Art/ArtContent"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("19_vex_placeholder")
+expand_mode = 1
+stretch_mode = 6
+modulate = Color(1, 1, 1, 0.78)
+
 
 [node name="TopLine" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox/Art/ArtContent" unique_id=465911586]
 layout_mode = 1
@@ -1078,6 +1128,19 @@ theme_override_styles/panel = SubResource("StyleArtKorsan")
 
 [node name="ArtContent" type="Control" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox/Art" unique_id=1685368440]
 layout_mode = 2
+[node name="KorsanPlaceholder" type="TextureRect" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox/Art/ArtContent"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("20_korsan_placeholder")
+expand_mode = 1
+stretch_mode = 6
+modulate = Color(1, 1, 1, 0.78)
+
 
 [node name="TopLine" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox/Art/ArtContent" unique_id=2065368315]
 layout_mode = 1
@@ -1154,6 +1217,19 @@ theme_override_styles/panel = SubResource("StyleArtFirtina")
 
 [node name="ArtContent" type="Control" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox/Art" unique_id=702910863]
 layout_mode = 2
+[node name="FirtinaPlaceholder" type="TextureRect" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox/Art/ArtContent"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("21_firtina_placeholder")
+expand_mode = 1
+stretch_mode = 6
+modulate = Color(1, 1, 1, 0.78)
+
 
 [node name="TopLine" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox/Art/ArtContent" unique_id=1310270351]
 layout_mode = 1
