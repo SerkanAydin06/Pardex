@@ -1,31 +1,88 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=14 format=3]
 
 [sub_resource type="StyleBoxFlat" id="Panel"]
-bg_color = Color(0.037, 0.052, 0.077, 1)
+bg_color = Color(0.016, 0.030, 0.049, 0.97)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.10, 0.16, 0.22, 1)
+border_color = Color(0.075, 0.20, 0.28, 0.96)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
-shadow_color = Color(0, 0, 0, 0.18)
-shadow_size = 7
+shadow_color = Color(0, 0, 0, 0.30)
+shadow_size = 11
 shadow_offset = Vector2(0, 3)
 content_margin_left = 24.0
 content_margin_top = 22.0
 content_margin_right = 24.0
 content_margin_bottom = 22.0
 
+[sub_resource type="StyleBoxFlat" id="IntroPanel"]
+bg_color = Color(0.014, 0.046, 0.069, 0.97)
+border_width_left = 3
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.12, 0.58, 0.76, 0.92)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.34)
+shadow_size = 12
+shadow_offset = Vector2(0, 4)
+content_margin_left = 24.0
+content_margin_top = 18.0
+content_margin_right = 24.0
+content_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxFlat" id="CreateCard"]
+bg_color = Color(0.018, 0.055, 0.084, 0.98)
+border_width_left = 2
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.12, 0.45, 0.63, 0.94)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.24)
+shadow_size = 8
+shadow_offset = Vector2(0, 3)
+content_margin_left = 18.0
+content_margin_top = 15.0
+content_margin_right = 18.0
+content_margin_bottom = 15.0
+
+[sub_resource type="StyleBoxFlat" id="JoinCard"]
+bg_color = Color(0.016, 0.050, 0.060, 0.98)
+border_width_left = 2
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.13, 0.50, 0.48, 0.92)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.24)
+shadow_size = 8
+shadow_offset = Vector2(0, 3)
+content_margin_left = 18.0
+content_margin_top = 15.0
+content_margin_right = 18.0
+content_margin_bottom = 15.0
+
 [sub_resource type="StyleBoxFlat" id="ActionCard"]
-bg_color = Color(0.041, 0.06, 0.086, 1)
+bg_color = Color(0.020, 0.038, 0.058, 0.98)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.11, 0.18, 0.25, 1)
+border_color = Color(0.08, 0.20, 0.28, 0.96)
 corner_radius_top_left = 14
 corner_radius_top_right = 14
 corner_radius_bottom_right = 14
@@ -39,7 +96,7 @@ content_margin_right = 16.0
 content_margin_bottom = 14.0
 
 [sub_resource type="StyleBoxFlat" id="Button"]
-bg_color = Color(0.105, 0.43, 0.72, 1)
+bg_color = Color(0.075, 0.42, 0.68, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
@@ -50,7 +107,7 @@ content_margin_right = 18.0
 content_margin_bottom = 9.0
 
 [sub_resource type="StyleBoxFlat" id="ButtonHover"]
-bg_color = Color(0.14, 0.51, 0.82, 1)
+bg_color = Color(0.10, 0.56, 0.82, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
@@ -77,12 +134,12 @@ content_margin_right = 18.0
 content_margin_bottom = 9.0
 
 [sub_resource type="StyleBoxFlat" id="Input"]
-bg_color = Color(0.022, 0.034, 0.052, 1)
+bg_color = Color(0.010, 0.024, 0.040, 0.96)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.10, 0.16, 0.23, 1)
+border_color = Color(0.08, 0.21, 0.30, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
@@ -93,12 +150,12 @@ content_margin_right = 12.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxFlat" id="InputFocus"]
-bg_color = Color(0.024, 0.041, 0.061, 1)
+bg_color = Color(0.014, 0.035, 0.055, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.24, 0.61, 0.84, 1)
+border_color = Color(0.22, 0.74, 0.93, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
@@ -162,9 +219,9 @@ size_flags_vertical = 3
 theme_override_constants/separation = 12
 
 [node name="Intro" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(0, 112)
+custom_minimum_size = Vector2(0, 122)
 layout_mode = 2
-theme_override_styles/panel = SubResource("Panel")
+theme_override_styles/panel = SubResource("IntroPanel")
 
 [node name="Row" type="HBoxContainer" parent="Intro"]
 layout_mode = 2
@@ -184,24 +241,24 @@ text = "PARDEX ONLINE / ODALAR"
 [node name="Title" type="Label" parent="Intro/Row/Text"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 23
+theme_override_font_sizes/font_size = 25
 text = "Aynı odaya gir, aynı oyuna bağlan."
 
 [node name="Body" type="Label" parent="Intro/Row/Text"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.56, 0.62, 0.72, 1)
+theme_override_colors/font_color = Color(0.63, 0.70, 0.79, 1)
 theme_override_font_sizes/font_size = 13
 text = "Oda kodları, hazır durumları ve oyun başlatma PARDEX Online üzerinden senkronize edilir."
 
 [node name="Actions" type="HBoxContainer" parent="."]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 154)
+custom_minimum_size = Vector2(0, 164)
 theme_override_constants/separation = 14
 
 [node name="CreateCard" type="PanelContainer" parent="Actions"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("ActionCard")
+theme_override_styles/panel = SubResource("CreateCard")
 
 [node name="VBox" type="VBoxContainer" parent="Actions/CreateCard"]
 layout_mode = 2
@@ -210,8 +267,8 @@ theme_override_constants/separation = 5
 [node name="Icon" type="Label" parent="Actions/CreateCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.43, 0.79, 1, 1)
-theme_override_font_sizes/font_size = 24
-text = "+"
+theme_override_font_sizes/font_size = 26
+text = "＋"
 
 [node name="Title" type="Label" parent="Actions/CreateCard/VBox"]
 layout_mode = 2
@@ -246,7 +303,7 @@ text = "ODA OLUŞTUR"
 [node name="JoinCard" type="PanelContainer" parent="Actions"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("ActionCard")
+theme_override_styles/panel = SubResource("JoinCard")
 
 [node name="VBox" type="VBoxContainer" parent="Actions/JoinCard"]
 layout_mode = 2
@@ -255,8 +312,8 @@ theme_override_constants/separation = 7
 [node name="Icon" type="Label" parent="Actions/JoinCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
-theme_override_font_sizes/font_size = 23
-text = "#"
+theme_override_font_sizes/font_size = 24
+text = "⌁"
 
 [node name="Title" type="Label" parent="Actions/JoinCard/VBox"]
 layout_mode = 2
@@ -300,7 +357,7 @@ theme_override_colors/font_disabled_color = Color(0.39, 0.45, 0.54, 1)
 text = "KATIL"
 
 [node name="CurrentRoom" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(0, 320)
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("Panel")
@@ -316,14 +373,14 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.82, 0.87, 0.94, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
 text = "MEVCUT ODA"
 
 [node name="CurrentRoomCode" type="Label" parent="CurrentRoom/VBox/Header"]
 custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 22
 text = "—"
 horizontal_alignment = 2
 
@@ -355,7 +412,7 @@ theme_override_constants/separation = 8
 [node name="Empty" type="Label" parent="CurrentRoom/VBox/MembersVBox"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_colors/font_color = Color(0.44, 0.5, 0.59, 1)
+theme_override_colors/font_color = Color(0.50, 0.58, 0.68, 1)
 theme_override_font_sizes/font_size = 14
 text = "Oda oluşturduğunda veya bir odaya katıldığında oyuncular burada görünecek."
 horizontal_alignment = 1
