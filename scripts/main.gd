@@ -27,6 +27,7 @@ var _server_url := DEFAULT_SERVER_URL
 var _nav_selected_style: StyleBox
 var _nav_normal_style: StyleBox
 var _game_launch_in_progress := false
+var _toast_revision := 0
 
 func _ready() -> void:
     version_label.text = "PARDEX v%s" % APP_VERSION
@@ -75,8 +76,6 @@ func _wire_actions() -> void:
     var ready_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/ReadyButton") as Button
     var start_game_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/StartGameButton") as Button
     var leave_room_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/LeaveRoomButton") as Button
-    var mic_button := _rooms_content.get_node("CurrentRoom/VBox/VoiceBar/MicButton") as Button
-    var deafen_button := _rooms_content.get_node("CurrentRoom/VBox/VoiceBar/DeafenButton") as Button
 
     create_room_button.pressed.connect(func(): PardexOnline.create_room("korsanlar", 4))
     join_room_button.pressed.connect(func(): PardexOnline.join_room(room_code_edit.text))
@@ -84,8 +83,6 @@ func _wire_actions() -> void:
     ready_button.pressed.connect(_toggle_ready)
     start_game_button.pressed.connect(PardexOnline.request_start_game)
     leave_room_button.pressed.connect(PardexOnline.leave_room)
-    mic_button.pressed.connect(PardexVoice.toggle_microphone)
-    deafen_button.pressed.connect(PardexVoice.toggle_output_muted)
 
     var save_profile_button := _settings_content.get_node("ProfilePanel/VBox/ProfileRow/SaveProfileButton") as Button
     var connect_button := _settings_content.get_node("OnlinePanel/VBox/ServerRow/ConnectButton") as Button
@@ -98,9 +95,6 @@ func _wire_online_signals() -> void:
     PardexOnline.room_left.connect(_render_empty_room)
     PardexOnline.online_error.connect(_show_toast)
     PardexOnline.game_start_requested.connect(_on_game_start_requested)
-    PardexVoice.voice_activity_changed.connect(_on_voice_activity_changed)
-    PardexVoice.voice_settings_changed.connect(_on_voice_settings_changed)
-    PardexVoice.voice_channel_state_changed.connect(_on_voice_channel_state_changed)
 
 func _prepare_game_cards() -> void:
     _set_game_card(
@@ -307,9 +301,6 @@ func _render_room(room: Dictionary) -> void:
     var ready_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/ReadyButton") as Button
     var start_game_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/StartGameButton") as Button
     var leave_room_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/LeaveRoomButton") as Button
-    var voice_status := _rooms_content.get_node("CurrentRoom/VBox/VoiceBar/VoiceStatus") as Label
-    var mic_button := _rooms_content.get_node("CurrentRoom/VBox/VoiceBar/MicButton") as Button
-    var deafen_button := _rooms_content.get_node("CurrentRoom/VBox/VoiceBar/DeafenButton") as Button
 
     room_code_label.text = str(room.get("code", "—"))
     var members: Array = room.get("members", [])
@@ -342,16 +333,6 @@ func _render_room(room: Dictionary) -> void:
         name_label.add_theme_color_override("font_color", Color(0.88, 0.92, 0.98, 1))
         row.add_child(name_label)
 
-        row.set_meta("pardex_user_id", member_id)
-
-        var voice_label := Label.new()
-        voice_label.custom_minimum_size = Vector2(118, 0)
-        voice_label.text = _voice_member_status(member)
-        voice_label.add_theme_font_size_override("font_size", 12)
-        voice_label.add_theme_color_override("font_color", _voice_member_color(member))
-        voice_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-        row.add_child(voice_label)
-
         var state_label := Label.new()
         state_label.custom_minimum_size = Vector2(82, 0)
         state_label.text = "HAZIR" if member_ready else "BEKLİYOR"
@@ -374,15 +355,6 @@ func _render_room(room: Dictionary) -> void:
     ready_button.disabled = launching
     leave_room_button.disabled = false
     ready_button.text = "HAZIRLIĞI KALDIR" if self_is_ready else "HAZIR"
-
-    voice_status.text = "🎙  SES KANALI • BAĞLI" if PardexVoice.is_channel_active() else "🎙  SES KANALI • BAĞLANIYOR"
-    voice_status.add_theme_color_override(
-        "font_color",
-        Color(0.38, 0.86, 0.62, 1) if PardexVoice.is_channel_active() else Color(0.9, 0.7, 0.32, 1)
-    )
-    mic_button.disabled = false
-    deafen_button.disabled = false
-    _refresh_voice_controls()
 
     start_game_button.visible = is_host
     start_game_button.disabled = not (is_host and all_ready and has_game_server and not launching)
@@ -421,9 +393,6 @@ func _render_empty_room() -> void:
     var ready_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/ReadyButton") as Button
     var start_game_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/StartGameButton") as Button
     var leave_room_button := _rooms_content.get_node("CurrentRoom/VBox/RoomActions/LeaveRoomButton") as Button
-    var voice_status := _rooms_content.get_node("CurrentRoom/VBox/VoiceBar/VoiceStatus") as Label
-    var mic_button := _rooms_content.get_node("CurrentRoom/VBox/VoiceBar/MicButton") as Button
-    var deafen_button := _rooms_content.get_node("CurrentRoom/VBox/VoiceBar/DeafenButton") as Button
 
     room_code_label.text = "—"
     room_summary.text = "Henüz bir odada değilsin."
@@ -446,93 +415,7 @@ func _render_empty_room() -> void:
     start_game_button.visible = false
     start_game_button.disabled = true
     leave_room_button.disabled = true
-    voice_status.text = "🎙  SES KANALI • ODA BEKLENİYOR"
-    voice_status.add_theme_color_override("font_color", Color(0.44, 0.5, 0.59, 1))
-    mic_button.disabled = true
-    deafen_button.disabled = true
-    _refresh_voice_controls()
     _game_launch_in_progress = false
-
-
-func _voice_member_status(member: Dictionary) -> String:
-    var member_id := str(member.get("user_id", ""))
-    var is_muted := bool(member.get("voice_muted", false))
-    if member_id == PardexOnline.user_id:
-        is_muted = PardexVoice.microphone_muted
-    if is_muted:
-        return "MIC KAPALI"
-    if PardexVoice.is_user_speaking(member_id):
-        return "KONUŞUYOR"
-    return "SES AÇIK"
-
-
-func _voice_member_color(member: Dictionary) -> Color:
-    var member_id := str(member.get("user_id", ""))
-    var is_muted := bool(member.get("voice_muted", false))
-    if member_id == PardexOnline.user_id:
-        is_muted = PardexVoice.microphone_muted
-    if is_muted:
-        return Color(0.58, 0.63, 0.72, 1)
-    if PardexVoice.is_user_speaking(member_id):
-        return Color(0.38, 0.86, 0.62, 1)
-    return Color(0.46, 0.9, 0.86, 1)
-
-
-func _refresh_voice_controls() -> void:
-    if _rooms_content == null:
-        return
-    var mic_button := _rooms_content.get_node("CurrentRoom/VBox/VoiceBar/MicButton") as Button
-    var deafen_button := _rooms_content.get_node("CurrentRoom/VBox/VoiceBar/DeafenButton") as Button
-    mic_button.text = "MİKROFONU AÇ" if PardexVoice.microphone_muted else "MİKROFONU KAPAT"
-    deafen_button.text = "SESLERİ AÇ" if PardexVoice.output_muted else "SESLERİ KAPAT"
-
-
-func _refresh_voice_member_rows() -> void:
-    if _rooms_content == null:
-        return
-    var members_box := _rooms_content.get_node("CurrentRoom/VBox/MembersVBox") as VBoxContainer
-    var members: Array = PardexOnline.current_room.get("members", [])
-    var members_by_id: Dictionary = {}
-    for member_data in members:
-        if typeof(member_data) == TYPE_DICTIONARY:
-            var member: Dictionary = member_data
-            members_by_id[str(member.get("user_id", ""))] = member
-
-    for row_node in members_box.get_children():
-        if not row_node.has_meta("pardex_user_id"):
-            continue
-        var user_id := str(row_node.get_meta("pardex_user_id"))
-        if not members_by_id.has(user_id):
-            continue
-        var row := row_node as HBoxContainer
-        if row == null or row.get_child_count() < 3:
-            continue
-        var voice_label := row.get_child(row.get_child_count() - 2) as Label
-        if voice_label == null:
-            continue
-        var member: Dictionary = members_by_id[user_id]
-        voice_label.text = _voice_member_status(member)
-        voice_label.add_theme_color_override("font_color", _voice_member_color(member))
-
-
-func _on_voice_activity_changed(_user_id: String, _speaking: bool) -> void:
-    _refresh_voice_member_rows()
-
-
-func _on_voice_settings_changed(_microphone_muted: bool, _output_muted: bool) -> void:
-    _refresh_voice_controls()
-    _refresh_voice_member_rows()
-
-
-func _on_voice_channel_state_changed(active: bool) -> void:
-    if _rooms_content == null or PardexOnline.current_room.is_empty():
-        return
-    var voice_status := _rooms_content.get_node("CurrentRoom/VBox/VoiceBar/VoiceStatus") as Label
-    voice_status.text = "🎙  SES KANALI • BAĞLI" if active else "🎙  SES KANALI • BAĞLANTI YOK"
-    voice_status.add_theme_color_override(
-        "font_color",
-        Color(0.38, 0.86, 0.62, 1) if active else Color(0.9, 0.42, 0.42, 1)
-    )
 
 
 func _on_game_start_requested(payload: Dictionary) -> void:
@@ -550,14 +433,12 @@ func _on_game_start_requested(payload: Dictionary) -> void:
 
 func _launch_korsan_development_project() -> void:
     if not OS.has_feature("editor"):
-        _game_launch_in_progress = false
-        _show_toast("Oyun oturumu hazır. Windows oyun paketi tamamlandığında PARDEX buradan açacak.")
+        _handle_game_launch_failure("Windows oyun paketi henüz hazır değil.")
         return
 
     var project_path := _find_korsan_project_path()
     if project_path.is_empty():
-        _game_launch_in_progress = false
-        _show_toast("Oturum hazır; Korsanların Hazinesi geliştirme projesi PARDEX'in yan klasöründe bulunamadı.")
+        _handle_game_launch_failure("Korsanların Hazinesi geliştirme projesi PARDEX'in yan klasöründe bulunamadı.")
         return
 
     var launch_args := PackedStringArray(["--path", project_path, "--"])
@@ -566,11 +447,17 @@ func _launch_korsan_development_project() -> void:
 
     var pid := OS.create_process(OS.get_executable_path(), launch_args)
     if pid <= 0:
-        _game_launch_in_progress = false
-        _show_toast("Korsanların Hazinesi başlatılamadı.")
+        _handle_game_launch_failure("Korsanların Hazinesi başlatılamadı.")
         return
 
     _show_toast("Korsanların Hazinesi PARDEX oturumuyla başlatıldı.")
+
+
+func _handle_game_launch_failure(message: String) -> void:
+    _game_launch_in_progress = false
+    PardexOnline.report_game_launch_failed()
+    _show_toast(message)
+
 
 func _find_korsan_project_path() -> String:
     var override_path := OS.get_environment("PARDEX_KORSAN_PROJECT").strip_edges()
@@ -609,10 +496,12 @@ func _unhandled_input(event: InputEvent) -> void:
         get_viewport().set_input_as_handled()
 
 func _show_toast(message: String) -> void:
+    _toast_revision += 1
+    var revision := _toast_revision
     toast_label.text = message
     toast_panel.show()
     var timer := get_tree().create_timer(2.6)
     timer.timeout.connect(func():
-        if is_instance_valid(toast_panel):
+        if revision == _toast_revision and is_instance_valid(toast_panel):
             toast_panel.hide()
     )
