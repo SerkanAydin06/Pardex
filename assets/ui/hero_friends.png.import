@@ -2,7 +2,7 @@
 
 importer="texture"
 type="CompressedTexture2D"
-path="res://.godot/imported/hero_friends.png-d685902234320c8bba445b729e807d36.ctex"
+path="res://.godot/imported/hero_friends.png-80e2bdc2f635046b91c13c1675eed672.ctex"
 metadata={
 "vram_texture": false
 }
@@ -10,7 +10,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/hero_friends.png"
-dest_files=["res://.godot/imported/hero_friends.png-d685902234320c8bba445b729e807d36.ctex"]
+dest_files=["res://.godot/imported/hero_friends.png-80e2bdc2f635046b91c13c1675eed672.ctex"]
 
 [params]
 

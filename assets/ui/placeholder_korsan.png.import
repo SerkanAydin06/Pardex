@@ -2,7 +2,7 @@
 
 importer="texture"
 type="CompressedTexture2D"
-path="res://.godot/imported/placeholder_korsan.png-30f01c01325927d388891f32a74a4e98.ctex"
+path="res://.godot/imported/placeholder_korsan.png-8209818fc9be9e977f65dc57cf1cd3b8.ctex"
 metadata={
 "vram_texture": false
 }
@@ -10,7 +10,7 @@ metadata={
 [deps]
 
 source_file="res://assets/ui/placeholder_korsan.png"
-dest_files=["res://.godot/imported/placeholder_korsan.png-30f01c01325927d388891f32a74a4e98.ctex"]
+dest_files=["res://.godot/imported/placeholder_korsan.png-8209818fc9be9e977f65dc57cf1cd3b8.ctex"]
 
 [params]
 
