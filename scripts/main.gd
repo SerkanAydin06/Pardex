@@ -138,7 +138,12 @@ func _set_game_card(
 	detail_text: String
 ) -> void:
 	status_label.text = status_text
-	status_label.add_theme_color_override("font_color", Color(0.9, 0.7, 0.32, 1))
+	var status_color := Color(0.58, 0.64, 0.73, 1)
+	if "ONLINE" in status_text:
+		status_color = Color(0.38, 0.86, 0.62, 1)
+	elif "GELİŞTİRİLİYOR" in status_text:
+		status_color = Color(0.76, 0.64, 0.40, 1)
+	status_label.add_theme_color_override("font_color", status_color)
 	detail_label.text = detail_text
 	action_button.text = "GELİŞTİRİLİYOR"
 	action_button.disabled = true
@@ -189,10 +194,15 @@ func _show_content(content: Control, title: String, subtitle: String, selected_b
 	_settings_content.hide()
 
 	content.show()
+	content.modulate.a = 0.0
 	_current_content = content
 	page_title.text = title
 	page_subtitle.text = subtitle
 	_set_selected_navigation(selected_button)
+	var transition := create_tween()
+	transition.set_trans(Tween.TRANS_QUAD)
+	transition.set_ease(Tween.EASE_OUT)
+	transition.tween_property(content, "modulate:a", 1.0, 0.14)
 
 func _set_selected_navigation(selected_button: Button) -> void:
 	var buttons := [%LibraryButton, %FriendsButton, %RoomsButton, %SettingsButton]
