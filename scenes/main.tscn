@@ -762,7 +762,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 18
 
 [node name="Hero" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent" unique_id=1358431032]
-custom_minimum_size = Vector2(0, 214)
+custom_minimum_size = Vector2(0, 280)
 layout_mode = 2
 clip_contents = true
 theme_override_styles/panel = SubResource("StyleHero")
@@ -857,7 +857,7 @@ columns = 3
 
 [node name="VexCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=1790321724]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 424)
+custom_minimum_size = Vector2(0, 390)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleCard")
@@ -867,7 +867,7 @@ layout_mode = 2
 theme_override_constants/separation = 9
 
 [node name="Art" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox"]
-custom_minimum_size = Vector2(0, 222)
+custom_minimum_size = Vector2(0, 205)
 layout_mode = 2
 clip_contents = true
 theme_override_styles/panel = SubResource("StyleGameArtVex")
@@ -935,7 +935,7 @@ text = "BAĞLA"
 
 [node name="KorsanCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=984548125]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 424)
+custom_minimum_size = Vector2(0, 390)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleCardOnline")
@@ -945,7 +945,7 @@ layout_mode = 2
 theme_override_constants/separation = 9
 
 [node name="Art" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox"]
-custom_minimum_size = Vector2(0, 222)
+custom_minimum_size = Vector2(0, 205)
 layout_mode = 2
 clip_contents = true
 theme_override_styles/panel = SubResource("StyleGameArtKorsan")
@@ -1012,7 +1012,7 @@ text = "▶  OYNA"
 
 [node name="FirtinaCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=765973551]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 424)
+custom_minimum_size = Vector2(0, 390)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleCard")
@@ -1022,7 +1022,7 @@ layout_mode = 2
 theme_override_constants/separation = 9
 
 [node name="Art" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox"]
-custom_minimum_size = Vector2(0, 222)
+custom_minimum_size = Vector2(0, 205)
 layout_mode = 2
 clip_contents = true
 theme_override_styles/panel = SubResource("StyleGameArtFirtina")
