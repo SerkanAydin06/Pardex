@@ -154,7 +154,10 @@ function createRoom(client, message) {
   leaveCurrentRoom(client.userId, false);
 
   const code = roomCode();
-  const maxPlayers = Math.max(2, Math.min(MAX_ROOM_SIZE, Number(message.max_players || 4)));
+  const requestedMaxPlayers = Number(message.max_players);
+  const maxPlayers = Number.isFinite(requestedMaxPlayers)
+    ? Math.max(2, Math.min(MAX_ROOM_SIZE, Math.floor(requestedMaxPlayers)))
+    : 4;
   const gameId = String(message.game_id || "korsanlar").slice(0, 32);
   const room = {
     code,
@@ -217,6 +220,19 @@ function startRoomGame(client) {
     const memberClient = clients.get(member.userId);
     if (memberClient) send(memberClient.ws, payload);
   }
+}
+
+function reportGameLaunchFailed(client) {
+  if (!client.roomCode) return;
+  const room = rooms.get(client.roomCode);
+  if (!room || !room.launching) return;
+
+  const member = room.members.find((item) => item.userId === client.userId);
+  if (!member) return;
+
+  room.launching = false;
+  member.ready = false;
+  broadcastRoom(room);
 }
 
 function allowVoiceFrame(client) {
@@ -339,6 +355,9 @@ function handleMessage(client, raw) {
     }
     case "start_game":
       startRoomGame(client);
+      break;
+    case "launch_failed":
+      reportGameLaunchFailed(client);
       break;
     case "voice_state":
       setVoiceState(client, message.muted);
