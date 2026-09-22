@@ -1,18 +1,75 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=10 format=3]
 
 [sub_resource type="StyleBoxFlat" id="Panel"]
-bg_color = Color(0.037, 0.052, 0.077, 1)
+bg_color = Color(0.016, 0.030, 0.049, 0.97)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.10, 0.16, 0.22, 1)
+border_color = Color(0.075, 0.20, 0.28, 0.96)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
-shadow_color = Color(0, 0, 0, 0.18)
-shadow_size = 7
+shadow_color = Color(0, 0, 0, 0.30)
+shadow_size = 11
+shadow_offset = Vector2(0, 3)
+content_margin_left = 26.0
+content_margin_top = 22.0
+content_margin_right = 26.0
+content_margin_bottom = 22.0
+
+[sub_resource type="StyleBoxFlat" id="ProfilePanel"]
+bg_color = Color(0.016, 0.046, 0.066, 0.98)
+border_width_left = 3
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.12, 0.52, 0.68, 0.92)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.28)
+shadow_size = 10
+shadow_offset = Vector2(0, 3)
+content_margin_left = 26.0
+content_margin_top = 22.0
+content_margin_right = 26.0
+content_margin_bottom = 22.0
+
+[sub_resource type="StyleBoxFlat" id="OnlinePanel"]
+bg_color = Color(0.014, 0.040, 0.050, 0.98)
+border_width_left = 3
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.12, 0.48, 0.44, 0.92)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.28)
+shadow_size = 10
+shadow_offset = Vector2(0, 3)
+content_margin_left = 26.0
+content_margin_top = 22.0
+content_margin_right = 26.0
+content_margin_bottom = 22.0
+
+[sub_resource type="StyleBoxFlat" id="DisplayPanel"]
+bg_color = Color(0.025, 0.033, 0.054, 0.98)
+border_width_left = 3
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.28, 0.34, 0.56, 0.90)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.28)
+shadow_size = 10
 shadow_offset = Vector2(0, 3)
 content_margin_left = 26.0
 content_margin_top = 22.0
@@ -20,12 +77,12 @@ content_margin_right = 26.0
 content_margin_bottom = 22.0
 
 [sub_resource type="StyleBoxFlat" id="Input"]
-bg_color = Color(0.022, 0.034, 0.052, 1)
+bg_color = Color(0.010, 0.024, 0.040, 0.96)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.10, 0.16, 0.23, 1)
+border_color = Color(0.08, 0.21, 0.30, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
@@ -36,12 +93,12 @@ content_margin_right = 14.0
 content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxFlat" id="InputFocus"]
-bg_color = Color(0.024, 0.041, 0.061, 1)
+bg_color = Color(0.014, 0.035, 0.055, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.24, 0.61, 0.84, 1)
+border_color = Color(0.22, 0.74, 0.93, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
@@ -52,7 +109,7 @@ content_margin_right = 14.0
 content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxFlat" id="Button"]
-bg_color = Color(0.105, 0.43, 0.72, 1)
+bg_color = Color(0.075, 0.42, 0.68, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
@@ -63,7 +120,7 @@ content_margin_right = 18.0
 content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxFlat" id="ButtonHover"]
-bg_color = Color(0.14, 0.51, 0.82, 1)
+bg_color = Color(0.10, 0.56, 0.82, 1)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
@@ -76,11 +133,11 @@ content_margin_bottom = 10.0
 [node name="SettingsContent" type="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 14
+theme_override_constants/separation = 12
 
 [node name="ProfilePanel" type="PanelContainer" parent="."]
 layout_mode = 2
-theme_override_styles/panel = SubResource("Panel")
+theme_override_styles/panel = SubResource("ProfilePanel")
 
 [node name="VBox" type="VBoxContainer" parent="ProfilePanel"]
 layout_mode = 2
@@ -90,11 +147,11 @@ theme_override_constants/separation = 10
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
-text = "PROFİL"
+text = "●  PROFİL"
 
 [node name="Description" type="Label" parent="ProfilePanel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
 theme_override_font_sizes/font_size = 14
 text = "Arkadaşların ve oyun odalarında görünecek PARDEX adını belirle."
 
@@ -115,7 +172,7 @@ max_length = 24
 
 [node name="SaveProfileButton" type="Button" parent="ProfilePanel/VBox/ProfileRow"]
 layout_mode = 2
-custom_minimum_size = Vector2(150, 44)
+custom_minimum_size = Vector2(156, 44)
 focus_mode = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 14
@@ -127,7 +184,7 @@ text = "KAYDET"
 [node name="OnlinePanel" type="PanelContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("Panel")
+theme_override_styles/panel = SubResource("OnlinePanel")
 
 [node name="VBox" type="VBoxContainer" parent="OnlinePanel"]
 layout_mode = 2
@@ -137,11 +194,11 @@ theme_override_constants/separation = 10
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
-text = "PARDEX ONLINE"
+text = "●  PARDEX ONLINE"
 
 [node name="Description" type="Label" parent="OnlinePanel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
 theme_override_font_sizes/font_size = 14
 text = "Geliştirme aşamasında bağlanılacak WebSocket sunucusunu burada belirleyebilirsin. Yayın sürümünde bu adres otomatik olacak."
 autowrap_mode = 2
@@ -162,7 +219,7 @@ placeholder_text = "wss://pardex-online-production.up.railway.app"
 
 [node name="ConnectButton" type="Button" parent="OnlinePanel/VBox/ServerRow"]
 layout_mode = 2
-custom_minimum_size = Vector2(170, 44)
+custom_minimum_size = Vector2(176, 44)
 focus_mode = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 14
@@ -179,7 +236,7 @@ text = "●  ÇEVRİMDIŞI"
 
 [node name="DisplayPanel" type="PanelContainer" parent="."]
 layout_mode = 2
-theme_override_styles/panel = SubResource("Panel")
+theme_override_styles/panel = SubResource("DisplayPanel")
 
 [node name="VBox" type="VBoxContainer" parent="DisplayPanel"]
 layout_mode = 2
@@ -189,17 +246,17 @@ theme_override_constants/separation = 8
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
-text = "GÖRÜNTÜ"
+text = "●  GÖRÜNTÜ"
 
 [node name="Title" type="Label" parent="DisplayPanel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 20
 text = "Masaüstü Pencere Modu"
 
 [node name="Description" type="Label" parent="DisplayPanel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
 theme_override_font_sizes/font_size = 14
 text = "PARDEX varsayılan olarak yeniden boyutlandırılabilir 1440 × 900 pencere halinde açılır. Son pencere boyutu ve konumu hatırlanır."
 autowrap_mode = 2
