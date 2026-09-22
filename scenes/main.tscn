@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/icon_friends.svg" id="9_nav_friends"]
 [ext_resource type="Texture2D" path="res://assets/ui/icon_rooms.svg" id="10_nav_rooms"]
 [ext_resource type="Texture2D" path="res://assets/ui/icon_settings.svg" id="11_nav_settings"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_exit.png" id="12_nav_exit"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.012, 0.021, 0.033, 1)
@@ -574,13 +575,16 @@ alignment = 0
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
+icon = ExtResource("12_nav_exit")
+icon_max_width = 24
+expand_icon = true
 theme_override_colors/font_color = Color(0.96, 0.40, 0.43, 1)
 theme_override_colors/font_hover_color = Color(1, 0.72, 0.72, 1)
 theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("StyleNavDanger")
 theme_override_styles/hover = SubResource("StyleNavDangerHover")
 theme_override_styles/pressed = SubResource("StyleNavDangerHover")
-text = "↪  Çıkış"
+text = "  Çıkış"
 alignment = 0
 
 
