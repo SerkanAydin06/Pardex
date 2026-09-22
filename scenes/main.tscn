@@ -563,11 +563,75 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
 
-[node name="BrandTitle" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text" unique_id=1853722687]
+[node name="BrandTitle" type="HBoxContainer" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text" unique_id=1853722687]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="BrandP" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.08, 0.72, 1, 0)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/shadow_outline_size = 4
 theme_override_font_sizes/font_size = 26
-text = "P A R D E X"
+text = "P"
+
+[node name="BrandA" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.08, 0.72, 1, 0)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/shadow_outline_size = 4
+theme_override_font_sizes/font_size = 26
+text = "A"
+
+[node name="BrandR" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.08, 0.72, 1, 0)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/shadow_outline_size = 4
+theme_override_font_sizes/font_size = 26
+text = "R"
+
+[node name="BrandD" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.08, 0.72, 1, 0)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/shadow_outline_size = 4
+theme_override_font_sizes/font_size = 26
+text = "D"
+
+[node name="BrandE" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.08, 0.72, 1, 0)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/shadow_outline_size = 4
+theme_override_font_sizes/font_size = 26
+text = "E"
+
+[node name="BrandX" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.08, 0.72, 1, 0)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/shadow_outline_size = 4
+theme_override_font_sizes/font_size = 26
+text = "X"
 
 [node name="BrandCaption" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text" unique_id=1141097461]
 layout_mode = 2
