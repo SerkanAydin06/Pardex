@@ -14,7 +14,7 @@
 bg_color = Color(0.012, 0.021, 0.033, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleSidebar"]
-bg_color = Color(0.021, 0.033, 0.05, 1)
+bg_color = Color(0.006, 0.014, 0.025, 0.18)
 border_width_right = 1
 border_color = Color(0.08, 0.16, 0.23, 1)
 shadow_color = Color(0, 0, 0, 0.32)
@@ -431,6 +431,19 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleSidebar")
 
+[node name="SidebarBackground" type="TextureRect" parent="Sidebar"]
+texture_filter = 4
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("14_left_banner")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="SidebarBackgroundShade" type="ColorRect" parent="Sidebar"]
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.004, 0.012, 0.024, 0.34)
+
 [node name="SidebarMargin" type="MarginContainer" parent="Sidebar" unique_id=1391221250]
 layout_mode = 2
 theme_override_constants/margin_left = 22
@@ -548,32 +561,11 @@ alignment = 0
 expand_icon = true
 
 [node name="SidebarFlex" type="Control" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=1853488818]
-clip_contents = true
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="LeftBanner" type="TextureRect" parent="Sidebar/SidebarMargin/SidebarVBox/SidebarFlex"]
-texture_filter = 4
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("14_left_banner")
-expand_mode = 1
-stretch_mode = 6
 
-[node name="LeftBannerShade" type="ColorRect" parent="Sidebar/SidebarMargin/SidebarVBox/SidebarFlex"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.005, 0.015, 0.028, 0.18)
+
 
 
 [node name="ProfilePanel" type="PanelContainer" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=1533586574]
