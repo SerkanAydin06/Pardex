@@ -436,47 +436,47 @@ func _update_connection_ui(state: String) -> void:
 	join_room_button.disabled = not online
 
 func _wire_game_card_hover(card: Control) -> void:
-    card.mouse_entered.connect(func():
-        card.pivot_offset = card.size * 0.5
-        var tween := create_tween()
-        tween.set_parallel(true)
-        tween.set_trans(Tween.TRANS_QUAD)
-        tween.set_ease(Tween.EASE_OUT)
-        tween.tween_property(card, "scale", Vector2(1.012, 1.012), 0.12)
-        tween.tween_property(card, "modulate", Color(1.04, 1.04, 1.04, 1), 0.12)
-    )
-    card.mouse_exited.connect(func():
-        card.pivot_offset = card.size * 0.5
-        var tween := create_tween()
-        tween.set_parallel(true)
-        tween.set_trans(Tween.TRANS_QUAD)
-        tween.set_ease(Tween.EASE_OUT)
-        tween.tween_property(card, "scale", Vector2.ONE, 0.14)
-        tween.tween_property(card, "modulate", Color.WHITE, 0.14)
-    )
+	card.mouse_entered.connect(func():
+		card.pivot_offset = card.size * 0.5
+		var tween := create_tween()
+		tween.set_parallel(true)
+		tween.set_trans(Tween.TRANS_QUAD)
+		tween.set_ease(Tween.EASE_OUT)
+		tween.tween_property(card, "scale", Vector2(1.008, 1.008), 0.12)
+		tween.tween_property(card, "modulate", Color(1.025, 1.025, 1.025, 1), 0.12)
+	)
+	card.mouse_exited.connect(func():
+		card.pivot_offset = card.size * 0.5
+		var tween := create_tween()
+		tween.set_parallel(true)
+		tween.set_trans(Tween.TRANS_QUAD)
+		tween.set_ease(Tween.EASE_OUT)
+		tween.tween_property(card, "scale", Vector2.ONE, 0.14)
+		tween.tween_property(card, "modulate", Color.WHITE, 0.14)
+	)
 
 
 func _open_korsan_rooms() -> void:
-    _show_rooms()
-    _show_toast("Korsanların Hazinesi için oda oluştur veya bir odaya katıl.")
+	_show_rooms()
+	_show_toast("Korsanların Hazinesi için oda oluştur veya bir odaya katıl.")
 
 
 func _filter_library(query: String) -> void:
-    var normalized := query.strip_edges().to_lower()
-    var cards := [
-        [%VexCard, "vex aksiyon"],
-        [%KorsanCard, "korsanların hazinesi korsan masa oyunu"],
-        [%FirtinaCard, "fırtına vadisi macera"],
-    ]
-    var visible_count := 0
-    for card_data in cards:
-        var card := card_data[0] as Control
-        var keywords := str(card_data[1])
-        var matches := normalized.is_empty() or normalized in keywords
-        card.visible = matches
-        if matches:
-            visible_count += 1
-    game_count_label.text = "%d OYUN" % visible_count
+	var normalized := query.strip_edges().to_lower()
+	var cards := [
+		[%VexCard, "vex aksiyon"],
+		[%KorsanCard, "korsanların hazinesi korsan masa oyunu"],
+		[%FirtinaCard, "fırtına vadisi macera"],
+	]
+	var visible_count := 0
+	for card_data in cards:
+		var card := card_data[0] as Control
+		var keywords := str(card_data[1])
+		var matches := normalized.is_empty() or normalized in keywords
+		card.visible = matches
+		if matches:
+			visible_count += 1
+	game_count_label.text = "%d OYUN" % visible_count
 
 
 func _toggle_ready() -> void:
