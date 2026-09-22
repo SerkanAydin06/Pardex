@@ -40,6 +40,8 @@ var _window_state_save_elapsed := 0.0
 var _game_cards: Array[Control] = []
 var _game_card_hovered: Dictionary = {}
 var _game_card_tweens: Dictionary = {}
+var _sidebar_hover_tweens: Dictionary = {}
+var _online_pulse_tween: Tween
 
 func _ready() -> void:
 	_nav_selected_style = %LibraryButton.get_theme_stylebox("normal")
@@ -51,6 +53,7 @@ func _ready() -> void:
 	_apply_profile()
 	_prepare_game_cards()
 	_wire_actions()
+	_wire_sidebar_polish()
 	_wire_online_signals()
 	_show_library()
 	_render_empty_room()
@@ -110,6 +113,34 @@ func _wire_actions() -> void:
 	save_profile_button.pressed.connect(_save_profile_from_settings)
 	connect_button.pressed.connect(_save_online_settings_and_connect)
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
+
+func _wire_sidebar_polish() -> void:
+	for button in [%LibraryButton, %FriendsButton, %RoomsButton, %SettingsButton, %ExitButton]:
+		button.mouse_entered.connect(_on_sidebar_button_hover.bind(button, true))
+		button.mouse_exited.connect(_on_sidebar_button_hover.bind(button, false))
+	_start_online_pulse()
+
+
+func _on_sidebar_button_hover(button: Button, hovered: bool) -> void:
+	if _sidebar_hover_tweens.has(button):
+		var previous: Tween = _sidebar_hover_tweens[button]
+		if previous != null and previous.is_valid():
+			previous.kill()
+
+	var tween := create_tween()
+	_sidebar_hover_tweens[button] = tween
+	tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(button, "modulate", Color(1.04, 1.04, 1.04, 1.0) if hovered else Color.WHITE, 0.12)
+
+
+func _start_online_pulse() -> void:
+	if _online_pulse_tween != null and _online_pulse_tween.is_valid():
+		_online_pulse_tween.kill()
+	_online_pulse_tween = create_tween().set_loops()
+	_online_pulse_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_online_pulse_tween.tween_property(connection_label, "modulate", Color(1.0, 1.0, 1.0, 0.72), 1.4)
+	_online_pulse_tween.tween_property(connection_label, "modulate", Color.WHITE, 1.4)
+
 
 func _wire_online_signals() -> void:
 	PardexOnline.connection_state_changed.connect(_update_connection_ui)
