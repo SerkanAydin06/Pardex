@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#231007"/><stop offset=".46" stop-color="#7c3f0c"/><stop offset="1" stop-color="#140b06"/></linearGradient><radialGradient id="sun"><stop stop-color="#ffd778"/><stop offset=".35" stop-color="#f5a623" stop-opacity=".7"/><stop offset="1" stop-color="#f5a623" stop-opacity="0"/></radialGradient></defs>
+<rect width="800" height="500" fill="url(#bg)"/>
+<circle cx="590" cy="105" r="190" fill="url(#sun)"/>
+<path d="M450 235h240l-30 80H480z" fill="#1a0d07"/>
+<path d="M485 230v-125h8v125zm78 0V70h9v160zm72 0V118h8v112" stroke="#2e1609" stroke-width="7"/>
+<path d="M492 112l66 48h-66zm78-34l73 62h-73zm73 48l48 42h-48z" fill="#261109"/>
+<g transform="translate(220 258)" stroke="#5a300d" stroke-width="18" fill="none"><circle r="104"/><circle r="18"/><path d="M0-104V104M-104 0H104M-74-74L74 74M74-74L-74 74"/></g>
+<g fill="#c88418"><circle cx="525" cy="390" r="15"/><circle cx="558" cy="405" r="13"/><circle cx="594" cy="388" r="14"/><circle cx="626" cy="410" r="10"/><circle cx="660" cy="390" r="11"/></g>
+<rect x="505" y="300" width="188" height="90" rx="12" fill="#351805" stroke="#a26014" stroke-width="7"/><path d="M505 336h188" stroke="#c77b1c" stroke-width="5"/>
+<g transform="translate(116 352)" fill="#e9d0a0"><circle cx="0" cy="0" r="42"/><circle cx="-14" cy="-6" r="9" fill="#44200b"/><circle cx="14" cy="-6" r="9" fill="#44200b"/><path d="M-18 18h36l-5 25h-26z" fill="#44200b"/></g>
+<text x="255" y="414" fill="#ffe2a4" stroke="#7b3c08" stroke-width="2" font-family="Georgia,serif" font-size="50" font-weight="700">KORSANLARIN</text>
+<text x="306" y="465" fill="#ffd36b" stroke="#7b3c08" stroke-width="2" font-family="Georgia,serif" font-size="58" font-weight="700">HAZİNESİ</text>
+</svg>
