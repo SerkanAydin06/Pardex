@@ -27,10 +27,10 @@ corner_radius_top_left = 18
 corner_radius_top_right = 18
 corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
-content_margin_left = 20.0
-content_margin_top = 18.0
-content_margin_right = 20.0
-content_margin_bottom = 18.0
+content_margin_left = 16.0
+content_margin_top = 14.0
+content_margin_right = 16.0
+content_margin_bottom = 14.0
 
 [sub_resource type="StyleBoxFlat" id="Button"]
 bg_color = Color(0.16, 0.41, 0.96, 1)
@@ -94,21 +94,21 @@ content_margin_bottom = 11.0
 [node name="RoomsContent" type="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 18
+theme_override_constants/separation = 12
 
 [node name="Intro" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(0, 132)
+custom_minimum_size = Vector2(0, 112)
 layout_mode = 2
 theme_override_styles/panel = SubResource("Panel")
 
 [node name="Row" type="HBoxContainer" parent="Intro"]
 layout_mode = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 16
 
 [node name="Text" type="VBoxContainer" parent="Intro/Row"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 5
 
 [node name="Eyebrow" type="Label" parent="Intro/Row/Text"]
 layout_mode = 2
@@ -119,19 +119,19 @@ text = "PARDEX ONLINE / ODALAR"
 [node name="Title" type="Label" parent="Intro/Row/Text"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 23
 text = "Aynı odaya gir, aynı oyuna bağlan."
 
 [node name="Body" type="Label" parent="Intro/Row/Text"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.56, 0.62, 0.72, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 text = "Oda kodları, hazır durumları ve oyun başlatma PARDEX Online üzerinden senkronize edilir."
 
 [node name="Actions" type="HBoxContainer" parent="."]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 178)
-theme_override_constants/separation = 20
+custom_minimum_size = Vector2(0, 154)
+theme_override_constants/separation = 14
 
 [node name="CreateCard" type="PanelContainer" parent="Actions"]
 layout_mode = 2
@@ -140,18 +140,18 @@ theme_override_styles/panel = SubResource("ActionCard")
 
 [node name="VBox" type="VBoxContainer" parent="Actions/CreateCard"]
 layout_mode = 2
-theme_override_constants/separation = 7
+theme_override_constants/separation = 5
 
 [node name="Icon" type="Label" parent="Actions/CreateCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.43, 0.79, 1, 1)
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 24
 text = "+"
 
 [node name="Title" type="Label" parent="Actions/CreateCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 18
 text = "Oda Oluştur"
 
 [node name="Body" type="Label" parent="Actions/CreateCard/VBox"]
@@ -166,7 +166,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="CreateRoomButton" type="Button" parent="Actions/CreateCard/VBox"]
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 focus_mode = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
@@ -188,13 +188,13 @@ theme_override_constants/separation = 7
 [node name="Icon" type="Label" parent="Actions/JoinCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
-theme_override_font_sizes/font_size = 27
+theme_override_font_sizes/font_size = 23
 text = "#"
 
 [node name="Title" type="Label" parent="Actions/JoinCard/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 18
 text = "Oda Koduyla Katıl"
 
 [node name="Body" type="Label" parent="Actions/JoinCard/VBox"]
@@ -205,7 +205,7 @@ text = "Arkadaşının paylaştığı 5 karakterlik kodu gir."
 autowrap_mode = 2
 
 [node name="RoomCode" type="LineEdit" parent="Actions/JoinCard/VBox"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 placeholder_text = "Örn. K7P2Q"
 max_length = 5
@@ -226,14 +226,14 @@ theme_override_styles/pressed = SubResource("Button")
 text = "KATIL"
 
 [node name="CurrentRoom" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(0, 360)
+custom_minimum_size = Vector2(0, 320)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("Panel")
 
 [node name="VBox" type="VBoxContainer" parent="CurrentRoom"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 7
 
 [node name="Header" type="HBoxContainer" parent="CurrentRoom/VBox"]
 layout_mode = 2
@@ -260,7 +260,7 @@ theme_override_font_sizes/font_size = 13
 text = "Henüz bir odada değilsin."
 
 [node name="LaunchHint" type="Label" parent="CurrentRoom/VBox"]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
@@ -288,12 +288,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="RoomActions" type="HBoxContainer" parent="CurrentRoom/VBox"]
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="ReadyButton" type="Button" parent="CurrentRoom/VBox/RoomActions"]
-custom_minimum_size = Vector2(230, 52)
+custom_minimum_size = Vector2(220, 46)
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
@@ -308,7 +308,7 @@ text = "HAZIR"
 disabled = true
 
 [node name="StartGameButton" type="Button" parent="CurrentRoom/VBox/RoomActions"]
-custom_minimum_size = Vector2(230, 52)
+custom_minimum_size = Vector2(220, 46)
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
@@ -324,7 +324,7 @@ disabled = true
 visible = false
 
 [node name="LeaveRoomButton" type="Button" parent="CurrentRoom/VBox/RoomActions"]
-custom_minimum_size = Vector2(230, 52)
+custom_minimum_size = Vector2(220, 46)
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
