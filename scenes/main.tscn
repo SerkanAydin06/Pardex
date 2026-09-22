@@ -7,6 +7,10 @@
 [ext_resource type="Texture2D" path="res://assets/ui/vex_cover.svg" id="5_vex"]
 [ext_resource type="Texture2D" path="res://assets/ui/korsan_cover.svg" id="6_korsan"]
 [ext_resource type="Texture2D" path="res://assets/ui/firtina_cover.svg" id="7_firtina"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_library.svg" id="8_nav_library"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_friends.svg" id="9_nav_friends"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_rooms.svg" id="10_nav_rooms"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_settings.svg" id="11_nav_settings"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.018, 0.027, 0.041, 1)
@@ -269,6 +273,38 @@ corner_radius_bottom_left = 9
 shadow_color = Color(1, 0.62, 0.16, 0.28)
 shadow_size = 10
 
+[sub_resource type="StyleBoxFlat" id="StyleBadge"]
+content_margin_left = 10.0
+content_margin_top = 5.0
+content_margin_right = 10.0
+content_margin_bottom = 5.0
+bg_color = Color(0.07, 0.09, 0.16, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.38, 0.42, 0.66, 0.95)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBadgeOnline"]
+content_margin_left = 10.0
+content_margin_top = 5.0
+content_margin_right = 10.0
+content_margin_bottom = 5.0
+bg_color = Color(0.035, 0.25, 0.15, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.72, 0.42, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
 [sub_resource type="StyleBoxFlat" id="StyleToast"]
 content_margin_left = 18.0
 content_margin_top = 13.0
@@ -359,33 +395,42 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
+icon = ExtResource("8_nav_library")
+icon_max_width = 20
+expand_icon = true
 theme_override_colors/font_color = Color(0.91, 0.94, 1, 1)
 theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("StyleNavHover")
 theme_override_styles/hover = SubResource("StyleNavHover")
-text = "▦   Kütüphane"
+text = "  Kütüphane"
 alignment = 0
 
 [node name="FriendsButton" type="Button" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=1005134791]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
+icon = ExtResource("9_nav_friends")
+icon_max_width = 20
+expand_icon = true
 theme_override_colors/font_color = Color(0.65, 0.7, 0.79, 1)
 theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleNav")
 theme_override_styles/hover = SubResource("StyleNavHover")
-text = "●   Arkadaşlar"
+text = "  Arkadaşlar"
 alignment = 0
 
 [node name="RoomsButton" type="Button" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=100644153]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
+icon = ExtResource("10_nav_rooms")
+icon_max_width = 20
+expand_icon = true
 theme_override_colors/font_color = Color(0.65, 0.7, 0.79, 1)
 theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleNav")
 theme_override_styles/hover = SubResource("StyleNavHover")
-text = "◇   Odalar"
+text = "  Odalar"
 alignment = 0
 
 [node name="SidebarFlex" type="Control" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=1853488818]
@@ -462,11 +507,14 @@ text = "●  Yerel mod"
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
+icon = ExtResource("11_nav_settings")
+icon_max_width = 20
+expand_icon = true
 theme_override_colors/font_color = Color(0.57, 0.62, 0.7, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleNav")
 theme_override_styles/hover = SubResource("StyleNavHover")
-text = "⚙  Ayarlar"
+text = "  Ayarlar"
 alignment = 0
 
 [node name="ExitButton" type="Button" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=2055885732]
@@ -487,6 +535,13 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.31, 0.36, 0.44, 1)
 theme_override_font_sizes/font_size = 12
 text = "PARDEX v0.1.0"
+
+[node name="FooterTagline" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.43, 0.53, 1)
+theme_override_font_sizes/font_size = 11
+text = "Daha fazla oyun
+Daha güçlü bağlar."
 
 [node name="MainMargin" type="MarginContainer" parent="." unique_id=2122734598]
 layout_mode = 1
@@ -702,6 +757,7 @@ offset_right = 190.0
 offset_bottom = 36.0
 theme_override_colors/font_color = Color(0.78, 0.82, 0.92, 1)
 theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBadge")
 text = "●  GELİŞTİRİLİYOR"
 
 [node name="Title" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox" unique_id=1809277446]
@@ -772,6 +828,7 @@ offset_right = 190.0
 offset_bottom = 36.0
 theme_override_colors/font_color = Color(0.38, 0.96, 0.66, 1)
 theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBadgeOnline")
 text = "●  PARDEX ONLINE HAZIR"
 
 [node name="Title" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox" unique_id=2045617748]
@@ -841,6 +898,7 @@ offset_right = 190.0
 offset_bottom = 36.0
 theme_override_colors/font_color = Color(0.78, 0.82, 0.92, 1)
 theme_override_font_sizes/font_size = 11
+theme_override_styles/normal = SubResource("StyleBadge")
 text = "●  GELİŞTİRİLİYOR"
 
 [node name="Title" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox" unique_id=2007660749]
