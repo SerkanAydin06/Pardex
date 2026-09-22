@@ -20,6 +20,8 @@ const SETTINGS_SCENE := preload("res://scenes/screens/settings.tscn")
 @onready var avatar_label: Label = $Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/Avatar
 @onready var online_state_label: Label = $Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/ProfileText/OnlineState
 @onready var connection_label: Label = $MainMargin/MainVBox/Header/ConnectionPill/ConnectionLabel
+@onready var library_search: LineEdit = %LibrarySearch
+@onready var game_count_label: Label = %GameCount
 
 var _friends_content: VBoxContainer
 var _rooms_content: VBoxContainer
@@ -412,6 +414,29 @@ func _update_connection_ui(state: String) -> void:
 	var online := state == "online"
 	create_room_button.disabled = not online
 	join_room_button.disabled = not online
+
+func _open_korsan_rooms() -> void:
+    _show_rooms()
+    _show_toast("Korsanların Hazinesi için oda oluştur veya bir odaya katıl.")
+
+
+func _filter_library(query: String) -> void:
+    var normalized := query.strip_edges().to_lower()
+    var cards := [
+        [%VexCard, "vex aksiyon"],
+        [%KorsanCard, "korsanların hazinesi korsan masa oyunu"],
+        [%FirtinaCard, "fırtına vadisi macera"],
+    ]
+    var visible_count := 0
+    for card_data in cards:
+        var card := card_data[0] as Control
+        var keywords := str(card_data[1])
+        var matches := normalized.is_empty() or normalized in keywords
+        card.visible = matches
+        if matches:
+            visible_count += 1
+    game_count_label.text = "%d OYUN" % visible_count
+
 
 func _toggle_ready() -> void:
 	if PardexOnline.current_room.is_empty():
