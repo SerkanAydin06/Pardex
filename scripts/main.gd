@@ -415,6 +415,27 @@ func _update_connection_ui(state: String) -> void:
 	create_room_button.disabled = not online
 	join_room_button.disabled = not online
 
+func _wire_game_card_hover(card: Control) -> void:
+    card.mouse_entered.connect(func():
+        card.pivot_offset = card.size * 0.5
+        var tween := create_tween()
+        tween.set_parallel(true)
+        tween.set_trans(Tween.TRANS_QUAD)
+        tween.set_ease(Tween.EASE_OUT)
+        tween.tween_property(card, "scale", Vector2(1.012, 1.012), 0.12)
+        tween.tween_property(card, "modulate", Color(1.04, 1.04, 1.04, 1), 0.12)
+    )
+    card.mouse_exited.connect(func():
+        card.pivot_offset = card.size * 0.5
+        var tween := create_tween()
+        tween.set_parallel(true)
+        tween.set_trans(Tween.TRANS_QUAD)
+        tween.set_ease(Tween.EASE_OUT)
+        tween.tween_property(card, "scale", Vector2.ONE, 0.14)
+        tween.tween_property(card, "modulate", Color.WHITE, 0.14)
+    )
+
+
 func _open_korsan_rooms() -> void:
     _show_rooms()
     _show_toast("Korsanların Hazinesi için oda oluştur veya bir odaya katıl.")
