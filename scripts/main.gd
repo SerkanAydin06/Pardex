@@ -15,7 +15,6 @@ const SETTINGS_SCENE := preload("res://scenes/screens/settings.tscn")
 @onready var library_content: VBoxContainer = %LibraryContent
 @onready var toast_panel: PanelContainer = %ToastPanel
 @onready var toast_label: Label = %ToastLabel
-@onready var version_label: Label = %VersionLabel
 @onready var profile_name_label: Label = $Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/ProfileText/UserName
 @onready var avatar_label: Label = $Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/Avatar
 @onready var online_state_label: Label = $Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/ProfileText/OnlineState
@@ -43,7 +42,6 @@ var _game_card_hovered: Dictionary = {}
 var _game_card_tweens: Dictionary = {}
 
 func _ready() -> void:
-	version_label.text = "PARDEX v%s" % APP_VERSION
 	_nav_selected_style = %LibraryButton.get_theme_stylebox("normal")
 	_nav_normal_style = %FriendsButton.get_theme_stylebox("normal")
 
