@@ -126,7 +126,7 @@ func _prepare_game_cards() -> void:
 		%VexPath,
 		%VexPlayButton,
 		"GELİŞTİRİLİYOR",
-		"Windows sürümü oyun tamamlandığında hazırlanacak.",
+		"Karanlık bir gelecekte, insanlığın son umutlarından biri ol. VEX ile sınırların ötesine yolculuk et.",
 		false
 	)
 	_configure_game_card(
@@ -134,7 +134,7 @@ func _prepare_game_cards() -> void:
 		%KorsanPath,
 		%KorsanPlayButton,
 		"PARDEX ONLINE HAZIR",
-		"Online oda ve dedicated oyun sunucusu hazır.",
+		"Strateji, şans ve dostluk bir arada. Mürettebatını topla, maceraya atıl.",
 		true
 	)
 	_configure_game_card(
@@ -142,7 +142,7 @@ func _prepare_game_cards() -> void:
 		%FirtinaPath,
 		%FirtinaPlayButton,
 		"GELİŞTİRİLİYOR",
-		"Windows sürümü oyun tamamlandığında hazırlanacak.",
+		"Fırtınanın kalbinde, unutulmuş topraklarda kendi hikâyeni yaz.",
 		false
 	)
 
@@ -155,14 +155,14 @@ func _configure_game_card(
 	detail_text: String,
 	playable: bool
 ) -> void:
-	status_label.text = status_text
+	status_label.text = ("●  " + status_text)
 	status_label.add_theme_color_override(
 		"font_color",
-		Color(0.38, 0.9, 0.64, 1) if playable else Color(0.74, 0.78, 0.86, 1)
+		Color(0.38, 0.9, 0.64, 1) if playable else Color(0.82, 0.86, 0.94, 1)
 	)
 	detail_label.text = detail_text
 	action_button.disabled = not playable
-	action_button.text = "▶  OYNA" if playable else "YAKINDA"
+	action_button.text = "▶  Oyna" if playable else "◷  Yakında"
 
 func _show_library() -> void:
 	_show_content(
