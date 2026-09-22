@@ -190,6 +190,14 @@ func request_start_game() -> void:
 	_send({"type": "start_game"})
 
 
+func report_game_launch_failed() -> void:
+	if not is_online() or current_room.is_empty():
+		return
+	if not bool(current_room.get("launching", false)):
+		return
+	_send({"type": "launch_failed"})
+
+
 func set_voice_muted(is_muted: bool) -> void:
 	if not is_online() or current_room.is_empty():
 		return
