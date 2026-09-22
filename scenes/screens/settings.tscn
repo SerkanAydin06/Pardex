@@ -159,10 +159,24 @@ text = "GÖRÜNTÜ"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 19
-text = "1920 × 1080 Tam Ekran"
+text = "Masaüstü Pencere Modu"
+
+[node name="Description" type="Label" parent="DisplayPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
+theme_override_font_sizes/font_size = 14
+text = "PARDEX varsayılan olarak yeniden boyutlandırılabilir 1440 × 900 pencere halinde açılır. Son pencere boyutu ve konumu hatırlanır."
+autowrap_mode = 2
+
+[node name="FullscreenOnStart" type="CheckButton" parent="DisplayPanel/VBox"]
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.86, 0.9, 0.96, 1)
+theme_override_font_sizes/font_size = 14
+text = "Tam ekran kullan ve sonraki açılışlarda tam ekran başlat"
 
 [node name="State" type="Label" parent="DisplayPanel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.38, 0.86, 0.62, 1)
 theme_override_font_sizes/font_size = 14
-text = "●  TAM EKRAN AKTİF"
+text = "●  PENCERE MODU"
