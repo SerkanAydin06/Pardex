@@ -1,11 +1,16 @@
 const http = require("http");
+const path = require("path");
 const { WebSocketServer, WebSocket } = require("ws");
 const crypto = require("crypto");
+const { SocialStore, accountIdFromIdentityKey } = require("./social_store");
 
 const PORT = Number(process.env.PORT || 8765);
 const HOST = process.env.HOST || "0.0.0.0";
 const KORSAN_GAME_SERVER_URL = String(process.env.KORSAN_GAME_SERVER_URL || "").trim();
 const SESSION_GRACE_MS = Math.max(1000, Number(process.env.SESSION_GRACE_MS || 30_000));
+const SOCIAL_DATA_PATH = String(
+  process.env.PARDEX_SOCIAL_DATA_PATH || path.join(__dirname, "data", "social.json")
+).trim();
 const ROOM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const MAX_ROOM_SIZE = 8;
 const MAX_PAYLOAD_BYTES = 16 * 1024;
@@ -20,6 +25,7 @@ const VOICE_RELAY_BUFFER_LIMIT_BYTES = 64 * 1024;
 const clients = new Map();
 const rooms = new Map();
 const resumeTokens = new Map();
+const social = new SocialStore(SOCIAL_DATA_PATH);
 let shuttingDown = false;
 
 function send(ws, payload) {
@@ -30,6 +36,10 @@ function send(ws, payload) {
 
 function sendError(ws, code, message) {
   send(ws, { type: "error", code, message });
+}
+
+function sendNotice(ws, code, message) {
+  send(ws, { type: "social_notice", code, message });
 }
 
 function sendVoice(ws, payload) {
@@ -64,6 +74,52 @@ function roomCode() {
   throw new Error("Unable to generate unique room code");
 }
 
+function isAccountOnline(accountId) {
+  if (!accountId) return false;
+  for (const client of clients.values()) {
+    if (
+      client.accountId === accountId
+      && client.helloReceived
+      && client.ws?.readyState === WebSocket.OPEN
+    ) return true;
+  }
+  return false;
+}
+
+function clientsForAccount(accountId) {
+  const result = [];
+  for (const client of clients.values()) {
+    if (
+      client.accountId === accountId
+      && client.helloReceived
+      && client.ws?.readyState === WebSocket.OPEN
+    ) result.push(client);
+  }
+  return result;
+}
+
+function pushSocialState(accountId) {
+  if (!accountId) return;
+  const state = social.socialState(accountId, isAccountOnline);
+  if (!state) return;
+  for (const client of clientsForAccount(accountId)) {
+    send(client.ws, { type: "social_state", state });
+  }
+}
+
+function pushRelatedSocialStates(accountId) {
+  if (!accountId) return;
+  for (const relatedId of social.relatedAccountIds(accountId)) {
+    pushSocialState(relatedId);
+  }
+}
+
+function requireSocialAccount(client) {
+  if (client.accountId && social.getAccount(client.accountId)) return true;
+  sendError(client.ws, "SOCIAL_NOT_READY", "PARDEX sosyal kimliği henüz hazır değil.");
+  return false;
+}
+
 function roomPayload(room) {
   return {
     code: room.code,
@@ -74,6 +130,7 @@ function roomPayload(room) {
     launching: Boolean(room.launching),
     members: room.members.map((member) => ({
       user_id: member.userId,
+      account_id: member.accountId || "",
       display_name: member.displayName,
       ready: member.ready,
       voice_muted: Boolean(member.voiceMuted),
@@ -122,6 +179,7 @@ function syncClientNameToRoom(client) {
   const member = room.members.find((item) => item.userId === client.userId);
   if (!member) return;
   member.displayName = client.displayName;
+  member.accountId = client.accountId;
   broadcastRoom(room);
 }
 
@@ -138,6 +196,7 @@ function expireDisconnectedClient(client) {
 function detachClient(client, ws) {
   if (!client || client.replaced || client.ws !== ws) return;
 
+  const accountId = client.accountId;
   client.ws = null;
   if (!client.helloReceived) {
     clients.delete(client.userId);
@@ -151,9 +210,10 @@ function detachClient(client, ws) {
     SESSION_GRACE_MS
   );
   client.disconnectTimer.unref?.();
+  pushRelatedSocialStates(accountId);
 }
 
-function tryResumeClient(client, resumeToken) {
+function tryResumeClient(client, resumeToken, expectedAccountId) {
   const token = String(resumeToken || "").trim();
   if (!token) return false;
 
@@ -165,7 +225,7 @@ function tryResumeClient(client, resumeToken) {
     resumeTokens.delete(token);
     return false;
   }
-
+  if (existing.accountId && existing.accountId !== expectedAccountId) return false;
   if (existing === client) return true;
 
   if (existing.disconnectTimer) {
@@ -186,6 +246,7 @@ function tryResumeClient(client, resumeToken) {
   client.resumeToken = existing.resumeToken;
   client.roomCode = existing.roomCode;
   client.displayName = existing.displayName;
+  client.accountId = expectedAccountId;
   client.helloReceived = true;
 
   clients.set(client.userId, client);
@@ -221,6 +282,7 @@ function joinRoom(client, code) {
   leaveCurrentRoom(client.userId, false);
   room.members.push({
     userId: client.userId,
+    accountId: client.accountId,
     displayName: client.displayName,
     ready: false,
     voiceMuted: false,
@@ -246,6 +308,7 @@ function createRoom(client, message) {
     launching: false,
     members: [{
       userId: client.userId,
+      accountId: client.accountId,
       displayName: client.displayName,
       ready: false,
       voiceMuted: false,
@@ -322,10 +385,7 @@ function allowVoiceFrame(client) {
   }
 
   client.voiceRateMessageCount += 1;
-  if (client.voiceRateMessageCount > VOICE_RATE_LIMIT_MESSAGES) {
-    return false;
-  }
-  return true;
+  return client.voiceRateMessageCount <= VOICE_RATE_LIMIT_MESSAGES;
 }
 
 function setVoiceState(client, muted) {
@@ -386,6 +446,16 @@ function allowMessage(client) {
   return true;
 }
 
+function applySocialAction(client, result, otherAccountId) {
+  if (!result.ok) {
+    sendError(client.ws, result.code, result.message);
+    return;
+  }
+  sendNotice(client.ws, result.code, result.message);
+  pushSocialState(client.accountId);
+  pushSocialState(otherAccountId);
+}
+
 function handleMessage(client, raw) {
   let message;
   try {
@@ -405,17 +475,71 @@ function handleMessage(client, raw) {
 
   switch (message.type) {
     case "hello": {
-      const resumed = tryResumeClient(client, message.resume_token);
+      const accountId = accountIdFromIdentityKey(message.identity_key);
+      if (!accountId) {
+        sendError(client.ws, "INVALID_IDENTITY", "PARDEX cihaz kimliği geçersiz.");
+        client.ws?.close(1008, "Invalid PARDEX identity");
+        return;
+      }
+
+      const resumed = tryResumeClient(client, message.resume_token, accountId);
       client.helloReceived = true;
+      client.accountId = accountId;
       client.displayName = safeName(message.display_name);
+      const accountResult = social.ensureAccount(accountId, client.displayName);
+
       send(client.ws, {
         type: "welcome",
         user_id: client.userId,
+        account_id: client.accountId,
         display_name: client.displayName,
         resume_token: client.resumeToken,
         resumed,
+        social_enabled: true,
       });
       syncClientNameToRoom(client);
+      pushSocialState(client.accountId);
+      if (accountResult.changed) pushRelatedSocialStates(client.accountId);
+      else pushRelatedSocialStates(client.accountId);
+      break;
+    }
+    case "get_social_state":
+      if (requireSocialAccount(client)) pushSocialState(client.accountId);
+      break;
+    case "search_users": {
+      if (!requireSocialAccount(client)) return;
+      const results = social.searchUsers(message.query, client.accountId, isAccountOnline);
+      send(client.ws, { type: "user_search_results", query: String(message.query || ""), results });
+      break;
+    }
+    case "send_friend_request": {
+      if (!requireSocialAccount(client)) return;
+      const targetId = String(message.account_id || "");
+      applySocialAction(client, social.sendFriendRequest(client.accountId, targetId), targetId);
+      break;
+    }
+    case "accept_friend_request": {
+      if (!requireSocialAccount(client)) return;
+      const fromId = String(message.account_id || "");
+      applySocialAction(client, social.acceptFriendRequest(client.accountId, fromId), fromId);
+      break;
+    }
+    case "decline_friend_request": {
+      if (!requireSocialAccount(client)) return;
+      const fromId = String(message.account_id || "");
+      applySocialAction(client, social.declineFriendRequest(client.accountId, fromId), fromId);
+      break;
+    }
+    case "cancel_friend_request": {
+      if (!requireSocialAccount(client)) return;
+      const targetId = String(message.account_id || "");
+      applySocialAction(client, social.cancelFriendRequest(client.accountId, targetId), targetId);
+      break;
+    }
+    case "remove_friend": {
+      if (!requireSocialAccount(client)) return;
+      const targetId = String(message.account_id || "");
+      applySocialAction(client, social.removeFriend(client.accountId, targetId), targetId);
       break;
     }
     case "create_room":
@@ -465,6 +589,8 @@ const httpServer = http.createServer((req, res) => {
       clients: connectedClients,
       recoverable_sessions: Math.max(0, clients.size - connectedClients),
       sessionGraceMs: SESSION_GRACE_MS,
+      socialAccounts: Object.keys(social.data.accounts).length,
+      socialDataPathConfigured: Boolean(SOCIAL_DATA_PATH),
       korsanGameServerAssigned: Boolean(KORSAN_GAME_SERVER_URL),
       voiceRelay: true,
     }));
@@ -490,6 +616,7 @@ wss.on("connection", (ws) => {
   const resumeToken = createResumeToken();
   const client = {
     userId,
+    accountId: "",
     resumeToken,
     displayName: "Pardus",
     roomCode: "",
