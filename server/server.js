@@ -1,10 +1,16 @@
 const http = require("http");
+const path = require("path");
 const { WebSocketServer, WebSocket } = require("ws");
 const crypto = require("crypto");
+const { SocialStore, accountIdFromIdentityKey } = require("./social_store");
 
 const PORT = Number(process.env.PORT || 8765);
 const HOST = process.env.HOST || "0.0.0.0";
 const KORSAN_GAME_SERVER_URL = String(process.env.KORSAN_GAME_SERVER_URL || "").trim();
+const SESSION_GRACE_MS = Math.max(1000, Number(process.env.SESSION_GRACE_MS || 30_000));
+const SOCIAL_DATA_PATH = String(
+  process.env.PARDEX_SOCIAL_DATA_PATH || path.join(__dirname, "data", "social.json")
+).trim();
 const ROOM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const MAX_ROOM_SIZE = 8;
 const MAX_PAYLOAD_BYTES = 16 * 1024;
@@ -18,10 +24,12 @@ const VOICE_RELAY_BUFFER_LIMIT_BYTES = 64 * 1024;
 
 const clients = new Map();
 const rooms = new Map();
+const resumeTokens = new Map();
+const social = new SocialStore(SOCIAL_DATA_PATH);
 let shuttingDown = false;
 
 function send(ws, payload) {
-  if (ws.readyState === WebSocket.OPEN) {
+  if (ws?.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify(payload));
   }
 }
@@ -30,8 +38,12 @@ function sendError(ws, code, message) {
   send(ws, { type: "error", code, message });
 }
 
+function sendNotice(ws, code, message) {
+  send(ws, { type: "social_notice", code, message });
+}
+
 function sendVoice(ws, payload) {
-  if (ws.readyState !== WebSocket.OPEN) return;
+  if (ws?.readyState !== WebSocket.OPEN) return;
   if (ws.bufferedAmount >= VOICE_RELAY_BUFFER_LIMIT_BYTES) return;
   ws.send(JSON.stringify(payload));
 }
@@ -39,6 +51,10 @@ function sendVoice(ws, payload) {
 function safeName(value) {
   const text = String(value || "Pardus").trim().replace(/\s+/g, " ");
   return (text || "Pardus").slice(0, 24);
+}
+
+function createResumeToken() {
+  return crypto.randomBytes(32).toString("base64url");
 }
 
 function gameServerUrl(gameId) {
@@ -58,6 +74,52 @@ function roomCode() {
   throw new Error("Unable to generate unique room code");
 }
 
+function isAccountOnline(accountId) {
+  if (!accountId) return false;
+  for (const client of clients.values()) {
+    if (
+      client.accountId === accountId
+      && client.helloReceived
+      && client.ws?.readyState === WebSocket.OPEN
+    ) return true;
+  }
+  return false;
+}
+
+function clientsForAccount(accountId) {
+  const result = [];
+  for (const client of clients.values()) {
+    if (
+      client.accountId === accountId
+      && client.helloReceived
+      && client.ws?.readyState === WebSocket.OPEN
+    ) result.push(client);
+  }
+  return result;
+}
+
+function pushSocialState(accountId) {
+  if (!accountId) return;
+  const state = social.socialState(accountId, isAccountOnline);
+  if (!state) return;
+  for (const client of clientsForAccount(accountId)) {
+    send(client.ws, { type: "social_state", state });
+  }
+}
+
+function pushRelatedSocialStates(accountId) {
+  if (!accountId) return;
+  for (const relatedId of social.relatedAccountIds(accountId)) {
+    pushSocialState(relatedId);
+  }
+}
+
+function requireSocialAccount(client) {
+  if (client.accountId && social.getAccount(client.accountId)) return true;
+  sendError(client.ws, "SOCIAL_NOT_READY", "PARDEX sosyal kimliği henüz hazır değil.");
+  return false;
+}
+
 function roomPayload(room) {
   return {
     code: room.code,
@@ -68,6 +130,7 @@ function roomPayload(room) {
     launching: Boolean(room.launching),
     members: room.members.map((member) => ({
       user_id: member.userId,
+      account_id: member.accountId || "",
       display_name: member.displayName,
       ready: member.ready,
       voice_muted: Boolean(member.voiceMuted),
@@ -79,7 +142,7 @@ function broadcastRoom(room) {
   const payload = { type: "room_state", room: roomPayload(room) };
   for (const member of room.members) {
     const client = clients.get(member.userId);
-    if (client) send(client.ws, payload);
+    if (client?.ws) send(client.ws, payload);
   }
 }
 
@@ -116,7 +179,84 @@ function syncClientNameToRoom(client) {
   const member = room.members.find((item) => item.userId === client.userId);
   if (!member) return;
   member.displayName = client.displayName;
+  member.accountId = client.accountId;
   broadcastRoom(room);
+}
+
+function expireDisconnectedClient(client) {
+  if (!client || client.replaced || client.ws) return;
+  if (clients.get(client.userId) !== client) return;
+
+  leaveCurrentRoom(client.userId, false);
+  clients.delete(client.userId);
+  resumeTokens.delete(client.resumeToken);
+  client.disconnectTimer = null;
+}
+
+function detachClient(client, ws) {
+  if (!client || client.replaced || client.ws !== ws) return;
+
+  const accountId = client.accountId;
+  client.ws = null;
+  if (!client.helloReceived) {
+    clients.delete(client.userId);
+    resumeTokens.delete(client.resumeToken);
+    return;
+  }
+
+  if (client.disconnectTimer) clearTimeout(client.disconnectTimer);
+  client.disconnectTimer = setTimeout(
+    () => expireDisconnectedClient(client),
+    SESSION_GRACE_MS
+  );
+  client.disconnectTimer.unref?.();
+  pushRelatedSocialStates(accountId);
+}
+
+function tryResumeClient(client, resumeToken, expectedAccountId) {
+  const token = String(resumeToken || "").trim();
+  if (!token) return false;
+
+  const existingUserId = resumeTokens.get(token);
+  if (!existingUserId) return false;
+
+  const existing = clients.get(existingUserId);
+  if (!existing) {
+    resumeTokens.delete(token);
+    return false;
+  }
+  if (existing.accountId && existing.accountId !== expectedAccountId) return false;
+  if (existing === client) return true;
+
+  if (existing.disconnectTimer) {
+    clearTimeout(existing.disconnectTimer);
+    existing.disconnectTimer = null;
+  }
+
+  const provisionalUserId = client.userId;
+  const provisionalToken = client.resumeToken;
+  clients.delete(provisionalUserId);
+  resumeTokens.delete(provisionalToken);
+
+  const previousSocket = existing.ws;
+  existing.replaced = true;
+  existing.ws = null;
+
+  client.userId = existing.userId;
+  client.resumeToken = existing.resumeToken;
+  client.roomCode = existing.roomCode;
+  client.displayName = existing.displayName;
+  client.accountId = expectedAccountId;
+  client.helloReceived = true;
+
+  clients.set(client.userId, client);
+  resumeTokens.set(client.resumeToken, client.userId);
+
+  if (previousSocket && previousSocket !== client.ws) {
+    previousSocket.close(4001, "PARDEX session resumed elsewhere");
+  }
+
+  return true;
 }
 
 function joinRoom(client, code) {
@@ -142,6 +282,7 @@ function joinRoom(client, code) {
   leaveCurrentRoom(client.userId, false);
   room.members.push({
     userId: client.userId,
+    accountId: client.accountId,
     displayName: client.displayName,
     ready: false,
     voiceMuted: false,
@@ -167,6 +308,7 @@ function createRoom(client, message) {
     launching: false,
     members: [{
       userId: client.userId,
+      accountId: client.accountId,
       displayName: client.displayName,
       ready: false,
       voiceMuted: false,
@@ -218,7 +360,7 @@ function startRoomGame(client) {
   };
   for (const member of room.members) {
     const memberClient = clients.get(member.userId);
-    if (memberClient) send(memberClient.ws, payload);
+    if (memberClient?.ws) send(memberClient.ws, payload);
   }
 }
 
@@ -243,10 +385,7 @@ function allowVoiceFrame(client) {
   }
 
   client.voiceRateMessageCount += 1;
-  if (client.voiceRateMessageCount > VOICE_RATE_LIMIT_MESSAGES) {
-    return false;
-  }
-  return true;
+  return client.voiceRateMessageCount <= VOICE_RATE_LIMIT_MESSAGES;
 }
 
 function setVoiceState(client, muted) {
@@ -284,7 +423,7 @@ function relayVoiceFrame(client, message) {
   for (const roomMember of room.members) {
     if (roomMember.userId === client.userId) continue;
     const target = clients.get(roomMember.userId);
-    if (target) sendVoice(target.ws, payload);
+    if (target?.ws) sendVoice(target.ws, payload);
   }
 }
 
@@ -297,7 +436,7 @@ function allowMessage(client) {
 
   client.rateMessageCount += 1;
   if (client.rateMessageCount > RATE_HARD_LIMIT_MESSAGES) {
-    client.ws.close(1008, "Rate limit exceeded");
+    client.ws?.close(1008, "Rate limit exceeded");
     return false;
   }
   if (client.rateMessageCount > RATE_LIMIT_MESSAGES) {
@@ -305,6 +444,16 @@ function allowMessage(client) {
     return false;
   }
   return true;
+}
+
+function applySocialAction(client, result, otherAccountId) {
+  if (!result.ok) {
+    sendError(client.ws, result.code, result.message);
+    return;
+  }
+  sendNotice(client.ws, result.code, result.message);
+  pushSocialState(client.accountId);
+  pushSocialState(otherAccountId);
 }
 
 function handleMessage(client, raw) {
@@ -325,15 +474,74 @@ function handleMessage(client, raw) {
   if (!allowMessage(client)) return;
 
   switch (message.type) {
-    case "hello":
+    case "hello": {
+      const accountId = accountIdFromIdentityKey(message.identity_key);
+      if (!accountId) {
+        sendError(client.ws, "INVALID_IDENTITY", "PARDEX cihaz kimliği geçersiz.");
+        client.ws?.close(1008, "Invalid PARDEX identity");
+        return;
+      }
+
+      const resumed = tryResumeClient(client, message.resume_token, accountId);
+      client.helloReceived = true;
+      client.accountId = accountId;
       client.displayName = safeName(message.display_name);
+      const accountResult = social.ensureAccount(accountId, client.displayName);
+
       send(client.ws, {
         type: "welcome",
         user_id: client.userId,
+        account_id: client.accountId,
         display_name: client.displayName,
+        resume_token: client.resumeToken,
+        resumed,
+        social_enabled: true,
       });
       syncClientNameToRoom(client);
+      pushSocialState(client.accountId);
+      if (accountResult.changed) pushRelatedSocialStates(client.accountId);
+      else pushRelatedSocialStates(client.accountId);
       break;
+    }
+    case "get_social_state":
+      if (requireSocialAccount(client)) pushSocialState(client.accountId);
+      break;
+    case "search_users": {
+      if (!requireSocialAccount(client)) return;
+      const results = social.searchUsers(message.query, client.accountId, isAccountOnline);
+      send(client.ws, { type: "user_search_results", query: String(message.query || ""), results });
+      break;
+    }
+    case "send_friend_request": {
+      if (!requireSocialAccount(client)) return;
+      const targetId = String(message.account_id || "");
+      applySocialAction(client, social.sendFriendRequest(client.accountId, targetId), targetId);
+      break;
+    }
+    case "accept_friend_request": {
+      if (!requireSocialAccount(client)) return;
+      const fromId = String(message.account_id || "");
+      applySocialAction(client, social.acceptFriendRequest(client.accountId, fromId), fromId);
+      break;
+    }
+    case "decline_friend_request": {
+      if (!requireSocialAccount(client)) return;
+      const fromId = String(message.account_id || "");
+      applySocialAction(client, social.declineFriendRequest(client.accountId, fromId), fromId);
+      break;
+    }
+    case "cancel_friend_request": {
+      if (!requireSocialAccount(client)) return;
+      const targetId = String(message.account_id || "");
+      applySocialAction(client, social.cancelFriendRequest(client.accountId, targetId), targetId);
+      break;
+    }
+    case "remove_friend": {
+      if (!requireSocialAccount(client)) return;
+      const targetId = String(message.account_id || "");
+      applySocialAction(client, social.removeFriend(client.accountId, targetId), targetId);
+      break;
+    }
     case "create_room":
       createRoom(client, message);
       break;
@@ -373,11 +581,16 @@ function handleMessage(client, raw) {
 const httpServer = http.createServer((req, res) => {
   if (req.url === "/health") {
     const status = shuttingDown ? 503 : 200;
+    const connectedClients = Array.from(clients.values()).filter((client) => client.ws).length;
     res.writeHead(status, { "Content-Type": "application/json" });
     res.end(JSON.stringify({
       ok: !shuttingDown,
       rooms: rooms.size,
-      clients: clients.size,
+      clients: connectedClients,
+      recoverable_sessions: Math.max(0, clients.size - connectedClients),
+      sessionGraceMs: SESSION_GRACE_MS,
+      socialAccounts: Object.keys(social.data.accounts).length,
+      socialDataPathConfigured: Boolean(SOCIAL_DATA_PATH),
       korsanGameServerAssigned: Boolean(KORSAN_GAME_SERVER_URL),
       voiceRelay: true,
     }));
@@ -400,10 +613,16 @@ wss.on("connection", (ws) => {
   }
 
   const userId = crypto.randomUUID();
+  const resumeToken = createResumeToken();
   const client = {
     userId,
+    accountId: "",
+    resumeToken,
     displayName: "Pardus",
     roomCode: "",
+    helloReceived: false,
+    replaced: false,
+    disconnectTimer: null,
     rateWindowStartedAt: Date.now(),
     rateMessageCount: 0,
     voiceRateWindowStartedAt: Date.now(),
@@ -411,12 +630,10 @@ wss.on("connection", (ws) => {
     ws,
   };
   clients.set(userId, client);
+  resumeTokens.set(resumeToken, userId);
 
   ws.on("message", (raw) => handleMessage(client, raw));
-  ws.on("close", () => {
-    leaveCurrentRoom(userId, false);
-    clients.delete(userId);
-  });
+  ws.on("close", () => detachClient(client, ws));
   ws.on("error", () => {});
 });
 
@@ -426,7 +643,8 @@ function shutdown(signal) {
   console.log(`PARDEX Online shutting down (${signal})`);
 
   for (const client of clients.values()) {
-    client.ws.close(1012, "PARDEX Online restarting");
+    if (client.disconnectTimer) clearTimeout(client.disconnectTimer);
+    client.ws?.close(1012, "PARDEX Online restarting");
   }
 
   wss.close(() => {});

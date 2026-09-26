@@ -29,10 +29,25 @@ jobs:
         run: npm install
 
       - name: Check server syntax
-        run: node --check server.js
+        run: |
+          node --check server.js
+          node --check social_store.js
 
-      - name: Run two-client smoke test
+      - name: Run room and social smoke tests
         run: npm test
 
       - name: Build deployable container
         run: docker build -t pardex-online-ci .
+
+      - name: Verify container starts and becomes healthy
+        run: |
+          container_id=$(docker run -d -p 18765:8765 -e PARDEX_SOCIAL_DATA_PATH=/tmp/pardex-social.json pardex-online-ci)
+          trap 'docker rm -f "$container_id" >/dev/null 2>&1 || true' EXIT
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -fsS http://127.0.0.1:18765/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs "$container_id"
+          exit 1

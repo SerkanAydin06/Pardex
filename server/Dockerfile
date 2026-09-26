@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev
 
-COPY server.js ./
+COPY server.js social_store.js ./
 
 ENV HOST=0.0.0.0
 ENV PORT=8765

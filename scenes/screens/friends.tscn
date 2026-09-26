@@ -1,4 +1,6 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/screens/friends.gd" id="1_friends"]
 
 [sub_resource type="StyleBoxFlat" id="Panel"]
 bg_color = Color(0.018, 0.032, 0.052, 0.96)
@@ -14,10 +16,10 @@ corner_radius_bottom_left = 16
 shadow_color = Color(0, 0, 0, 0.30)
 shadow_size = 11
 shadow_offset = Vector2(0, 4)
-content_margin_left = 24.0
-content_margin_top = 22.0
-content_margin_right = 24.0
-content_margin_bottom = 22.0
+content_margin_left = 22.0
+content_margin_top = 18.0
+content_margin_right = 22.0
+content_margin_bottom = 18.0
 
 [sub_resource type="StyleBoxFlat" id="IntroPanel"]
 bg_color = Color(0.014, 0.046, 0.069, 0.97)
@@ -34,9 +36,9 @@ shadow_color = Color(0, 0, 0, 0.34)
 shadow_size = 12
 shadow_offset = Vector2(0, 4)
 content_margin_left = 26.0
-content_margin_top = 22.0
+content_margin_top = 20.0
 content_margin_right = 24.0
-content_margin_bottom = 22.0
+content_margin_bottom = 20.0
 
 [sub_resource type="StyleBoxFlat" id="PreviewChip"]
 bg_color = Color(0.025, 0.12, 0.16, 0.88)
@@ -68,10 +70,10 @@ corner_radius_bottom_left = 16
 shadow_color = Color(0, 0, 0, 0.24)
 shadow_size = 9
 shadow_offset = Vector2(0, 3)
-content_margin_left = 24.0
-content_margin_top = 22.0
-content_margin_right = 24.0
-content_margin_bottom = 22.0
+content_margin_left = 20.0
+content_margin_top = 17.0
+content_margin_right = 20.0
+content_margin_bottom = 17.0
 
 [sub_resource type="StyleBoxFlat" id="Search"]
 bg_color = Color(0.010, 0.024, 0.040, 0.96)
@@ -146,10 +148,11 @@ content_margin_bottom = 10.0
 [node name="FriendsContent" type="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 14
+theme_override_constants/separation = 12
+script = ExtResource("1_friends")
 
 [node name="Intro" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(0, 150)
+custom_minimum_size = Vector2(0, 134)
 layout_mode = 2
 theme_override_styles/panel = SubResource("IntroPanel")
 
@@ -160,25 +163,25 @@ theme_override_constants/separation = 22
 [node name="Text" type="VBoxContainer" parent="Intro/Row"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 7
 
 [node name="Eyebrow" type="Label" parent="Intro/Row/Text"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
-text = "PARDEX ONLINE"
+text = "PARDEX SOSYAL"
 
 [node name="Title" type="Label" parent="Intro/Row/Text"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 28
-text = "Arkadaşların burada olacak."
+theme_override_font_sizes/font_size = 27
+text = "Ekibini PARDEX'te kur."
 
 [node name="Body" type="Label" parent="Intro/Row/Text"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.63, 0.70, 0.79, 1)
 theme_override_font_sizes/font_size = 14
-text = "Çevrimiçi durum, hangi oyunda oldukları ve davetler bu ekrandan yönetilecek.\nSunucu bağlantısı tamamlanana kadar ekran geliştirme önizlemesidir."
+text = "Kullanıcı ara, arkadaşlık isteği gönder ve çevrimiçi arkadaşlarını gör.\nOyun davetleri, oyunlar hazır olduğunda bu sosyal temel üzerine eklenecek."
 
 [node name="Badge" type="Label" parent="Intro/Row"]
 custom_minimum_size = Vector2(166, 0)
@@ -186,7 +189,7 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.42, 0.88, 1, 0.82)
 theme_override_font_sizes/font_size = 16
 theme_override_styles/normal = SubResource("PreviewChip")
-text = "●  ONLINE SOSYAL"
+text = "●  SOSYAL HAZIR"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -202,49 +205,89 @@ theme_override_colors/font_placeholder_color = Color(0.38, 0.44, 0.53, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("Search")
 theme_override_styles/focus = SubResource("SearchFocus")
-placeholder_text = "Kullanıcı adı ara..."
-editable = false
+placeholder_text = "Kullanıcı adı veya PARDEX kimliği ara..."
 
-[node name="AddFriendButton" type="Button" parent="Toolbar"]
+[node name="SearchButton" type="Button" parent="Toolbar"]
 layout_mode = 2
-custom_minimum_size = Vector2(178, 44)
+custom_minimum_size = Vector2(132, 44)
 focus_mode = 0
-disabled = true
-theme_override_colors/font_color = Color(0.85, 0.9, 0.98, 1)
+theme_override_colors/font_color = Color(0.90, 0.95, 1, 1)
+theme_override_colors/font_disabled_color = Color(0.39, 0.45, 0.54, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("Button")
 theme_override_styles/hover = SubResource("ButtonHover")
 theme_override_styles/disabled = SubResource("ButtonDisabled")
-theme_override_colors/font_disabled_color = Color(0.39, 0.45, 0.54, 1)
-text = "ARKADAŞ EKLE"
+text = "ARA"
 
-[node name="ListPanel" type="PanelContainer" parent="."]
+[node name="ConnectionHint" type="Label" parent="."]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.67, 0.75, 1)
+theme_override_font_sizes/font_size = 12
+text = "PARDEX sosyal durumu hazırlanıyor..."
+
+[node name="ContentScroll" type="ScrollContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Sections" type="VBoxContainer" parent="ContentScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="RequestsPanel" type="PanelContainer" parent="ContentScroll/Sections"]
+visible = false
+layout_mode = 2
+theme_override_styles/panel = SubResource("Panel")
+
+[node name="Requests" type="VBoxContainer" parent="ContentScroll/Sections/RequestsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="RequestsHeader" type="Label" parent="ContentScroll/Sections/RequestsPanel/Requests"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.88, 0.90, 1)
+theme_override_font_sizes/font_size = 13
+text = "GELEN ARKADAŞLIK İSTEKLERİ"
+
+[node name="RequestsList" type="VBoxContainer" parent="ContentScroll/Sections/RequestsPanel/Requests"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ResultsPanel" type="PanelContainer" parent="ContentScroll/Sections"]
+visible = false
+layout_mode = 2
+theme_override_styles/panel = SubResource("ListPanel")
+
+[node name="Results" type="VBoxContainer" parent="ContentScroll/Sections/ResultsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 9
+
+[node name="ResultsHeader" type="Label" parent="ContentScroll/Sections/ResultsPanel/Results"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.75, 0.94, 1)
+theme_override_font_sizes/font_size = 13
+text = "ARAMA SONUÇLARI"
+
+[node name="ResultsList" type="VBoxContainer" parent="ContentScroll/Sections/ResultsPanel/Results"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FriendsPanel" type="PanelContainer" parent="ContentScroll/Sections"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("ListPanel")
 
-[node name="EmptyState" type="VBoxContainer" parent="ListPanel"]
+[node name="Friends" type="VBoxContainer" parent="ContentScroll/Sections/FriendsPanel"]
 layout_mode = 2
-alignment = 1
-theme_override_constants/separation = 10
+theme_override_constants/separation = 9
 
-[node name="Icon" type="Label" parent="ListPanel/EmptyState"]
+[node name="FriendsHeader" type="Label" parent="ContentScroll/Sections/FriendsPanel/Friends"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.20, 0.63, 0.80, 0.75)
-theme_override_font_sizes/font_size = 50
-text = "◉"
-horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.45, 0.75, 0.94, 1)
+theme_override_font_sizes/font_size = 13
+text = "ARKADAŞLAR  •  0"
 
-[node name="Title" type="Label" parent="ListPanel/EmptyState"]
+[node name="FriendsList" type="VBoxContainer" parent="ContentScroll/Sections/FriendsPanel/Friends"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.85, 0.92, 1)
-theme_override_font_sizes/font_size = 20
-text = "Sosyal merkez hazırlanıyor"
-horizontal_alignment = 1
-
-[node name="Body" type="Label" parent="ListPanel/EmptyState"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.47, 0.53, 0.62, 1)
-theme_override_font_sizes/font_size = 14
-text = "Arkadaşların, çevrimiçi durumları ve oyun davetleri burada tek merkezde görünecek."
-horizontal_alignment = 1
+theme_override_constants/separation = 8
