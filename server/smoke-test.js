@@ -5,6 +5,7 @@ const WebSocket = require("ws");
 const PORT = 9876;
 const URL = `ws://127.0.0.1:${PORT}`;
 const GAME_SERVER_URL = "ws://127.0.0.1:9999";
+const SESSION_GRACE_MS = 1200;
 
 function waitForMessage(ws, predicate, timeoutMs = 4000) {
   return new Promise((resolve, reject) => {
@@ -30,7 +31,7 @@ function waitForMessage(ws, predicate, timeoutMs = 4000) {
   });
 }
 
-async function connectClient(displayName) {
+async function connectClient(displayName, resumeToken = "", expectRoom = false) {
   const ws = new WebSocket(URL);
   await new Promise((resolve, reject) => {
     ws.once("open", resolve);
@@ -38,11 +39,25 @@ async function connectClient(displayName) {
   });
 
   const welcomePromise = waitForMessage(ws, (message) => message.type === "welcome");
-  ws.send(JSON.stringify({ type: "hello", display_name: displayName }));
+  const roomPromise = expectRoom
+    ? waitForMessage(ws, (message) => message.type === "room_state")
+    : null;
+  const hello = { type: "hello", display_name: displayName };
+  if (resumeToken) hello.resume_token = resumeToken;
+  ws.send(JSON.stringify(hello));
+
   const welcome = await welcomePromise;
+  const roomState = roomPromise ? await roomPromise : null;
   assert.ok(welcome.user_id, "welcome must include user_id");
+  assert.ok(welcome.resume_token, "welcome must include resume_token");
   assert.strictEqual(welcome.display_name, displayName);
-  return { ws, userId: welcome.user_id };
+  return {
+    ws,
+    userId: welcome.user_id,
+    resumeToken: welcome.resume_token,
+    resumed: Boolean(welcome.resumed),
+    roomState,
+  };
 }
 
 async function waitForServerReady(server) {
@@ -59,6 +74,13 @@ async function waitForServerReady(server) {
       reject(new Error(`Server exited before ready with code ${code}`));
     });
   });
+}
+
+async function closeClient(ws) {
+  if (!ws || ws.readyState === WebSocket.CLOSED) return;
+  const closed = new Promise((resolve) => ws.once("close", resolve));
+  ws.close();
+  await closed;
 }
 
 async function setReadyAndWait(client, observer, userId) {
@@ -79,6 +101,7 @@ async function main() {
       HOST: "127.0.0.1",
       PORT: String(PORT),
       KORSAN_GAME_SERVER_URL: GAME_SERVER_URL,
+      SESSION_GRACE_MS: String(SESSION_GRACE_MS),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -92,6 +115,9 @@ async function main() {
     first = await connectClient("Pardus-A");
     second = await connectClient("Pardus-B");
 
+    assert.strictEqual(first.resumed, false);
+    assert.strictEqual(second.resumed, false);
+
     const createdPromise = waitForMessage(
       first.ws,
       (message) => message.type === "room_state" && message.room?.members?.length === 1
@@ -103,8 +129,10 @@ async function main() {
     }));
     const created = await createdPromise;
     const roomCode = created.room.code;
+    const originalHostId = first.userId;
+    const hostResumeToken = first.resumeToken;
     assert.match(roomCode, /^[A-Z2-9]{5}$/);
-    assert.strictEqual(created.room.host_id, first.userId);
+    assert.strictEqual(created.room.host_id, originalHostId);
     assert.strictEqual(created.room.game_server_url, GAME_SERVER_URL);
 
     const firstJoinPromise = waitForMessage(
@@ -117,6 +145,22 @@ async function main() {
     );
     second.ws.send(JSON.stringify({ type: "join_room", code: roomCode }));
     await Promise.all([firstJoinPromise, secondJoinPromise]);
+
+    await setReadyAndWait(first, second, originalHostId);
+
+    await closeClient(first.ws);
+    first = await connectClient("Pardus-A", hostResumeToken, true);
+    assert.strictEqual(first.resumed, true, "host connection should resume");
+    assert.strictEqual(first.userId, originalHostId, "resumed host must keep user_id");
+    assert.strictEqual(first.resumeToken, hostResumeToken, "resume token should remain stable");
+    assert.strictEqual(first.roomState.room.code, roomCode);
+    assert.strictEqual(first.roomState.room.host_id, originalHostId, "host role must survive reconnect");
+    assert.ok(
+      first.roomState.room.members.some(
+        (member) => member.user_id === originalHostId && member.ready === true
+      ),
+      "ready state must survive reconnect"
+    );
 
     const mutedStatePromise = waitForMessage(
       first.ws,
@@ -152,7 +196,6 @@ async function main() {
     }));
     await voiceRelayPromise;
 
-    await setReadyAndWait(first, second, first.userId);
     await setReadyAndWait(second, first, second.userId);
 
     const firstStartPromise = waitForMessage(first.ws, (message) => message.type === "game_start");
@@ -182,7 +225,20 @@ async function main() {
     second.ws.send(JSON.stringify({ type: "launch_failed" }));
     await Promise.all([hostRollbackPromise, joinerRollbackPromise]);
 
-    console.log("PARDEX Online smoke test passed: create -> join -> voice -> ready -> start -> rollback");
+    const expiredMemberPromise = waitForMessage(
+      first.ws,
+      (message) => message.type === "room_state"
+        && message.room?.code === roomCode
+        && message.room.members.length === 1
+        && message.room.members[0].user_id === originalHostId,
+      SESSION_GRACE_MS + 2500
+    );
+    await closeClient(second.ws);
+    await expiredMemberPromise;
+
+    console.log(
+      "PARDEX Online smoke test passed: create -> join -> reconnect recovery -> voice -> ready -> start -> rollback -> expiry"
+    );
   } finally {
     if (first?.ws) first.ws.close();
     if (second?.ws) second.ws.close();
