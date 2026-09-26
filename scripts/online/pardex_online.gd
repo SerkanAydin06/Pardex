@@ -19,6 +19,7 @@ const VOICE_OUTBOUND_QUEUE_LIMIT := 32768
 var server_url := DEFAULT_SERVER_URL
 var display_name := "Pardus"
 var user_id := ""
+var resume_token := ""
 var current_room: Dictionary = {}
 var connection_state := "offline"
 
@@ -74,12 +75,9 @@ func _process(delta: float) -> void:
 		_no_delay_configured = false
 		_heartbeat_elapsed = 0.0
 		_server_silence_elapsed = 0.0
-		user_id = ""
-		if not current_room.is_empty():
-			current_room.clear()
-			room_left.emit()
 		_set_connection_state("offline")
 		if was_manual:
+			_clear_session_state()
 			_manual_disconnect = false
 
 func configure(url: String, player_name: String) -> void:
@@ -131,10 +129,6 @@ func reconnect_server() -> void:
 	if _socket != null:
 		_socket.close(1000, "PARDEX reconnect")
 	_socket = null
-	user_id = ""
-	if not current_room.is_empty():
-		current_room.clear()
-		room_left.emit()
 	_set_connection_state("offline")
 	connect_server()
 
@@ -145,7 +139,9 @@ func disconnect_server() -> void:
 	if _socket != null:
 		_socket.close(1000, "PARDEX closed")
 	else:
+		_clear_session_state()
 		_set_connection_state("offline")
+		_manual_disconnect = false
 
 func create_room(game_id := "korsanlar", max_players := 4) -> void:
 	if not is_online():
@@ -211,10 +207,6 @@ func send_voice_frame(sequence: int, pcm_base64: String) -> void:
 	if not is_online() or current_room.is_empty() or pcm_base64.is_empty():
 		return
 
-	# Voice is real-time data: once the socket queue grows, old audio has
-	# already lost its value. Drop new voice frames before the WebSocket
-	# outbound buffer fills so control messages (ready/leave/start/ping)
-	# always keep headroom and Godot never hits ERR_OUT_OF_MEMORY here.
 	if (
 		_socket != null
 		and _socket.get_current_outbound_buffered_amount() >= VOICE_OUTBOUND_QUEUE_LIMIT
@@ -266,10 +258,13 @@ func build_game_launch_args(expected_game_id: String) -> PackedStringArray:
 	return args
 
 func _send_hello() -> void:
-	_send({
+	var payload := {
 		"type": "hello",
 		"display_name": display_name,
-	})
+	}
+	if not resume_token.is_empty():
+		payload["resume_token"] = resume_token
+	_send(payload)
 
 func _send(payload: Dictionary) -> Error:
 	if _socket == null or _socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
@@ -291,8 +286,15 @@ func _handle_packet(packet: String) -> void:
 
 	match message_type:
 		"welcome":
+			var previous_user_id := user_id
+			var had_room := not current_room.is_empty()
 			user_id = str(message.get("user_id", ""))
+			resume_token = str(message.get("resume_token", ""))
 			display_name = str(message.get("display_name", display_name))
+			if had_room and not previous_user_id.is_empty() and user_id != previous_user_id:
+				current_room.clear()
+				room_left.emit()
+				online_error.emit("Önceki PARDEX odası geri yüklenemedi. Yeniden katılman gerekiyor.")
 			welcome_received.emit(user_id, display_name)
 		"room_state":
 			var room_data = message.get("room", {})
@@ -318,6 +320,13 @@ func _handle_packet(packet: String) -> void:
 			online_error.emit(str(message.get("message", "Bilinmeyen PARDEX Online hatası.")))
 		"pong":
 			pass
+
+func _clear_session_state() -> void:
+	user_id = ""
+	resume_token = ""
+	if not current_room.is_empty():
+		current_room.clear()
+		room_left.emit()
 
 func _set_connection_state(new_state: String) -> void:
 	if connection_state == new_state:
