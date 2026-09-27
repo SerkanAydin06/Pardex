@@ -24,14 +24,18 @@ func _is_valid_identity_key(value: String) -> bool:
 	return true
 
 
-func _verify_identity_repair() -> bool:
+func _autoload(name: String) -> Node:
+	return root.get_node_or_null(name)
+
+
+func _verify_identity_repair(identity_guard: Node) -> bool:
 	var broken := ConfigFile.new()
 	broken.set_value("identity", "key", "z".repeat(64))
 	if broken.save(IDENTITY_PATH) != OK:
 		_fail("invalid identity fixture could not be written")
 		return false
 
-	PardexIdentityGuard._ensure_valid_identity()
+	identity_guard.call("_ensure_valid_identity")
 	var repaired := ConfigFile.new()
 	if repaired.load(IDENTITY_PATH) != OK:
 		_fail("repaired identity could not be loaded")
@@ -44,7 +48,12 @@ func _verify_identity_repair() -> bool:
 
 
 func _run() -> void:
-	if not _verify_identity_repair():
+	var identity_guard := _autoload("PardexIdentityGuard")
+	var online := _autoload("PardexOnline")
+	if identity_guard == null or online == null:
+		_fail("required autoloads are missing")
+		return
+	if not _verify_identity_repair(identity_guard):
 		return
 
 	var config := ConfigFile.new()
@@ -54,7 +63,7 @@ func _run() -> void:
 		_fail("CI settings could not be written")
 		return
 
-	PardexOnline.configure(CI_SERVER_URL, "CI-Pardus")
+	online.call("configure", CI_SERVER_URL, "CI-Pardus")
 
 	var packed := ResourceLoader.load(MAIN_SCENE) as PackedScene
 	if packed == null:
@@ -93,6 +102,6 @@ func _run() -> void:
 		_fail("presence label was not found")
 		return
 
-	PardexOnline.disconnect_server()
+	online.call("disconnect_server")
 	print("PARDEX boot smoke passed: identity repair -> main scene -> autoloads -> dynamic social UI")
 	quit(0)
