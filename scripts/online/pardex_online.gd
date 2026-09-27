@@ -13,6 +13,9 @@ signal social_notice(message: String)
 signal room_invite_received(invite: Dictionary)
 signal room_invite_closed(invite_id: String, reason: String)
 signal presence_changed(presence: String)
+signal recovery_code_created(code: String)
+signal account_recovered(account_id: String, display_name: String)
+signal account_recovery_failed(message: String)
 
 const DEFAULT_SERVER_URL := "wss://pardex-online-production.up.railway.app"
 const LEGACY_LOCAL_SERVER_URL := "ws://127.0.0.1:8765"
@@ -23,6 +26,7 @@ const SERVER_TIMEOUT := 60.0
 const WEBSOCKET_OUTBOUND_BUFFER_SIZE := 262144
 const VOICE_OUTBOUND_QUEUE_LIMIT := 32768
 const VALID_PRESENCE := ["online", "away", "busy"]
+const RECOVERY_HEX := "0123456789ABCDEF"
 
 var server_url := DEFAULT_SERVER_URL
 var display_name := "Pardus"
@@ -36,6 +40,7 @@ var pending_room_invite: Dictionary = {}
 var connection_state := "offline"
 var presence_status := "online"
 var effective_presence := "offline"
+var recovery_enabled := false
 
 var _socket: WebSocketPeer
 var _reconnect_elapsed := 0.0
@@ -45,6 +50,8 @@ var _manual_disconnect := false
 var _hello_sent := false
 var _no_delay_configured := false
 var _session_ready := false
+var _pending_recovery_code := ""
+var _pending_recovery_setup_code := ""
 
 
 func _ready() -> void:
@@ -302,6 +309,32 @@ func _send_social_action(action_type: String, target_account_id: String) -> void
 	_send({"type": action_type, "account_id": normalized_id})
 
 
+func request_recovery_code() -> void:
+	if not is_online():
+		account_recovery_failed.emit("Kurtarma kodu oluşturmak için PARDEX Online bağlantısı gerekli.")
+		return
+	var recovery_code := _generate_recovery_code()
+	_pending_recovery_setup_code = recovery_code
+	var result := _send({"type": "set_recovery_code", "recovery_code": recovery_code})
+	if result != OK:
+		_pending_recovery_setup_code = ""
+		account_recovery_failed.emit("Kurtarma kodu sunucuya gönderilemedi.")
+
+
+func recover_account(recovery_code: String) -> void:
+	if not current_room.is_empty():
+		account_recovery_failed.emit("Hesap kurtarmadan önce aktif oyun odasından çıkmalısın.")
+		return
+	var normalized := _normalize_recovery_code(recovery_code)
+	if normalized.is_empty():
+		account_recovery_failed.emit("Kurtarma kodu biçimi geçersiz.")
+		return
+	_pending_recovery_setup_code = ""
+	_pending_recovery_code = normalized
+	resume_token = ""
+	reconnect_server()
+
+
 func set_voice_muted(is_muted: bool) -> void:
 	if is_online() and not current_room.is_empty():
 		_send({"type": "voice_state", "muted": is_muted})
@@ -378,6 +411,26 @@ func _load_or_create_identity() -> void:
 		push_warning("PARDEX identity could not be saved: %s" % error_string(result))
 
 
+func _generate_recovery_code() -> String:
+	var hex_value := Crypto.new().generate_random_bytes(16).hex_encode().to_upper()
+	var groups: PackedStringArray = []
+	for offset in range(0, hex_value.length(), 4):
+		groups.append(hex_value.substr(offset, 4))
+	return "PX1-" + "-".join(groups)
+
+
+func _normalize_recovery_code(value: String) -> String:
+	var compact := value.strip_edges().to_upper()
+	for separator in ["-", " ", "\t", "\n", "\r"]:
+		compact = compact.replace(separator, "")
+	if compact.length() != 35 or not compact.begins_with("PX1"):
+		return ""
+	for character in compact.substr(3):
+		if RECOVERY_HEX.find(character) == -1:
+			return ""
+	return compact
+
+
 func _send_hello() -> void:
 	var payload := {
 		"type": "hello",
@@ -385,7 +438,9 @@ func _send_hello() -> void:
 		"identity_key": identity_key,
 		"presence_status": presence_status,
 	}
-	if not resume_token.is_empty():
+	if not _pending_recovery_code.is_empty():
+		payload["recovery_code"] = _pending_recovery_code
+	elif not resume_token.is_empty():
 		payload["resume_token"] = resume_token
 	_send(payload)
 
@@ -411,10 +466,12 @@ func _handle_packet(packet: String) -> void:
 		"welcome":
 			var previous_user_id := user_id
 			var had_room := not current_room.is_empty()
+			var recovered := bool(message.get("recovered", false))
 			user_id = str(message.get("user_id", ""))
 			account_id = str(message.get("account_id", account_id))
 			resume_token = str(message.get("resume_token", ""))
 			display_name = str(message.get("display_name", display_name))
+			recovery_enabled = bool(message.get("recovery_enabled", recovery_enabled))
 			_session_ready = not account_id.is_empty() and not user_id.is_empty()
 			if not _session_ready:
 				online_error.emit("PARDEX kimliği sunucudan alınamadı.")
@@ -425,8 +482,17 @@ func _handle_packet(packet: String) -> void:
 				online_error.emit("Önceki PARDEX odası geri yüklenemedi. Yeniden katılman gerekiyor.")
 			_set_connection_state("online")
 			welcome_received.emit(user_id, display_name)
+			if recovered:
+				_pending_recovery_code = ""
+				account_recovered.emit(account_id, display_name)
 			if bool(message.get("social_enabled", false)):
 				request_social_state()
+		"recovery_code_saved":
+			recovery_enabled = bool(message.get("recovery_enabled", true))
+			var saved_code := _pending_recovery_setup_code
+			_pending_recovery_setup_code = ""
+			if not saved_code.is_empty():
+				recovery_code_created.emit(saved_code)
 		"presence_state":
 			_set_effective_presence(str(message.get("presence", presence_status)))
 		"social_state":
@@ -476,6 +542,13 @@ func _handle_packet(packet: String) -> void:
 			room_left.emit()
 		"error":
 			var error_message := str(message.get("message", "Bilinmeyen PARDEX Online hatası."))
+			var error_code := str(message.get("code", ""))
+			if not _pending_recovery_code.is_empty() and error_code in ["INVALID_RECOVERY_CODE", "RECOVERY_SAVE_FAILED", "INVALID_IDENTITY"]:
+				_pending_recovery_code = ""
+				account_recovery_failed.emit(error_message)
+			if not _pending_recovery_setup_code.is_empty() and error_code.begins_with("RECOVERY_"):
+				_pending_recovery_setup_code = ""
+				account_recovery_failed.emit(error_message)
 			online_error.emit(error_message)
 			social_notice.emit(error_message)
 		"pong":

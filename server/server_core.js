@@ -2,7 +2,7 @@ const http = require("http");
 const path = require("path");
 const { WebSocketServer, WebSocket } = require("ws");
 const crypto = require("crypto");
-const { SocialStore, accountIdFromIdentityKey } = require("./social_store");
+const { SocialStore } = require("./social_store");
 
 const PORT = Number(process.env.PORT || 8765);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -462,6 +462,27 @@ function leaveCurrentRoom(userId, notifySelf = true) {
   pushRoomPresence(room);
 }
 
+function revokeAccountSessions(accountId, replacementClient) {
+  if (!accountId) return;
+  for (const session of [...clients.values()]) {
+    if (session === replacementClient || session.accountId !== accountId) continue;
+    if (session.disconnectTimer) {
+      clearTimeout(session.disconnectTimer);
+      session.disconnectTimer = null;
+    }
+    leaveCurrentRoom(session.userId, false);
+    clients.delete(session.userId);
+    resumeTokens.delete(session.resumeToken);
+    session.replaced = true;
+    const previousSocket = session.ws;
+    session.ws = null;
+    if (previousSocket?.readyState === WebSocket.OPEN) {
+      previousSocket.close(4003, "PARDEX account transferred to another device");
+    }
+  }
+  pushRelatedSocialStates(accountId);
+}
+
 function syncClientNameToRoom(client) {
   if (!client.roomCode) return;
   const room = rooms.get(client.roomCode);
@@ -720,9 +741,28 @@ function handleMessage(client, raw) {
 
   switch (message.type) {
     case "hello": {
-      const accountId = accountIdFromIdentityKey(message.identity_key);
+      const recoveryCode = String(message.recovery_code || "").trim();
+      let accountId = "";
+      let recovered = false;
+      let previousAccountId = "";
+
+      if (recoveryCode) {
+        const recovery = social.recoverIdentity(message.identity_key, recoveryCode);
+        if (!recovery.ok) {
+          sendError(client.ws, recovery.code, recovery.message);
+          client.ws?.close(1008, "PARDEX account recovery rejected");
+          return;
+        }
+        accountId = recovery.accountId;
+        previousAccountId = recovery.previousAccountId || "";
+        recovered = true;
+        revokeAccountSessions(accountId, client);
+      } else {
+        accountId = social.resolveAccountId(message.identity_key);
+      }
+
       if (!accountId) {
-        sendError(client.ws, "INVALID_IDENTITY", "PARDEX cihaz kimliği geçersiz.");
+        sendError(client.ws, "INVALID_IDENTITY", "PARDEX cihaz kimliği geçersiz veya bu hesap başka bir cihaza taşındı.");
         client.ws?.close(1008, "Invalid PARDEX identity");
         return;
       }
@@ -730,16 +770,20 @@ function handleMessage(client, raw) {
         sendError(client.ws, "ACCOUNT_CHANGE_NOT_ALLOWED", "Açık bir PARDEX oturumunda hesap değiştirilemez.");
         return;
       }
-      const resumed = tryResumeClient(client, message.resume_token, accountId);
+      const resumed = recovered ? false : tryResumeClient(client, message.resume_token, accountId);
       client.helloReceived = true;
       if (client.helloTimer) {
         clearTimeout(client.helloTimer);
         client.helloTimer = null;
       }
       client.accountId = accountId;
-      client.displayName = safeName(message.display_name);
+      const existingAccount = social.getAccount(accountId);
+      client.displayName = recovered && existingAccount
+        ? existingAccount.display_name
+        : safeName(message.display_name);
       client.presenceStatus = safePresence(message.presence_status || client.presenceStatus);
       social.ensureAccount(accountId, client.displayName);
+      social.registerIdentity(accountId, message.identity_key);
       send(client.ws, {
         type: "welcome",
         user_id: client.userId,
@@ -747,6 +791,8 @@ function handleMessage(client, raw) {
         display_name: client.displayName,
         resume_token: client.resumeToken,
         resumed,
+        recovered,
+        recovery_enabled: social.hasRecoveryCode(client.accountId),
         social_enabled: true,
         room_invites_enabled: true,
         presence_enabled: true,
@@ -755,6 +801,23 @@ function handleMessage(client, raw) {
       syncClientNameToRoom(client);
       pushSocialState(client.accountId);
       pushRelatedSocialStates(client.accountId);
+      if (recovered && previousAccountId && previousAccountId !== client.accountId) {
+        pushRelatedSocialStates(previousAccountId);
+      }
+      break;
+    }
+    case "set_recovery_code": {
+      if (!requireSocialAccount(client)) return;
+      const result = social.setRecoveryCode(client.accountId, message.recovery_code);
+      if (!result.ok) {
+        sendError(client.ws, result.code, result.message);
+        return;
+      }
+      send(client.ws, {
+        type: "recovery_code_saved",
+        recovery_enabled: true,
+        message: result.message,
+      });
       break;
     }
     case "get_social_state":
@@ -867,6 +930,7 @@ const httpServer = http.createServer((req, res) => {
       voiceRelay: VOICE_RELAY_ENABLED,
       presence: true,
       friendRoomJoin: true,
+      accountRecovery: true,
     }));
     return;
   }

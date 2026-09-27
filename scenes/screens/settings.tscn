@@ -1,4 +1,6 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/screens/account_recovery.gd" id="1_recovery"]
 
 [sub_resource type="StyleBoxFlat" id="Panel"]
 bg_color = Color(0.016, 0.030, 0.049, 0.97)
@@ -180,6 +182,148 @@ theme_override_styles/normal = SubResource("Button")
 theme_override_styles/hover = SubResource("ButtonHover")
 theme_override_styles/pressed = SubResource("ButtonHover")
 text = "KAYDET"
+
+[node name="AccountPanel" type="PanelContainer" parent="."]
+layout_mode = 2
+theme_override_styles/panel = SubResource("OnlinePanel")
+script = ExtResource("1_recovery")
+
+[node name="VBox" type="VBoxContainer" parent="AccountPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Section" type="Label" parent="AccountPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
+theme_override_font_sizes/font_size = 13
+text = "●  HESAP KURTARMA"
+
+[node name="Description" type="Label" parent="AccountPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
+theme_override_font_sizes/font_size = 14
+text = "Tek kullanımlık kurtarma kodu ile PARDEX hesabını başka bir bilgisayara güvenli şekilde taşı."
+autowrap_mode = 2
+
+[node name="AccountRow" type="HBoxContainer" parent="AccountPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AccountTitle" type="Label" parent="AccountPanel/VBox/AccountRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.48, 0.56, 0.66, 1)
+theme_override_font_sizes/font_size = 12
+text = "HESAP"
+
+[node name="AccountValue" type="Label" parent="AccountPanel/VBox/AccountRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.88, 0.92, 0.98, 1)
+theme_override_font_sizes/font_size = 12
+text = "Bağlantı bekleniyor"
+
+[node name="RecoveryState" type="Label" parent="AccountPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.76, 0.84, 1)
+theme_override_font_sizes/font_size = 12
+text = "●  KURTARMA KODU HENÜZ OLUŞTURULMADI"
+
+[node name="GenerateRow" type="HBoxContainer" parent="AccountPanel/VBox"]
+layout_mode = 2
+
+[node name="GenerateHint" type="Label" parent="AccountPanel/VBox/GenerateRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.56, 0.63, 0.72, 1)
+theme_override_font_sizes/font_size = 12
+text = "Yeni kod üretildiğinde önceki kod geçersiz olur."
+
+[node name="GenerateButton" type="Button" parent="AccountPanel/VBox/GenerateRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(196, 40)
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("Button")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/pressed = SubResource("ButtonHover")
+text = "KURTARMA KODU OLUŞTUR"
+
+[node name="CodeBox" type="VBoxContainer" parent="AccountPanel/VBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="CodeRow" type="HBoxContainer" parent="AccountPanel/VBox/CodeBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CodeEdit" type="LineEdit" parent="AccountPanel/VBox/CodeBox/CodeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+editable = false
+theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("Input")
+theme_override_styles/focus = SubResource("InputFocus")
+
+[node name="CopyButton" type="Button" parent="AccountPanel/VBox/CodeBox/CodeRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(112, 40)
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("Button")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/pressed = SubResource("ButtonHover")
+text = "KOPYALA"
+
+[node name="CodeHint" type="Label" parent="AccountPanel/VBox/CodeBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.70, 0.38, 1)
+theme_override_font_sizes/font_size = 12
+text = "Bu kod yalnız burada gösterilir. PARDEX kodun düz metnini sunucuda saklamaz."
+autowrap_mode = 2
+
+[node name="RecoverDescription" type="Label" parent="AccountPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.66, 0.72, 0.81, 1)
+theme_override_font_sizes/font_size = 12
+text = "Başka bir cihazdaki hesabı bu bilgisayara bağlamak için kurtarma kodunu gir."
+autowrap_mode = 2
+
+[node name="RecoverRow" type="HBoxContainer" parent="AccountPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RecoverCodeEdit" type="LineEdit" parent="AccountPanel/VBox/RecoverRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_length = 48
+theme_override_colors/font_color = Color(0.9, 0.93, 0.98, 1)
+theme_override_colors/font_placeholder_color = Color(0.38, 0.44, 0.53, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("Input")
+theme_override_styles/focus = SubResource("InputFocus")
+placeholder_text = "PX1-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
+
+[node name="RecoverButton" type="Button" parent="AccountPanel/VBox/RecoverRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(156, 40)
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("Button")
+theme_override_styles/hover = SubResource("ButtonHover")
+theme_override_styles/pressed = SubResource("ButtonHover")
+text = "HESABI KURTAR"
+
+[node name="Status" type="Label" parent="AccountPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.56, 0.63, 0.72, 1)
+theme_override_font_sizes/font_size = 12
+text = "Kurtarma kodunu parola gibi sakla; paylaşma."
+autowrap_mode = 2
 
 [node name="OnlinePanel" type="PanelContainer" parent="."]
 layout_mode = 2
