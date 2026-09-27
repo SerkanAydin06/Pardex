@@ -31,9 +31,11 @@ jobs:
       - name: Check server syntax
         run: |
           node --check server.js
+          node --check server_core.js
           node --check social_store.js
+          node --check presence-smoke-test.js
 
-      - name: Run room and social smoke tests
+      - name: Run room, social, invite and presence smoke tests
         run: npm test
 
       - name: Build deployable container
