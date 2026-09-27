@@ -120,6 +120,7 @@ async function main() {
       KORSAN_GAME_SERVER_URL: GAME_SERVER_URL,
       SESSION_GRACE_MS: String(SESSION_GRACE_MS),
       PARDEX_SOCIAL_DATA_PATH: socialDataPath,
+      PARDEX_VOICE_RELAY_ENABLED: "1",
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
