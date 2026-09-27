@@ -33,12 +33,22 @@ jobs:
           node --check server.js
           node --check server_core.js
           node --check social_store.js
+          node --check lifecycle-smoke-test.js
           node --check presence-smoke-test.js
           node --check hardening-smoke-test.js
           node --check recovery-smoke-test.js
 
-      - name: Run room, social, invite, presence, hardening and recovery smoke tests
-        run: npm test
+      - name: Run secure lifecycle smoke test
+        run: node lifecycle-smoke-test.js
+
+      - name: Run remaining smoke tests
+        run: |
+          node smoke-test.js
+          node social-smoke-test.js
+          node invite-smoke-test.js
+          node presence-smoke-test.js
+          node hardening-smoke-test.js
+          node recovery-smoke-test.js
 
       - name: Build deployable container
         run: docker build -t pardex-online-ci .
