@@ -305,6 +305,13 @@ function installGameControlProtocol(ws) {
       // Let server_core produce the canonical BAD_JSON response.
     }
 
+    // The old one-phase game_hello path would mark the player in_game before
+    // the dedicated server admits them. Block it so every game launch must use
+    // ticket verification followed by the explicit admission confirmation.
+    if (message?.type === "game_hello") {
+      runtime.sendError(ws, "GAME_TWO_PHASE_REQUIRED", "Bu PARDEX sürümü iki aşamalı oyun kabulü gerektiriyor.");
+      return;
+    }
     if (message?.type === "game_ticket_verify") {
       handleTicketVerify(ws, message);
       return;
