@@ -19,6 +19,7 @@ config/icon="res://assets/icon.png"
 
 [autoload]
 
+PardexIdentityGuard="*res://scripts/online/pardex_identity_guard.gd"
 PardexOnline="*res://scripts/online/pardex_online.gd"
 PardexNotifications="*res://scripts/online/pardex_notifications.gd"
 PardexPresenceUI="*res://scripts/online/pardex_presence_ui.gd"
