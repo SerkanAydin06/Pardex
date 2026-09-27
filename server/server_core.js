@@ -9,6 +9,11 @@ const HOST = process.env.HOST || "0.0.0.0";
 const KORSAN_GAME_SERVER_URL = String(process.env.KORSAN_GAME_SERVER_URL || "").trim();
 const SESSION_GRACE_MS = Math.max(1000, Number(process.env.SESSION_GRACE_MS || 30_000));
 const ROOM_INVITE_TTL_MS = Math.max(15_000, Number(process.env.ROOM_INVITE_TTL_MS || 60_000));
+const HELLO_TIMEOUT_MS = Math.max(500, Number(process.env.HELLO_TIMEOUT_MS || 10_000));
+// PARDEX voice is disabled on the client; keep the relay off unless explicitly enabled.
+const VOICE_RELAY_ENABLED = ["1", "true", "yes"].includes(
+  String(process.env.PARDEX_VOICE_RELAY_ENABLED || "").trim().toLowerCase()
+);
 const SOCIAL_DATA_PATH = String(
   process.env.PARDEX_SOCIAL_DATA_PATH || path.join(__dirname, "data", "social.json")
 ).trim();
@@ -651,6 +656,7 @@ function setVoiceState(client, muted) {
 }
 
 function relayVoiceFrame(client, message) {
+  if (!VOICE_RELAY_ENABLED) return;
   if (!client.helloReceived || !client.roomCode) return;
   const room = rooms.get(client.roomCode);
   if (!room) return;
@@ -720,8 +726,16 @@ function handleMessage(client, raw) {
         client.ws?.close(1008, "Invalid PARDEX identity");
         return;
       }
+      if (client.helloReceived && client.accountId && client.accountId !== accountId) {
+        sendError(client.ws, "ACCOUNT_CHANGE_NOT_ALLOWED", "Açık bir PARDEX oturumunda hesap değiştirilemez.");
+        return;
+      }
       const resumed = tryResumeClient(client, message.resume_token, accountId);
       client.helloReceived = true;
+      if (client.helloTimer) {
+        clearTimeout(client.helloTimer);
+        client.helloTimer = null;
+      }
       client.accountId = accountId;
       client.displayName = safeName(message.display_name);
       client.presenceStatus = safePresence(message.presence_status || client.presenceStatus);
@@ -850,7 +864,7 @@ const httpServer = http.createServer((req, res) => {
       socialAccounts: Object.keys(social.data.accounts).length,
       socialDataPathConfigured: Boolean(SOCIAL_DATA_PATH),
       korsanGameServerAssigned: Boolean(KORSAN_GAME_SERVER_URL),
-      voiceRelay: true,
+      voiceRelay: VOICE_RELAY_ENABLED,
       presence: true,
       friendRoomJoin: true,
     }));
@@ -883,12 +897,24 @@ wss.on("connection", (ws) => {
     rateMessageCount: 0,
     voiceRateWindowStartedAt: Date.now(),
     voiceRateMessageCount: 0,
+    helloTimer: null,
     ws,
   };
+  client.helloTimer = setTimeout(() => {
+    client.helloTimer = null;
+    if (!client.helloReceived && client.ws === ws) ws.close(1008, "PARDEX hello timeout");
+  }, HELLO_TIMEOUT_MS);
+  client.helloTimer.unref?.();
   clients.set(userId, client);
   resumeTokens.set(resumeToken, userId);
   ws.on("message", (raw) => handleMessage(client, raw));
-  ws.on("close", () => detachClient(client, ws));
+  ws.on("close", () => {
+    if (client.helloTimer) {
+      clearTimeout(client.helloTimer);
+      client.helloTimer = null;
+    }
+    detachClient(client, ws);
+  });
   ws.on("error", () => {});
 });
 
