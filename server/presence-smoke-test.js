@@ -139,6 +139,7 @@ async function main() {
       if (message.type !== "social_state") return false;
       const friend = friendFromState(message, alice.accountId);
       return friend?.in_room === true
+        && friend?.room_state === "lobby"
         && friend?.game_name === "Korsanların Hazinesi"
         && friend?.room_joinable === true;
     });
@@ -146,6 +147,7 @@ async function main() {
     const aliceRoom = await aliceRoomPromise;
     await aliceRoomSeenByBob;
     assert.ok(aliceRoom.room.code, "room must have a code");
+    assert.strictEqual(aliceRoom.room.state, "lobby");
 
     const bobJoined = waitForMessage(bob.ws, (message) =>
       message.type === "room_state"
@@ -171,18 +173,26 @@ async function main() {
     await bobReadySeen;
 
     const gameStart = waitForMessage(bob.ws, (message) => message.type === "game_start");
+    alice.ws.send(JSON.stringify({ type: "start_game" }));
+    const started = await gameStart;
+    const matchId = started.match_id || started.room?.match_id;
+    assert.ok(matchId, "game_start must include match_id");
+    assert.strictEqual(started.room.state, "launching");
+    assert.strictEqual(started.room.in_game, false);
+
     const bobInGameSeen = waitForMessage(alice.ws, (message) => {
       if (message.type !== "social_state") return false;
       const friend = friendFromState(message, bob.accountId);
       return friend?.presence === "in_game"
         && friend?.in_game === true
+        && friend?.room_state === "in_game"
         && friend?.room_joinable === false;
     });
-    alice.ws.send(JSON.stringify({ type: "start_game" }));
-    await gameStart;
+    alice.ws.send(JSON.stringify({ type: "game_connected", match_id: matchId }));
+    bob.ws.send(JSON.stringify({ type: "game_connected", match_id: matchId }));
     await bobInGameSeen;
 
-    console.log("PARDEX presence smoke test passed: session guard -> status -> activity -> friend join -> in-game");
+    console.log("PARDEX presence smoke test passed: session guard -> status -> activity -> friend join -> launching -> confirmed in-game");
 
     await closeClient(alice.ws);
     await closeClient(bob.ws);
