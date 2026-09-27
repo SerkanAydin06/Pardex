@@ -2,10 +2,22 @@ name: PARDEX Online Production Smoke
 
 on:
   push:
+    branches:
+      - main
     paths:
-      - "server/production_smoke_test.js"
-      - ".github/workflows/pardex-production-smoke.yml"
+      - "server/server.js"
+      - "server/server_core.js"
+      - "server/social_store.js"
+      - "server/package.json"
+      - "server/package-lock.json"
+      - "server/Dockerfile"
+  schedule:
+    - cron: "23 */6 * * *"
   workflow_dispatch:
+
+concurrency:
+  group: pardex-production-smoke
+  cancel-in-progress: false
 
 jobs:
   production-smoke:
@@ -24,6 +36,10 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Allow Railway rollout after server push
+        if: github.event_name == 'push'
+        run: sleep 45
 
       - name: Test live PARDEX Online
         env:
