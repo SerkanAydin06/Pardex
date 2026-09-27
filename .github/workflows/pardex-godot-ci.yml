@@ -30,3 +30,6 @@ jobs:
 
       - name: Validate PARDEX resources
         run: godot --headless --path . --script res://scripts/ci/validate_project.gd
+
+      - name: Boot PARDEX headlessly
+        run: godot --headless --path . --script res://scripts/ci/boot_smoke.gd
