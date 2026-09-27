@@ -6,6 +6,11 @@ COPY package*.json ./
 RUN npm install --omit=dev
 
 COPY server.js server_core.js social_store.js ./
+COPY *-smoke-test.js ./
+
+# GitHub Actions minutes may be unavailable; production images must still prove
+# the complete local WebSocket/session/social/lifecycle suite before release.
+RUN npm test
 
 ENV HOST=0.0.0.0
 ENV PORT=8765
