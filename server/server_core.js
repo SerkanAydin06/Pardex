@@ -462,6 +462,27 @@ function leaveCurrentRoom(userId, notifySelf = true) {
   pushRoomPresence(room);
 }
 
+function revokeAccountSessions(accountId, replacementClient) {
+  if (!accountId) return;
+  for (const session of [...clients.values()]) {
+    if (session === replacementClient || session.accountId !== accountId) continue;
+    if (session.disconnectTimer) {
+      clearTimeout(session.disconnectTimer);
+      session.disconnectTimer = null;
+    }
+    leaveCurrentRoom(session.userId, false);
+    clients.delete(session.userId);
+    resumeTokens.delete(session.resumeToken);
+    session.replaced = true;
+    const previousSocket = session.ws;
+    session.ws = null;
+    if (previousSocket?.readyState === WebSocket.OPEN) {
+      previousSocket.close(4003, "PARDEX account transferred to another device");
+    }
+  }
+  pushRelatedSocialStates(accountId);
+}
+
 function syncClientNameToRoom(client) {
   if (!client.roomCode) return;
   const room = rooms.get(client.roomCode);
@@ -735,12 +756,13 @@ function handleMessage(client, raw) {
         accountId = recovery.accountId;
         previousAccountId = recovery.previousAccountId || "";
         recovered = true;
+        revokeAccountSessions(accountId, client);
       } else {
         accountId = social.resolveAccountId(message.identity_key);
       }
 
       if (!accountId) {
-        sendError(client.ws, "INVALID_IDENTITY", "PARDEX cihaz kimliği geçersiz.");
+        sendError(client.ws, "INVALID_IDENTITY", "PARDEX cihaz kimliği geçersiz veya bu hesap başka bir cihaza taşındı.");
         client.ws?.close(1008, "Invalid PARDEX identity");
         return;
       }
