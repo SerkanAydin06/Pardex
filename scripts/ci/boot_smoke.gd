@@ -2,6 +2,7 @@ extends SceneTree
 
 const MAIN_SCENE := "res://scenes/main.tscn"
 const CI_SERVER_URL := "ws://127.0.0.1:65535"
+const IDENTITY_PATH := "user://pardex_identity.cfg"
 
 
 func _initialize() -> void:
@@ -13,7 +14,39 @@ func _fail(message: String) -> void:
 	quit(1)
 
 
+func _is_valid_identity_key(value: String) -> bool:
+	if value.length() != 64:
+		return false
+	for index in range(value.length()):
+		var code := value.unicode_at(index)
+		if not ((code >= 48 and code <= 57) or (code >= 97 and code <= 102)):
+			return false
+	return true
+
+
+func _verify_identity_repair() -> bool:
+	var broken := ConfigFile.new()
+	broken.set_value("identity", "key", "z".repeat(64))
+	if broken.save(IDENTITY_PATH) != OK:
+		_fail("invalid identity fixture could not be written")
+		return false
+
+	PardexIdentityGuard._ensure_valid_identity()
+	var repaired := ConfigFile.new()
+	if repaired.load(IDENTITY_PATH) != OK:
+		_fail("repaired identity could not be loaded")
+		return false
+	var repaired_key := str(repaired.get_value("identity", "key", "")).strip_edges().to_lower()
+	if not _is_valid_identity_key(repaired_key):
+		_fail("identity guard did not repair an invalid key")
+		return false
+	return true
+
+
 func _run() -> void:
+	if not _verify_identity_repair():
+		return
+
 	var config := ConfigFile.new()
 	config.set_value("profile", "display_name", "CI-Pardus")
 	config.set_value("online", "server_url", CI_SERVER_URL)
@@ -61,5 +94,5 @@ func _run() -> void:
 		return
 
 	PardexOnline.disconnect_server()
-	print("PARDEX boot smoke passed: main scene -> autoloads -> dynamic social UI")
+	print("PARDEX boot smoke passed: identity repair -> main scene -> autoloads -> dynamic social UI")
 	quit(0)
