@@ -80,6 +80,22 @@ async function closeClient(ws) {
   await done;
 }
 
+async function connectGame(startPayload) {
+  const ws = await openSocket();
+  const response = waitForMessage(ws, (message) =>
+    message.type === "game_hello_ok" || message.type === "error"
+  );
+  ws.send(JSON.stringify({
+    type: "game_hello",
+    game_id: startPayload.game_id,
+    match_id: startPayload.match_id,
+    launch_ticket: startPayload.launch_ticket,
+  }));
+  const message = await response;
+  assert.strictEqual(message.type, "game_hello_ok");
+  return ws;
+}
+
 function friendFromState(message, accountId) {
   return message.state?.friends?.find((friend) => friend.account_id === accountId);
 }
@@ -98,6 +114,10 @@ async function main() {
     stdio: ["ignore", "pipe", "pipe"],
   });
 
+  let alice;
+  let bob;
+  let aliceGame;
+  let bobGame;
   try {
     await waitForServerReady(server);
 
@@ -107,8 +127,8 @@ async function main() {
     await earlyError;
     await closeClient(early);
 
-    const alice = await connectClient("Alice");
-    const bob = await connectClient("Bob");
+    alice = await connectClient("Alice");
+    bob = await connectClient("Bob");
 
     const requestSeen = waitForMessage(alice.ws, (message) =>
       message.type === "social_state"
@@ -172,13 +192,19 @@ async function main() {
     bob.ws.send(JSON.stringify({ type: "set_ready", ready: true }));
     await bobReadySeen;
 
-    const gameStart = waitForMessage(bob.ws, (message) => message.type === "game_start");
+    const aliceStartPromise = waitForMessage(alice.ws, (message) => message.type === "game_start");
+    const bobStartPromise = waitForMessage(bob.ws, (message) => message.type === "game_start");
     alice.ws.send(JSON.stringify({ type: "start_game" }));
-    const started = await gameStart;
-    const matchId = started.match_id || started.room?.match_id;
+    const [aliceStart, bobStart] = await Promise.all([aliceStartPromise, bobStartPromise]);
+    const matchId = bobStart.match_id || bobStart.room?.match_id;
     assert.ok(matchId, "game_start must include match_id");
-    assert.strictEqual(started.room.state, "launching");
-    assert.strictEqual(started.room.in_game, false);
+    assert.strictEqual(aliceStart.match_id, matchId);
+    assert.strictEqual(bobStart.room.state, "launching");
+    assert.strictEqual(bobStart.room.in_game, false);
+    assert.ok(aliceStart.launch_ticket);
+    assert.ok(bobStart.launch_ticket);
+
+    aliceGame = await connectGame(aliceStart);
 
     const bobInGameSeen = waitForMessage(alice.ws, (message) => {
       if (message.type !== "social_state") return false;
@@ -188,15 +214,15 @@ async function main() {
         && friend?.room_state === "in_game"
         && friend?.room_joinable === false;
     });
-    alice.ws.send(JSON.stringify({ type: "game_connected", match_id: matchId }));
-    bob.ws.send(JSON.stringify({ type: "game_connected", match_id: matchId }));
+    bobGame = await connectGame(bobStart);
     await bobInGameSeen;
 
-    console.log("PARDEX presence smoke test passed: session guard -> status -> activity -> friend join -> launching -> confirmed in-game");
-
-    await closeClient(alice.ws);
-    await closeClient(bob.ws);
+    console.log("PARDEX presence smoke test passed: session guard -> status -> activity -> friend join -> secure handoff -> confirmed in-game");
   } finally {
+    await closeClient(aliceGame);
+    await closeClient(bobGame);
+    await closeClient(alice?.ws);
+    await closeClient(bob?.ws);
     server.kill("SIGTERM");
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
