@@ -10,6 +10,10 @@ const KORSAN_GAME_SERVER_URL = String(process.env.KORSAN_GAME_SERVER_URL || "").
 const SESSION_GRACE_MS = Math.max(1000, Number(process.env.SESSION_GRACE_MS || 30_000));
 const ROOM_INVITE_TTL_MS = Math.max(15_000, Number(process.env.ROOM_INVITE_TTL_MS || 60_000));
 const HELLO_TIMEOUT_MS = Math.max(500, Number(process.env.HELLO_TIMEOUT_MS || 10_000));
+const GAME_LAUNCH_TICKET_TTL_MS = Math.max(
+  1000,
+  Number(process.env.GAME_LAUNCH_TICKET_TTL_MS || 120_000)
+);
 // PARDEX voice is disabled on the client; keep the relay off unless explicitly enabled.
 const VOICE_RELAY_ENABLED = ["1", "true", "yes"].includes(
   String(process.env.PARDEX_VOICE_RELAY_ENABLED || "").trim().toLowerCase()
@@ -34,6 +38,7 @@ const clients = new Map();
 const rooms = new Map();
 const resumeTokens = new Map();
 const roomInvites = new Map();
+const gameLaunchTickets = new Map();
 const social = new SocialStore(SOCIAL_DATA_PATH);
 let shuttingDown = false;
 
@@ -72,6 +77,38 @@ function safeRoomState(value) {
 
 function createResumeToken() {
   return crypto.randomBytes(32).toString("base64url");
+}
+
+function gameLaunchTicketHash(ticket) {
+  return crypto.createHash("sha256").update(String(ticket || ""), "utf8").digest("hex");
+}
+
+function createGameLaunchTicket(room, member) {
+  const ticket = crypto.randomBytes(32).toString("base64url");
+  const expiresAt = Date.now() + GAME_LAUNCH_TICKET_TTL_MS;
+  gameLaunchTickets.set(gameLaunchTicketHash(ticket), {
+    matchId: room.matchId,
+    roomCode: room.code,
+    gameId: room.gameId,
+    userId: member.userId,
+    accountId: member.accountId || "",
+    expiresAt,
+  });
+  return { ticket, expiresAt };
+}
+
+function clearGameLaunchTicketsForMatch(matchId) {
+  const normalized = String(matchId || "").trim();
+  if (!normalized) return;
+  for (const [ticketHash, record] of gameLaunchTickets.entries()) {
+    if (record.matchId === normalized) gameLaunchTickets.delete(ticketHash);
+  }
+}
+
+function pruneGameLaunchTickets(now = Date.now()) {
+  for (const [ticketHash, record] of gameLaunchTickets.entries()) {
+    if (now >= record.expiresAt) gameLaunchTickets.delete(ticketHash);
+  }
 }
 
 function gameServerUrl(gameId) {
@@ -119,6 +156,7 @@ function resetMemberForLobby(member) {
 }
 
 function resetRoomToLobby(room) {
+  clearGameLaunchTicketsForMatch(room.matchId);
   room.state = "lobby";
   room.matchId = "";
   room.launchStartedAt = 0;
@@ -535,6 +573,7 @@ function leaveCurrentRoom(userId, notifySelf = true) {
   const previousState = roomState(room);
   room.members = room.members.filter((member) => member.userId !== userId);
   if (room.members.length === 0) {
+    clearGameLaunchTicketsForMatch(room.matchId);
     room.state = "closed";
     rooms.delete(room.code);
     cancelInvitesForRoom(room.code, "room_closed");
@@ -725,6 +764,7 @@ function startRoomGame(client) {
   if (!room.members.every((member) => member.ready)) return sendError(client.ws, "PLAYERS_NOT_READY", "Tüm oyuncular hazır olmalı.");
   if (!gameServerUrl(room.gameId)) return sendError(client.ws, "GAME_SERVER_UNAVAILABLE", "Bu oyun için PARDEX oyun sunucusu hazır değil.");
 
+  pruneGameLaunchTickets();
   room.state = "launching";
   room.matchId = crypto.randomUUID();
   room.launchStartedAt = Date.now();
@@ -737,7 +777,8 @@ function startRoomGame(client) {
   cancelInvitesForRoom(room.code, "room_in_game");
   broadcastRoom(room);
   pushRoomPresence(room);
-  const payload = {
+
+  const sharedPayload = {
     type: "game_start",
     game_id: room.gameId,
     match_id: room.matchId,
@@ -747,7 +788,13 @@ function startRoomGame(client) {
   };
   for (const member of room.members) {
     const memberClient = clients.get(member.userId);
-    if (memberClient?.ws) send(memberClient.ws, payload);
+    if (!memberClient?.ws || memberClient.ws.readyState !== WebSocket.OPEN) continue;
+    const launch = createGameLaunchTicket(room, member);
+    send(memberClient.ws, {
+      ...sharedPayload,
+      launch_ticket: launch.ticket,
+      launch_ticket_expires_at: launch.expiresAt,
+    });
   }
 }
 
@@ -756,23 +803,12 @@ function validateMatch(room, message) {
   return Boolean(matchId && room.matchId && matchId === room.matchId);
 }
 
-function reportGameConnected(client, message) {
-  if (!client.roomCode) return sendError(client.ws, "NO_ROOM", "Aktif oyun odası bulunamadı.");
-  const room = rooms.get(client.roomCode);
-  if (!room) return sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
-  if (!roomIsLaunching(room) && !roomIsInGame(room)) {
-    return sendError(client.ws, "ROOM_NOT_LAUNCHING", "Oda şu anda oyuna bağlanma aşamasında değil.");
-  }
-  if (!validateMatch(room, message)) {
-    return sendError(client.ws, "MATCH_MISMATCH", "Oyun oturumu kimliği artık geçerli değil.");
-  }
-  const member = room.members.find((item) => item.userId === client.userId);
-  if (!member) return sendError(client.ws, "NOT_IN_ROOM", "Bu oyun odasının üyesi değilsin.");
-
+function markMemberGameConnected(room, member) {
   member.gameState = "in_game";
   if (!member.gameConnectedAt) member.gameConnectedAt = Date.now();
 
   if (roomIsLaunching(room) && room.members.every((item) => item.gameState === "in_game")) {
+    clearGameLaunchTicketsForMatch(room.matchId);
     room.state = "in_game";
     room.startedAt = Date.now();
     broadcastRoom(room);
@@ -786,6 +822,81 @@ function reportGameConnected(client, message) {
 
   broadcastRoom(room);
   pushRoomPresence(room);
+}
+
+function handleGameHello(client, message) {
+  const matchId = String(message.match_id || "").trim();
+  const ticket = String(message.launch_ticket || "").trim();
+  const requestedGameId = String(message.game_id || "").trim();
+  if (!matchId || !ticket) {
+    sendError(client.ws, "GAME_TICKET_REQUIRED", "Oyun bağlantısı için geçerli bir PARDEX ticket gerekli.");
+    return;
+  }
+
+  const ticketHash = gameLaunchTicketHash(ticket);
+  const record = gameLaunchTickets.get(ticketHash);
+  if (!record) {
+    sendError(client.ws, "GAME_TICKET_INVALID", "PARDEX oyun ticket'ı geçersiz veya daha önce kullanılmış.");
+    return;
+  }
+  if (Date.now() >= record.expiresAt) {
+    gameLaunchTickets.delete(ticketHash);
+    sendError(client.ws, "GAME_TICKET_EXPIRED", "PARDEX oyun ticket'ının süresi doldu.");
+    return;
+  }
+  if (record.matchId !== matchId) {
+    sendError(client.ws, "MATCH_MISMATCH", "Oyun oturumu kimliği ticket ile eşleşmiyor.");
+    return;
+  }
+  if (requestedGameId && requestedGameId !== record.gameId) {
+    sendError(client.ws, "GAME_MISMATCH", "Oyun kimliği ticket ile eşleşmiyor.");
+    return;
+  }
+
+  const room = rooms.get(record.roomCode);
+  if (!room || (!roomIsLaunching(room) && !roomIsInGame(room))) {
+    gameLaunchTickets.delete(ticketHash);
+    sendError(client.ws, "GAME_SESSION_CLOSED", "PARDEX oyun oturumu artık aktif değil.");
+    return;
+  }
+  if (room.matchId !== record.matchId || room.gameId !== record.gameId) {
+    gameLaunchTickets.delete(ticketHash);
+    sendError(client.ws, "MATCH_MISMATCH", "PARDEX oyun oturumu artık geçerli değil.");
+    return;
+  }
+
+  const member = room.members.find((item) =>
+    item.userId === record.userId
+    && (!record.accountId || item.accountId === record.accountId)
+  );
+  if (!member) {
+    gameLaunchTickets.delete(ticketHash);
+    sendError(client.ws, "GAME_MEMBER_NOT_FOUND", "Bu ticket artık oda üyesiyle eşleşmiyor.");
+    return;
+  }
+
+  gameLaunchTickets.delete(ticketHash);
+  if (client.helloTimer) {
+    clearTimeout(client.helloTimer);
+    client.helloTimer = null;
+  }
+  markMemberGameConnected(room, member);
+  send(client.ws, {
+    type: "game_hello_ok",
+    game_id: room.gameId,
+    match_id: room.matchId,
+    room_code: room.code,
+    user_id: member.userId,
+    game_connected_at: member.gameConnectedAt,
+  });
+}
+
+function reportGameConnected(client, _message) {
+  sendError(
+    client.ws,
+    "GAME_TICKET_REQUIRED",
+    "game_connected artık launcher oturumundan kabul edilmiyor; oyun secure ticket ile game_hello göndermeli."
+  );
 }
 
 function reportGameLaunchFailed(client, message) {
@@ -810,6 +921,7 @@ function reportGameEnded(client, message) {
     return sendError(client.ws, "MATCH_MISMATCH", "Oyun oturumu kimliği artık geçerli değil.");
   }
 
+  clearGameLaunchTicketsForMatch(room.matchId);
   room.state = "ended";
   room.endedAt = Date.now();
   for (const member of room.members) {
@@ -924,6 +1036,11 @@ function handleMessage(client, raw) {
   }
   if (!allowMessage(client)) return;
 
+  if (message.type === "game_hello") {
+    handleGameHello(client, message);
+    return;
+  }
+
   if (message.type !== "hello" && !client.helloReceived) {
     sendError(client.ws, "SESSION_NOT_READY", "PARDEX oturumu henüz hazır değil.");
     return;
@@ -988,6 +1105,7 @@ function handleMessage(client, raw) {
         presence_enabled: true,
         friend_join_enabled: true,
         room_lifecycle_enabled: true,
+        secure_game_handoff_enabled: true,
       });
       syncClientNameToRoom(client);
       pushSocialState(client.accountId);
@@ -1113,6 +1231,7 @@ function handleMessage(client, raw) {
 
 const httpServer = http.createServer((req, res) => {
   if (req.url === "/health") {
+    pruneGameLaunchTickets();
     const status = shuttingDown ? 503 : 200;
     const connectedClients = Array.from(clients.values()).filter((client) => client.ws).length;
     const lifecycleCounts = { lobby: 0, launching: 0, in_game: 0, ended: 0 };
@@ -1137,6 +1256,9 @@ const httpServer = http.createServer((req, res) => {
       friendRoomJoin: true,
       accountRecovery: true,
       roomLifecycle: true,
+      secureGameHandoff: true,
+      gameLaunchTicketTtlMs: GAME_LAUNCH_TICKET_TTL_MS,
+      pendingGameLaunchTickets: gameLaunchTickets.size,
       roomLifecycleCounts: lifecycleCounts,
     }));
     return;
@@ -1194,6 +1316,7 @@ function shutdown(signal) {
   shuttingDown = true;
   console.log(`PARDEX Online shutting down (${signal})`);
   for (const invite of [...roomInvites.values()]) closeRoomInvite(invite, "server_restarting");
+  gameLaunchTickets.clear();
   for (const client of clients.values()) {
     if (client.disconnectTimer) clearTimeout(client.disconnectTimer);
     client.ws?.close(1012, "PARDEX Online restarting");
