@@ -10,11 +10,20 @@ func _ready() -> void:
 	call_deferred("_try_bind_profile_label")
 
 
+func _exit_tree() -> void:
+	_profile_state_label = null
+
+
 func _try_bind_profile_label() -> void:
+	if not is_inside_tree():
+		return
+	var tree := get_tree()
+	if tree == null:
+		return
 	if is_instance_valid(_profile_state_label):
 		_update_profile_state()
 		return
-	var scene := get_tree().current_scene
+	var scene := tree.current_scene
 	if scene == null:
 		return
 	var node := scene.find_child("OnlineState", true, false)
@@ -24,15 +33,17 @@ func _try_bind_profile_label() -> void:
 
 
 func _on_connection_state_changed(_state: String) -> void:
-	call_deferred("_try_bind_profile_label")
+	if is_inside_tree():
+		call_deferred("_try_bind_profile_label")
 
 
 func _on_presence_changed(_presence: String) -> void:
-	call_deferred("_try_bind_profile_label")
+	if is_inside_tree():
+		call_deferred("_try_bind_profile_label")
 
 
 func _update_profile_state() -> void:
-	if not is_instance_valid(_profile_state_label):
+	if not is_inside_tree() or not is_instance_valid(_profile_state_label):
 		return
 	if PardexOnline.connection_state == "connecting":
 		_profile_state_label.text = "●  Kimlik doğrulanıyor"
