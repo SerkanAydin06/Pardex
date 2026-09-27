@@ -181,8 +181,15 @@ class SocialStore {
 
     const mappedAccountId = this.data.identity_aliases[fingerprint];
     if (mappedAccountId && this.data.accounts[mappedAccountId]) return mappedAccountId;
-
     if (mappedAccountId) delete this.data.identity_aliases[fingerprint];
+
+    // Existing v1 accounts may claim their first alias once. After an account has a
+    // registered identity alias, unknown device keys may not fall back to the legacy
+    // deterministic account id. This makes recovery a true device transfer: deleting
+    // the previous alias permanently revokes that previous device after restart too.
+    const existingAccountHasAlias = Object.values(this.data.identity_aliases).includes(legacyAccountId);
+    if (this.data.accounts[legacyAccountId] && existingAccountHasAlias) return "";
+
     this.data.identity_aliases[fingerprint] = legacyAccountId;
     this.save();
     return legacyAccountId;
@@ -252,7 +259,14 @@ class SocialStore {
     }
 
     const previousAccountId = this.data.identity_aliases[fingerprint] || legacyAccountId;
+
+    // Recovery is a transfer, not an additional login. Remove every previous device
+    // alias for the recovered account before assigning the replacement device.
+    for (const [knownFingerprint, knownAccountId] of Object.entries(this.data.identity_aliases)) {
+      if (knownAccountId === recoveredAccountId) delete this.data.identity_aliases[knownFingerprint];
+    }
     this.data.identity_aliases[fingerprint] = recoveredAccountId;
+
     const recovered = this.data.accounts[recoveredAccountId];
     recovered.recovery_hash = "";
     recovered.recovery_updated_at = Date.now();
@@ -266,7 +280,7 @@ class SocialStore {
     return {
       ok: true,
       code: "ACCOUNT_RECOVERED",
-      message: "PARDEX hesabı bu cihaza bağlandı.",
+      message: "PARDEX hesabı bu cihaza taşındı.",
       accountId: recoveredAccountId,
       previousAccountId,
     };
