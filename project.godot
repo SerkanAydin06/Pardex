@@ -4,7 +4,7 @@
 ;
 ; Format:
 ;   [section] ; section goes between []
-;   param=value ; assign values to parameters
+;   param=value
 
 config_version=5
 
@@ -20,6 +20,7 @@ config/icon="res://assets/icon.png"
 [autoload]
 
 PardexOnline="*res://scripts/online/pardex_online.gd"
+PardexNotifications="*res://scripts/online/pardex_notifications.gd"
 
 [display]
 

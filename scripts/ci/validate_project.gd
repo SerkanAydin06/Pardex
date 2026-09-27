@@ -7,6 +7,7 @@ const RESOURCES := [
     "res://scenes/screens/settings.tscn",
     "res://scripts/main.gd",
     "res://scripts/online/pardex_online.gd",
+    "res://scripts/online/pardex_notifications.gd",
 ]
 
 func _initialize() -> void:
