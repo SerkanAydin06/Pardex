@@ -82,6 +82,10 @@ function connect(name) {
       const msg = JSON.parse(raw.toString("utf8"));
       if (msg.type === "welcome") {
         clearTimeout(timer);
+        if (msg.room_lifecycle_enabled !== true) {
+          reject(new Error(`${name} welcome did not advertise room lifecycle support`));
+          return;
+        }
         resolve({ ws, userId: msg.user_id });
       } else if (msg.type === "error") {
         clearTimeout(timer);
@@ -145,6 +149,9 @@ async function main() {
   if (health.accountRecovery !== true) {
     throw new Error("Production /health does not report accountRecovery=true");
   }
+  if (health.roomLifecycle !== true) {
+    throw new Error("Production /health does not report roomLifecycle=true");
+  }
   const voiceRelayEnabled = health.voiceRelay === true;
   const a = await connect("CI-A");
   const b = await connect("CI-B");
@@ -159,6 +166,7 @@ async function main() {
     const created = await roomCreated;
     const code = created.room.code;
     if (!code) throw new Error("Room code missing");
+    if (created.room.state !== "lobby") throw new Error(`Expected lobby state, got ${created.room.state}`);
     if (created.room.game_server_url !== EXPECTED_GAME_SERVER_URL) {
       throw new Error(
         `Game server assignment mismatch: expected ${EXPECTED_GAME_SERVER_URL}, got ${created.room.game_server_url || "<empty>"}`
@@ -217,15 +225,18 @@ async function main() {
     a.ws.send(JSON.stringify({ type: "start_game" }));
     const [hostStart, joinerStart] = await Promise.all([aStart, bStart]);
 
-    if (!hostStart.room.launching || !joinerStart.room.launching) {
+    if (!hostStart.room.launching || !joinerStart.room.launching || hostStart.room.state !== "launching") {
       throw new Error("Room did not enter launching state");
+    }
+    if (!hostStart.match_id || hostStart.match_id !== hostStart.room.match_id) {
+      throw new Error("Game start payload is missing stable match_id");
     }
     if (hostStart.room.game_server_url !== EXPECTED_GAME_SERVER_URL) {
       throw new Error("Game start payload lost the assigned game server URL");
     }
 
     console.log(
-      `PARDEX production flow passed: commit=${deployment?.commitSha || "unchecked"} ${URL} room=${code} voice=${voiceRelayEnabled ? "ok" : "disabled"} game_server=${hostStart.room.game_server_url}`
+      `PARDEX production flow passed: commit=${deployment?.commitSha || "unchecked"} ${URL} room=${code} match=${hostStart.match_id} state=${hostStart.room.state} voice=${voiceRelayEnabled ? "ok" : "disabled"} game_server=${hostStart.room.game_server_url}`
     );
   } finally {
     a.ws.close();
