@@ -8,9 +8,11 @@ on:
       - "server/server.js"
       - "server/server_core.js"
       - "server/social_store.js"
+      - "server/production_smoke_test.js"
       - "server/package.json"
       - "server/package-lock.json"
       - "server/Dockerfile"
+      - ".github/workflows/pardex-production-smoke.yml"
   schedule:
     - cron: "23 */6 * * *"
   workflow_dispatch:
@@ -37,12 +39,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Allow Railway rollout after server push
-        if: github.event_name == 'push'
-        run: sleep 45
-
-      - name: Test live PARDEX Online
+      - name: Verify exact Railway deploy and test live PARDEX Online
         env:
           PARDEX_ONLINE_URL: wss://pardex-online-production.up.railway.app
           PARDEX_GAME_SERVER_URL: wss://korsan-game-production.up.railway.app
+          EXPECTED_DEPLOY_COMMIT: ${{ github.sha }}
+          DEPLOYMENT_WAIT_MS: "240000"
         run: node production_smoke_test.js
