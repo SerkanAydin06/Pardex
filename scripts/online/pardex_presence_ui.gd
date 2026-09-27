@@ -1,38 +1,75 @@
 extends Node
 
 var _profile_state_label: Label
+var _bind_retry_scheduled := false
 
 
 func _ready() -> void:
 	PardexOnline.connection_state_changed.connect(_on_connection_state_changed)
 	PardexOnline.presence_changed.connect(_on_presence_changed)
-	get_tree().tree_changed.connect(_try_bind_profile_label)
 	call_deferred("_try_bind_profile_label")
+
+
+func _exit_tree() -> void:
+	_bind_retry_scheduled = false
+	_profile_state_label = null
 
 
 func _try_bind_profile_label() -> void:
-	if is_instance_valid(_profile_state_label):
+	_bind_retry_scheduled = false
+	if not is_inside_tree():
+		return
+	var tree := get_tree()
+	if tree == null:
+		return
+
+	if _is_profile_label_usable():
 		_update_profile_state()
 		return
-	var scene := get_tree().current_scene
-	if scene == null:
+	_profile_state_label = null
+
+	var scene := tree.current_scene
+	if scene == null or scene.is_queued_for_deletion():
+		_schedule_bind_retry()
 		return
 	var node := scene.find_child("OnlineState", true, false)
-	if node is Label:
+	if node is Label and node.is_inside_tree() and not node.is_queued_for_deletion():
 		_profile_state_label = node as Label
 		_update_profile_state()
+	else:
+		_schedule_bind_retry()
+
+
+func _schedule_bind_retry() -> void:
+	if _bind_retry_scheduled or not is_inside_tree():
+		return
+	var tree := get_tree()
+	if tree == null:
+		return
+	_bind_retry_scheduled = true
+	tree.create_timer(0.15).timeout.connect(_try_bind_profile_label)
+
+
+func _is_profile_label_usable() -> bool:
+	return (
+		is_instance_valid(_profile_state_label)
+		and _profile_state_label.is_inside_tree()
+		and not _profile_state_label.is_queued_for_deletion()
+	)
 
 
 func _on_connection_state_changed(_state: String) -> void:
-	call_deferred("_try_bind_profile_label")
+	if is_inside_tree():
+		call_deferred("_try_bind_profile_label")
 
 
 func _on_presence_changed(_presence: String) -> void:
-	call_deferred("_try_bind_profile_label")
+	if is_inside_tree():
+		call_deferred("_try_bind_profile_label")
 
 
 func _update_profile_state() -> void:
-	if not is_instance_valid(_profile_state_label):
+	if not is_inside_tree() or not _is_profile_label_usable():
 		return
 	if PardexOnline.connection_state == "connecting":
 		_profile_state_label.text = "●  Kimlik doğrulanıyor"

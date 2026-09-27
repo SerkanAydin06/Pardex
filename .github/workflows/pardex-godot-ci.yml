@@ -6,12 +6,14 @@ on:
       - "project.godot"
       - "scenes/**"
       - "scripts/**"
+      - "assets/**"
       - ".github/workflows/pardex-godot-ci.yml"
   pull_request:
     paths:
       - "project.godot"
       - "scenes/**"
       - "scripts/**"
+      - "assets/**"
       - ".github/workflows/pardex-godot-ci.yml"
 
 jobs:
@@ -28,5 +30,11 @@ jobs:
           csharp: false
           export-templates: false
 
+      - name: Import PARDEX resources
+        run: godot --headless --editor --path . --quit
+
       - name: Validate PARDEX resources
         run: godot --headless --path . --script res://scripts/ci/validate_project.gd
+
+      - name: Boot PARDEX headlessly
+        run: godot --headless --path . --script res://scripts/ci/boot_smoke.gd
