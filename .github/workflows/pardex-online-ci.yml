@@ -35,8 +35,9 @@ jobs:
           node --check social_store.js
           node --check presence-smoke-test.js
           node --check hardening-smoke-test.js
+          node --check recovery-smoke-test.js
 
-      - name: Run room, social, invite and presence smoke tests
+      - name: Run room, social, invite, presence, hardening and recovery smoke tests
         run: npm test
 
       - name: Build deployable container
