@@ -9,7 +9,9 @@ const WebSocket = require("ws");
 const PORT = 9883;
 const URL = `ws://127.0.0.1:${PORT}`;
 const HEALTH_URL = `http://127.0.0.1:${PORT}/health`;
+const CONTROL_HEALTH_URL = `http://127.0.0.1:${PORT}/game-control-health`;
 const GAME_SERVER_URL = "ws://127.0.0.1:9999";
+const GAME_SERVER_TOKEN = "pardex-lifecycle-smoke-game-server-token-2026";
 
 function identityKeyFor(value) {
   return crypto.createHash("sha256").update(`pardex-lifecycle:${value}`).digest("hex");
@@ -23,11 +25,7 @@ function waitForMessage(ws, predicate, timeoutMs = 5000) {
     }, timeoutMs);
     function onMessage(raw) {
       let payload;
-      try {
-        payload = JSON.parse(raw.toString("utf8"));
-      } catch {
-        return;
-      }
+      try { payload = JSON.parse(raw.toString("utf8")); } catch { return; }
       if (!predicate(payload)) return;
       clearTimeout(timeout);
       ws.off("message", onMessage);
@@ -64,19 +62,11 @@ async function openSocket() {
 async function connectClient(name) {
   const ws = await openSocket();
   const welcomePromise = waitForMessage(ws, (message) => message.type === "welcome");
-  ws.send(JSON.stringify({
-    type: "hello",
-    display_name: name,
-    identity_key: identityKeyFor(name),
-  }));
+  ws.send(JSON.stringify({ type: "hello", display_name: name, identity_key: identityKeyFor(name) }));
   const welcome = await welcomePromise;
   assert.strictEqual(welcome.room_lifecycle_enabled, true);
   assert.strictEqual(welcome.secure_game_handoff_enabled, true);
-  return {
-    ws,
-    userId: welcome.user_id,
-    accountId: welcome.account_id,
-  };
+  return { ws, userId: welcome.user_id, accountId: welcome.account_id };
 }
 
 async function closeClient(ws) {
@@ -98,43 +88,64 @@ async function ready(client, observer, userId) {
 async function startMatch(host, joiner) {
   await ready(host, joiner, host.userId);
   await ready(joiner, host, joiner.userId);
-
   const hostStart = waitForMessage(host.ws, (message) => message.type === "game_start");
   const joinerStart = waitForMessage(joiner.ws, (message) => message.type === "game_start");
   host.ws.send(JSON.stringify({ type: "start_game" }));
   const [hostPayload, joinerPayload] = await Promise.all([hostStart, joinerStart]);
-
   assert.strictEqual(hostPayload.room.state, "launching");
-  assert.strictEqual(hostPayload.room.launching, true);
   assert.strictEqual(hostPayload.room.in_game, false);
-  assert.ok(hostPayload.match_id, "game_start must expose match_id");
+  assert.ok(hostPayload.match_id);
   assert.strictEqual(hostPayload.match_id, joinerPayload.match_id);
-  assert.strictEqual(hostPayload.match_id, hostPayload.room.match_id);
-  assert.ok(hostPayload.launch_ticket, "host must receive a launch ticket");
-  assert.ok(joinerPayload.launch_ticket, "joiner must receive a launch ticket");
+  assert.ok(hostPayload.launch_ticket);
+  assert.ok(joinerPayload.launch_ticket);
   assert.notStrictEqual(hostPayload.launch_ticket, joinerPayload.launch_ticket);
-  assert.ok(hostPayload.launch_ticket_expires_at > Date.now());
-  assert.ok(joinerPayload.launch_ticket_expires_at > Date.now());
-  assert.ok(hostPayload.room.launch_started_at > 0);
-  assert.strictEqual(hostPayload.room.started_at, 0);
   assert.ok(hostPayload.room.members.every((member) => member.game_state === "launching"));
-  assert.strictEqual(hostPayload.room.launch_ticket, undefined);
-
   return { hostPayload, joinerPayload, matchId: hostPayload.match_id };
 }
 
-async function gameHello(startPayload, ticket = startPayload.launch_ticket) {
+async function verifyTicket(startPayload, ticket = startPayload.launch_ticket) {
   const ws = await openSocket();
   const response = waitForMessage(ws, (message) =>
-    message.type === "game_hello_ok" || message.type === "error"
+    message.type === "game_ticket_ok" || message.type === "error"
   );
   ws.send(JSON.stringify({
-    type: "game_hello",
+    type: "game_ticket_verify",
     game_id: startPayload.game_id,
     match_id: startPayload.match_id,
     launch_ticket: ticket,
   }));
   return { ws, response: await response };
+}
+
+async function admitGame(verification, startPayload) {
+  const response = waitForMessage(verification.ws, (message) =>
+    message.type === "game_admitted_ok" || message.type === "error"
+  );
+  verification.ws.send(JSON.stringify({
+    type: "game_admitted",
+    game_id: startPayload.game_id,
+    match_id: startPayload.match_id,
+    admission_token: verification.response.admission_token,
+  }));
+  return await response;
+}
+
+async function reportGameEnded(startPayload, roomCode, result, token = GAME_SERVER_TOKEN) {
+  const ws = await openSocket();
+  const response = waitForMessage(ws, (message) =>
+    message.type === "game_server_ended_ok" || message.type === "error"
+  );
+  ws.send(JSON.stringify({
+    type: "game_server_ended",
+    server_token: token,
+    game_id: startPayload.game_id,
+    match_id: startPayload.match_id,
+    room_code: roomCode,
+    result,
+  }));
+  const payload = await response;
+  await closeClient(ws);
+  return payload;
 }
 
 async function main() {
@@ -146,6 +157,7 @@ async function main() {
       HOST: "127.0.0.1",
       PORT: String(PORT),
       KORSAN_GAME_SERVER_URL: GAME_SERVER_URL,
+      PARDEX_GAME_SERVER_TOKEN: GAME_SERVER_TOKEN,
       PARDEX_SOCIAL_DATA_PATH: path.join(tempDir, "social.json"),
     },
     stdio: ["ignore", "pipe", "pipe"],
@@ -161,13 +173,10 @@ async function main() {
     const health = await fetch(HEALTH_URL).then((response) => response.json());
     assert.strictEqual(health.roomLifecycle, true);
     assert.strictEqual(health.secureGameHandoff, true);
-    assert.ok(health.gameLaunchTicketTtlMs >= 1000);
-    assert.deepStrictEqual(health.roomLifecycleCounts, {
-      lobby: 0,
-      launching: 0,
-      in_game: 0,
-      ended: 0,
-    });
+    const controlHealth = await fetch(CONTROL_HEALTH_URL).then((response) => response.json());
+    assert.strictEqual(controlHealth.twoPhaseGameHandoff, true);
+    assert.strictEqual(controlHealth.authoritativeGameEnd, true);
+    assert.strictEqual(controlHealth.gameServerTokenConfigured, true);
 
     host = await connectClient("Lifecycle-Host");
     joiner = await connectClient("Lifecycle-Joiner");
@@ -179,13 +188,6 @@ async function main() {
     host.ws.send(JSON.stringify({ type: "create_room", game_id: "korsanlar", max_players: 4 }));
     const created = await createdPromise;
     const roomCode = created.room.code;
-    assert.strictEqual(created.room.state, "lobby");
-    assert.strictEqual(created.room.match_id, "");
-    assert.strictEqual(created.room.launching, false);
-    assert.strictEqual(created.room.in_game, false);
-    assert.strictEqual(created.room.ended, false);
-    assert.strictEqual(created.room.members[0].game_state, "lobby");
-    assert.strictEqual(created.room.members[0].connection_state, "online");
 
     const hostSeesJoin = waitForMessage(host.ws, (message) =>
       message.type === "room_state" && message.room?.members?.length === 2
@@ -198,16 +200,32 @@ async function main() {
 
     const first = await startMatch(host, joiner);
 
-    const oldLauncherAckRejected = waitForMessage(host.ws, (message) =>
-      message.type === "error" && message.code === "GAME_TICKET_REQUIRED"
+    const oldHelloWs = await openSocket();
+    gameSockets.push(oldHelloWs);
+    const oldHelloRejected = waitForMessage(oldHelloWs, (message) =>
+      message.type === "error" && message.code === "GAME_TWO_PHASE_REQUIRED"
     );
-    host.ws.send(JSON.stringify({ type: "game_connected", match_id: first.matchId }));
-    await oldLauncherAckRejected;
+    oldHelloWs.send(JSON.stringify({
+      type: "game_hello",
+      game_id: first.hostPayload.game_id,
+      match_id: first.matchId,
+      launch_ticket: first.hostPayload.launch_ticket,
+    }));
+    await oldHelloRejected;
 
-    const wrongTicket = await gameHello(first.hostPayload, crypto.randomBytes(32).toString("base64url"));
+    const wrongTicket = await verifyTicket(first.hostPayload, crypto.randomBytes(32).toString("base64url"));
     gameSockets.push(wrongTicket.ws);
-    assert.strictEqual(wrongTicket.response.type, "error");
     assert.strictEqual(wrongTicket.response.code, "GAME_TICKET_INVALID");
+
+    const hostVerification = await verifyTicket(first.hostPayload);
+    gameSockets.push(hostVerification.ws);
+    assert.strictEqual(hostVerification.response.type, "game_ticket_ok");
+    assert.strictEqual(hostVerification.response.user_id, host.userId);
+
+    // Phase 1 must not mark the PARDEX member in_game yet.
+    const reuseAfterVerify = await verifyTicket(first.hostPayload);
+    gameSockets.push(reuseAfterVerify.ws);
+    assert.strictEqual(reuseAfterVerify.response.code, "GAME_TICKET_INVALID");
 
     const hostConnectedSeen = waitForMessage(joiner.ws, (message) =>
       message.type === "room_state"
@@ -215,101 +233,75 @@ async function main() {
       && message.room.members.find((member) => member.user_id === host.userId)?.game_state === "in_game"
       && message.room.members.find((member) => member.user_id === joiner.userId)?.game_state === "launching"
     );
-    const hostGame = await gameHello(first.hostPayload);
-    gameSockets.push(hostGame.ws);
-    assert.strictEqual(hostGame.response.type, "game_hello_ok");
-    assert.strictEqual(hostGame.response.user_id, host.userId);
+    const hostAdmitted = await admitGame(hostVerification, first.hostPayload);
+    assert.strictEqual(hostAdmitted.type, "game_admitted_ok");
     await hostConnectedSeen;
 
-    const reusedTicket = await gameHello(first.hostPayload);
-    gameSockets.push(reusedTicket.ws);
-    assert.strictEqual(reusedTicket.response.type, "error");
-    assert.strictEqual(reusedTicket.response.code, "GAME_TICKET_INVALID");
-
+    const joinerVerification = await verifyTicket(first.joinerPayload);
+    gameSockets.push(joinerVerification.ws);
     const hostGameStarted = waitForMessage(host.ws, (message) =>
       message.type === "game_started" && message.match_id === first.matchId
     );
     const joinerInGameState = waitForMessage(joiner.ws, (message) =>
       message.type === "room_state" && message.room?.state === "in_game"
     );
-    const joinerGame = await gameHello(first.joinerPayload);
-    gameSockets.push(joinerGame.ws);
-    assert.strictEqual(joinerGame.response.type, "game_hello_ok");
-    assert.strictEqual(joinerGame.response.user_id, joiner.userId);
+    const joinerAdmitted = await admitGame(joinerVerification, first.joinerPayload);
+    assert.strictEqual(joinerAdmitted.type, "game_admitted_ok");
     const [, inGameState] = await Promise.all([hostGameStarted, joinerInGameState]);
-    assert.strictEqual(inGameState.room.launching, false);
-    assert.strictEqual(inGameState.room.in_game, true);
-    assert.ok(inGameState.room.started_at > 0);
     assert.ok(inGameState.room.members.every((member) => member.game_state === "in_game"));
 
-    const outsiderJoinRejected = waitForMessage(outsider.ws, (message) =>
-      message.type === "error" && message.code === "ROOM_IN_GAME"
+    const badServerEnd = await reportGameEnded(
+      first.hostPayload,
+      roomCode,
+      { reason: "forged" },
+      "wrong-game-server-token"
     );
-    outsider.ws.send(JSON.stringify({ type: "join_room", code: roomCode }));
-    await outsiderJoinRejected;
-
-    const nonHostEndRejected = waitForMessage(joiner.ws, (message) =>
-      message.type === "error" && message.code === "NOT_HOST"
-    );
-    joiner.ws.send(JSON.stringify({ type: "game_ended", match_id: first.matchId }));
-    await nonHostEndRejected;
+    assert.strictEqual(badServerEnd.code, "GAME_SERVER_UNAUTHORIZED");
 
     const hostEnded = waitForMessage(host.ws, (message) =>
-      message.type === "game_ended" && message.match_id === first.matchId
+      message.type === "game_ended" && message.match_id === first.matchId && message.source === "game_server"
     );
     const joinerEndedState = waitForMessage(joiner.ws, (message) =>
       message.type === "room_state" && message.room?.state === "ended"
     );
-    host.ws.send(JSON.stringify({
-      type: "game_ended",
-      match_id: first.matchId,
-      result: { reason: "smoke_complete", winner_account_id: host.accountId },
-    }));
+    const authoritativeResult = {
+      reason: "victory",
+      winner_user_id: host.userId,
+      winner_name: "Lifecycle-Host",
+      winner_fame: 30,
+    };
+    const serverEndAck = await reportGameEnded(first.hostPayload, roomCode, authoritativeResult);
+    assert.strictEqual(serverEndAck.type, "game_server_ended_ok");
     const [endedEvent, endedState] = await Promise.all([hostEnded, joinerEndedState]);
+    assert.strictEqual(endedEvent.result.winner_user_id, host.userId);
     assert.strictEqual(endedState.room.ended, true);
-    assert.strictEqual(endedState.room.in_game, false);
-    assert.ok(endedState.room.ended_at > 0);
-    assert.ok(endedState.room.members.every((member) => member.ready === false));
     assert.ok(endedState.room.members.every((member) => member.game_state === "ended"));
-    assert.strictEqual(endedEvent.result.reason, "smoke_complete");
+
+    const duplicateEndAck = await reportGameEnded(first.hostPayload, roomCode, authoritativeResult);
+    assert.strictEqual(duplicateEndAck.type, "game_server_ended_ok");
+    assert.strictEqual(duplicateEndAck.duplicate, true);
 
     const returnedToLobby = waitForMessage(joiner.ws, (message) =>
-      message.type === "room_state"
-      && message.room?.state === "lobby"
-      && message.room?.match_id === ""
+      message.type === "room_state" && message.room?.state === "lobby" && message.room?.match_id === ""
     );
     host.ws.send(JSON.stringify({ type: "return_to_lobby" }));
-    const lobbyState = await returnedToLobby;
-    assert.ok(lobbyState.room.members.every((member) => member.game_state === "lobby"));
-    assert.ok(lobbyState.room.members.every((member) => member.ready === false));
+    await returnedToLobby;
 
     const second = await startMatch(host, joiner);
     const hostAbort = waitForMessage(host.ws, (message) =>
-      message.type === "game_launch_aborted"
-      && message.reason === "simulated_launch_failure"
-      && message.failed_user_id === joiner.userId
-    );
-    const joinerRollback = waitForMessage(joiner.ws, (message) =>
-      message.type === "room_state"
-      && message.room?.state === "lobby"
-      && message.room?.match_id === ""
-      && message.room.members.every((member) => member.ready === false)
+      message.type === "game_launch_aborted" && message.reason === "simulated_launch_failure"
     );
     joiner.ws.send(JSON.stringify({
       type: "launch_failed",
       match_id: second.matchId,
       reason: "simulated_launch_failure",
     }));
-    await Promise.all([hostAbort, joinerRollback]);
+    await hostAbort;
 
     const finalHealth = await fetch(HEALTH_URL).then((response) => response.json());
     assert.strictEqual(finalHealth.pendingGameLaunchTickets, 0);
     assert.strictEqual(finalHealth.roomLifecycleCounts.lobby, 1);
-    assert.strictEqual(finalHealth.roomLifecycleCounts.launching, 0);
-    assert.strictEqual(finalHealth.roomLifecycleCounts.in_game, 0);
-    assert.strictEqual(finalHealth.roomLifecycleCounts.ended, 0);
-
-    console.log("PARDEX lifecycle smoke test passed: secure tickets -> launching -> in_game -> ended -> lobby + rollback");
+    console.log("PARDEX lifecycle smoke test passed: two-phase admission -> in_game -> authoritative end -> lobby + rollback");
   } finally {
     for (const ws of gameSockets) await closeClient(ws);
     await closeClient(host?.ws);

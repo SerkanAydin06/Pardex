@@ -82,17 +82,30 @@ async function closeClient(ws) {
 
 async function connectGame(startPayload) {
   const ws = await openSocket();
-  const response = waitForMessage(ws, (message) =>
-    message.type === "game_hello_ok" || message.type === "error"
+  const verifyResponse = waitForMessage(ws, (message) =>
+    message.type === "game_ticket_ok" || message.type === "error"
   );
   ws.send(JSON.stringify({
-    type: "game_hello",
+    type: "game_ticket_verify",
     game_id: startPayload.game_id,
     match_id: startPayload.match_id,
     launch_ticket: startPayload.launch_ticket,
   }));
-  const message = await response;
-  assert.strictEqual(message.type, "game_hello_ok");
+  const verified = await verifyResponse;
+  assert.strictEqual(verified.type, "game_ticket_ok");
+  assert.ok(verified.admission_token);
+
+  const admitResponse = waitForMessage(ws, (message) =>
+    message.type === "game_admitted_ok" || message.type === "error"
+  );
+  ws.send(JSON.stringify({
+    type: "game_admitted",
+    game_id: startPayload.game_id,
+    match_id: startPayload.match_id,
+    admission_token: verified.admission_token,
+  }));
+  const admitted = await admitResponse;
+  assert.strictEqual(admitted.type, "game_admitted_ok");
   return ws;
 }
 
@@ -217,7 +230,7 @@ async function main() {
     bobGame = await connectGame(bobStart);
     await bobInGameSeen;
 
-    console.log("PARDEX presence smoke test passed: session guard -> status -> activity -> friend join -> secure handoff -> confirmed in-game");
+    console.log("PARDEX presence smoke test passed: session guard -> status -> activity -> friend join -> two-phase handoff -> confirmed in-game");
   } finally {
     await closeClient(aliceGame);
     await closeClient(bobGame);
