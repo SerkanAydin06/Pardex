@@ -6,9 +6,11 @@ const RESOURCES := [
     "res://scenes/screens/rooms.tscn",
     "res://scenes/screens/settings.tscn",
     "res://scripts/main.gd",
+    "res://scripts/online/pardex_identity_guard.gd",
     "res://scripts/online/pardex_online.gd",
     "res://scripts/online/pardex_notifications.gd",
     "res://scripts/online/pardex_presence_ui.gd",
+    "res://scripts/ci/boot_smoke.gd",
 ]
 
 func _initialize() -> void:
