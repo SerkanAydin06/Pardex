@@ -8,6 +8,7 @@ const RESOURCES := [
     "res://scripts/main.gd",
     "res://scripts/online/pardex_online.gd",
     "res://scripts/online/pardex_notifications.gd",
+    "res://scripts/online/pardex_presence_ui.gd",
 ]
 
 func _initialize() -> void:
