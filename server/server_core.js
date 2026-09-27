@@ -28,6 +28,7 @@ const VOICE_RATE_LIMIT_MESSAGES = 20;
 const MAX_VOICE_BASE64_CHARS = 6_000;
 const VOICE_RELAY_BUFFER_LIMIT_BYTES = 64 * 1024;
 const PRESENCE_VALUES = new Set(["online", "away", "busy"]);
+const ROOM_STATES = new Set(["lobby", "launching", "in_game", "ended", "closed"]);
 
 const clients = new Map();
 const rooms = new Map();
@@ -64,6 +65,11 @@ function safePresence(value) {
   return PRESENCE_VALUES.has(normalized) ? normalized : "online";
 }
 
+function safeRoomState(value) {
+  const normalized = String(value || "lobby").trim().toLowerCase();
+  return ROOM_STATES.has(normalized) ? normalized : "lobby";
+}
+
 function createResumeToken() {
   return crypto.randomBytes(32).toString("base64url");
 }
@@ -86,6 +92,39 @@ function roomCode() {
     if (!rooms.has(code)) return code;
   }
   throw new Error("Unable to generate unique room code");
+}
+
+function roomState(room) {
+  if (!room) return "closed";
+  if (room.state) return safeRoomState(room.state);
+  return room.launching ? "launching" : "lobby";
+}
+
+function roomIsLobby(room) {
+  return roomState(room) === "lobby";
+}
+
+function roomIsLaunching(room) {
+  return roomState(room) === "launching";
+}
+
+function roomIsInGame(room) {
+  return roomState(room) === "in_game";
+}
+
+function resetMemberForLobby(member) {
+  member.ready = false;
+  member.gameState = "lobby";
+  member.gameConnectedAt = 0;
+}
+
+function resetRoomToLobby(room) {
+  room.state = "lobby";
+  room.matchId = "";
+  room.launchStartedAt = 0;
+  room.startedAt = 0;
+  room.endedAt = 0;
+  for (const member of room.members) resetMemberForLobby(member);
 }
 
 function clientsForAccount(accountId) {
@@ -112,6 +151,7 @@ function presenceForAccount(accountId) {
       presence: "offline",
       in_room: false,
       in_game: false,
+      room_state: "",
       game_id: "",
       game_name: "",
       room_joinable: false,
@@ -125,13 +165,18 @@ function presenceForAccount(accountId) {
   else if (connected.every((client) => client.presenceStatus === "away")) manualPresence = "away";
 
   let chosenRoom = null;
+  let chosenRank = -1;
+  const stateRank = { lobby: 1, ended: 2, launching: 3, in_game: 4 };
   for (const client of connected) {
     if (!client.roomCode) continue;
     const room = rooms.get(client.roomCode);
     if (!room) continue;
     if (!room.members.some((member) => member.userId === client.userId)) continue;
-    if (!chosenRoom || room.launching) chosenRoom = room;
-    if (room.launching) break;
+    const rank = stateRank[roomState(room)] || 0;
+    if (!chosenRoom || rank > chosenRank) {
+      chosenRoom = room;
+      chosenRank = rank;
+    }
   }
 
   if (!chosenRoom) {
@@ -139,6 +184,7 @@ function presenceForAccount(accountId) {
       presence: manualPresence,
       in_room: false,
       in_game: false,
+      room_state: "",
       game_id: "",
       game_name: "",
       room_joinable: false,
@@ -147,13 +193,15 @@ function presenceForAccount(accountId) {
     };
   }
 
+  const state = roomState(chosenRoom);
   return {
-    presence: chosenRoom.launching ? "in_game" : manualPresence,
+    presence: state === "in_game" ? "in_game" : manualPresence,
     in_room: true,
-    in_game: Boolean(chosenRoom.launching),
+    in_game: state === "in_game",
+    room_state: state,
     game_id: chosenRoom.gameId,
     game_name: gameDisplayName(chosenRoom.gameId),
-    room_joinable: !chosenRoom.launching && chosenRoom.members.length < chosenRoom.maxPlayers,
+    room_joinable: state === "lobby" && chosenRoom.members.length < chosenRoom.maxPlayers,
     room_member_count: chosenRoom.members.length,
     room_max_players: chosenRoom.maxPlayers,
   };
@@ -213,26 +261,52 @@ function requireSocialAccount(client) {
   return false;
 }
 
+function memberConnectionState(member) {
+  const client = clients.get(member.userId);
+  if (client?.ws?.readyState === WebSocket.OPEN) return "online";
+  if (client && client.helloReceived) return "reconnecting";
+  return "offline";
+}
+
 function roomPayload(room) {
+  const state = roomState(room);
   return {
     code: room.code,
     game_id: room.gameId,
     game_server_url: gameServerUrl(room.gameId),
     host_id: room.hostId,
     max_players: room.maxPlayers,
-    launching: Boolean(room.launching),
+    state,
+    match_id: room.matchId || "",
+    launch_started_at: room.launchStartedAt || 0,
+    started_at: room.startedAt || 0,
+    ended_at: room.endedAt || 0,
+    launching: state === "launching",
+    in_game: state === "in_game",
+    ended: state === "ended",
     members: room.members.map((member) => ({
       user_id: member.userId,
       account_id: member.accountId || "",
       display_name: member.displayName,
       ready: member.ready,
       voice_muted: Boolean(member.voiceMuted),
+      game_state: member.gameState || "lobby",
+      game_connected_at: member.gameConnectedAt || 0,
+      connection_state: memberConnectionState(member),
     })),
   };
 }
 
 function broadcastRoom(room) {
   const payload = { type: "room_state", room: roomPayload(room) };
+  for (const member of room.members) {
+    const client = clients.get(member.userId);
+    if (client?.ws) send(client.ws, payload);
+  }
+}
+
+function sendRoomLifecycleEvent(room, type, extra = {}) {
+  const payload = { type, room: roomPayload(room), ...extra };
   for (const member of room.members) {
     const client = clients.get(member.userId);
     if (client?.ws) send(client.ws, payload);
@@ -290,8 +364,8 @@ function sendRoomInvite(client, targetAccountId) {
     sendError(client.ws, "ROOM_NOT_FOUND", "Aktif odan bulunamadı.");
     return;
   }
-  if (room.launching) {
-    sendError(client.ws, "ROOM_IN_GAME", "Oyun başlatılırken yeni davet gönderilemez.");
+  if (!roomIsLobby(room)) {
+    sendError(client.ws, "ROOM_IN_GAME", "Oda yalnız lobi durumundayken davet kabul eder.");
     return;
   }
   if (room.members.length >= room.maxPlayers) {
@@ -372,9 +446,9 @@ function respondToRoomInvite(client, inviteId, accept) {
     sendError(client.ws, "ROOM_NOT_FOUND", "Davet edilen oda artık açık değil.");
     return;
   }
-  if (room.launching) {
+  if (!roomIsLobby(room)) {
     closeRoomInvite(invite, "room_in_game");
-    sendError(client.ws, "ROOM_IN_GAME", "Bu oda oyunu başlatıyor.");
+    sendError(client.ws, "ROOM_IN_GAME", "Bu oda artık lobi durumunda değil.");
     return;
   }
   if (room.members.length >= room.maxPlayers) {
@@ -419,8 +493,8 @@ function joinFriendRoom(client, targetAccountId) {
     sendError(client.ws, "FRIEND_NOT_IN_ROOM", "Arkadaşın şu anda katılabileceğin bir odada değil.");
     return;
   }
-  if (room.launching) {
-    sendError(client.ws, "ROOM_IN_GAME", "Arkadaşının odasında oyun başlamış.");
+  if (!roomIsLobby(room)) {
+    sendError(client.ws, "ROOM_IN_GAME", "Arkadaşının odası artık lobi durumunda değil.");
     return;
   }
   if (room.members.length >= room.maxPlayers) {
@@ -430,6 +504,17 @@ function joinFriendRoom(client, targetAccountId) {
 
   joinRoom(client, room.code);
   sendNotice(client.ws, "FRIEND_ROOM_JOINED", `${social.getAccount(targetId)?.display_name || "Arkadaşının"} odasına katıldın.`);
+}
+
+function abortRoomLaunch(room, failedUserId = "", reason = "launch_failed") {
+  if (!room || !roomIsLaunching(room)) return;
+  resetRoomToLobby(room);
+  broadcastRoom(room);
+  pushRoomPresence(room);
+  sendRoomLifecycleEvent(room, "game_launch_aborted", {
+    failed_user_id: failedUserId,
+    reason: String(reason || "launch_failed").slice(0, 96),
+  });
 }
 
 function leaveCurrentRoom(userId, notifySelf = true) {
@@ -447,13 +532,21 @@ function leaveCurrentRoom(userId, notifySelf = true) {
     return;
   }
 
+  const previousState = roomState(room);
   room.members = room.members.filter((member) => member.userId !== userId);
   if (room.members.length === 0) {
+    room.state = "closed";
     rooms.delete(room.code);
     cancelInvitesForRoom(room.code, "room_closed");
   } else {
     if (room.hostId === userId) room.hostId = room.members[0].userId;
-    if (room.launching) room.launching = false;
+    if (previousState === "launching") {
+      resetRoomToLobby(room);
+      sendRoomLifecycleEvent(room, "game_launch_aborted", {
+        failed_user_id: userId,
+        reason: "member_left",
+      });
+    }
     broadcastRoom(room);
   }
 
@@ -515,6 +608,10 @@ function detachClient(client, ws) {
   if (client.disconnectTimer) clearTimeout(client.disconnectTimer);
   client.disconnectTimer = setTimeout(() => expireDisconnectedClient(client), SESSION_GRACE_MS);
   client.disconnectTimer.unref?.();
+  if (client.roomCode) {
+    const room = rooms.get(client.roomCode);
+    if (room) broadcastRoom(room);
+  }
   pushRelatedSocialStates(accountId);
 }
 
@@ -560,7 +657,7 @@ function joinRoom(client, code) {
   const normalized = String(code || "").trim().toUpperCase();
   const room = rooms.get(normalized);
   if (!room) return sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
-  if (room.launching) return sendError(client.ws, "ROOM_IN_GAME", "Bu oda oyunu başlatıyor.");
+  if (!roomIsLobby(room)) return sendError(client.ws, "ROOM_IN_GAME", "Bu oda artık lobi durumunda değil.");
   if (client.roomCode === normalized) {
     broadcastRoom(room);
     return;
@@ -575,6 +672,8 @@ function joinRoom(client, code) {
     displayName: client.displayName,
     ready: false,
     voiceMuted: false,
+    gameState: "lobby",
+    gameConnectedAt: 0,
   });
   client.roomCode = room.code;
   broadcastRoom(room);
@@ -595,13 +694,19 @@ function createRoom(client, message) {
     gameId,
     hostId: client.userId,
     maxPlayers,
-    launching: false,
+    state: "lobby",
+    matchId: "",
+    launchStartedAt: 0,
+    startedAt: 0,
+    endedAt: 0,
     members: [{
       userId: client.userId,
       accountId: client.accountId,
       displayName: client.displayName,
       ready: false,
       voiceMuted: false,
+      gameState: "lobby",
+      gameConnectedAt: 0,
     }],
   };
   rooms.set(code, room);
@@ -615,21 +720,30 @@ function startRoomGame(client) {
   const room = rooms.get(client.roomCode);
   if (!room) return sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
   if (room.hostId !== client.userId) return sendError(client.ws, "NOT_HOST", "Oyunu yalnız oda kurucusu başlatabilir.");
-  if (room.launching) return;
+  if (!roomIsLobby(room)) return sendError(client.ws, "ROOM_NOT_IN_LOBBY", "Oyun yalnız lobi durumundayken başlatılabilir.");
   if (room.members.length < 2) return sendError(client.ws, "NOT_ENOUGH_PLAYERS", "Oyunu başlatmak için en az 2 oyuncu gerekli.");
   if (!room.members.every((member) => member.ready)) return sendError(client.ws, "PLAYERS_NOT_READY", "Tüm oyuncular hazır olmalı.");
   if (!gameServerUrl(room.gameId)) return sendError(client.ws, "GAME_SERVER_UNAVAILABLE", "Bu oyun için PARDEX oyun sunucusu hazır değil.");
 
-  room.launching = true;
+  room.state = "launching";
+  room.matchId = crypto.randomUUID();
+  room.launchStartedAt = Date.now();
+  room.startedAt = 0;
+  room.endedAt = 0;
+  for (const member of room.members) {
+    member.gameState = "launching";
+    member.gameConnectedAt = 0;
+  }
   cancelInvitesForRoom(room.code, "room_in_game");
   broadcastRoom(room);
   pushRoomPresence(room);
   const payload = {
     type: "game_start",
     game_id: room.gameId,
+    match_id: room.matchId,
     room: roomPayload(room),
     started_by: client.userId,
-    started_at: Date.now(),
+    started_at: room.launchStartedAt,
   };
   for (const member of room.members) {
     const memberClient = clients.get(member.userId);
@@ -637,16 +751,92 @@ function startRoomGame(client) {
   }
 }
 
-function reportGameLaunchFailed(client) {
-  if (!client.roomCode) return;
+function validateMatch(room, message) {
+  const matchId = String(message.match_id || "").trim();
+  return Boolean(matchId && room.matchId && matchId === room.matchId);
+}
+
+function reportGameConnected(client, message) {
+  if (!client.roomCode) return sendError(client.ws, "NO_ROOM", "Aktif oyun odası bulunamadı.");
   const room = rooms.get(client.roomCode);
-  if (!room || !room.launching) return;
+  if (!room) return sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
+  if (!roomIsLaunching(room) && !roomIsInGame(room)) {
+    return sendError(client.ws, "ROOM_NOT_LAUNCHING", "Oda şu anda oyuna bağlanma aşamasında değil.");
+  }
+  if (!validateMatch(room, message)) {
+    return sendError(client.ws, "MATCH_MISMATCH", "Oyun oturumu kimliği artık geçerli değil.");
+  }
   const member = room.members.find((item) => item.userId === client.userId);
-  if (!member) return;
-  room.launching = false;
-  member.ready = false;
+  if (!member) return sendError(client.ws, "NOT_IN_ROOM", "Bu oyun odasının üyesi değilsin.");
+
+  member.gameState = "in_game";
+  if (!member.gameConnectedAt) member.gameConnectedAt = Date.now();
+
+  if (roomIsLaunching(room) && room.members.every((item) => item.gameState === "in_game")) {
+    room.state = "in_game";
+    room.startedAt = Date.now();
+    broadcastRoom(room);
+    pushRoomPresence(room);
+    sendRoomLifecycleEvent(room, "game_started", {
+      match_id: room.matchId,
+      started_at: room.startedAt,
+    });
+    return;
+  }
+
   broadcastRoom(room);
   pushRoomPresence(room);
+}
+
+function reportGameLaunchFailed(client, message) {
+  if (!client.roomCode) return;
+  const room = rooms.get(client.roomCode);
+  if (!room || !roomIsLaunching(room)) return;
+  if (message.match_id && !validateMatch(room, message)) return;
+  const member = room.members.find((item) => item.userId === client.userId);
+  if (!member) return;
+  abortRoomLaunch(room, client.userId, message.reason || "launch_failed");
+}
+
+function reportGameEnded(client, message) {
+  if (!client.roomCode) return sendError(client.ws, "NO_ROOM", "Aktif oyun odası bulunamadı.");
+  const room = rooms.get(client.roomCode);
+  if (!room) return sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
+  if (room.hostId !== client.userId) return sendError(client.ws, "NOT_HOST", "Oyunu yalnız oda kurucusu sonlandırabilir.");
+  if (!roomIsLaunching(room) && !roomIsInGame(room)) {
+    return sendError(client.ws, "GAME_NOT_ACTIVE", "Bu odada aktif oyun yok.");
+  }
+  if (!validateMatch(room, message)) {
+    return sendError(client.ws, "MATCH_MISMATCH", "Oyun oturumu kimliği artık geçerli değil.");
+  }
+
+  room.state = "ended";
+  room.endedAt = Date.now();
+  for (const member of room.members) {
+    member.gameState = "ended";
+    member.ready = false;
+  }
+  broadcastRoom(room);
+  pushRoomPresence(room);
+  sendRoomLifecycleEvent(room, "game_ended", {
+    match_id: room.matchId,
+    ended_at: room.endedAt,
+    result: typeof message.result === "object" && message.result !== null ? message.result : {},
+  });
+}
+
+function returnRoomToLobby(client) {
+  if (!client.roomCode) return sendError(client.ws, "NO_ROOM", "Aktif oda bulunamadı.");
+  const room = rooms.get(client.roomCode);
+  if (!room) return sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
+  if (room.hostId !== client.userId) return sendError(client.ws, "NOT_HOST", "Lobiye yalnız oda kurucusu döndürebilir.");
+  if (roomState(room) !== "ended") {
+    return sendError(client.ws, "ROOM_NOT_ENDED", "Oda yalnız oyun bittikten sonra lobiye döndürülebilir.");
+  }
+  resetRoomToLobby(room);
+  broadcastRoom(room);
+  pushRoomPresence(room);
+  sendRoomLifecycleEvent(room, "room_returned_to_lobby", { returned_by: client.userId });
 }
 
 function setPresenceStatus(client, value) {
@@ -797,6 +987,7 @@ function handleMessage(client, raw) {
         room_invites_enabled: true,
         presence_enabled: true,
         friend_join_enabled: true,
+        room_lifecycle_enabled: true,
       });
       syncClientNameToRoom(client);
       pushSocialState(client.accountId);
@@ -887,7 +1078,7 @@ function handleMessage(client, raw) {
     case "set_ready": {
       if (!client.roomCode) return;
       const room = rooms.get(client.roomCode);
-      if (!room || room.launching) return;
+      if (!room || !roomIsLobby(room)) return;
       const member = room.members.find((item) => item.userId === client.userId);
       if (!member) return;
       member.ready = Boolean(message.ready);
@@ -897,8 +1088,17 @@ function handleMessage(client, raw) {
     case "start_game":
       startRoomGame(client);
       break;
+    case "game_connected":
+      reportGameConnected(client, message);
+      break;
     case "launch_failed":
-      reportGameLaunchFailed(client);
+      reportGameLaunchFailed(client, message);
+      break;
+    case "game_ended":
+      reportGameEnded(client, message);
+      break;
+    case "return_to_lobby":
+      returnRoomToLobby(client);
       break;
     case "voice_state":
       setVoiceState(client, message.muted);
@@ -915,6 +1115,11 @@ const httpServer = http.createServer((req, res) => {
   if (req.url === "/health") {
     const status = shuttingDown ? 503 : 200;
     const connectedClients = Array.from(clients.values()).filter((client) => client.ws).length;
+    const lifecycleCounts = { lobby: 0, launching: 0, in_game: 0, ended: 0 };
+    for (const room of rooms.values()) {
+      const state = roomState(room);
+      if (Object.prototype.hasOwnProperty.call(lifecycleCounts, state)) lifecycleCounts[state] += 1;
+    }
     res.writeHead(status, { "Content-Type": "application/json" });
     res.end(JSON.stringify({
       ok: !shuttingDown,
@@ -931,6 +1136,8 @@ const httpServer = http.createServer((req, res) => {
       presence: true,
       friendRoomJoin: true,
       accountRecovery: true,
+      roomLifecycle: true,
+      roomLifecycleCounts: lifecycleCounts,
     }));
     return;
   }
