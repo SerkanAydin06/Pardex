@@ -1,12 +1,12 @@
 {
   "name": "pardex-online-server",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "description": "PARDEX Online oda, oturum ve sosyal sunucusu",
+  "description": "PARDEX Online oda, oturum, sosyal ve davet sunucusu",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node smoke-test.js && node social-smoke-test.js"
+    "test": "node smoke-test.js && node social-smoke-test.js && node invite-smoke-test.js"
   },
   "dependencies": {
     "ws": "^8.18.0"
