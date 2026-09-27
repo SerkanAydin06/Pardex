@@ -13,6 +13,8 @@ extends VBoxContainer
 var _social_state: Dictionary = {}
 var _search_results: Array = []
 var _last_search := ""
+var _invite_dialog: ConfirmationDialog
+var _active_invite_id := ""
 
 
 func _ready() -> void:
@@ -24,7 +26,12 @@ func _ready() -> void:
 	PardexOnline.user_search_results.connect(_on_user_search_results)
 	PardexOnline.social_notice.connect(_on_social_notice)
 	PardexOnline.connection_state_changed.connect(_on_connection_state_changed)
+	PardexOnline.room_state_changed.connect(_on_room_state_changed)
+	PardexOnline.room_left.connect(_on_room_left)
+	PardexOnline.room_invite_received.connect(_on_room_invite_received)
+	PardexOnline.room_invite_closed.connect(_on_room_invite_closed)
 
+	_create_invite_dialog()
 	_social_state = PardexOnline.social_state.duplicate(true)
 	_update_connection_state(PardexOnline.connection_state)
 	_render_social_state()
@@ -34,10 +41,33 @@ func _ready() -> void:
 		PardexOnline.request_social_state()
 
 
+func _create_invite_dialog() -> void:
+	_invite_dialog = ConfirmationDialog.new()
+	_invite_dialog.title = "PARDEX Oda Daveti"
+	_invite_dialog.min_size = Vector2i(500, 250)
+	_invite_dialog.exclusive = true
+	get_tree().root.add_child.call_deferred(_invite_dialog)
+	_invite_dialog.confirmed.connect(_accept_active_invite)
+	_invite_dialog.canceled.connect(_decline_active_invite)
+	call_deferred("_style_invite_dialog_buttons")
+
+
+func _style_invite_dialog_buttons() -> void:
+	if _invite_dialog == null:
+		return
+	var ok_button := _invite_dialog.get_ok_button()
+	if ok_button != null:
+		ok_button.text = "KATIL"
+	var cancel_button := _invite_dialog.get_cancel_button()
+	if cancel_button != null:
+		cancel_button.text = "REDDET"
+
+
 func _on_connection_state_changed(state: String) -> void:
 	_update_connection_state(state)
 	if state == "online":
 		PardexOnline.request_social_state()
+	_render_social_state()
 
 
 func _update_connection_state(state: String) -> void:
@@ -85,6 +115,16 @@ func _on_social_state_changed(state: Dictionary) -> void:
 		PardexOnline.search_users(_last_search)
 
 
+func _on_room_state_changed(_room: Dictionary) -> void:
+	_render_social_state()
+	_render_search_results()
+
+
+func _on_room_left() -> void:
+	_render_social_state()
+	_render_search_results()
+
+
 func _on_user_search_results(results: Array) -> void:
 	_search_results = results.duplicate(true)
 	_render_search_results()
@@ -95,9 +135,66 @@ func _on_user_search_results(results: Array) -> void:
 
 
 func _on_social_notice(message: String) -> void:
-	if message.is_empty():
+	if not message.is_empty():
+		connection_hint.text = message
+
+
+func _on_room_invite_received(invite: Dictionary) -> void:
+	var invite_id := str(invite.get("id", ""))
+	if invite_id.is_empty():
 		return
-	connection_hint.text = message
+	if not _active_invite_id.is_empty() and _active_invite_id != invite_id:
+		PardexOnline.decline_room_invite(_active_invite_id)
+
+	_active_invite_id = invite_id
+	var inviter_name := str(invite.get("from_display_name", "Bir arkadaşın"))
+	var game_name := str(invite.get("game_name", "PARDEX Oyunu"))
+	var room_code := str(invite.get("room_code", ""))
+	var member_count := int(invite.get("member_count", 0))
+	var max_players := int(invite.get("max_players", 0))
+	_invite_dialog.dialog_text = "%s seni %s odasına davet ediyor.\n\nOda: %s\nOyuncular: %d / %d\n\nOdaya katılmak ister misin?" % [
+		inviter_name,
+		game_name,
+		room_code,
+		member_count,
+		max_players,
+	]
+	_style_invite_dialog_buttons()
+	_invite_dialog.popup_centered(Vector2i(520, 260))
+
+
+func _on_room_invite_closed(invite_id: String, reason: String) -> void:
+	if invite_id != _active_invite_id:
+		return
+	var was_visible := _invite_dialog.visible
+	_active_invite_id = ""
+	_invite_dialog.hide()
+	if was_visible and reason == "expired":
+		_on_social_notice("Oda davetinin süresi doldu.")
+	elif was_visible and reason in ["room_closed", "room_full", "room_in_game"]:
+		_on_social_notice("Davet edilen oda artık katılıma uygun değil.")
+
+
+func _accept_active_invite() -> void:
+	if _active_invite_id.is_empty():
+		return
+	var invite_id := _active_invite_id
+	_invite_dialog.hide()
+	connection_hint.text = "Odaya katılınıyor..."
+	PardexOnline.accept_room_invite(invite_id)
+
+
+func _decline_active_invite() -> void:
+	if _active_invite_id.is_empty():
+		return
+	var invite_id := _active_invite_id
+	_invite_dialog.hide()
+	PardexOnline.decline_room_invite(invite_id)
+
+
+func _send_room_invite(account_id: String) -> void:
+	PardexOnline.send_room_invite(account_id)
+	connection_hint.text = "Oda daveti gönderiliyor..."
 
 
 func _render_social_state() -> void:
@@ -107,10 +204,8 @@ func _render_social_state() -> void:
 	requests_panel.visible = not incoming.is_empty()
 	_clear_children(requests_list)
 	for profile_variant in incoming:
-		if typeof(profile_variant) != TYPE_DICTIONARY:
-			continue
-		var profile: Dictionary = profile_variant
-		requests_list.add_child(_make_profile_row(profile, "incoming"))
+		if typeof(profile_variant) == TYPE_DICTIONARY:
+			requests_list.add_child(_make_profile_row(profile_variant as Dictionary, "incoming"))
 
 	_clear_children(friends_list)
 	friends_header.text = "ARKADAŞLAR  •  %d" % friends.size()
@@ -118,10 +213,8 @@ func _render_social_state() -> void:
 		friends_list.add_child(_make_empty_label("Henüz arkadaşın yok. Yukarıdan kullanıcı ara ve arkadaşlık isteği gönder."))
 	else:
 		for profile_variant in friends:
-			if typeof(profile_variant) != TYPE_DICTIONARY:
-				continue
-			var profile: Dictionary = profile_variant
-			friends_list.add_child(_make_profile_row(profile, "friend"))
+			if typeof(profile_variant) == TYPE_DICTIONARY:
+				friends_list.add_child(_make_profile_row(profile_variant as Dictionary, "friend"))
 
 
 func _render_search_results() -> void:
@@ -132,12 +225,9 @@ func _render_search_results() -> void:
 	if _search_results.is_empty():
 		results_list.add_child(_make_empty_label("Aramana uyan PARDEX kullanıcısı bulunamadı."))
 		return
-
 	for profile_variant in _search_results:
-		if typeof(profile_variant) != TYPE_DICTIONARY:
-			continue
-		var profile: Dictionary = profile_variant
-		results_list.add_child(_make_profile_row(profile, "search"))
+		if typeof(profile_variant) == TYPE_DICTIONARY:
+			results_list.add_child(_make_profile_row(profile_variant as Dictionary, "search"))
 
 
 func _array_from_state(key: String) -> Array:
@@ -154,7 +244,6 @@ func _make_profile_row(profile: Dictionary, mode: String) -> Control:
 
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", _row_style())
-
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 	panel.add_child(row)
@@ -194,6 +283,14 @@ func _make_profile_row(profile: Dictionary, mode: String) -> Control:
 		actions.add_child(_make_action_button("KABUL ET", func(): PardexOnline.accept_friend_request(account_id), true))
 		actions.add_child(_make_action_button("REDDET", func(): PardexOnline.decline_friend_request(account_id), false, true))
 	elif mode == "friend":
+		if not online:
+			actions.add_child(_make_action_button("ÇEVRİMDIŞI", Callable(), false, false, true))
+		elif PardexOnline.current_room.is_empty():
+			actions.add_child(_make_action_button("ODA YOK", Callable(), false, false, true))
+		elif bool(PardexOnline.current_room.get("launching", false)):
+			actions.add_child(_make_action_button("ODA MEŞGUL", Callable(), false, false, true))
+		else:
+			actions.add_child(_make_action_button("DAVET ET", func(): _send_room_invite(account_id), true))
 		actions.add_child(_make_action_button("KALDIR", func(): PardexOnline.remove_friend(account_id), false, true))
 	else:
 		match relationship:
@@ -210,13 +307,7 @@ func _make_profile_row(profile: Dictionary, mode: String) -> Control:
 	return panel
 
 
-func _make_action_button(
-	text_value: String,
-	action: Callable,
-	primary := false,
-	danger := false,
-	disabled := false
-) -> Button:
+func _make_action_button(text_value: String, action: Callable, primary := false, danger := false, disabled := false) -> Button:
 	var button := Button.new()
 	button.text = text_value
 	button.custom_minimum_size = Vector2(104, 34)
