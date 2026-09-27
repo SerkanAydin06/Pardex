@@ -1,21 +1,72 @@
-// Live PARDEX room-to-game launch smoke test. Latest Railway deployment verification.
+// Live PARDEX room-to-game launch smoke test with exact Railway deploy verification.
 const crypto = require("crypto");
 const WebSocket = require("ws");
 
 const URL = process.env.PARDEX_ONLINE_URL || "wss://pardex-online-production.up.railway.app";
 const EXPECTED_GAME_SERVER_URL = process.env.PARDEX_GAME_SERVER_URL || "wss://korsan-game-production.up.railway.app";
-const HEALTH_URL = `${URL.replace(/^ws/, "http").replace(/\/+$/, "")}/health`;
+const EXPECTED_DEPLOY_COMMIT = String(process.env.EXPECTED_DEPLOY_COMMIT || "").trim().toLowerCase();
+const HTTP_BASE_URL = URL.replace(/^ws/, "http").replace(/\/+$/, "");
+const HEALTH_URL = `${HTTP_BASE_URL}/health`;
+const DEPLOYMENT_URL = `${HTTP_BASE_URL}/deployment`;
 const TIMEOUT_MS = 15000;
+const DEPLOYMENT_WAIT_MS = Math.max(15_000, Number(process.env.DEPLOYMENT_WAIT_MS || 180_000));
+const DEPLOYMENT_POLL_MS = 3_000;
 
 // Stable per-name keys so repeated CI runs reuse the same production accounts.
 function identityKeyFor(name) {
   return crypto.createHash("sha256").update(`pardex-production-smoke:${name}`).digest("hex");
 }
 
-async function fetchHealth() {
-  const response = await fetch(HEALTH_URL);
-  if (!response.ok) throw new Error(`Health check failed: ${response.status}`);
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
+  const contentType = String(response.headers.get("content-type") || "").toLowerCase();
+  if (!contentType.includes("application/json")) {
+    throw new Error(`${url} is not serving deployment JSON yet`);
+  }
   return response.json();
+}
+
+async function fetchHealth() {
+  return fetchJson(HEALTH_URL);
+}
+
+async function waitForExpectedDeployment() {
+  if (!EXPECTED_DEPLOY_COMMIT) {
+    console.log("No EXPECTED_DEPLOY_COMMIT provided; skipping exact deployment SHA gate.");
+    return null;
+  }
+
+  const deadline = Date.now() + DEPLOYMENT_WAIT_MS;
+  let lastObserved = "<unavailable>";
+  let lastError = "";
+
+  while (Date.now() < deadline) {
+    try {
+      const deployment = await fetchJson(DEPLOYMENT_URL);
+      const deployedCommit = String(deployment.commitSha || "").trim().toLowerCase();
+      lastObserved = deployedCommit || "<empty>";
+      if (deployedCommit === EXPECTED_DEPLOY_COMMIT) {
+        console.log(
+          `PARDEX production commit verified: ${deployedCommit} deployment=${deployment.deploymentId || "<unknown>"}`
+        );
+        return deployment;
+      }
+      lastError = "";
+    } catch (error) {
+      lastError = error.message;
+    }
+    await sleep(DEPLOYMENT_POLL_MS);
+  }
+
+  const detail = lastError ? ` last_error=${lastError}` : "";
+  throw new Error(
+    `Railway did not serve expected commit ${EXPECTED_DEPLOY_COMMIT} within ${DEPLOYMENT_WAIT_MS}ms; last_observed=${lastObserved}.${detail}`
+  );
 }
 
 function connect(name) {
@@ -89,7 +140,11 @@ async function markReady(client, observer, userId, code) {
 }
 
 async function main() {
+  const deployment = await waitForExpectedDeployment();
   const health = await fetchHealth();
+  if (health.accountRecovery !== true) {
+    throw new Error("Production /health does not report accountRecovery=true");
+  }
   const voiceRelayEnabled = health.voiceRelay === true;
   const a = await connect("CI-A");
   const b = await connect("CI-B");
@@ -170,7 +225,7 @@ async function main() {
     }
 
     console.log(
-      `PARDEX production flow passed: ${URL} room=${code} voice=${voiceRelayEnabled ? "ok" : "disabled"} game_server=${hostStart.room.game_server_url}`
+      `PARDEX production flow passed: commit=${deployment?.commitSha || "unchecked"} ${URL} room=${code} voice=${voiceRelayEnabled ? "ok" : "disabled"} game_server=${hostStart.room.game_server_url}`
     );
   } finally {
     a.ws.close();
