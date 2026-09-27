@@ -137,6 +137,22 @@ async function rejectUsedRecoveryCode(identityKey) {
   ws.close();
 }
 
+async function rejectRevokedIdentity(identityKey) {
+  const ws = await openSocket();
+  const errorPromise = waitForMessage(
+    ws,
+    (message) => message.type === "error" && message.code === "INVALID_IDENTITY"
+  );
+  ws.send(JSON.stringify({
+    type: "hello",
+    display_name: "Old-Device",
+    identity_key: identityKey,
+  }));
+  const error = await errorPromise;
+  assert.match(error.message, /taşındı|geçersiz/i);
+  ws.close();
+}
+
 async function main() {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "pardex-recovery-smoke-"));
   const socialDataPath = path.join(tempDir, "social.json");
@@ -188,10 +204,14 @@ async function main() {
     await recoverySaved;
 
     const originalAccountId = original.accountId;
-    await closeClient(original);
-    original = null;
+    const oldSessionClosed = new Promise((resolve) => {
+      original.ws.once("close", (code) => resolve(code));
+    });
 
     recovered = await connectClient("Yeni-Cihaz-Adi", recoveredIdentity, RECOVERY_CODE);
+    assert.strictEqual(await oldSessionClosed, 4003, "recovery must immediately terminate the previous device session");
+    original = null;
+
     assert.strictEqual(recovered.accountId, originalAccountId, "recovery must restore the original account id");
     assert.strictEqual(recovered.displayName, "Pardus-A", "recovery must preserve the original display name");
     assert.strictEqual(recovered.recovered, true, "welcome must identify a recovery handshake");
@@ -232,6 +252,7 @@ async function main() {
     assert.ok(Object.keys(parsed.identity_aliases || {}).length >= 2, "identity aliases must persist hashed device bindings");
 
     server = await startServer(socialDataPath);
+    await rejectRevokedIdentity(originalIdentity);
     reconnected = await connectClient("Pardus-A", recoveredIdentity);
     assert.strictEqual(
       reconnected.accountId,
@@ -240,7 +261,7 @@ async function main() {
     );
 
     console.log(
-      "PARDEX recovery smoke test passed: friendship -> one-time recovery -> replay rejection -> alias persistence"
+      "PARDEX recovery smoke test passed: friendship -> one-time transfer -> old-session revocation -> persistence"
     );
   } finally {
     await closeClient(original);
