@@ -8,6 +8,7 @@ const PORT = Number(process.env.PORT || 8765);
 const HOST = process.env.HOST || "0.0.0.0";
 const KORSAN_GAME_SERVER_URL = String(process.env.KORSAN_GAME_SERVER_URL || "").trim();
 const SESSION_GRACE_MS = Math.max(1000, Number(process.env.SESSION_GRACE_MS || 30_000));
+const ROOM_INVITE_TTL_MS = Math.max(15_000, Number(process.env.ROOM_INVITE_TTL_MS || 60_000));
 const SOCIAL_DATA_PATH = String(
   process.env.PARDEX_SOCIAL_DATA_PATH || path.join(__dirname, "data", "social.json")
 ).trim();
@@ -25,13 +26,12 @@ const VOICE_RELAY_BUFFER_LIMIT_BYTES = 64 * 1024;
 const clients = new Map();
 const rooms = new Map();
 const resumeTokens = new Map();
+const roomInvites = new Map();
 const social = new SocialStore(SOCIAL_DATA_PATH);
 let shuttingDown = false;
 
 function send(ws, payload) {
-  if (ws?.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify(payload));
-  }
+  if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify(payload));
 }
 
 function sendError(ws, code, message) {
@@ -62,13 +62,16 @@ function gameServerUrl(gameId) {
   return "";
 }
 
+function gameDisplayName(gameId) {
+  if (gameId === "korsanlar") return "Korsanların Hazinesi";
+  return gameId || "PARDEX Oyunu";
+}
+
 function roomCode() {
   for (let attempt = 0; attempt < 50; attempt += 1) {
     let code = "";
     const bytes = crypto.randomBytes(5);
-    for (let i = 0; i < 5; i += 1) {
-      code += ROOM_ALPHABET[bytes[i] % ROOM_ALPHABET.length];
-    }
+    for (let i = 0; i < 5; i += 1) code += ROOM_ALPHABET[bytes[i] % ROOM_ALPHABET.length];
     if (!rooms.has(code)) return code;
   }
   throw new Error("Unable to generate unique room code");
@@ -102,16 +105,12 @@ function pushSocialState(accountId) {
   if (!accountId) return;
   const state = social.socialState(accountId, isAccountOnline);
   if (!state) return;
-  for (const client of clientsForAccount(accountId)) {
-    send(client.ws, { type: "social_state", state });
-  }
+  for (const client of clientsForAccount(accountId)) send(client.ws, { type: "social_state", state });
 }
 
 function pushRelatedSocialStates(accountId) {
   if (!accountId) return;
-  for (const relatedId of social.relatedAccountIds(accountId)) {
-    pushSocialState(relatedId);
-  }
+  for (const relatedId of social.relatedAccountIds(accountId)) pushSocialState(relatedId);
 }
 
 function requireSocialAccount(client) {
@@ -146,6 +145,158 @@ function broadcastRoom(room) {
   }
 }
 
+function closeRoomInvite(invite, reason = "closed") {
+  if (!invite) return;
+  if (invite.timer) clearTimeout(invite.timer);
+  roomInvites.delete(invite.id);
+  for (const target of clientsForAccount(invite.toAccountId)) {
+    send(target.ws, { type: "room_invite_closed", invite_id: invite.id, reason });
+  }
+}
+
+function cancelInvitesForRoom(code, reason = "room_closed") {
+  for (const invite of [...roomInvites.values()]) {
+    if (invite.roomCode === code) closeRoomInvite(invite, reason);
+  }
+}
+
+function invitePayload(invite, room) {
+  const inviter = social.getAccount(invite.fromAccountId);
+  return {
+    id: invite.id,
+    room_code: room.code,
+    game_id: room.gameId,
+    game_name: gameDisplayName(room.gameId),
+    from_account_id: invite.fromAccountId,
+    from_display_name: inviter?.display_name || "Pardus",
+    member_count: room.members.length,
+    max_players: room.maxPlayers,
+    expires_at: invite.expiresAt,
+  };
+}
+
+function sendRoomInvite(client, targetAccountId) {
+  if (!requireSocialAccount(client)) return;
+  const targetId = String(targetAccountId || "").trim();
+  if (!targetId || targetId === client.accountId) {
+    sendError(client.ws, "INVALID_INVITE_TARGET", "Geçerli bir arkadaş seçmelisin.");
+    return;
+  }
+  if (social.relationshipBetween(client.accountId, targetId) !== "friend") {
+    sendError(client.ws, "NOT_FRIENDS", "Oda daveti yalnız arkadaşlara gönderilebilir.");
+    return;
+  }
+  if (!client.roomCode) {
+    sendError(client.ws, "NO_ROOM", "Arkadaşını davet etmek için önce bir odaya katılmalısın.");
+    return;
+  }
+
+  const room = rooms.get(client.roomCode);
+  if (!room || !room.members.some((member) => member.userId === client.userId)) {
+    sendError(client.ws, "ROOM_NOT_FOUND", "Aktif odan bulunamadı.");
+    return;
+  }
+  if (room.launching) {
+    sendError(client.ws, "ROOM_IN_GAME", "Oyun başlatılırken yeni davet gönderilemez.");
+    return;
+  }
+  if (room.members.length >= room.maxPlayers) {
+    sendError(client.ws, "ROOM_FULL", "Oda dolu.");
+    return;
+  }
+  if (room.members.some((member) => member.accountId === targetId)) {
+    sendError(client.ws, "ALREADY_IN_ROOM", "Bu arkadaş zaten odada.");
+    return;
+  }
+
+  const targets = clientsForAccount(targetId);
+  if (targets.length === 0) {
+    sendError(client.ws, "FRIEND_OFFLINE", "Arkadaşın şu anda çevrimdışı.");
+    return;
+  }
+
+  for (const existing of [...roomInvites.values()]) {
+    if (
+      existing.fromAccountId === client.accountId
+      && existing.toAccountId === targetId
+      && existing.roomCode === room.code
+    ) closeRoomInvite(existing, "replaced");
+  }
+
+  const now = Date.now();
+  const invite = {
+    id: crypto.randomUUID(),
+    fromAccountId: client.accountId,
+    fromUserId: client.userId,
+    toAccountId: targetId,
+    roomCode: room.code,
+    createdAt: now,
+    expiresAt: now + ROOM_INVITE_TTL_MS,
+    timer: null,
+  };
+  invite.timer = setTimeout(() => closeRoomInvite(invite, "expired"), ROOM_INVITE_TTL_MS);
+  invite.timer.unref?.();
+  roomInvites.set(invite.id, invite);
+
+  const payload = { type: "room_invite", invite: invitePayload(invite, room) };
+  for (const target of targets) send(target.ws, payload);
+  sendNotice(client.ws, "ROOM_INVITE_SENT", "Oda daveti gönderildi.");
+}
+
+function respondToRoomInvite(client, inviteId, accept) {
+  if (!requireSocialAccount(client)) return;
+  const normalizedId = String(inviteId || "").trim();
+  const invite = roomInvites.get(normalizedId);
+  if (!invite || invite.toAccountId !== client.accountId) {
+    sendError(client.ws, "INVITE_NOT_FOUND", "Oda daveti artık geçerli değil.");
+    return;
+  }
+  if (Date.now() >= invite.expiresAt) {
+    closeRoomInvite(invite, "expired");
+    sendError(client.ws, "INVITE_EXPIRED", "Oda davetinin süresi doldu.");
+    return;
+  }
+
+  if (!accept) {
+    closeRoomInvite(invite, "declined");
+    sendNotice(client.ws, "ROOM_INVITE_DECLINED", "Oda daveti reddedildi.");
+    for (const inviter of clientsForAccount(invite.fromAccountId)) {
+      sendNotice(inviter.ws, "ROOM_INVITE_DECLINED", `${client.displayName} oda davetini reddetti.`);
+    }
+    return;
+  }
+
+  if (social.relationshipBetween(client.accountId, invite.fromAccountId) !== "friend") {
+    closeRoomInvite(invite, "not_friends");
+    sendError(client.ws, "NOT_FRIENDS", "Davet gönderen kullanıcı artık arkadaş listende değil.");
+    return;
+  }
+
+  const room = rooms.get(invite.roomCode);
+  if (!room) {
+    closeRoomInvite(invite, "room_closed");
+    sendError(client.ws, "ROOM_NOT_FOUND", "Davet edilen oda artık açık değil.");
+    return;
+  }
+  if (room.launching) {
+    closeRoomInvite(invite, "room_in_game");
+    sendError(client.ws, "ROOM_IN_GAME", "Bu oda oyunu başlatıyor.");
+    return;
+  }
+  if (room.members.length >= room.maxPlayers) {
+    closeRoomInvite(invite, "room_full");
+    sendError(client.ws, "ROOM_FULL", "Davet edilen oda doldu.");
+    return;
+  }
+
+  closeRoomInvite(invite, "accepted");
+  joinRoom(client, room.code);
+  sendNotice(client.ws, "ROOM_INVITE_ACCEPTED", "Odaya katıldın.");
+  for (const inviter of clientsForAccount(invite.fromAccountId)) {
+    sendNotice(inviter.ws, "ROOM_INVITE_ACCEPTED", `${client.displayName} odaya katıldı.`);
+  }
+}
+
 function leaveCurrentRoom(userId, notifySelf = true) {
   const client = clients.get(userId);
   if (!client || !client.roomCode) return;
@@ -160,9 +311,9 @@ function leaveCurrentRoom(userId, notifySelf = true) {
   }
 
   room.members = room.members.filter((member) => member.userId !== userId);
-
   if (room.members.length === 0) {
     rooms.delete(room.code);
+    cancelInvitesForRoom(room.code, "room_closed");
   } else {
     if (room.hostId === userId) room.hostId = room.members[0].userId;
     if (room.launching) room.launching = false;
@@ -186,7 +337,6 @@ function syncClientNameToRoom(client) {
 function expireDisconnectedClient(client) {
   if (!client || client.replaced || client.ws) return;
   if (clients.get(client.userId) !== client) return;
-
   leaveCurrentRoom(client.userId, false);
   clients.delete(client.userId);
   resumeTokens.delete(client.resumeToken);
@@ -195,7 +345,6 @@ function expireDisconnectedClient(client) {
 
 function detachClient(client, ws) {
   if (!client || client.replaced || client.ws !== ws) return;
-
   const accountId = client.accountId;
   client.ws = null;
   if (!client.helloReceived) {
@@ -203,12 +352,8 @@ function detachClient(client, ws) {
     resumeTokens.delete(client.resumeToken);
     return;
   }
-
   if (client.disconnectTimer) clearTimeout(client.disconnectTimer);
-  client.disconnectTimer = setTimeout(
-    () => expireDisconnectedClient(client),
-    SESSION_GRACE_MS
-  );
+  client.disconnectTimer = setTimeout(() => expireDisconnectedClient(client), SESSION_GRACE_MS);
   client.disconnectTimer.unref?.();
   pushRelatedSocialStates(accountId);
 }
@@ -216,10 +361,8 @@ function detachClient(client, ws) {
 function tryResumeClient(client, resumeToken, expectedAccountId) {
   const token = String(resumeToken || "").trim();
   if (!token) return false;
-
   const existingUserId = resumeTokens.get(token);
   if (!existingUserId) return false;
-
   const existing = clients.get(existingUserId);
   if (!existing) {
     resumeTokens.delete(token);
@@ -233,11 +376,8 @@ function tryResumeClient(client, resumeToken, expectedAccountId) {
     existing.disconnectTimer = null;
   }
 
-  const provisionalUserId = client.userId;
-  const provisionalToken = client.resumeToken;
-  clients.delete(provisionalUserId);
-  resumeTokens.delete(provisionalToken);
-
+  clients.delete(client.userId);
+  resumeTokens.delete(client.resumeToken);
   const previousSocket = existing.ws;
   existing.replaced = true;
   existing.ws = null;
@@ -248,36 +388,23 @@ function tryResumeClient(client, resumeToken, expectedAccountId) {
   client.displayName = existing.displayName;
   client.accountId = expectedAccountId;
   client.helloReceived = true;
-
   clients.set(client.userId, client);
   resumeTokens.set(client.resumeToken, client.userId);
 
-  if (previousSocket && previousSocket !== client.ws) {
-    previousSocket.close(4001, "PARDEX session resumed elsewhere");
-  }
-
+  if (previousSocket && previousSocket !== client.ws) previousSocket.close(4001, "PARDEX session resumed elsewhere");
   return true;
 }
 
 function joinRoom(client, code) {
   const normalized = String(code || "").trim().toUpperCase();
   const room = rooms.get(normalized);
-  if (!room) {
-    sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
-    return;
-  }
-  if (room.launching) {
-    sendError(client.ws, "ROOM_IN_GAME", "Bu oda oyunu başlatıyor.");
-    return;
-  }
+  if (!room) return sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
+  if (room.launching) return sendError(client.ws, "ROOM_IN_GAME", "Bu oda oyunu başlatıyor.");
   if (client.roomCode === normalized) {
     broadcastRoom(room);
     return;
   }
-  if (room.members.length >= room.maxPlayers) {
-    sendError(client.ws, "ROOM_FULL", "Oda dolu.");
-    return;
-  }
+  if (room.members.length >= room.maxPlayers) return sendError(client.ws, "ROOM_FULL", "Oda dolu.");
 
   leaveCurrentRoom(client.userId, false);
   room.members.push({
@@ -293,7 +420,6 @@ function joinRoom(client, code) {
 
 function createRoom(client, message) {
   leaveCurrentRoom(client.userId, false);
-
   const code = roomCode();
   const requestedMaxPlayers = Number(message.max_players);
   const maxPlayers = Number.isFinite(requestedMaxPlayers)
@@ -314,42 +440,23 @@ function createRoom(client, message) {
       voiceMuted: false,
     }],
   };
-
   rooms.set(code, room);
   client.roomCode = code;
   broadcastRoom(room);
 }
 
 function startRoomGame(client) {
-  if (!client.roomCode) {
-    sendError(client.ws, "NO_ROOM", "Önce bir odaya katılmalısın.");
-    return;
-  }
-
+  if (!client.roomCode) return sendError(client.ws, "NO_ROOM", "Önce bir odaya katılmalısın.");
   const room = rooms.get(client.roomCode);
-  if (!room) {
-    sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
-    return;
-  }
-  if (room.hostId !== client.userId) {
-    sendError(client.ws, "NOT_HOST", "Oyunu yalnız oda kurucusu başlatabilir.");
-    return;
-  }
+  if (!room) return sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
+  if (room.hostId !== client.userId) return sendError(client.ws, "NOT_HOST", "Oyunu yalnız oda kurucusu başlatabilir.");
   if (room.launching) return;
-  if (room.members.length < 2) {
-    sendError(client.ws, "NOT_ENOUGH_PLAYERS", "Oyunu başlatmak için en az 2 oyuncu gerekli.");
-    return;
-  }
-  if (!room.members.every((member) => member.ready)) {
-    sendError(client.ws, "PLAYERS_NOT_READY", "Tüm oyuncular hazır olmalı.");
-    return;
-  }
-  if (!gameServerUrl(room.gameId)) {
-    sendError(client.ws, "GAME_SERVER_UNAVAILABLE", "Bu oyun için PARDEX oyun sunucusu hazır değil.");
-    return;
-  }
+  if (room.members.length < 2) return sendError(client.ws, "NOT_ENOUGH_PLAYERS", "Oyunu başlatmak için en az 2 oyuncu gerekli.");
+  if (!room.members.every((member) => member.ready)) return sendError(client.ws, "PLAYERS_NOT_READY", "Tüm oyuncular hazır olmalı.");
+  if (!gameServerUrl(room.gameId)) return sendError(client.ws, "GAME_SERVER_UNAVAILABLE", "Bu oyun için PARDEX oyun sunucusu hazır değil.");
 
   room.launching = true;
+  cancelInvitesForRoom(room.code, "room_in_game");
   broadcastRoom(room);
   const payload = {
     type: "game_start",
@@ -368,10 +475,8 @@ function reportGameLaunchFailed(client) {
   if (!client.roomCode) return;
   const room = rooms.get(client.roomCode);
   if (!room || !room.launching) return;
-
   const member = room.members.find((item) => item.userId === client.userId);
   if (!member) return;
-
   room.launching = false;
   member.ready = false;
   broadcastRoom(room);
@@ -383,7 +488,6 @@ function allowVoiceFrame(client) {
     client.voiceRateWindowStartedAt = now;
     client.voiceRateMessageCount = 0;
   }
-
   client.voiceRateMessageCount += 1;
   return client.voiceRateMessageCount <= VOICE_RATE_LIMIT_MESSAGES;
 }
@@ -402,24 +506,12 @@ function relayVoiceFrame(client, message) {
   if (!client.roomCode) return;
   const room = rooms.get(client.roomCode);
   if (!room) return;
-
   const member = room.members.find((item) => item.userId === client.userId);
   if (!member || member.voiceMuted) return;
-
   const pcm = String(message.pcm || "");
   if (!pcm || pcm.length > MAX_VOICE_BASE64_CHARS) return;
-
-  const sequence = Number.isFinite(Number(message.seq))
-    ? Math.max(0, Math.floor(Number(message.seq)))
-    : 0;
-
-  const payload = {
-    type: "voice_frame",
-    user_id: client.userId,
-    seq: sequence,
-    pcm,
-  };
-
+  const sequence = Number.isFinite(Number(message.seq)) ? Math.max(0, Math.floor(Number(message.seq))) : 0;
+  const payload = { type: "voice_frame", user_id: client.userId, seq: sequence, pcm };
   for (const roomMember of room.members) {
     if (roomMember.userId === client.userId) continue;
     const target = clients.get(roomMember.userId);
@@ -433,7 +525,6 @@ function allowMessage(client) {
     client.rateWindowStartedAt = now;
     client.rateMessageCount = 0;
   }
-
   client.rateMessageCount += 1;
   if (client.rateMessageCount > RATE_HARD_LIMIT_MESSAGES) {
     client.ws?.close(1008, "Rate limit exceeded");
@@ -447,10 +538,7 @@ function allowMessage(client) {
 }
 
 function applySocialAction(client, result, otherAccountId) {
-  if (!result.ok) {
-    sendError(client.ws, result.code, result.message);
-    return;
-  }
+  if (!result.ok) return sendError(client.ws, result.code, result.message);
   sendNotice(client.ws, result.code, result.message);
   pushSocialState(client.accountId);
   pushSocialState(otherAccountId);
@@ -466,11 +554,9 @@ function handleMessage(client, raw) {
   }
 
   if (message.type === "voice_frame") {
-    if (!allowVoiceFrame(client)) return;
-    relayVoiceFrame(client, message);
+    if (allowVoiceFrame(client)) relayVoiceFrame(client, message);
     return;
   }
-
   if (!allowMessage(client)) return;
 
   switch (message.type) {
@@ -481,13 +567,11 @@ function handleMessage(client, raw) {
         client.ws?.close(1008, "Invalid PARDEX identity");
         return;
       }
-
       const resumed = tryResumeClient(client, message.resume_token, accountId);
       client.helloReceived = true;
       client.accountId = accountId;
       client.displayName = safeName(message.display_name);
-      const accountResult = social.ensureAccount(accountId, client.displayName);
-
+      social.ensureAccount(accountId, client.displayName);
       send(client.ws, {
         type: "welcome",
         user_id: client.userId,
@@ -496,22 +580,23 @@ function handleMessage(client, raw) {
         resume_token: client.resumeToken,
         resumed,
         social_enabled: true,
+        room_invites_enabled: true,
       });
       syncClientNameToRoom(client);
       pushSocialState(client.accountId);
-      if (accountResult.changed) pushRelatedSocialStates(client.accountId);
-      else pushRelatedSocialStates(client.accountId);
+      pushRelatedSocialStates(client.accountId);
       break;
     }
     case "get_social_state":
       if (requireSocialAccount(client)) pushSocialState(client.accountId);
       break;
-    case "search_users": {
-      if (!requireSocialAccount(client)) return;
-      const results = social.searchUsers(message.query, client.accountId, isAccountOnline);
-      send(client.ws, { type: "user_search_results", query: String(message.query || ""), results });
+    case "search_users":
+      if (requireSocialAccount(client)) send(client.ws, {
+        type: "user_search_results",
+        query: String(message.query || ""),
+        results: social.searchUsers(message.query, client.accountId, isAccountOnline),
+      });
       break;
-    }
     case "send_friend_request": {
       if (!requireSocialAccount(client)) return;
       const targetId = String(message.account_id || "");
@@ -542,6 +627,15 @@ function handleMessage(client, raw) {
       applySocialAction(client, social.removeFriend(client.accountId, targetId), targetId);
       break;
     }
+    case "send_room_invite":
+      sendRoomInvite(client, message.account_id);
+      break;
+    case "accept_room_invite":
+      respondToRoomInvite(client, message.invite_id, true);
+      break;
+    case "decline_room_invite":
+      respondToRoomInvite(client, message.invite_id, false);
+      break;
     case "create_room":
       createRoom(client, message);
       break;
@@ -589,6 +683,8 @@ const httpServer = http.createServer((req, res) => {
       clients: connectedClients,
       recoverable_sessions: Math.max(0, clients.size - connectedClients),
       sessionGraceMs: SESSION_GRACE_MS,
+      roomInviteTtlMs: ROOM_INVITE_TTL_MS,
+      pendingRoomInvites: roomInvites.size,
       socialAccounts: Object.keys(social.data.accounts).length,
       socialDataPathConfigured: Boolean(SOCIAL_DATA_PATH),
       korsanGameServerAssigned: Boolean(KORSAN_GAME_SERVER_URL),
@@ -596,22 +692,17 @@ const httpServer = http.createServer((req, res) => {
     }));
     return;
   }
-
   res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
   res.end("PARDEX Online server\n");
 });
 
-const wss = new WebSocketServer({
-  server: httpServer,
-  maxPayload: MAX_PAYLOAD_BYTES,
-});
+const wss = new WebSocketServer({ server: httpServer, maxPayload: MAX_PAYLOAD_BYTES });
 
 wss.on("connection", (ws) => {
   if (shuttingDown) {
     ws.close(1012, "Service restarting");
     return;
   }
-
   const userId = crypto.randomUUID();
   const resumeToken = createResumeToken();
   const client = {
@@ -631,7 +722,6 @@ wss.on("connection", (ws) => {
   };
   clients.set(userId, client);
   resumeTokens.set(resumeToken, userId);
-
   ws.on("message", (raw) => handleMessage(client, raw));
   ws.on("close", () => detachClient(client, ws));
   ws.on("error", () => {});
@@ -641,15 +731,13 @@ function shutdown(signal) {
   if (shuttingDown) return;
   shuttingDown = true;
   console.log(`PARDEX Online shutting down (${signal})`);
-
+  for (const invite of [...roomInvites.values()]) closeRoomInvite(invite, "server_restarting");
   for (const client of clients.values()) {
     if (client.disconnectTimer) clearTimeout(client.disconnectTimer);
     client.ws?.close(1012, "PARDEX Online restarting");
   }
-
   wss.close(() => {});
   httpServer.close(() => process.exit(0));
-
   setTimeout(() => process.exit(1), 5000).unref();
 }
 
