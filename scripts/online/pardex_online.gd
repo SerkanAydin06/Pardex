@@ -10,6 +10,8 @@ signal voice_frame_received(user_id: String, sequence: int, pcm_base64: String)
 signal social_state_changed(state: Dictionary)
 signal user_search_results(results: Array)
 signal social_notice(message: String)
+signal room_invite_received(invite: Dictionary)
+signal room_invite_closed(invite_id: String, reason: String)
 
 const DEFAULT_SERVER_URL := "wss://pardex-online-production.up.railway.app"
 const LEGACY_LOCAL_SERVER_URL := "ws://127.0.0.1:8765"
@@ -28,6 +30,7 @@ var identity_key := ""
 var resume_token := ""
 var current_room: Dictionary = {}
 var social_state: Dictionary = {}
+var pending_room_invite: Dictionary = {}
 var connection_state := "offline"
 
 var _socket: WebSocketPeer
@@ -95,11 +98,7 @@ func _process(delta: float) -> void:
 
 func configure(url: String, player_name: String) -> void:
 	var normalized_url := url.strip_edges()
-	if normalized_url.is_empty() or normalized_url == LEGACY_LOCAL_SERVER_URL:
-		server_url = DEFAULT_SERVER_URL
-	else:
-		server_url = normalized_url
-
+	server_url = DEFAULT_SERVER_URL if normalized_url.is_empty() or normalized_url == LEGACY_LOCAL_SERVER_URL else normalized_url
 	var normalized_name := player_name.strip_edges()
 	display_name = normalized_name.left(24) if not normalized_name.is_empty() else "Pardus"
 
@@ -112,12 +111,8 @@ func update_display_name(player_name: String) -> void:
 
 
 func connect_server() -> void:
-	if _socket != null and _socket.get_ready_state() in [
-		WebSocketPeer.STATE_CONNECTING,
-		WebSocketPeer.STATE_OPEN,
-	]:
+	if _socket != null and _socket.get_ready_state() in [WebSocketPeer.STATE_CONNECTING, WebSocketPeer.STATE_OPEN]:
 		return
-
 	if identity_key.is_empty():
 		_load_or_create_identity()
 
@@ -168,11 +163,7 @@ func create_room(game_id := "korsanlar", max_players := 4) -> void:
 	if not is_online():
 		online_error.emit("PARDEX Online bağlantısı yok.")
 		return
-	_send({
-		"type": "create_room",
-		"game_id": game_id,
-		"max_players": clampi(max_players, 2, 8),
-	})
+	_send({"type": "create_room", "game_id": game_id, "max_players": clampi(max_players, 2, 8)})
 
 
 func join_room(code: String) -> void:
@@ -183,25 +174,17 @@ func join_room(code: String) -> void:
 	if not is_online():
 		online_error.emit("PARDEX Online bağlantısı yok.")
 		return
-	_send({
-		"type": "join_room",
-		"code": normalized_code,
-	})
+	_send({"type": "join_room", "code": normalized_code})
 
 
 func leave_room() -> void:
-	if not is_online():
-		return
-	_send({"type": "leave_room"})
+	if is_online():
+		_send({"type": "leave_room"})
 
 
 func set_ready(is_ready: bool) -> void:
-	if not is_online() or current_room.is_empty():
-		return
-	_send({
-		"type": "set_ready",
-		"ready": is_ready,
-	})
+	if is_online() and not current_room.is_empty():
+		_send({"type": "set_ready", "ready": is_ready})
 
 
 func request_start_game() -> void:
@@ -212,17 +195,14 @@ func request_start_game() -> void:
 
 
 func report_game_launch_failed() -> void:
-	if not is_online() or current_room.is_empty():
-		return
-	if not bool(current_room.get("launching", false)):
+	if not is_online() or current_room.is_empty() or not bool(current_room.get("launching", false)):
 		return
 	_send({"type": "launch_failed"})
 
 
 func request_social_state() -> void:
-	if not is_online():
-		return
-	_send({"type": "get_social_state"})
+	if is_online():
+		_send({"type": "get_social_state"})
 
 
 func search_users(query: String) -> void:
@@ -233,10 +213,7 @@ func search_users(query: String) -> void:
 	if not is_online():
 		social_notice.emit("Kullanıcı aramak için PARDEX Online bağlantısı gerekli.")
 		return
-	_send({
-		"type": "search_users",
-		"query": normalized.left(48),
-	})
+	_send({"type": "search_users", "query": normalized.left(48)})
 
 
 func send_friend_request(target_account_id: String) -> void:
@@ -259,48 +236,55 @@ func remove_friend(target_account_id: String) -> void:
 	_send_social_action("remove_friend", target_account_id)
 
 
+func send_room_invite(target_account_id: String) -> void:
+	var normalized_id := target_account_id.strip_edges()
+	if normalized_id.is_empty():
+		return
+	if not is_online():
+		social_notice.emit("Oda daveti göndermek için PARDEX Online bağlantısı gerekli.")
+		return
+	if current_room.is_empty():
+		social_notice.emit("Arkadaşını davet etmek için önce bir oda oluştur veya odaya katıl.")
+		return
+	_send({"type": "send_room_invite", "account_id": normalized_id})
+
+
+func accept_room_invite(invite_id: String) -> void:
+	var normalized_id := invite_id.strip_edges()
+	if normalized_id.is_empty() or not is_online():
+		return
+	_send({"type": "accept_room_invite", "invite_id": normalized_id})
+
+
+func decline_room_invite(invite_id: String) -> void:
+	var normalized_id := invite_id.strip_edges()
+	if normalized_id.is_empty() or not is_online():
+		return
+	_send({"type": "decline_room_invite", "invite_id": normalized_id})
+
+
 func _send_social_action(action_type: String, target_account_id: String) -> void:
 	var normalized_id := target_account_id.strip_edges()
 	if normalized_id.is_empty() or not is_online():
 		return
-	_send({
-		"type": action_type,
-		"account_id": normalized_id,
-	})
+	_send({"type": action_type, "account_id": normalized_id})
 
 
 func set_voice_muted(is_muted: bool) -> void:
-	if not is_online() or current_room.is_empty():
-		return
-	_send({
-		"type": "voice_state",
-		"muted": is_muted,
-	})
+	if is_online() and not current_room.is_empty():
+		_send({"type": "voice_state", "muted": is_muted})
 
 
 func send_voice_frame(sequence: int, pcm_base64: String) -> void:
 	if not is_online() or current_room.is_empty() or pcm_base64.is_empty():
 		return
-
-	if (
-		_socket != null
-		and _socket.get_current_outbound_buffered_amount() >= VOICE_OUTBOUND_QUEUE_LIMIT
-	):
+	if _socket != null and _socket.get_current_outbound_buffered_amount() >= VOICE_OUTBOUND_QUEUE_LIMIT:
 		return
-
-	_send({
-		"type": "voice_frame",
-		"seq": sequence,
-		"pcm": pcm_base64,
-	})
+	_send({"type": "voice_frame", "seq": sequence, "pcm": pcm_base64})
 
 
 func is_online() -> bool:
-	return (
-		_socket != null
-		and _socket.get_ready_state() == WebSocketPeer.STATE_OPEN
-		and connection_state == "online"
-	)
+	return _socket != null and _socket.get_ready_state() == WebSocketPeer.STATE_OPEN and connection_state == "online"
 
 
 func is_in_room() -> bool:
@@ -324,10 +308,8 @@ func build_game_launch_args(expected_game_id: String) -> PackedStringArray:
 	var args := PackedStringArray()
 	if current_room.is_empty() or user_id.is_empty():
 		return args
-	var room_game_id := str(current_room.get("game_id", ""))
-	if room_game_id != expected_game_id:
+	if str(current_room.get("game_id", "")) != expected_game_id:
 		return args
-
 	args.append("--pardex")
 	args.append("--pardex-session=%s" % str(current_room.get("code", "")))
 	args.append("--pardex-player=%s" % user_id)
@@ -346,7 +328,6 @@ func _load_or_create_identity() -> void:
 		if saved_key.length() == 64:
 			identity_key = saved_key
 			return
-
 	var crypto := Crypto.new()
 	identity_key = crypto.generate_random_bytes(32).hex_encode()
 	config.set_value("identity", "key", identity_key)
@@ -356,11 +337,7 @@ func _load_or_create_identity() -> void:
 
 
 func _send_hello() -> void:
-	var payload := {
-		"type": "hello",
-		"display_name": display_name,
-		"identity_key": identity_key,
-	}
+	var payload := {"type": "hello", "display_name": display_name, "identity_key": identity_key}
 	if not resume_token.is_empty():
 		payload["resume_token"] = resume_token
 	_send(payload)
@@ -369,7 +346,6 @@ func _send_hello() -> void:
 func _send(payload: Dictionary) -> Error:
 	if _socket == null or _socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		return ERR_UNAVAILABLE
-
 	var result := _socket.send_text(JSON.stringify(payload))
 	if result != OK and str(payload.get("type", "")) != "voice_frame":
 		push_warning("PARDEX WebSocket send failed: %s" % error_string(result))
@@ -384,7 +360,6 @@ func _handle_packet(packet: String) -> void:
 
 	var message: Dictionary = parsed
 	var message_type := str(message.get("type", ""))
-
 	match message_type:
 		"welcome":
 			var previous_user_id := user_id
@@ -411,15 +386,26 @@ func _handle_packet(packet: String) -> void:
 				user_search_results.emit((results_data as Array).duplicate(true))
 		"social_notice":
 			social_notice.emit(str(message.get("message", "PARDEX sosyal işlemi tamamlandı.")))
+		"room_invite":
+			var invite_data = message.get("invite", {})
+			if typeof(invite_data) == TYPE_DICTIONARY:
+				pending_room_invite = (invite_data as Dictionary).duplicate(true)
+				room_invite_received.emit(pending_room_invite.duplicate(true))
+		"room_invite_closed":
+			var closed_id := str(message.get("invite_id", ""))
+			var reason := str(message.get("reason", "closed"))
+			if str(pending_room_invite.get("id", "")) == closed_id:
+				pending_room_invite.clear()
+			room_invite_closed.emit(closed_id, reason)
 		"room_state":
 			var room_data = message.get("room", {})
 			if typeof(room_data) == TYPE_DICTIONARY:
 				current_room = (room_data as Dictionary).duplicate(true)
 				room_state_changed.emit(current_room.duplicate(true))
 		"game_start":
-			var room_data = message.get("room", {})
-			if typeof(room_data) == TYPE_DICTIONARY:
-				current_room = (room_data as Dictionary).duplicate(true)
+			var game_room_data = message.get("room", {})
+			if typeof(game_room_data) == TYPE_DICTIONARY:
+				current_room = (game_room_data as Dictionary).duplicate(true)
 				room_state_changed.emit(current_room.duplicate(true))
 			game_start_requested.emit(message.duplicate(true))
 		"voice_frame":
@@ -444,6 +430,10 @@ func _clear_session_state() -> void:
 	resume_token = ""
 	social_state.clear()
 	social_state_changed.emit({})
+	if not pending_room_invite.is_empty():
+		var invite_id := str(pending_room_invite.get("id", ""))
+		pending_room_invite.clear()
+		room_invite_closed.emit(invite_id, "disconnected")
 	if not current_room.is_empty():
 		current_room.clear()
 		room_left.emit()
