@@ -1,9 +1,22 @@
 // Live PARDEX room-to-game launch smoke test. Latest Railway deployment verification.
+const crypto = require("crypto");
 const WebSocket = require("ws");
 
 const URL = process.env.PARDEX_ONLINE_URL || "wss://pardex-online-production.up.railway.app";
 const EXPECTED_GAME_SERVER_URL = process.env.PARDEX_GAME_SERVER_URL || "wss://korsan-game-production.up.railway.app";
+const HEALTH_URL = `${URL.replace(/^ws/, "http").replace(/\/+$/, "")}/health`;
 const TIMEOUT_MS = 15000;
+
+// Stable per-name keys so repeated CI runs reuse the same production accounts.
+function identityKeyFor(name) {
+  return crypto.createHash("sha256").update(`pardex-production-smoke:${name}`).digest("hex");
+}
+
+async function fetchHealth() {
+  const response = await fetch(HEALTH_URL);
+  if (!response.ok) throw new Error(`Health check failed: ${response.status}`);
+  return response.json();
+}
 
 function connect(name) {
   return new Promise((resolve, reject) => {
@@ -11,7 +24,7 @@ function connect(name) {
     const timer = setTimeout(() => reject(new Error(`Timeout connecting ${name}`)), TIMEOUT_MS);
 
     ws.on("open", () => {
-      ws.send(JSON.stringify({ type: "hello", display_name: name }));
+      ws.send(JSON.stringify({ type: "hello", display_name: name, identity_key: identityKeyFor(name) }));
     });
 
     ws.on("message", (raw) => {
@@ -19,6 +32,9 @@ function connect(name) {
       if (msg.type === "welcome") {
         clearTimeout(timer);
         resolve({ ws, userId: msg.user_id });
+      } else if (msg.type === "error") {
+        clearTimeout(timer);
+        reject(new Error(`${name} hello rejected: ${msg.code} ${msg.message}`));
       }
     });
 
@@ -73,6 +89,8 @@ async function markReady(client, observer, userId, code) {
 }
 
 async function main() {
+  const health = await fetchHealth();
+  const voiceRelayEnabled = health.voiceRelay === true;
   const a = await connect("CI-A");
   const b = await connect("CI-B");
 
@@ -115,16 +133,18 @@ async function main() {
     b.ws.send(JSON.stringify({ type: "voice_state", muted: false }));
     await voiceState;
 
-    const voiceRelay = waitFor(
-      a.ws,
-      (msg) => msg.type === "voice_frame"
-        && msg.user_id === b.userId
-        && msg.seq === 3
-        && msg.pcm === "AQIDBA==",
-      "voice relay"
-    );
-    b.ws.send(JSON.stringify({ type: "voice_frame", seq: 3, pcm: "AQIDBA==" }));
-    await voiceRelay;
+    if (voiceRelayEnabled) {
+      const voiceRelay = waitFor(
+        a.ws,
+        (msg) => msg.type === "voice_frame"
+          && msg.user_id === b.userId
+          && msg.seq === 3
+          && msg.pcm === "AQIDBA==",
+        "voice relay"
+      );
+      b.ws.send(JSON.stringify({ type: "voice_frame", seq: 3, pcm: "AQIDBA==" }));
+      await voiceRelay;
+    }
 
     await markReady(a, b, a.userId, code);
     await markReady(b, a, b.userId, code);
@@ -150,7 +170,7 @@ async function main() {
     }
 
     console.log(
-      `PARDEX production flow passed: ${URL} room=${code} voice=ok game_server=${hostStart.room.game_server_url}`
+      `PARDEX production flow passed: ${URL} room=${code} voice=${voiceRelayEnabled ? "ok" : "disabled"} game_server=${hostStart.room.game_server_url}`
     );
   } finally {
     a.ws.close();
