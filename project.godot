@@ -24,6 +24,7 @@ PardexOnline="*res://scripts/online/pardex_online_secure_handoff.gd"
 PardexGameLauncher="*res://scripts/online/pardex_game_launcher.gd"
 PardexNotifications="*res://scripts/online/pardex_notifications.gd"
 PardexPresenceUI="*res://scripts/online/pardex_presence_ui.gd"
+PardexHomeUI="*res://scripts/ui/pardex_home_ui.gd"
 
 [display]
 
