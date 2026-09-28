@@ -32,14 +32,19 @@ jobs:
         run: |
           node --check server.js
           node --check server_core.js
+          node --check production_server.js
           node --check social_store.js
           node --check lifecycle-smoke-test.js
+          node --check production-guard-smoke-test.js
           node --check presence-smoke-test.js
           node --check hardening-smoke-test.js
           node --check recovery-smoke-test.js
 
       - name: Secure lifecycle smoke test
         run: node lifecycle-smoke-test.js
+
+      - name: Production game guard smoke test
+        run: node production-guard-smoke-test.js
 
       - name: Core room smoke test
         run: node smoke-test.js
