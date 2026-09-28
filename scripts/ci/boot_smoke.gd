@@ -50,7 +50,8 @@ func _verify_identity_repair(identity_guard: Node) -> bool:
 func _run() -> void:
 	var identity_guard := _autoload("PardexIdentityGuard")
 	var online := _autoload("PardexOnline")
-	if identity_guard == null or online == null:
+	var game_launcher := _autoload("PardexGameLauncher")
+	if identity_guard == null or online == null or game_launcher == null:
 		_fail("required autoloads are missing")
 		return
 	if not _verify_identity_repair(identity_guard):
@@ -103,5 +104,5 @@ func _run() -> void:
 		return
 
 	online.call("disconnect_server")
-	print("PARDEX boot smoke passed: identity repair -> main scene -> autoloads -> dynamic social UI")
+	print("PARDEX boot smoke passed: identity repair -> main scene -> secure launcher autoloads -> dynamic social UI")
 	quit(0)
