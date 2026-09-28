@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev
 
-COPY server.js server_core.js social_store.js ./
+COPY server.js server_core.js production_server.js social_store.js ./
 COPY smoke-test.js ./
 COPY *-smoke-test.js ./
 
@@ -21,4 +21,4 @@ EXPOSE 8765
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD wget -qO- http://127.0.0.1:${PORT}/health || exit 1
 
-CMD ["node", "server.js"]
+CMD ["node", "production_server.js"]
