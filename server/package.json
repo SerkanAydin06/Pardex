@@ -1,12 +1,12 @@
 {
   "name": "pardex-online-server",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "private": true,
   "description": "PARDEX Online oda, oturum, sosyal, presence, davet, hesap kurtarma ve oyun yaşam döngüsü sunucusu",
-  "main": "server.js",
+  "main": "production_server.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "node smoke-test.js && node social-smoke-test.js && node invite-smoke-test.js && node presence-smoke-test.js && node lifecycle-smoke-test.js && node hardening-smoke-test.js && node recovery-smoke-test.js"
+    "start": "node production_server.js",
+    "test": "node smoke-test.js && node social-smoke-test.js && node invite-smoke-test.js && node presence-smoke-test.js && node lifecycle-smoke-test.js && node hardening-smoke-test.js && node recovery-smoke-test.js && node production-guard-smoke-test.js"
   },
   "dependencies": {
     "ws": "^8.18.0"
