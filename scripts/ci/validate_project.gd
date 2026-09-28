@@ -8,6 +8,8 @@ const RESOURCES := [
     "res://scripts/main.gd",
     "res://scripts/online/pardex_identity_guard.gd",
     "res://scripts/online/pardex_online.gd",
+    "res://scripts/online/pardex_online_secure_handoff.gd",
+    "res://scripts/online/pardex_game_launcher.gd",
     "res://scripts/online/pardex_notifications.gd",
     "res://scripts/online/pardex_presence_ui.gd",
     "res://scripts/ci/boot_smoke.gd",
