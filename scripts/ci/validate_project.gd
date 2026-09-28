@@ -12,6 +12,7 @@ const RESOURCES := [
     "res://scripts/online/pardex_game_launcher.gd",
     "res://scripts/online/pardex_notifications.gd",
     "res://scripts/online/pardex_presence_ui.gd",
+    "res://scripts/ui/pardex_home_ui.gd",
     "res://scripts/ci/boot_smoke.gd",
 ]
 
