@@ -10,12 +10,17 @@ const PORT = 9888;
 const URL = `ws://127.0.0.1:${PORT}`;
 const GAME_SERVER_URL = "ws://127.0.0.1:9999";
 const GAME_SERVER_TOKEN = "pardex-production-guard-smoke-game-server-token-2026";
+const RECYCLE_GUARD_WAIT_MS = 5_250;
 
 function identityKeyFor(value) {
   return crypto.createHash("sha256").update(`pardex-production-guard:${value}`).digest("hex");
 }
 
-function waitForMessage(ws, predicate, timeoutMs = 5000) {
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function waitForMessage(ws, predicate, timeoutMs = 7000) {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
       ws.off("message", onMessage);
@@ -48,12 +53,17 @@ async function waitForServerReady(server) {
   });
 }
 
-async function connectClient(name) {
+async function connectSocket() {
   const ws = new WebSocket(URL);
   await new Promise((resolve, reject) => {
     ws.once("open", resolve);
     ws.once("error", reject);
   });
+  return ws;
+}
+
+async function connectClient(name) {
+  const ws = await connectSocket();
   const welcomePromise = waitForMessage(ws, (message) => message.type === "welcome");
   ws.send(JSON.stringify({ type: "hello", display_name: name, identity_key: identityKeyFor(name) }));
   const welcome = await welcomePromise;
@@ -93,12 +103,15 @@ async function createTwoPlayerRoom(host, joiner) {
   return code;
 }
 
-async function closeClient(client) {
-  const ws = client?.ws;
+async function closeSocket(ws) {
   if (!ws || ws.readyState === WebSocket.CLOSED) return;
   const done = new Promise((resolve) => ws.once("close", resolve));
   ws.close();
   await done;
+}
+
+async function closeClient(client) {
+  await closeSocket(client?.ws);
 }
 
 async function main() {
@@ -121,6 +134,7 @@ async function main() {
   let joinerA;
   let hostB;
   let joinerB;
+  let gameServerWs;
   try {
     await waitForServerReady(server);
     hostA = await connectClient("Guard-Host-A");
@@ -146,21 +160,36 @@ async function main() {
     await legacyEndRejected;
 
     await createTwoPlayerRoom(hostB, joinerB);
-    const busyRejected = waitForMessage(hostB.ws, (message) =>
+    const activeBusyRejected = waitForMessage(hostB.ws, (message) =>
       message.type === "error" && message.code === "GAME_SERVER_BUSY"
     );
     hostB.ws.send(JSON.stringify({ type: "start_game" }));
-    await busyRejected;
+    await activeBusyRejected;
 
-    const rollbackSeen = waitForMessage(joinerA.ws, (message) =>
-      message.type === "room_state" && message.room?.code === roomA && message.room?.state === "lobby"
+    gameServerWs = await connectSocket();
+    const authoritativeEndAck = waitForMessage(gameServerWs, (message) =>
+      message.type === "game_server_ended_ok" && message.match_id === launchA.match_id
     );
-    hostA.ws.send(JSON.stringify({
-      type: "launch_failed",
+    const roomEndedSeen = waitForMessage(joinerA.ws, (message) =>
+      message.type === "room_state" && message.room?.code === roomA && message.room?.state === "ended"
+    );
+    gameServerWs.send(JSON.stringify({
+      type: "game_server_ended",
+      server_token: GAME_SERVER_TOKEN,
+      game_id: "korsanlar",
       match_id: launchA.match_id,
-      reason: "guard-smoke-rollback",
+      room_code: roomA,
+      result: { reason: "guard-smoke-authoritative-end" },
     }));
-    await rollbackSeen;
+    await Promise.all([authoritativeEndAck, roomEndedSeen]);
+
+    const recycleBusyRejected = waitForMessage(hostB.ws, (message) =>
+      message.type === "error" && message.code === "GAME_SERVER_BUSY"
+    );
+    hostB.ws.send(JSON.stringify({ type: "start_game" }));
+    await recycleBusyRejected;
+
+    await delay(RECYCLE_GUARD_WAIT_MS);
 
     const startBA = waitForMessage(hostB.ws, (message) => message.type === "game_start");
     const startBB = waitForMessage(joinerB.ws, (message) => message.type === "game_start");
@@ -168,8 +197,9 @@ async function main() {
     const [launchB] = await Promise.all([startBA, startBB]);
     assert.strictEqual(launchB.room.state, "launching");
 
-    console.log("PARDEX production guard smoke passed: client end blocked + single-instance busy guard + rollback release");
+    console.log("PARDEX production guard smoke passed: client end blocked + active busy guard + recycle cooldown + next match release");
   } finally {
+    await closeSocket(gameServerWs);
     await closeClient(hostA);
     await closeClient(joinerA);
     await closeClient(hostB);
