@@ -21,6 +21,7 @@ const RESOURCES := [
     "res://scripts/ui/pardex_window_chrome.gd",
     "res://scripts/ui/pardex_library_responsive.gd",
     "res://scripts/ui/pardex_secondary_scroll.gd",
+    "res://scripts/ui/pardex_typography.gd",
     "res://scripts/ci/boot_smoke.gd",
 ]
 
