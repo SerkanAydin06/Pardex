@@ -6,29 +6,33 @@ const DEFAULT_SERVER_URL := "wss://pardex-online-production.up.railway.app"
 const DEFAULT_WINDOW_SIZE := Vector2i(1440, 900)
 const MIN_WINDOW_SIZE := Vector2i(1024, 640)
 const WINDOW_STATE_SAVE_INTERVAL := 1.0
-const FRIENDS_SCENE := preload("res://scenes/screens/friends.tscn")
 const ROOMS_SCENE := preload("res://scenes/screens/rooms.tscn")
 const SETTINGS_SCENE := preload("res://scenes/screens/settings.tscn")
 const TextFit := preload("res://scripts/ui/pardex_text_fit.gd")
+const UI := preload("res://scripts/ui/pardex_ui.gd")
+const Catalog := preload("res://scripts/data/pardex_catalog.gd")
+const HomePage := preload("res://scripts/pages/home_page.gd")
+const DiscoverPage := preload("res://scripts/pages/discover_page.gd")
+const SocialPage := preload("res://scripts/pages/social_page.gd")
+const ProfilePage := preload("res://scripts/pages/profile_page.gd")
 
 # Responsive shell breakpoints (window width in pixels).
 const WINDOW_NARROW := 1180
 const WINDOW_COMPACT := 1400
 
-@onready var page_title: Label = %PageTitle
-@onready var page_subtitle: Label = %PageSubtitle
 @onready var library_content: VBoxContainer = %LibraryContent
 @onready var toast_panel: PanelContainer = %ToastPanel
 @onready var toast_label: Label = %ToastLabel
 @onready var profile_name_label: Label = %UserName
-@onready var avatar_label: Label = %Avatar
-@onready var online_state_label: Label = %OnlineState
-@onready var connection_label: Label = %ConnectionLabel
-@onready var home_content: VBoxContainer = %HomeContent
+@onready var online_state_button: Button = %OnlineState
 @onready var library_search: LineEdit = %LibrarySearch
 @onready var game_count_label: Label = %GameCount
 
-var _friends_content: VBoxContainer
+var _home_page: VBoxContainer
+var _discover_page: VBoxContainer
+var _social_page: VBoxContainer
+var _profile_page: VBoxContainer
+var _presence_menu: PopupMenu
 var _rooms_content: VBoxContainer
 var _settings_content: VBoxContainer
 var _current_content: Control
@@ -47,8 +51,6 @@ var _game_cards: Array[Control] = []
 var _game_card_hovered: Dictionary = {}
 var _game_card_tweens: Dictionary = {}
 var _sidebar_hover_tweens: Dictionary = {}
-var _online_pulse_tween: Tween
-var _brand_glow_tween: Tween
 
 func _ready() -> void:
 	_create_secondary_screens()
@@ -58,15 +60,16 @@ func _ready() -> void:
 	_prepare_game_cards()
 	_wire_actions()
 	_wire_sidebar_polish()
-	_start_brand_letter_glow()
 	_wire_online_signals()
 	_show_home()
 	_render_empty_room()
 	_update_connection_ui(PardexOnline.connection_state)
 	toast_panel.hide()
 
-	TextFit.apply(self)
-	get_tree().node_added.connect(_on_node_added)
+	# The older scene-built screens get the automatic text policy; the new
+	# pages size their text explicitly.
+	for screen in [library_content, _rooms_content, _settings_content]:
+		TextFit.apply(screen)
 	resized.connect(_apply_responsive_layout)
 	_apply_responsive_layout()
 
@@ -74,47 +77,74 @@ func _ready() -> void:
 	PardexOnline.connect_server()
 
 func _create_secondary_screens() -> void:
-	_pages[home_content] = home_content
-	_pages[library_content] = library_content
-
-	# Friends scrolls its own list; Rooms and Settings scroll as a whole page.
-	_friends_content = FRIENDS_SCENE.instantiate() as VBoxContainer
-	_add_page(_friends_content, false)
+	_home_page = _add_page(HomePage.new(), "")
+	_add_page(library_content, "Kütüphane", "Tüm oyunlarını tek merkezden yönet.")
+	_discover_page = _add_page(DiscoverPage.new(), "")
+	_social_page = _add_page(SocialPage.new(), "")
+	_profile_page = _add_page(ProfilePage.new(), "")
 	_rooms_content = ROOMS_SCENE.instantiate() as VBoxContainer
-	_add_page(_rooms_content, true)
+	_add_page(_rooms_content, "Odalar", "Oyun partini kur, oda koduyla katıl ve oyunu başlat.", true)
 	_settings_content = SETTINGS_SCENE.instantiate() as VBoxContainer
-	_add_page(_settings_content, true)
+	_add_page(_settings_content, "Ayarlar", "PARDEX profilini ve bağlantı ayarlarını yönet.", true)
+	for page in [_home_page, _discover_page, _social_page, _profile_page]:
+		if page.has_signal("navigate"):
+			page.navigate.connect(_navigate)
+		if page.has_signal("play_requested"):
+			page.play_requested.connect(_play_game)
+		if page.has_signal("toast"):
+			page.toast.connect(_show_toast)
 
 
-func _add_page(screen: VBoxContainer, scrolls: bool) -> void:
-	var content_parent := library_content.get_parent()
+# Pages live in %Pages; exactly one is visible. Older screens get a title
+# header and, when long, a scroll wrapper.
+func _add_page(screen: VBoxContainer, title: String, subtitle := "", scrolls := false) -> VBoxContainer:
+	screen.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var page: Control = screen
-	if scrolls:
-		var scroll := ScrollContainer.new()
-		scroll.name = String(screen.name) + "Scroll"
-		scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-		screen.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		screen.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-		scroll.add_child(screen)
-		page = scroll
-	content_parent.add_child(page)
+	if not title.is_empty():
+		var wrapper := UI.vbox(14)
+		wrapper.name = String(screen.name) + "Page" if not String(screen.name).is_empty() else "Page"
+		wrapper.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		var heading := UI.vbox(2)
+		heading.add_child(UI.label(title, 26, UI.TEXT, true))
+		heading.add_child(UI.label(subtitle, 13, UI.TEXT_2))
+		wrapper.add_child(heading)
+		var holder: Control = wrapper
+		if scrolls:
+			var scroll := ScrollContainer.new()
+			scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+			scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+			screen.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			screen.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+			wrapper.add_child(scroll)
+			holder = scroll
+		%Pages.add_child(wrapper)
+		# reparent() keeps scene ownership, so %UniqueName lookups keep working.
+		if screen.is_inside_tree():
+			screen.reparent(holder, false)
+		else:
+			holder.add_child(screen)
+		page = wrapper
+	else:
+		%Pages.add_child(page)
 	page.hide()
 	_pages[screen] = page
+	return screen
+
 
 func _wire_actions() -> void:
-	%HomeButton.pressed.connect(_show_home)
-	(home_content.get_node("%LibraryAction") as Button).pressed.connect(_show_library)
-	%LibraryButton.pressed.connect(_show_library)
-	%FriendsButton.pressed.connect(_show_friends)
-	%RoomsButton.pressed.connect(_show_rooms)
-	%SettingsButton.pressed.connect(_show_settings)
-	%ExitButton.pressed.connect(_quit_application)
+	%HomeButton.pressed.connect(_navigate.bind("home"))
+	%LibraryButton.pressed.connect(_navigate.bind("library"))
+	%DiscoverButton.pressed.connect(_navigate.bind("discover"))
+	%FriendsButton.pressed.connect(_navigate.bind("friends"))
+	%ProfileButton.pressed.connect(_navigate.bind("profile"))
+	%SettingsButton.pressed.connect(_navigate.bind("settings"))
+	online_state_button.pressed.connect(_open_presence_menu)
+	_build_presence_menu()
 	%HeroPlayButton.pressed.connect(_open_korsan_rooms)
-	%HeroFriendsButton.pressed.connect(_show_friends)
+	%HeroFriendsButton.pressed.connect(_navigate.bind("friends"))
 	%HeroRoomsButton.pressed.connect(_show_rooms)
 	%KorsanPlayButton.pressed.connect(_open_korsan_rooms)
-	library_search.text_changed.connect(_filter_library)
+	library_search.text_changed.connect(_on_search_changed)
 	_wire_game_card_hover(%VexCard)
 	_wire_game_card_hover(%KorsanCard)
 	_wire_game_card_hover(%FirtinaCard)
@@ -141,10 +171,18 @@ func _wire_actions() -> void:
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
 
 func _wire_sidebar_polish() -> void:
-	for button in [%HomeButton, %LibraryButton, %FriendsButton, %RoomsButton, %SettingsButton, %ExitButton]:
+	var icons := {"HomeButton": "⌂", "LibraryButton": "▤", "DiscoverButton": "⌕", "FriendsButton": "⚇", "ProfileButton": "◉"}
+	for button in _nav_buttons():
+		button.text = "%s     %s" % [icons[String(button.name)], button.text.strip_edges()]
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.focus_mode = Control.FOCUS_NONE
+		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		button.add_theme_font_size_override("font_size", 15)
 		button.mouse_entered.connect(_on_sidebar_button_hover.bind(button, true))
 		button.mouse_exited.connect(_on_sidebar_button_hover.bind(button, false))
-	_start_online_pulse()
+	%SettingsButton.add_theme_color_override("font_color", UI.TEXT_2)
+	%SettingsButton.add_theme_color_override("font_hover_color", UI.TEXT)
+	_style_search()
 
 
 func _on_sidebar_button_hover(button: Button, hovered: bool) -> void:
@@ -159,46 +197,9 @@ func _on_sidebar_button_hover(button: Button, hovered: bool) -> void:
 	tween.tween_property(button, "modulate", Color(1.04, 1.04, 1.04, 1.0) if hovered else Color.WHITE, 0.12)
 
 
-func _start_online_pulse() -> void:
-	if _online_pulse_tween != null and _online_pulse_tween.is_valid():
-		_online_pulse_tween.kill()
-	_online_pulse_tween = create_tween().set_loops()
-	_online_pulse_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	_online_pulse_tween.tween_property(connection_label, "modulate", Color(1.0, 1.0, 1.0, 0.72), 1.4)
-	_online_pulse_tween.tween_property(connection_label, "modulate", Color.WHITE, 1.4)
-
-
-func _start_brand_letter_glow() -> void:
-	if _brand_glow_tween != null and _brand_glow_tween.is_valid():
-		_brand_glow_tween.kill()
-
-	var letters: Array[Label] = [%BrandP, %BrandA, %BrandR, %BrandD, %BrandE, %BrandX]
-	for letter in letters:
-		_set_brand_letter_glow(0.0, letter)
-
-	_brand_glow_tween = create_tween().set_loops()
-	_brand_glow_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	_brand_glow_tween.tween_interval(2.5)
-
-	for letter in letters:
-		_brand_glow_tween.tween_method(_set_brand_letter_glow.bind(letter), 0.0, 1.0, 0.10)
-		_brand_glow_tween.tween_method(_set_brand_letter_glow.bind(letter), 1.0, 0.0, 0.14)
-		_brand_glow_tween.tween_interval(0.035)
-
-	_brand_glow_tween.tween_interval(7.0)
-
-
-func _set_brand_letter_glow(amount: float, letter: Label) -> void:
-	var base_color := Color(0.9, 0.96, 1.0, 1.0)
-	var glow_color := Color(0.60, 0.96, 1.0, 1.0)
-	var shadow_color := Color(0.08, 0.78, 1.0, 0.78 * amount)
-
-	letter.add_theme_color_override("font_color", base_color.lerp(glow_color, amount))
-	letter.add_theme_color_override("font_shadow_color", shadow_color)
-
-
 func _wire_online_signals() -> void:
 	PardexOnline.connection_state_changed.connect(_update_connection_ui)
+	PardexOnline.presence_changed.connect(func(_presence): _render_presence())
 	PardexOnline.room_state_changed.connect(_render_room)
 	PardexOnline.room_left.connect(_render_empty_room)
 	PardexOnline.online_error.connect(_show_toast)
@@ -248,37 +249,28 @@ func _configure_game_card(
 	action_button.disabled = not playable
 	action_button.text = "▶  Oyna" if playable else "◷  Yakında"
 
+func _navigate(page_name: String) -> void:
+	match page_name:
+		"home": _show_page(_home_page, %HomeButton)
+		"library": _show_page(library_content, %LibraryButton)
+		"discover": _show_page(_discover_page, %DiscoverButton)
+		"friends": _show_page(_social_page, %FriendsButton)
+		"profile": _show_page(_profile_page, %ProfileButton)
+		"rooms": _show_page(_rooms_content, %FriendsButton)
+		"settings": _show_settings()
+
+
 func _show_home() -> void:
-	_show_content(
-		home_content,
-		"Ana Sayfa",
-		"Oyunların, arkadaşların ve güncellemelerin tek merkezde.",
-		%HomeButton
-	)
+	_navigate("home")
+
 
 func _show_library() -> void:
-	_show_content(
-		library_content,
-		"Kütüphane",
-		"Tüm oyunlarını tek merkezden yönet.",
-		%LibraryButton
-	)
+	_navigate("library")
 
-func _show_friends() -> void:
-	_show_content(
-		_friends_content,
-		"Arkadaşlar",
-		"Arkadaşlarını bul, durumlarını gör ve oyunlara davet et.",
-		%FriendsButton
-	)
 
 func _show_rooms() -> void:
-	_show_content(
-		_rooms_content,
-		"Odalar",
-		"Ortak oyun oturumlarını buradan yönet.",
-		%RoomsButton
-	)
+	_navigate("rooms")
+
 
 func _show_settings() -> void:
 	var profile_name_edit := _settings_content.get_node("ProfilePanel/VBox/ProfileRow/ProfileNameEdit") as LineEdit
@@ -288,111 +280,145 @@ func _show_settings() -> void:
 	var fullscreen_toggle := _settings_content.get_node("DisplayPanel/VBox/FullscreenOnStart") as CheckButton
 	fullscreen_toggle.set_pressed_no_signal(_start_fullscreen)
 	_refresh_display_settings_ui()
-	_show_content(
-		_settings_content,
-		"Ayarlar",
-		"PARDEX profilini ve bağlantı ayarlarını yönet.",
-		%SettingsButton
-	)
+	_show_page(_settings_content, null)
 
-func _show_content(content: Control, title: String, subtitle: String, selected_button: Button) -> void:
+
+func _show_page(content: Control, selected_button: Button) -> void:
 	for screen in _pages:
 		(_pages[screen] as Control).visible = screen == content
-
-	library_search.visible = content == library_content or content == home_content
 	if content != library_content:
 		library_search.release_focus()
-
-	content.modulate.a = 0.0
+	var page := _pages[content] as Control
+	page.modulate.a = 0.0
 	_current_content = content
-	page_title.text = title
-	page_subtitle.text = subtitle
 	_set_selected_navigation(selected_button)
 	var transition := create_tween()
 	transition.set_trans(Tween.TRANS_QUAD)
 	transition.set_ease(Tween.EASE_OUT)
-	transition.tween_property(content, "modulate:a", 1.0, 0.14)
+	transition.tween_property(page, "modulate:a", 1.0, 0.14)
+
+
+func _nav_buttons() -> Array:
+	return [%HomeButton, %LibraryButton, %DiscoverButton, %FriendsButton, %ProfileButton]
+
+
+func _play_game(game_id: String) -> void:
+	var entry := Catalog.game(game_id)
+	if entry.is_empty() or not bool(entry["playable"]):
+		_show_toast("%s yakında PARDEX'te." % str(entry.get("title", "Bu oyun")))
+		return
+	_open_korsan_rooms()
+
+
+func _on_search_changed(query: String) -> void:
+	if not query.strip_edges().is_empty() and _current_content != library_content:
+		_navigate("library")
+	_filter_library(query)
+
+
+func _style_search() -> void:
+	var normal := UI.box(UI.SURFACE_2, 9, UI.BORDER, 1)
+	normal.content_margin_left = 34
+	normal.content_margin_right = 10
+	var focus := normal.duplicate() as StyleBoxFlat
+	focus.border_color = UI.ACCENT_DARK
+	library_search.add_theme_stylebox_override("normal", normal)
+	library_search.add_theme_stylebox_override("focus", focus)
+	library_search.add_theme_font_size_override("font_size", 13)
+	library_search.add_theme_color_override("font_placeholder_color", UI.TEXT_3)
+	var glass := UI.label("⌕", 17, UI.TEXT_3)
+	glass.set_anchors_preset(Control.PRESET_CENTER_LEFT)
+	glass.offset_left = 12
+	glass.offset_top = -12
+	glass.offset_bottom = 12
+	glass.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	library_search.add_child(glass)
+
+
+func _build_presence_menu() -> void:
+	_presence_menu = PopupMenu.new()
+	add_child(_presence_menu)
+	for entry in [["online", "●  Çevrimiçi"], ["away", "◐  Uzakta"], ["busy", "●  Meşgul"]]:
+		_presence_menu.add_item(str(entry[1]))
+		_presence_menu.set_item_metadata(_presence_menu.item_count - 1, entry[0])
+	_presence_menu.index_pressed.connect(func(index: int):
+		PardexOnline.set_presence_status(str(_presence_menu.get_item_metadata(index)))
+	)
+
+
+func _open_presence_menu() -> void:
+	if not PardexOnline.is_online():
+		_show_toast("Durum seçmek için PARDEX Online bağlantısı gerekli.")
+		return
+	var rect := online_state_button.get_global_rect()
+	_presence_menu.popup(Rect2i(Vector2i(rect.position.x, rect.position.y - 96), Vector2i.ZERO))
+
+
+func _render_presence() -> void:
+	var presence := PardexOnline.effective_presence if PardexOnline.is_online() else "offline"
+	if PardexOnline.connection_state == "connecting":
+		online_state_button.text = "●  Bağlanıyor"
+		online_state_button.add_theme_color_override("font_color", UI.AMBER)
+	else:
+		online_state_button.text = "●  " + UI.presence_label(presence)
+		online_state_button.add_theme_color_override("font_color", UI.presence_color(presence))
+	online_state_button.add_theme_color_override("font_hover_color", UI.TEXT)
+	UI.clear(%AvatarSlot)
+	%AvatarSlot.add_child(UI.avatar(_display_name, 36, presence, UI.ACCENT))
+
 
 func _set_selected_navigation(selected_button: Button) -> void:
-	for node in [%HomeButton, %LibraryButton, %FriendsButton, %RoomsButton, %SettingsButton]:
+	for node in _nav_buttons():
 		var button := node as Button
 		var selected := button == selected_button
 		button.add_theme_stylebox_override("normal", _nav_style(selected, false))
 		button.add_theme_stylebox_override("hover", _nav_style(selected, true))
 		button.add_theme_stylebox_override("pressed", _nav_style(true, true))
-		button.add_theme_color_override("font_color", Color(0.96, 0.985, 1.0, 1.0) if selected else Color(0.76, 0.84, 0.93, 1.0))
-		button.add_theme_color_override("font_hover_color", Color(0.96, 0.985, 1.0, 1.0))
-		button.custom_minimum_size.y = 56.0
+		button.add_theme_color_override("font_color", UI.TEXT if selected else UI.TEXT_2)
+		button.add_theme_color_override("font_hover_color", UI.TEXT)
+		button.custom_minimum_size.y = 42.0
 
 
 func _nav_style(selected: bool, hovered: bool) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.set_corner_radius_all(14 if selected else 12)
-	style.content_margin_left = 18
-	style.content_margin_right = 14
-	style.content_margin_top = 12
-	style.content_margin_bottom = 12
+	var style := UI.box(Color.TRANSPARENT, 9)
+	style.content_margin_left = 14
+	style.content_margin_right = 10
 	if selected:
-		style.bg_color = Color(0.045, 0.25, 0.42, 1.0) if hovered else Color(0.035, 0.20, 0.34, 0.98)
-		style.border_color = Color(0.12, 0.72, 1.0, 1.0) if hovered else Color(0.10, 0.46, 0.72, 1.0)
+		style.bg_color = Color("12406e") if hovered else Color("0f3760")
+		style.border_color = Color(UI.ACCENT, 0.55)
 		style.set_border_width_all(1)
-		style.border_width_left = 6
-		style.shadow_color = Color(0.0, 0.62, 1.0, 0.20)
-		style.shadow_size = 9
 	elif hovered:
-		style.bg_color = Color(0.025, 0.10, 0.16, 0.92)
-		style.border_color = Color(0.08, 0.28, 0.42, 0.95)
-		style.set_border_width_all(1)
-		style.border_width_left = 2
-	else:
-		style.bg_color = Color(0.008, 0.022, 0.038, 0.16)
+		style.bg_color = Color(1, 1, 1, 0.05)
 	return style
 
 
-func _on_node_added(node: Node) -> void:
-	# Runtime UI (friend rows, notifications) follows the same text policy.
-	if node is Control and is_ancestor_of(node):
-		TextFit.apply.call_deferred(node)
 
 
-# Steam-style reflow: the sidebar and main area always split the window between
-# them (Shell is an HBoxContainer); this only picks densities and column counts
-# from the window width, never from content width (which would feed back).
+# Steam-style reflow: sidebar and content always split the window between them
+# (Body is an HBoxContainer); this only picks densities and column counts from
+# the window width, never from content width (which would feed back).
 func _apply_responsive_layout() -> void:
 	var width := size.x
 	if width <= 1.0:
 		return
 	var narrow := width <= WINDOW_NARROW
-	var compact := width <= WINDOW_COMPACT
-
-	var sidebar_width := 240.0 if narrow else (250.0 if compact else 270.0)
+	var sidebar_width := 200.0 if narrow else 230.0
 	%Sidebar.custom_minimum_size.x = sidebar_width
-	var side_margin := 14 if narrow else (18 if compact else 22)
-	var sidebar_margin := %Sidebar.get_node("SidebarMargin") as MarginContainer
-	sidebar_margin.add_theme_constant_override("margin_left", side_margin)
-	sidebar_margin.add_theme_constant_override("margin_right", side_margin)
-	sidebar_margin.add_theme_constant_override("margin_top", 18 if compact else 24)
-	sidebar_margin.add_theme_constant_override("margin_bottom", 16 if compact else 22)
-
-	var outer := 10 if narrow else (14 if compact else 18)
+	%Brand.custom_minimum_size.x = sidebar_width - 28.0
+	var outer := 12 if narrow else 18
 	var main_margin := %MainMargin as MarginContainer
 	for side in ["margin_left", "margin_right"]:
 		main_margin.add_theme_constant_override(side, outer)
 	for side in ["margin_top", "margin_bottom"]:
-		main_margin.add_theme_constant_override(side, 10 if narrow else 12)
-
-	# Header: title keeps a readable width, search takes the free space.
-	%HeaderText.custom_minimum_size.x = 200.0 if narrow else 220.0
-	library_search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	library_search.custom_minimum_size.x = 120.0 if narrow else 180.0
-	(%ConnectionLabel.get_parent() as Control).custom_minimum_size.x = 110.0 if narrow else 172.0
-	# Decorative header extras give way first on small windows.
-	%WindowChrome.get_node("SecondaryAction").visible = not narrow
+		main_margin.add_theme_constant_override(side, 12 if narrow else 16)
+	library_search.custom_minimum_size.x = 140.0 if narrow else 200.0
+	%WindowChrome.get_node("SecondaryAction").visible = false
 	%WindowChrome.get_node("Separator").visible = not narrow
 
 	var content_width := width - sidebar_width - float(outer * 2)
 	_apply_library_layout(content_width)
-	_apply_home_layout(content_width)
+	for page in [_home_page, _discover_page, _social_page, _profile_page]:
+		page.apply_layout(content_width)
 
 
 func _apply_library_layout(content_width: float) -> void:
@@ -406,26 +432,6 @@ func _apply_library_layout(content_width: float) -> void:
 		(card as Control).custom_minimum_size = Vector2(0, 330 if compact else 366)
 	%Hero.custom_minimum_size.y = 205.0 if content_width < 1000.0 else 244.0
 
-
-func _apply_home_layout(content_width: float) -> void:
-	var top_row := home_content.get_node("%TopRow") as BoxContainer
-	var bottom_row := home_content.get_node("%BottomRow") as BoxContainer
-	# Side panels stack under the main panel when the two would get too narrow.
-	top_row.vertical = content_width < 760.0
-	bottom_row.vertical = content_width < 980.0
-	var gap := 10 if content_width < 980.0 else 14
-	for row in [top_row, bottom_row]:
-		row.add_theme_constant_override("separation", gap)
-	var side_width := clampf(content_width * 0.34, 260.0, 440.0)
-	for side in [home_content.get_node("%Agenda"), home_content.get_node("%QuickStart")]:
-		var panel := side as Control
-		var stacked := (panel.get_parent() as BoxContainer).vertical
-		panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL if stacked else Control.SIZE_FILL
-		panel.custom_minimum_size.x = 0.0 if stacked else side_width
-	var recent_width := content_width if bottom_row.vertical else content_width - side_width - gap
-	var recent_grid := home_content.get_node("%RecentGrid") as GridContainer
-	recent_grid.columns = clampi(floori((recent_width + 10.0) / 160.0), 1, 4)
-	top_row.custom_minimum_size.y = 310.0
 
 func _load_settings() -> void:
 	var config := ConfigFile.new()
@@ -600,7 +606,10 @@ func _save_online_settings_and_connect() -> void:
 
 func _apply_profile() -> void:
 	profile_name_label.text = _display_name
-	avatar_label.text = _display_name.left(1).to_upper()
+	if _profile_page != null:
+		_profile_page.display_name = _display_name
+		_profile_page.refresh()
+	_render_presence()
 
 func _update_connection_ui(state: String) -> void:
 	var settings_state_label := _settings_content.get_node("OnlinePanel/VBox/State") as Label
@@ -616,15 +625,7 @@ func _update_connection_ui(state: String) -> void:
 		text = "●  ÇEVRİMİÇİ"
 		color = Color(0.38, 0.86, 0.62, 1)
 
-	var header_text := text
-	if state == "online":
-		header_text = "●  PARDEX ONLINE AKTİF"
-	elif state == "connecting":
-		header_text = "●  PARDEX BAĞLANIYOR"
-	connection_label.text = header_text
-	connection_label.add_theme_color_override("font_color", color)
-	online_state_label.text = text
-	online_state_label.add_theme_color_override("font_color", color)
+	_render_presence()
 	settings_state_label.text = text
 	settings_state_label.add_theme_color_override("font_color", color)
 
@@ -857,6 +858,7 @@ func _on_game_start_requested(payload: Dictionary) -> void:
 		return
 
 	_game_launch_in_progress = true
+	Catalog.record_launch("korsanlar")
 	_launch_korsan_development_project()
 
 func _launch_korsan_development_project() -> void:
@@ -936,8 +938,8 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel") and _current_content != library_content:
-		_show_library()
+	if event.is_action_pressed("ui_cancel") and _current_content != _home_page:
+		_show_home()
 		get_viewport().set_input_as_handled()
 
 func _show_toast(message: String) -> void:
