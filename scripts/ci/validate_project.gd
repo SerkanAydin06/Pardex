@@ -13,6 +13,7 @@ const RESOURCES := [
     "res://scripts/online/pardex_notifications.gd",
     "res://scripts/online/pardex_presence_ui.gd",
     "res://scripts/ui/pardex_home_ui.gd",
+    "res://scripts/ui/pardex_home_art.gd",
     "res://scripts/ui/pardex_adaptive_window.gd",
     "res://scripts/ui/pardex_library_responsive.gd",
     "res://scripts/ui/pardex_secondary_scroll.gd",
