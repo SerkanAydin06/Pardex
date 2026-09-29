@@ -42,17 +42,25 @@ func _restyle_current_scene() -> void:
 	_style_subtree(tree.current_scene)
 
 func _on_node_added(node: Node) -> void:
-	if not _bound:
+	if not _bound or not (node is Control):
 		return
-	if node is Control:
-		call_deferred("_style_subtree", node)
+	# Do not queue the node Object itself. Some runtime UI nodes can be freed
+	# before the deferred call runs, which makes the queued Object argument invalid.
+	call_deferred("_style_instance_id", node.get_instance_id())
+
+func _style_instance_id(instance_id: int) -> void:
+	var instance := instance_from_id(instance_id)
+	if instance == null or not is_instance_valid(instance) or not (instance is Node):
+		return
+	_style_subtree(instance as Node)
 
 func _style_subtree(node: Node) -> void:
 	if node == null or not is_instance_valid(node):
 		return
 	_style_node(node)
 	for child in node.get_children():
-		_style_subtree(child)
+		if child is Node and is_instance_valid(child):
+			_style_subtree(child as Node)
 
 func _style_node(node: Node) -> void:
 	if not (node is Control):
