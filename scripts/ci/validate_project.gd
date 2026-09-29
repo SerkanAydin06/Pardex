@@ -2,6 +2,7 @@ extends SceneTree
 
 const RESOURCES := [
     "res://scenes/main.tscn",
+    "res://scenes/screens/home_static.tscn",
     "res://scenes/screens/friends.tscn",
     "res://scenes/screens/rooms.tscn",
     "res://scenes/screens/settings.tscn",
@@ -13,8 +14,6 @@ const RESOURCES := [
     "res://scripts/online/pardex_notifications.gd",
     "res://scripts/online/pardex_presence_ui.gd",
     "res://scripts/ui/pardex_home_ui.gd",
-    "res://scripts/ui/pardex_home_art.gd",
-    "res://scripts/ui/pardex_home_art_assets.gd",
     "res://scripts/ui/pardex_brand_ui.gd",
     "res://scripts/ui/pardex_adaptive_window.gd",
     "res://scripts/ui/pardex_library_responsive.gd",
@@ -24,7 +23,6 @@ const RESOURCES := [
 
 func _initialize() -> void:
     var failed := false
-
     for resource_path in RESOURCES:
         var resource := ResourceLoader.load(resource_path)
         if resource == null:
@@ -32,10 +30,8 @@ func _initialize() -> void:
             failed = true
         else:
             print("PARDEX CI OK: %s" % resource_path)
-
     if failed:
         quit(1)
         return
-
     print("PARDEX CI: proje kaynakları başarıyla doğrulandı.")
     quit(0)

@@ -27,6 +27,7 @@ func _apply_brand() -> void:
 		return
 
 	logo.texture = symbol
+	logo.texture_filter = 4
 	logo.custom_minimum_size = Vector2(56, 56)
 	logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
