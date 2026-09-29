@@ -7,6 +7,8 @@ var _main: Control
 var _main_vbox: VBoxContainer
 var _header: Control
 var _header_text: Control
+var _page_title: Label
+var _page_subtitle: Label
 var _search: LineEdit
 var _connection_pill: Control
 var _library_button: Button
@@ -37,6 +39,8 @@ func _bind_ui() -> void:
 	_main_vbox = _main.get_node_or_null("MainMargin/MainVBox") as VBoxContainer
 	_header = _main.get_node_or_null("MainMargin/MainVBox/Header") as Control
 	_header_text = _main.get_node_or_null("MainMargin/MainVBox/Header/HeaderRow/HeaderText") as Control
+	_page_title = _main.get_node_or_null("MainMargin/MainVBox/Header/HeaderRow/HeaderText/PageTitle") as Label
+	_page_subtitle = _main.get_node_or_null("MainMargin/MainVBox/Header/HeaderRow/HeaderText/PageSubtitle") as Label
 	_search = _main.get_node_or_null("MainMargin/MainVBox/Header/HeaderRow/LibrarySearch") as LineEdit
 	_connection_pill = _main.get_node_or_null("MainMargin/MainVBox/Header/HeaderRow/ConnectionPill") as Control
 	_library_button = _main.get_node_or_null("Sidebar/SidebarMargin/SidebarVBox/LibraryButton") as Button
@@ -44,7 +48,7 @@ func _bind_ui() -> void:
 	_rooms_button = _main.get_node_or_null("Sidebar/SidebarMargin/SidebarVBox/RoomsButton") as Button
 	_settings_button = _main.get_node_or_null("Sidebar/SidebarMargin/SidebarVBox/SettingsButton") as Button
 	_exit_button = _main.get_node_or_null("Sidebar/SidebarMargin/SidebarVBox/ExitButton") as Button
-	if _main_vbox == null or _header == null or _search == null or _library_button == null or _friends_button == null:
+	if _main_vbox == null or _header == null or _header_text == null or _page_title == null or _page_subtitle == null or _search == null or _library_button == null or _friends_button == null:
 		_retry_bind()
 		return
 	_selected_style = _library_button.get_theme_stylebox("normal")
@@ -96,10 +100,14 @@ func _show_home() -> void:
 	for child in _main_vbox.get_children():
 		if child is Control:
 			(child as Control).visible = (child == _header or child == _home_content)
-	if _header_text != null:
-		_header_text.hide()
+
+	# Ana Sayfa uses the exact same header shell and typography as every other tab.
+	_header_text.show()
+	_page_title.text = "Ana Sayfa"
+	_page_subtitle.text = "Oyunların, arkadaşların ve güncellemelerin tek merkezde."
 	if _connection_pill != null:
-		_connection_pill.hide()
+		_connection_pill.show()
+
 	_search.show()
 	_search.placeholder_text = "Oyun, arkadaş veya içerik ara..."
 	_search.clear()
@@ -112,8 +120,7 @@ func _leave_home() -> void:
 	if not _bound or _home_content == null:
 		return
 	_home_content.hide()
-	if _header_text != null:
-		_header_text.show()
+	_header_text.show()
 	if _connection_pill != null:
 		_connection_pill.show()
 	_home_button.add_theme_stylebox_override("normal", _normal_style)
