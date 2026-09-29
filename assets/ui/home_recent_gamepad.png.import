@@ -1,12 +1,20 @@
 [remap]
+
 importer="texture"
 type="CompressedTexture2D"
+uid="uid://b63jxxrspg3xu"
 path="res://.godot/imported/home_recent_gamepad.png-cd831f7220aaea43ca915d9d4103d33a.ctex"
-metadata={"vram_texture": false}
+metadata={
+"vram_texture": false
+}
+
 [deps]
+
 source_file="res://assets/ui/home_recent_gamepad.png"
 dest_files=["res://.godot/imported/home_recent_gamepad.png-cd831f7220aaea43ca915d9d4103d33a.ctex"]
+
 [params]
+
 compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7

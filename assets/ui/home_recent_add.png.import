@@ -1,12 +1,20 @@
 [remap]
+
 importer="texture"
 type="CompressedTexture2D"
+uid="uid://bhr1tv1ps7kxk"
 path="res://.godot/imported/home_recent_add.png-c0053569ba14c4a9e2071d811e058621.ctex"
-metadata={"vram_texture": false}
+metadata={
+"vram_texture": false
+}
+
 [deps]
+
 source_file="res://assets/ui/home_recent_add.png"
 dest_files=["res://.godot/imported/home_recent_add.png-c0053569ba14c4a9e2071d811e058621.ctex"]
+
 [params]
+
 compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7

@@ -1,12 +1,20 @@
 [remap]
+
 importer="texture"
 type="CompressedTexture2D"
+uid="uid://ctpfuf4f04t5p"
 path="res://.godot/imported/brand_pardex_app_icon.png-7511b8ecbc1b884fcb6fd4dd2dad6676.ctex"
-metadata={"vram_texture": false}
+metadata={
+"vram_texture": false
+}
+
 [deps]
+
 source_file="res://assets/ui/brand_pardex_app_icon.png"
 dest_files=["res://.godot/imported/brand_pardex_app_icon.png-7511b8ecbc1b884fcb6fd4dd2dad6676.ctex"]
+
 [params]
+
 compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7

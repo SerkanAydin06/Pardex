@@ -1,12 +1,20 @@
 [remap]
+
 importer="texture"
 type="CompressedTexture2D"
+uid="uid://fnk886lqoaa8"
 path="res://.godot/imported/home_recent_grid.png-227397b6285b92b74a5407e174b4a63a.ctex"
-metadata={"vram_texture": false}
+metadata={
+"vram_texture": false
+}
+
 [deps]
+
 source_file="res://assets/ui/home_recent_grid.png"
 dest_files=["res://.godot/imported/home_recent_grid.png-227397b6285b92b74a5407e174b4a63a.ctex"]
+
 [params]
+
 compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
