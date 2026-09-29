@@ -31,6 +31,7 @@ PardexAdaptiveWindow="*res://scripts/ui/pardex_adaptive_window.gd"
 PardexWindowChrome="*res://scripts/ui/pardex_window_chrome.gd"
 PardexLibraryResponsive="*res://scripts/ui/pardex_library_responsive.gd"
 PardexSecondaryScroll="*res://scripts/ui/pardex_secondary_scroll.gd"
+PardexTypography="*res://scripts/ui/pardex_typography.gd"
 
 [display]
 
@@ -40,7 +41,7 @@ window/size/mode=0
 window/size/resizable=true
 window/size/window_width_override=1440
 window/size/window_height_override=900
-window/stretch/mode="canvas_items"
+window/stretch/mode="disabled"
 window/stretch/aspect="expand"
 
 [rendering]
