@@ -90,7 +90,7 @@ func _install_resize_handles() -> void:
 	_add_resize_handle("ResizeBottomLeft", DisplayServer.WINDOW_EDGE_BOTTOM_LEFT, Control.CURSOR_BDIAGSIZE, Vector2(0, 1), Vector2(0, 1), Vector2(0, -RESIZE_CORNER_SIZE), Vector2(RESIZE_CORNER_SIZE, 0))
 	_add_resize_handle("ResizeBottomRight", DisplayServer.WINDOW_EDGE_BOTTOM_RIGHT, Control.CURSOR_FDIAGSIZE, Vector2(1, 1), Vector2(1, 1), Vector2(-RESIZE_CORNER_SIZE, -RESIZE_CORNER_SIZE), Vector2(0, 0))
 
-func _add_resize_handle(name_value: String, edge: DisplayServer.WindowResizeEdge, cursor: Control.CursorShape, anchor_from: Vector2, anchor_to: Vector2, offset_from: Vector2, offset_to: Vector2) -> void:
+func _add_resize_handle(name_value: String, edge, cursor, anchor_from: Vector2, anchor_to: Vector2, offset_from: Vector2, offset_to: Vector2) -> void:
 	var handle := Control.new()
 	handle.name = name_value
 	handle.z_index = 1000
@@ -107,7 +107,7 @@ func _add_resize_handle(name_value: String, edge: DisplayServer.WindowResizeEdge
 	handle.gui_input.connect(_on_resize_handle_input.bind(edge))
 	_main_scene.add_child(handle)
 
-func _on_resize_handle_input(event: InputEvent, edge: DisplayServer.WindowResizeEdge) -> void:
+func _on_resize_handle_input(event: InputEvent, edge) -> void:
 	if event is InputEventMouseButton:
 		var mouse := event as InputEventMouseButton
 		if mouse.button_index == MOUSE_BUTTON_LEFT and mouse.pressed:
