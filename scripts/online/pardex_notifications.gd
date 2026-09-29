@@ -39,13 +39,14 @@ func _bind_ui() -> void:
 	var friends = scene.find_child("FriendsButton", true, false)
 	var rooms = scene.find_child("RoomsButton", true, false)
 	var header = scene.find_child("HeaderRow", true, false)
-	if not (friends is Button) or not (rooms is Button) or not (header is HBoxContainer):
+	# The rooms badge is optional: the shell may reach rooms through Friends.
+	if not (friends is Button) or not (header is HBoxContainer):
 		_schedule_bind_retry()
 		return
 
 	_main_scene = scene as Control
 	_friends_button = friends as Button
-	_rooms_button = rooms as Button
+	_rooms_button = rooms as Button if rooms is Button else null
 	_header_row = header as HBoxContainer
 	_create_badges()
 	_create_notification_button()
@@ -68,7 +69,8 @@ func _schedule_bind_retry() -> void:
 
 func _create_badges() -> void:
 	_friends_badge = _make_badge(_friends_button)
-	_rooms_badge = _make_badge(_rooms_button)
+	if _rooms_button != null:
+		_rooms_badge = _make_badge(_rooms_button)
 
 
 func _make_badge(parent_button: Button) -> PanelContainer:
@@ -128,7 +130,7 @@ func _create_notification_panel() -> void:
 	_notification_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	_notification_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	_notification_panel.offset_left = -430.0
-	_notification_panel.offset_top = 86.0
+	_notification_panel.offset_top = 64.0
 	_notification_panel.offset_right = -28.0
 	_notification_panel.offset_bottom = 560.0
 	_notification_panel.add_theme_stylebox_override("panel", _notification_panel_style())
@@ -468,12 +470,8 @@ func _badge_style() -> StyleBoxFlat:
 
 func _notification_button_style(hovered: bool) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.035, 0.13, 0.18, 0.94) if hovered else Color(0.02, 0.075, 0.11, 0.9)
-	style.border_width_left = 1
-	style.border_width_top = 1
-	style.border_width_right = 1
-	style.border_width_bottom = 1
-	style.border_color = Color(0.14, 0.48, 0.62, 1.0)
+	# Flat header icon, like the window buttons next to it.
+	style.bg_color = Color(1, 1, 1, 0.07) if hovered else Color(1, 1, 1, 0.0)
 	style.corner_radius_top_left = 10
 	style.corner_radius_top_right = 10
 	style.corner_radius_bottom_right = 10
