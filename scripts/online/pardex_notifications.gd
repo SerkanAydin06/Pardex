@@ -36,9 +36,9 @@ func _bind_ui() -> void:
 		_schedule_bind_retry()
 		return
 
-	var friends = scene.get_node_or_null("Sidebar/SidebarMargin/SidebarVBox/FriendsButton")
-	var rooms = scene.get_node_or_null("Sidebar/SidebarMargin/SidebarVBox/RoomsButton")
-	var header = scene.get_node_or_null("MainMargin/MainVBox/Header/HeaderRow")
+	var friends = scene.find_child("FriendsButton", true, false)
+	var rooms = scene.find_child("RoomsButton", true, false)
+	var header = scene.find_child("HeaderRow", true, false)
 	if not (friends is Button) or not (rooms is Button) or not (header is HBoxContainer):
 		_schedule_bind_retry()
 		return
@@ -97,21 +97,22 @@ func _make_badge(parent_button: Button) -> PanelContainer:
 func _create_notification_button() -> void:
 	_notification_button = Button.new()
 	_notification_button.name = "NotificationButton"
-	_notification_button.custom_minimum_size = Vector2(48, 44)
+	_notification_button.custom_minimum_size = Vector2(44, 44)
 	_notification_button.focus_mode = Control.FOCUS_NONE
-	_notification_button.text = "◆"
+	_notification_button.text = "🔔"
 	_notification_button.tooltip_text = "Bildirimler"
-	_notification_button.add_theme_font_size_override("font_size", 18)
-	_notification_button.add_theme_color_override("font_color", Color(0.68, 0.9, 1.0, 1.0))
+	_notification_button.add_theme_font_size_override("font_size", 16)
+	_notification_button.add_theme_color_override("font_color", Color(0.72, 0.86, 1.0, 1.0))
 	_notification_button.add_theme_stylebox_override("normal", _notification_button_style(false))
 	_notification_button.add_theme_stylebox_override("hover", _notification_button_style(true))
 	_notification_button.add_theme_stylebox_override("pressed", _notification_button_style(true))
 	_notification_button.pressed.connect(_toggle_notification_panel)
 	_header_row.add_child(_notification_button)
 
-	var connection_pill := _header_row.get_node_or_null("ConnectionPill")
-	if connection_pill != null:
-		_header_row.move_child(_notification_button, connection_pill.get_index())
+	# The bell sits between the connection pill and the window buttons.
+	var window_chrome := _header_row.get_node_or_null("WindowChrome")
+	if window_chrome != null:
+		_header_row.move_child(_notification_button, window_chrome.get_index())
 
 	_notification_button_badge = _make_badge(_notification_button)
 	_notification_button_badge.offset_left = -22.0

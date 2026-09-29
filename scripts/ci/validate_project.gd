@@ -14,14 +14,9 @@ const RESOURCES := [
     "res://scripts/online/pardex_game_launcher.gd",
     "res://scripts/online/pardex_notifications.gd",
     "res://scripts/online/pardex_presence_ui.gd",
-    "res://scripts/ui/pardex_home_ui.gd",
-    "res://scripts/ui/pardex_nav_style.gd",
-    "res://scripts/ui/pardex_brand_ui.gd",
-    "res://scripts/ui/pardex_adaptive_window.gd",
-    "res://scripts/ui/pardex_window_chrome.gd",
-    "res://scripts/ui/pardex_library_responsive.gd",
-    "res://scripts/ui/pardex_secondary_scroll.gd",
     "res://scripts/ui/pardex_typography.gd",
+    "res://scripts/ui/pardex_window_frame.gd",
+    "res://scripts/ui/pardex_text_fit.gd",
     "res://scripts/ci/boot_smoke.gd",
 ]
 

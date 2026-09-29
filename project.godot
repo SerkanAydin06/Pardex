@@ -24,13 +24,6 @@ PardexOnline="*res://scripts/online/pardex_online_secure_handoff.gd"
 PardexGameLauncher="*res://scripts/online/pardex_game_launcher.gd"
 PardexNotifications="*res://scripts/online/pardex_notifications.gd"
 PardexPresenceUI="*res://scripts/online/pardex_presence_ui.gd"
-PardexHomeUI="*res://scripts/ui/pardex_home_ui.gd"
-PardexNavStyle="*res://scripts/ui/pardex_nav_style.gd"
-PardexBrandUI="*res://scripts/ui/pardex_brand_ui.gd"
-PardexAdaptiveWindow="*res://scripts/ui/pardex_adaptive_window.gd"
-PardexWindowChrome="*res://scripts/ui/pardex_window_chrome.gd"
-PardexLibraryResponsive="*res://scripts/ui/pardex_library_responsive.gd"
-PardexSecondaryScroll="*res://scripts/ui/pardex_secondary_scroll.gd"
 PardexTypography="*res://scripts/ui/pardex_typography.gd"
 
 [display]

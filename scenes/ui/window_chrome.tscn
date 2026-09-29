@@ -27,7 +27,6 @@ corner_radius_bottom_left = 10
 corner_radius_bottom_right = 10
 
 [node name="WindowChrome" type="HBoxContainer"]
-custom_minimum_size = Vector2(190, 44)
 theme_override_constants/separation = 4
 
 [node name="SecondaryAction" type="Button" parent="."]
