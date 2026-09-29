@@ -4,9 +4,9 @@ extends Node
 # Keeps text readable on 1366x768 laptops while preserving hierarchy on larger screens.
 
 const RETRY_SECONDS := 0.20
-const BODY_SIZE := 16
-const BUTTON_SIZE := 16
-const INPUT_SIZE := 16
+const BODY_SIZE := 17
+const BUTTON_SIZE := 17
+const INPUT_SIZE := 17
 const SECTION_TITLE_SIZE := 22
 const PAGE_TITLE_SIZE := 36
 const PAGE_SUBTITLE_SIZE := 16
@@ -32,6 +32,14 @@ func _bind() -> void:
 		return
 	_bound = true
 	_style_subtree(scene)
+	# Re-apply once after the other UI autoloads finish their own style passes.
+	tree.create_timer(0.20).timeout.connect(_restyle_current_scene)
+
+func _restyle_current_scene() -> void:
+	var tree := get_tree()
+	if tree == null or tree.current_scene == null:
+		return
+	_style_subtree(tree.current_scene)
 
 func _on_node_added(node: Node) -> void:
 	if not _bound:
@@ -81,9 +89,9 @@ func _style_label(label: Label) -> void:
 		target_size = maxi(28, label.get_theme_font_size("font_size"))
 		outline_size = 2
 	elif label_name == "Tag":
-		target_size = 13
-	elif label_name in ["UserName"]:
-		target_size = 17
+		target_size = 14
+	elif label_name == "UserName":
+		target_size = 18
 	elif label_name in ["OnlineState", "ConnectionLabel", "State", "Status", "More"]:
 		target_size = SMALL_SIZE
 	else:
@@ -105,7 +113,7 @@ func _style_button(button: Button) -> void:
 		return
 	var target_size := BUTTON_SIZE
 	if button_name in ["HomeButton", "LibraryButton", "FriendsButton", "RoomsButton", "SettingsButton", "ExitButton"]:
-		target_size = 17
+		target_size = 18
 		button.custom_minimum_size.y = maxf(button.custom_minimum_size.y, 56.0)
 	else:
 		button.custom_minimum_size.y = maxf(button.custom_minimum_size.y, 46.0)
@@ -127,9 +135,9 @@ func _style_check_button(toggle: CheckButton) -> void:
 
 func _style_rich_text(text: RichTextLabel) -> void:
 	text.add_theme_font_size_override("normal_font_size", BODY_SIZE)
-	text.add_theme_font_size_override("bold_font_size", 18)
+	text.add_theme_font_size_override("bold_font_size", 19)
 	text.add_theme_font_size_override("italics_font_size", BODY_SIZE)
-	text.add_theme_font_size_override("bold_italics_font_size", 18)
+	text.add_theme_font_size_override("bold_italics_font_size", 19)
 
 func _is_window_chrome(control: Control) -> bool:
 	var path := String(control.get_path())
