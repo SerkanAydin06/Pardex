@@ -27,6 +27,7 @@ PardexPresenceUI="*res://scripts/online/pardex_presence_ui.gd"
 PardexHomeUI="*res://scripts/ui/pardex_home_ui.gd"
 PardexAdaptiveWindow="*res://scripts/ui/pardex_adaptive_window.gd"
 PardexLibraryResponsive="*res://scripts/ui/pardex_library_responsive.gd"
+PardexSecondaryScroll="*res://scripts/ui/pardex_secondary_scroll.gd"
 
 [display]
 
