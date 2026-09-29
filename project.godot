@@ -41,7 +41,7 @@ window/size/mode=0
 window/size/resizable=true
 window/size/window_width_override=1440
 window/size/window_height_override=900
-window/stretch/mode="canvas_items"
+window/stretch/mode="disabled"
 window/stretch/aspect="expand"
 
 [rendering]
