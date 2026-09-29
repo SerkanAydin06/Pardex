@@ -3,7 +3,7 @@
 ; since the parameters that go here are not all obvious.
 ;
 ; Format:
-;   [section] ; section goes between []
+;   [section] ; section between []
 ;   param=value ; assign values to parameters
 
 config_version=5
@@ -26,6 +26,7 @@ PardexNotifications="*res://scripts/online/pardex_notifications.gd"
 PardexPresenceUI="*res://scripts/online/pardex_presence_ui.gd"
 PardexHomeUI="*res://scripts/ui/pardex_home_ui.gd"
 PardexAdaptiveWindow="*res://scripts/ui/pardex_adaptive_window.gd"
+PardexLibraryResponsive="*res://scripts/ui/pardex_library_responsive.gd"
 
 [display]
 
