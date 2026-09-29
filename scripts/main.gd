@@ -4,7 +4,7 @@ const APP_VERSION := "0.1.0"
 const SETTINGS_PATH := "user://pardex.cfg"
 const DEFAULT_SERVER_URL := "wss://pardex-online-production.up.railway.app"
 const DEFAULT_WINDOW_SIZE := Vector2i(1440, 900)
-const MIN_WINDOW_SIZE := Vector2i(1100, 700)
+const MIN_WINDOW_SIZE := Vector2i(1024, 640)
 const WINDOW_STATE_SAVE_INTERVAL := 1.0
 const FRIENDS_SCENE := preload("res://scenes/screens/friends.tscn")
 const ROOMS_SCENE := preload("res://scenes/screens/rooms.tscn")
@@ -336,7 +336,8 @@ func _save_settings(capture_window := true) -> int:
 
 
 func _apply_window_preferences() -> void:
-	get_window().min_size = MIN_WINDOW_SIZE
+	var usable := DisplayServer.screen_get_usable_rect(DisplayServer.window_get_current_screen())
+	get_window().min_size = Vector2i(mini(MIN_WINDOW_SIZE.x, usable.size.x), mini(MIN_WINDOW_SIZE.y, usable.size.y))
 	if _start_fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 		return

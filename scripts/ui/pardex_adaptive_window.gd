@@ -2,11 +2,17 @@ extends Node
 
 # Steam-style responsive desktop shell for PARDEX.
 # Layout reflows; text/icons stay readable and the home screen fills the viewport.
+#
+# Layout contract: the sidebar has a fixed width and MainMargin starts right after
+# it. Nothing inside either panel may demand more width than it is given, so all
+# single-line text ellipsizes instead of pushing panels over each other, and all
+# reflow decisions use the width the window actually offers (not the width of the
+# content, which would feed back into itself). Window size and minimum size are
+# owned by main.gd.
 
-const DESIGN_SIZE := Vector2i(1440, 900)
-const WINDOW_MIN_SIZE := Vector2i(960, 620)
-const SCREEN_FILL := 0.96
 const BIND_RETRY_SECONDS := 0.20
+# Labels/buttons that must keep their full text (short, fixed-size UI).
+const NO_SHRINK_NAMES := ["BrandP", "BrandA", "BrandR", "BrandD", "BrandE", "BrandX", "Avatar", "Mark"]
 
 const WINDOW_NARROW := 1180
 const WINDOW_COMPACT := 1400
@@ -58,8 +64,10 @@ func _bind_after_scene_ready() -> void:
 		_retry_bind()
 		return
 	_bound = true
+	_make_shrinkable(_main)
+	tree.node_added.connect(_on_node_added)
 	await tree.process_frame
-	_apply_for_current_screen()
+	_apply_shell_density()
 	await tree.create_timer(0.25).timeout
 	if not is_instance_valid(_main):
 		return
@@ -74,28 +82,55 @@ func _retry_bind() -> void:
 		return
 	tree.create_timer(BIND_RETRY_SECONDS).timeout.connect(_bind_after_scene_ready)
 
-func _apply_for_current_screen() -> void:
-	var screen := DisplayServer.window_get_current_screen()
-	var usable := DisplayServer.screen_get_usable_rect(screen)
-	if usable.size.x <= 0 or usable.size.y <= 0:
-		return
-	get_window().min_size = Vector2i(mini(WINDOW_MIN_SIZE.x, usable.size.x), mini(WINDOW_MIN_SIZE.y, usable.size.y))
-	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED:
-		var current := DisplayServer.window_get_size()
-		var safe_max := Vector2i(maxi(1, floori(float(usable.size.x) * SCREEN_FILL)), maxi(1, floori(float(usable.size.y) * SCREEN_FILL)))
-		var preferred := Vector2i(mini(DESIGN_SIZE.x, safe_max.x), mini(DESIGN_SIZE.y, safe_max.y))
-		var target := Vector2i(mini(current.x, preferred.x), mini(current.y, preferred.y))
-		target.x = maxi(target.x, mini(WINDOW_MIN_SIZE.x, safe_max.x))
-		target.y = maxi(target.y, mini(WINDOW_MIN_SIZE.y, safe_max.y))
-		if target != current:
-			DisplayServer.window_set_size(target)
-			_center_window(usable, target)
-	_apply_shell_density()
+func _window_width() -> float:
+	return _main.get_viewport_rect().size.x
 
-func _center_window(usable: Rect2i, window_size: Vector2i) -> void:
-	var x := usable.position.x + maxi(0, roundi(float(usable.size.x - window_size.x) * 0.5))
-	var y := usable.position.y + maxi(0, roundi(float(usable.size.y - window_size.y) * 0.5))
-	DisplayServer.window_set_position(Vector2i(x, y))
+# Width available to page content: window minus sidebar and the main margins.
+func _content_width() -> float:
+	var left := _main_margin.get_theme_constant("margin_left")
+	var right := _main_margin.get_theme_constant("margin_right")
+	return maxf(320.0, _window_width() - _main_margin.offset_left - float(left + right))
+
+func _on_node_added(node: Node) -> void:
+	if not is_instance_valid(_main) or not (node is Control) or not _main.is_ancestor_of(node):
+		return
+	_make_shrinkable(node)
+
+# Single-line text reports its full width as minimum size; with an overrun
+# behavior it can shrink, so long text never widens its panel.
+func _make_shrinkable(node: Node) -> void:
+	if node is Control and _may_shrink(node as Control):
+		if node is Label:
+			var label := node as Label
+			if String(label.name) == "Body" and label.autowrap_mode == TextServer.AUTOWRAP_OFF:
+				# Descriptive paragraphs wrap onto more lines instead of losing text.
+				label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			elif label.autowrap_mode == TextServer.AUTOWRAP_OFF:
+				label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		elif node is Button:
+			var button := node as Button
+			if button.text != "" and button.text_overrun_behavior == TextServer.OVERRUN_NO_TRIMMING:
+				button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+				button.clip_text = true
+	for child in node.get_children():
+		_make_shrinkable(child)
+
+# Only shrink text whose container hands out width beyond the minimum:
+# vertical stacks, grids and expanding row items. A non-expanding item in a row,
+# or a label placed by anchors, is sized by its minimum and would collapse to "…".
+func _may_shrink(control: Control) -> bool:
+	if String(control.name) in NO_SHRINK_NAMES:
+		return false
+	var item := control
+	var parent := control.get_parent()
+	while parent is PanelContainer or parent is MarginContainer:
+		item = parent as Control
+		parent = parent.get_parent()
+	if not (parent is Container):
+		return false
+	if parent is BoxContainer and not (parent as BoxContainer).vertical:
+		return (item.size_flags_horizontal & Control.SIZE_EXPAND) != 0
+	return true
 
 func _on_window_size_changed() -> void:
 	if not _bound or not is_instance_valid(_main):
@@ -111,11 +146,11 @@ func _apply_responsive_layout() -> void:
 func _apply_shell_density() -> void:
 	if _sidebar == null or _main_margin == null:
 		return
-	var window_width := DisplayServer.window_get_size().x
+	var window_width := _window_width()
 	var narrow := window_width <= WINDOW_NARROW
 	var compact := window_width <= WINDOW_COMPACT
 	# Reference keeps the navigation substantial even on a 1366-wide laptop.
-	var sidebar_width := 220.0 if narrow else (250.0 if compact else 270.0)
+	var sidebar_width := 232.0 if narrow else (250.0 if compact else 270.0)
 	_sidebar.offset_right = sidebar_width
 	_main_margin.offset_left = sidebar_width
 	var outer_margin := 10 if narrow else (14 if compact else 18)
@@ -130,8 +165,17 @@ func _apply_shell_density() -> void:
 		_sidebar_margin.add_theme_constant_override("margin_right", side_margin)
 		_sidebar_margin.add_theme_constant_override("margin_bottom", 16 if compact else 22)
 	if _search != null:
-		var search_width := 260.0 if narrow else (330.0 if compact else 430.0)
-		_search.custom_minimum_size = Vector2(search_width, maxf(48.0, _search.custom_minimum_size.y))
+		# The search box takes the free header space but never forces its width.
+		_search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_search.size_flags_stretch_ratio = 1.0
+		_search.custom_minimum_size = Vector2(120.0 if narrow else 180.0, maxf(48.0, _search.custom_minimum_size.y))
+	var header_text := _main.get_node_or_null("MainMargin/MainVBox/Header/HeaderRow/HeaderText") as Control
+	if header_text != null:
+		# Keeps the page title readable; the subtitle ellipsizes below it.
+		header_text.custom_minimum_size.x = 200.0 if narrow else 220.0
+	var pill := _main.get_node_or_null("MainMargin/MainVBox/Header/HeaderRow/ConnectionPill") as Control
+	if pill != null:
+		pill.custom_minimum_size.x = 110.0 if narrow else 172.0
 	var sidebar_vbox := _main.get_node_or_null("Sidebar/SidebarMargin/SidebarVBox") as VBoxContainer
 	if sidebar_vbox != null:
 		sidebar_vbox.add_theme_constant_override("separation", 8 if narrow else 10)
@@ -227,9 +271,7 @@ func _ensure_recent_grid() -> void:
 func _apply_home_reflow() -> void:
 	if _home_root == null or not is_instance_valid(_home_root) or _home_top_grid == null:
 		return
-	var content_width := _home_root.size.x
-	if content_width <= 1.0:
-		content_width = maxf(600.0, float(DisplayServer.window_get_size().x) - _sidebar.offset_right - 40.0)
+	var content_width := _content_width()
 	_home_top_grid.columns = 1 if content_width < CONTENT_STACK_TOP else 2
 	_home_bottom_grid.columns = 1 if content_width < CONTENT_STACK_BOTTOM else 2
 	var viewport_height := maxf(620.0, _home_scroll.size.y)
@@ -240,19 +282,19 @@ func _apply_home_reflow() -> void:
 	_home_top_grid.custom_minimum_size = Vector2(0, top_height)
 	_home_bottom_grid.custom_minimum_size = Vector2(0, bottom_height)
 	_home_hero.custom_minimum_size = Vector2(0, top_height)
-	_home_agenda.custom_minimum_size = Vector2(320 if _home_top_grid.columns == 2 else 0, top_height)
-	_home_recent.custom_minimum_size = Vector2(0, bottom_height)
-	_home_quick.custom_minimum_size = Vector2(320 if _home_bottom_grid.columns == 2 else 0, bottom_height)
+	# Grid columns share width by minimum size, so the side panels get a fixed
+	# share of the content width instead of a hard 320px floor.
+	var side_width := clampf(content_width * 0.34, 260.0, 440.0)
+	_home_hero.custom_minimum_size = Vector2(content_width - side_width - gap if _home_top_grid.columns == 2 else 0.0, top_height)
+	_home_agenda.custom_minimum_size = Vector2(side_width if _home_top_grid.columns == 2 else 0.0, top_height)
+	_home_recent.custom_minimum_size = Vector2(content_width - side_width - gap if _home_bottom_grid.columns == 2 else 0.0, bottom_height)
+	_home_quick.custom_minimum_size = Vector2(side_width if _home_bottom_grid.columns == 2 else 0.0, bottom_height)
 	if _recent_grid != null:
-		if content_width >= 900.0:
-			_recent_grid.columns = 4
-		elif content_width >= 650.0:
-			_recent_grid.columns = 3
-		else:
-			_recent_grid.columns = 2
+		var recent_width := content_width - side_width - gap if _home_bottom_grid.columns == 2 else content_width
+		_recent_grid.columns = clampi(floori((recent_width + 10.0) / 160.0), 1, 4)
 		for card in _recent_grid.get_children():
 			if card is Control:
-				(card as Control).custom_minimum_size.y = maxf(240.0, bottom_height - 42.0)
+				(card as Control).custom_minimum_size = Vector2(0.0, maxf(240.0, bottom_height - 42.0))
 				var art := card.get_node_or_null("VBox/Artwork") as Control
 				if art != null:
 					art.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -296,7 +338,7 @@ func _ensure_library_scroll() -> void:
 func _apply_library_density() -> void:
 	if _library_body == null or not is_instance_valid(_library_body):
 		return
-	var width := _library_root.size.x
+	var width := _content_width()
 	var compact := width < 1000.0
 	_library_body.add_theme_constant_override("separation", 12 if compact else 18)
 	var hero := _library_body.get_node_or_null("Hero") as Control

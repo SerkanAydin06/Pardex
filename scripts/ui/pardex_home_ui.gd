@@ -98,8 +98,17 @@ func _show_home() -> void:
 	if not _bound:
 		return
 	for child in _main_vbox.get_children():
-		if child is Control:
-			(child as Control).visible = (child == _header or child == _home_content)
+		if child == _header or child == _home_content or not (child is Control):
+			continue
+		# Secondary screens sit inside ScrollContainer wrappers that mirror their
+		# screen's visibility. Hide the screen itself first; hiding only the
+		# wrapper leaves the screen "visible" and it reappears behind Ana Sayfa.
+		if child is ScrollContainer:
+			for screen in child.get_children():
+				if screen is Control:
+					(screen as Control).hide()
+		(child as Control).hide()
+	_home_content.show()
 
 	# Ana Sayfa uses the exact same header shell and typography as every other tab.
 	_header_text.show()

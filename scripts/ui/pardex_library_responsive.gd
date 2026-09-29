@@ -50,9 +50,9 @@ func _on_window_size_changed() -> void:
 func _apply_columns() -> void:
 	if _grid == null or not is_instance_valid(_grid):
 		return
-	var width := _grid.size.x
-	if width <= 1.0:
-		width = maxf(500.0, float(DisplayServer.window_get_size().x) - 260.0)
+	# Measure the space the window offers, not the grid: the grid's own width
+	# grows with its column count, so measuring it would lock in the columns.
+	var width := _available_width()
 
 	if width >= 900.0:
 		_grid.columns = 3
@@ -68,3 +68,12 @@ func _apply_columns() -> void:
 	for card in _grid.get_children():
 		if card is Control:
 			(card as Control).custom_minimum_size = Vector2(0, 330 if compact else 366)
+			(card as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+
+func _available_width() -> float:
+	var main_margin := _grid.get_tree().current_scene.get_node_or_null("MainMargin") as MarginContainer
+	if main_margin == null:
+		return _grid.size.x
+	var margins := main_margin.get_theme_constant("margin_left") + main_margin.get_theme_constant("margin_right")
+	return maxf(320.0, main_margin.get_viewport_rect().size.x - main_margin.offset_left - float(margins))
