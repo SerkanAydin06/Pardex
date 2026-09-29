@@ -31,6 +31,7 @@ PardexAdaptiveWindow="*res://scripts/ui/pardex_adaptive_window.gd"
 PardexWindowChrome="*res://scripts/ui/pardex_window_chrome.gd"
 PardexLibraryResponsive="*res://scripts/ui/pardex_library_responsive.gd"
 PardexSecondaryScroll="*res://scripts/ui/pardex_secondary_scroll.gd"
+PardexTypography="*res://scripts/ui/pardex_typography.gd"
 
 [display]
 
