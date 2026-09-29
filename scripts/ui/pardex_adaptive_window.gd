@@ -48,6 +48,13 @@ func _bind_after_scene_ready() -> void:
 	_apply_for_current_screen()
 	get_window().size_changed.connect(_on_window_size_changed)
 
+	# Home UI is also created from an autoload. Re-apply shortly after startup so
+	# its dynamically-created rows receive compact dimensions too.
+	await tree.create_timer(0.25).timeout
+	if is_instance_valid(_main):
+		var screen := DisplayServer.window_get_current_screen()
+		_apply_layout_density(DisplayServer.screen_get_usable_rect(screen).size)
+
 
 func _retry_bind() -> void:
 	var tree := get_tree()
@@ -130,7 +137,8 @@ func _apply_layout_density(screen_size: Vector2i) -> void:
 	_main_margin.add_theme_constant_override("margin_bottom", 14 if compact else 24)
 
 	if _search != null:
-		_search.custom_minimum_size.x = 250.0 if compact else 330.0
+		var search_min := _search.custom_minimum_size
+		_search.custom_minimum_size = Vector2(250.0 if compact else 330.0, search_min.y)
 
 	var sidebar_margin := _main.get_node_or_null("Sidebar/SidebarMargin") as MarginContainer
 	if sidebar_margin != null:
@@ -150,12 +158,12 @@ func _apply_home_density(home: VBoxContainer, compact: bool) -> void:
 	var top_row := home.get_child(0) as HBoxContainer
 	var bottom_row := home.get_child(1) as HBoxContainer
 	if top_row != null:
-		top_row.custom_minimum_size.y = 250.0 if compact else 310.0
+		top_row.custom_minimum_size = Vector2(top_row.custom_minimum_size.x, 250.0 if compact else 310.0)
 		if top_row.get_child_count() >= 2:
 			var agenda := top_row.get_child(1) as Control
 			if agenda != null:
-				agenda.custom_minimum_size.x = 300.0 if compact else 360.0
+				agenda.custom_minimum_size = Vector2(300.0 if compact else 360.0, agenda.custom_minimum_size.y)
 	if bottom_row != null and bottom_row.get_child_count() >= 2:
 		var quick := bottom_row.get_child(1) as Control
 		if quick != null:
-			quick.custom_minimum_size.x = 300.0 if compact else 360.0
+			quick.custom_minimum_size = Vector2(300.0 if compact else 360.0, quick.custom_minimum_size.y)
