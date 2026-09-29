@@ -52,15 +52,15 @@ func _retry() -> void:
 func _place_notification_button() -> void:
 	if not _bound or _header_row == null or _chrome == null:
 		return
-	var notification := _header_row.get_node_or_null("NotificationButton") as Button
-	if notification == null:
+	var notification_button := _header_row.get_node_or_null("NotificationButton") as Button
+	if notification_button == null:
 		get_tree().create_timer(0.20).timeout.connect(_place_notification_button)
 		return
-	notification.text = "🔔"
-	notification.custom_minimum_size = Vector2(44, 44)
-	notification.add_theme_font_size_override("font_size", 16)
-	notification.add_theme_color_override("font_color", Color(0.72, 0.86, 1.0, 1.0))
-	_header_row.move_child(notification, _chrome.get_index())
+	notification_button.text = "🔔"
+	notification_button.custom_minimum_size = Vector2(44, 44)
+	notification_button.add_theme_font_size_override("font_size", 16)
+	notification_button.add_theme_color_override("font_color", Color(0.72, 0.86, 1.0, 1.0))
+	_header_row.move_child(notification_button, _chrome.get_index())
 
 func _minimize_window() -> void:
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MINIMIZED)
