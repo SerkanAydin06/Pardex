@@ -93,7 +93,7 @@ func _style_label(label: Label) -> void:
 	elif label_name == "Title":
 		target_size = 36 if "HomeHero" in path else SECTION_TITLE_SIZE
 		outline_size = 2
-	elif label_name.begins_with("Brand"):
+	elif label_name.begins_with("Brand") and label_name.length() == 6:
 		target_size = maxi(28, label.get_theme_font_size("font_size"))
 		outline_size = 2
 	elif label_name == "Tag":

@@ -4,21 +4,27 @@ const APP_VERSION := "0.1.0"
 const SETTINGS_PATH := "user://pardex.cfg"
 const DEFAULT_SERVER_URL := "wss://pardex-online-production.up.railway.app"
 const DEFAULT_WINDOW_SIZE := Vector2i(1440, 900)
-const MIN_WINDOW_SIZE := Vector2i(1100, 700)
+const MIN_WINDOW_SIZE := Vector2i(1024, 640)
 const WINDOW_STATE_SAVE_INTERVAL := 1.0
 const FRIENDS_SCENE := preload("res://scenes/screens/friends.tscn")
 const ROOMS_SCENE := preload("res://scenes/screens/rooms.tscn")
 const SETTINGS_SCENE := preload("res://scenes/screens/settings.tscn")
+const TextFit := preload("res://scripts/ui/pardex_text_fit.gd")
+
+# Responsive shell breakpoints (window width in pixels).
+const WINDOW_NARROW := 1180
+const WINDOW_COMPACT := 1400
 
 @onready var page_title: Label = %PageTitle
 @onready var page_subtitle: Label = %PageSubtitle
 @onready var library_content: VBoxContainer = %LibraryContent
 @onready var toast_panel: PanelContainer = %ToastPanel
 @onready var toast_label: Label = %ToastLabel
-@onready var profile_name_label: Label = $Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/ProfileText/UserName
-@onready var avatar_label: Label = $Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/Avatar
-@onready var online_state_label: Label = $Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/ProfileText/OnlineState
-@onready var connection_label: Label = $MainMargin/MainVBox/Header/HeaderRow/ConnectionPill/ConnectionLabel
+@onready var profile_name_label: Label = %UserName
+@onready var avatar_label: Label = %Avatar
+@onready var online_state_label: Label = %OnlineState
+@onready var connection_label: Label = %ConnectionLabel
+@onready var home_content: VBoxContainer = %HomeContent
 @onready var library_search: LineEdit = %LibrarySearch
 @onready var game_count_label: Label = %GameCount
 
@@ -26,10 +32,10 @@ var _friends_content: VBoxContainer
 var _rooms_content: VBoxContainer
 var _settings_content: VBoxContainer
 var _current_content: Control
+# Screen root -> the node that is shown/hidden for it (its scroll wrapper, if any).
+var _pages: Dictionary = {}
 var _display_name := "Pardus"
 var _server_url := DEFAULT_SERVER_URL
-var _nav_selected_style: StyleBox
-var _nav_normal_style: StyleBox
 var _game_launch_in_progress := false
 var _toast_revision := 0
 var _start_fullscreen := false
@@ -45,9 +51,6 @@ var _online_pulse_tween: Tween
 var _brand_glow_tween: Tween
 
 func _ready() -> void:
-	_nav_selected_style = %LibraryButton.get_theme_stylebox("normal")
-	_nav_normal_style = %FriendsButton.get_theme_stylebox("normal")
-
 	_create_secondary_screens()
 	_load_settings()
 	_apply_window_preferences()
@@ -57,30 +60,51 @@ func _ready() -> void:
 	_wire_sidebar_polish()
 	_start_brand_letter_glow()
 	_wire_online_signals()
-	_show_library()
+	_show_home()
 	_render_empty_room()
 	_update_connection_ui(PardexOnline.connection_state)
 	toast_panel.hide()
+
+	TextFit.apply(self)
+	get_tree().node_added.connect(_on_node_added)
+	resized.connect(_apply_responsive_layout)
+	_apply_responsive_layout()
 
 	PardexOnline.configure(_server_url, _display_name)
 	PardexOnline.connect_server()
 
 func _create_secondary_screens() -> void:
-	var content_parent := library_content.get_parent()
+	_pages[home_content] = home_content
+	_pages[library_content] = library_content
 
+	# Friends scrolls its own list; Rooms and Settings scroll as a whole page.
 	_friends_content = FRIENDS_SCENE.instantiate() as VBoxContainer
-	content_parent.add_child(_friends_content)
-	_friends_content.hide()
-
+	_add_page(_friends_content, false)
 	_rooms_content = ROOMS_SCENE.instantiate() as VBoxContainer
-	content_parent.add_child(_rooms_content)
-	_rooms_content.hide()
-
+	_add_page(_rooms_content, true)
 	_settings_content = SETTINGS_SCENE.instantiate() as VBoxContainer
-	content_parent.add_child(_settings_content)
-	_settings_content.hide()
+	_add_page(_settings_content, true)
+
+
+func _add_page(screen: VBoxContainer, scrolls: bool) -> void:
+	var content_parent := library_content.get_parent()
+	var page: Control = screen
+	if scrolls:
+		var scroll := ScrollContainer.new()
+		scroll.name = String(screen.name) + "Scroll"
+		scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		screen.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		screen.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		scroll.add_child(screen)
+		page = scroll
+	content_parent.add_child(page)
+	page.hide()
+	_pages[screen] = page
 
 func _wire_actions() -> void:
+	%HomeButton.pressed.connect(_show_home)
+	(home_content.get_node("%LibraryAction") as Button).pressed.connect(_show_library)
 	%LibraryButton.pressed.connect(_show_library)
 	%FriendsButton.pressed.connect(_show_friends)
 	%RoomsButton.pressed.connect(_show_rooms)
@@ -117,7 +141,7 @@ func _wire_actions() -> void:
 	fullscreen_toggle.toggled.connect(_on_fullscreen_toggled)
 
 func _wire_sidebar_polish() -> void:
-	for button in [%LibraryButton, %FriendsButton, %RoomsButton, %SettingsButton, %ExitButton]:
+	for button in [%HomeButton, %LibraryButton, %FriendsButton, %RoomsButton, %SettingsButton, %ExitButton]:
 		button.mouse_entered.connect(_on_sidebar_button_hover.bind(button, true))
 		button.mouse_exited.connect(_on_sidebar_button_hover.bind(button, false))
 	_start_online_pulse()
@@ -224,6 +248,14 @@ func _configure_game_card(
 	action_button.disabled = not playable
 	action_button.text = "▶  Oyna" if playable else "◷  Yakında"
 
+func _show_home() -> void:
+	_show_content(
+		home_content,
+		"Ana Sayfa",
+		"Oyunların, arkadaşların ve güncellemelerin tek merkezde.",
+		%HomeButton
+	)
+
 func _show_library() -> void:
 	_show_content(
 		library_content,
@@ -264,16 +296,13 @@ func _show_settings() -> void:
 	)
 
 func _show_content(content: Control, title: String, subtitle: String, selected_button: Button) -> void:
-	library_content.hide()
-	_friends_content.hide()
-	_rooms_content.hide()
-	_settings_content.hide()
+	for screen in _pages:
+		(_pages[screen] as Control).visible = screen == content
 
-	library_search.visible = content == library_content
+	library_search.visible = content == library_content or content == home_content
 	if content != library_content:
 		library_search.release_focus()
 
-	content.show()
 	content.modulate.a = 0.0
 	_current_content = content
 	page_title.text = title
@@ -285,14 +314,118 @@ func _show_content(content: Control, title: String, subtitle: String, selected_b
 	transition.tween_property(content, "modulate:a", 1.0, 0.14)
 
 func _set_selected_navigation(selected_button: Button) -> void:
-	var buttons := [%LibraryButton, %FriendsButton, %RoomsButton, %SettingsButton]
-	for node in buttons:
+	for node in [%HomeButton, %LibraryButton, %FriendsButton, %RoomsButton, %SettingsButton]:
 		var button := node as Button
-		button.add_theme_stylebox_override("normal", _nav_normal_style)
-		button.add_theme_color_override("font_color", Color(0.65, 0.7, 0.79, 1))
+		var selected := button == selected_button
+		button.add_theme_stylebox_override("normal", _nav_style(selected, false))
+		button.add_theme_stylebox_override("hover", _nav_style(selected, true))
+		button.add_theme_stylebox_override("pressed", _nav_style(true, true))
+		button.add_theme_color_override("font_color", Color(0.96, 0.985, 1.0, 1.0) if selected else Color(0.76, 0.84, 0.93, 1.0))
+		button.add_theme_color_override("font_hover_color", Color(0.96, 0.985, 1.0, 1.0))
+		button.custom_minimum_size.y = 56.0
 
-	selected_button.add_theme_stylebox_override("normal", _nav_selected_style)
-	selected_button.add_theme_color_override("font_color", Color(0.91, 0.94, 1, 1))
+
+func _nav_style(selected: bool, hovered: bool) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.set_corner_radius_all(14 if selected else 12)
+	style.content_margin_left = 18
+	style.content_margin_right = 14
+	style.content_margin_top = 12
+	style.content_margin_bottom = 12
+	if selected:
+		style.bg_color = Color(0.045, 0.25, 0.42, 1.0) if hovered else Color(0.035, 0.20, 0.34, 0.98)
+		style.border_color = Color(0.12, 0.72, 1.0, 1.0) if hovered else Color(0.10, 0.46, 0.72, 1.0)
+		style.set_border_width_all(1)
+		style.border_width_left = 6
+		style.shadow_color = Color(0.0, 0.62, 1.0, 0.20)
+		style.shadow_size = 9
+	elif hovered:
+		style.bg_color = Color(0.025, 0.10, 0.16, 0.92)
+		style.border_color = Color(0.08, 0.28, 0.42, 0.95)
+		style.set_border_width_all(1)
+		style.border_width_left = 2
+	else:
+		style.bg_color = Color(0.008, 0.022, 0.038, 0.16)
+	return style
+
+
+func _on_node_added(node: Node) -> void:
+	# Runtime UI (friend rows, notifications) follows the same text policy.
+	if node is Control and is_ancestor_of(node):
+		TextFit.apply.call_deferred(node)
+
+
+# Steam-style reflow: the sidebar and main area always split the window between
+# them (Shell is an HBoxContainer); this only picks densities and column counts
+# from the window width, never from content width (which would feed back).
+func _apply_responsive_layout() -> void:
+	var width := size.x
+	if width <= 1.0:
+		return
+	var narrow := width <= WINDOW_NARROW
+	var compact := width <= WINDOW_COMPACT
+
+	var sidebar_width := 240.0 if narrow else (250.0 if compact else 270.0)
+	%Sidebar.custom_minimum_size.x = sidebar_width
+	var side_margin := 14 if narrow else (18 if compact else 22)
+	var sidebar_margin := %Sidebar.get_node("SidebarMargin") as MarginContainer
+	sidebar_margin.add_theme_constant_override("margin_left", side_margin)
+	sidebar_margin.add_theme_constant_override("margin_right", side_margin)
+	sidebar_margin.add_theme_constant_override("margin_top", 18 if compact else 24)
+	sidebar_margin.add_theme_constant_override("margin_bottom", 16 if compact else 22)
+
+	var outer := 10 if narrow else (14 if compact else 18)
+	var main_margin := %MainMargin as MarginContainer
+	for side in ["margin_left", "margin_right"]:
+		main_margin.add_theme_constant_override(side, outer)
+	for side in ["margin_top", "margin_bottom"]:
+		main_margin.add_theme_constant_override(side, 10 if narrow else 12)
+
+	# Header: title keeps a readable width, search takes the free space.
+	%HeaderText.custom_minimum_size.x = 200.0 if narrow else 220.0
+	library_search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	library_search.custom_minimum_size.x = 120.0 if narrow else 180.0
+	(%ConnectionLabel.get_parent() as Control).custom_minimum_size.x = 110.0 if narrow else 172.0
+	# Decorative header extras give way first on small windows.
+	%WindowChrome.get_node("SecondaryAction").visible = not narrow
+	%WindowChrome.get_node("Separator").visible = not narrow
+
+	var content_width := width - sidebar_width - float(outer * 2)
+	_apply_library_layout(content_width)
+	_apply_home_layout(content_width)
+
+
+func _apply_library_layout(content_width: float) -> void:
+	var grid := %GameGrid as GridContainer
+	grid.columns = 3 if content_width >= 900.0 else (2 if content_width >= 560.0 else 1)
+	var compact := content_width < 900.0
+	grid.add_theme_constant_override("h_separation", 12 if compact else 18)
+	grid.add_theme_constant_override("v_separation", 12 if compact else 18)
+	for card in grid.get_children():
+		(card as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		(card as Control).custom_minimum_size = Vector2(0, 330 if compact else 366)
+	%Hero.custom_minimum_size.y = 205.0 if content_width < 1000.0 else 244.0
+
+
+func _apply_home_layout(content_width: float) -> void:
+	var top_row := home_content.get_node("%TopRow") as BoxContainer
+	var bottom_row := home_content.get_node("%BottomRow") as BoxContainer
+	# Side panels stack under the main panel when the two would get too narrow.
+	top_row.vertical = content_width < 760.0
+	bottom_row.vertical = content_width < 980.0
+	var gap := 10 if content_width < 980.0 else 14
+	for row in [top_row, bottom_row]:
+		row.add_theme_constant_override("separation", gap)
+	var side_width := clampf(content_width * 0.34, 260.0, 440.0)
+	for side in [home_content.get_node("%Agenda"), home_content.get_node("%QuickStart")]:
+		var panel := side as Control
+		var stacked := (panel.get_parent() as BoxContainer).vertical
+		panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL if stacked else Control.SIZE_FILL
+		panel.custom_minimum_size.x = 0.0 if stacked else side_width
+	var recent_width := content_width if bottom_row.vertical else content_width - side_width - gap
+	var recent_grid := home_content.get_node("%RecentGrid") as GridContainer
+	recent_grid.columns = clampi(floori((recent_width + 10.0) / 160.0), 1, 4)
+	top_row.custom_minimum_size.y = 310.0
 
 func _load_settings() -> void:
 	var config := ConfigFile.new()
@@ -336,7 +469,8 @@ func _save_settings(capture_window := true) -> int:
 
 
 func _apply_window_preferences() -> void:
-	get_window().min_size = MIN_WINDOW_SIZE
+	var usable := DisplayServer.screen_get_usable_rect(DisplayServer.window_get_current_screen())
+	get_window().min_size = Vector2i(mini(MIN_WINDOW_SIZE.x, usable.size.x), mini(MIN_WINDOW_SIZE.y, usable.size.y))
 	if _start_fullscreen:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 		return

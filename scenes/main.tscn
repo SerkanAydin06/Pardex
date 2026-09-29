@@ -1,7 +1,10 @@
 [gd_scene format=3 uid="uid://c4ee5q51bjoxw"]
 
 [ext_resource type="Script" uid="uid://b862qcsk55r27" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="Texture2D" uid="uid://dvk3gg6umetow" path="res://assets/icon.png" id="2_logo"]
+[ext_resource type="Texture2D" path="res://assets/ui/brand_pardex_symbol.png" id="2_logo"]
+[ext_resource type="PackedScene" path="res://scenes/screens/home_static.tscn" id="30_home"]
+[ext_resource type="PackedScene" path="res://scenes/ui/window_chrome.tscn" id="31_chrome"]
+[ext_resource type="Script" path="res://scripts/ui/pardex_window_frame.gd" id="32_frame"]
 [ext_resource type="Texture2D" uid="uid://dx6lh4r4q671a" path="res://assets/ui/icon_library.png" id="8_nav_library"]
 [ext_resource type="Texture2D" uid="uid://ncee80n0ptvt" path="res://assets/ui/icon_friends.png" id="9_nav_friends"]
 [ext_resource type="Texture2D" uid="uid://bulpldt8jeoeq" path="res://assets/ui/icon_rooms.png" id="10_nav_rooms"]
@@ -513,16 +516,22 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBg")
 
-[node name="Sidebar" type="PanelContainer" parent="." unique_id=1692516323]
+[node name="Shell" type="HBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 9
+anchors_preset = 15
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 270.0
-grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Sidebar" type="PanelContainer" parent="Shell" unique_id=1692516323]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(270, 0)
+clip_contents = true
+layout_mode = 2
 theme_override_styles/panel = SubResource("StyleSidebar")
 
-[node name="SidebarBackground" type="TextureRect" parent="Sidebar" unique_id=1805269835]
+[node name="SidebarBackground" type="TextureRect" parent="Shell/Sidebar" unique_id=1805269835]
 texture_filter = 4
 layout_mode = 2
 mouse_filter = 2
@@ -530,44 +539,45 @@ texture = ExtResource("14_left_banner")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="SidebarBackgroundShade" type="ColorRect" parent="Sidebar" unique_id=145686718]
+[node name="SidebarBackgroundShade" type="ColorRect" parent="Shell/Sidebar" unique_id=145686718]
 layout_mode = 2
 mouse_filter = 2
 color = Color(0.004, 0.012, 0.024, 0.34)
 
-[node name="SidebarMargin" type="MarginContainer" parent="Sidebar" unique_id=1391221250]
+[node name="SidebarMargin" type="MarginContainer" parent="Shell/Sidebar" unique_id=1391221250]
 layout_mode = 2
 theme_override_constants/margin_left = 22
 theme_override_constants/margin_top = 26
 theme_override_constants/margin_right = 22
 theme_override_constants/margin_bottom = 22
 
-[node name="SidebarVBox" type="VBoxContainer" parent="Sidebar/SidebarMargin" unique_id=1583966239]
+[node name="SidebarVBox" type="VBoxContainer" parent="Shell/Sidebar/SidebarMargin" unique_id=1583966239]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Brand" type="HBoxContainer" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=297795637]
+[node name="Brand" type="HBoxContainer" parent="Shell/Sidebar/SidebarMargin/SidebarVBox" unique_id=297795637]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Logo" type="TextureRect" parent="Sidebar/SidebarMargin/SidebarVBox/Brand" unique_id=1507975921]
+[node name="Logo" type="TextureRect" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/Brand" unique_id=1507975921]
+unique_name_in_owner = true
 texture_filter = 3
-custom_minimum_size = Vector2(50, 50)
+custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 texture = ExtResource("2_logo")
 expand_mode = 3
 stretch_mode = 5
 
-[node name="Text" type="VBoxContainer" parent="Sidebar/SidebarMargin/SidebarVBox/Brand" unique_id=1893962495]
+[node name="Text" type="VBoxContainer" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/Brand" unique_id=1893962495]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
 
-[node name="BrandTitle" type="HBoxContainer" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text" unique_id=1853722687]
+[node name="BrandTitle" type="HBoxContainer" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/Brand/Text" unique_id=1853722687]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="BrandP" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle" unique_id=458406549]
+[node name="BrandP" type="Label" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle" unique_id=458406549]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
@@ -578,7 +588,7 @@ theme_override_constants/shadow_outline_size = 4
 theme_override_font_sizes/font_size = 26
 text = "P"
 
-[node name="BrandA" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle" unique_id=481060977]
+[node name="BrandA" type="Label" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle" unique_id=481060977]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
@@ -589,7 +599,7 @@ theme_override_constants/shadow_outline_size = 4
 theme_override_font_sizes/font_size = 26
 text = "A"
 
-[node name="BrandR" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle" unique_id=2065472646]
+[node name="BrandR" type="Label" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle" unique_id=2065472646]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
@@ -600,7 +610,7 @@ theme_override_constants/shadow_outline_size = 4
 theme_override_font_sizes/font_size = 26
 text = "R"
 
-[node name="BrandD" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle" unique_id=612002581]
+[node name="BrandD" type="Label" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle" unique_id=612002581]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
@@ -611,7 +621,7 @@ theme_override_constants/shadow_outline_size = 4
 theme_override_font_sizes/font_size = 26
 text = "D"
 
-[node name="BrandE" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle" unique_id=1137116973]
+[node name="BrandE" type="Label" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle" unique_id=1137116973]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
@@ -622,7 +632,7 @@ theme_override_constants/shadow_outline_size = 4
 theme_override_font_sizes/font_size = 26
 text = "E"
 
-[node name="BrandX" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle" unique_id=2091113788]
+[node name="BrandX" type="Label" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/Brand/Text/BrandTitle" unique_id=2091113788]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.96, 1, 1)
@@ -633,17 +643,27 @@ theme_override_constants/shadow_outline_size = 4
 theme_override_font_sizes/font_size = 26
 text = "X"
 
-[node name="BrandCaption" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/Brand/Text" unique_id=1141097461]
+[node name="BrandCaption" type="Label" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/Brand/Text" unique_id=1141097461]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.48, 0.62, 0.76, 1)
 theme_override_font_sizes/font_size = 11
 text = "Desktop Game Hub"
 
-[node name="BrandSpacer" type="Control" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=293170494]
+[node name="BrandSpacer" type="Control" parent="Shell/Sidebar/SidebarMargin/SidebarVBox" unique_id=293170494]
 custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
 
-[node name="LibraryButton" type="Button" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=911956009]
+[node name="HomeButton" type="Button" parent="Shell/Sidebar/SidebarMargin/SidebarVBox"]
+unique_name_in_owner = true
+texture_filter = 3
+layout_mode = 2
+focus_mode = 0
+text = "  Ana Sayfa"
+icon = ExtResource("2_logo")
+alignment = 0
+expand_icon = true
+
+[node name="LibraryButton" type="Button" parent="Shell/Sidebar/SidebarMargin/SidebarVBox" unique_id=911956009]
 unique_name_in_owner = true
 texture_filter = 3
 layout_mode = 2
@@ -660,7 +680,7 @@ icon = ExtResource("8_nav_library")
 alignment = 0
 expand_icon = true
 
-[node name="FriendsButton" type="Button" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=1005134791]
+[node name="FriendsButton" type="Button" parent="Shell/Sidebar/SidebarMargin/SidebarVBox" unique_id=1005134791]
 unique_name_in_owner = true
 texture_filter = 3
 layout_mode = 2
@@ -677,7 +697,7 @@ icon = ExtResource("9_nav_friends")
 alignment = 0
 expand_icon = true
 
-[node name="RoomsButton" type="Button" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=100644153]
+[node name="RoomsButton" type="Button" parent="Shell/Sidebar/SidebarMargin/SidebarVBox" unique_id=100644153]
 unique_name_in_owner = true
 texture_filter = 3
 layout_mode = 2
@@ -694,7 +714,7 @@ icon = ExtResource("10_nav_rooms")
 alignment = 0
 expand_icon = true
 
-[node name="SettingsButton" type="Button" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=656099719]
+[node name="SettingsButton" type="Button" parent="Shell/Sidebar/SidebarMargin/SidebarVBox" unique_id=656099719]
 unique_name_in_owner = true
 texture_filter = 3
 layout_mode = 2
@@ -711,7 +731,7 @@ icon = ExtResource("11_nav_settings")
 alignment = 0
 expand_icon = true
 
-[node name="ExitButton" type="Button" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=2055885732]
+[node name="ExitButton" type="Button" parent="Shell/Sidebar/SidebarMargin/SidebarVBox" unique_id=2055885732]
 unique_name_in_owner = true
 texture_filter = 3
 layout_mode = 2
@@ -729,19 +749,20 @@ icon = ExtResource("12_nav_exit")
 alignment = 0
 expand_icon = true
 
-[node name="SidebarFlex" type="Control" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=1853488818]
+[node name="SidebarFlex" type="Control" parent="Shell/Sidebar/SidebarMargin/SidebarVBox" unique_id=1853488818]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ProfilePanel" type="PanelContainer" parent="Sidebar/SidebarMargin/SidebarVBox" unique_id=1533586574]
+[node name="ProfilePanel" type="PanelContainer" parent="Shell/Sidebar/SidebarMargin/SidebarVBox" unique_id=1533586574]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleProfile")
 
-[node name="ProfileRow" type="HBoxContainer" parent="Sidebar/SidebarMargin/SidebarVBox/ProfilePanel" unique_id=2123648957]
+[node name="ProfileRow" type="HBoxContainer" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/ProfilePanel" unique_id=2123648957]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Avatar" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow" unique_id=1101534547]
+[node name="Avatar" type="Label" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow" unique_id=1101534547]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(42, 42)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
@@ -750,72 +771,74 @@ text = "P"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ProfileText" type="VBoxContainer" parent="Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow" unique_id=721066493]
+[node name="ProfileText" type="VBoxContainer" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow" unique_id=721066493]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="UserName" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/ProfileText" unique_id=1484180681]
+[node name="UserName" type="Label" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/ProfileText" unique_id=1484180681]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.95, 1, 1)
 theme_override_font_sizes/font_size = 16
 text = "Pardus"
 
-[node name="OnlineState" type="Label" parent="Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/ProfileText" unique_id=702025886]
+[node name="OnlineState" type="Label" parent="Shell/Sidebar/SidebarMargin/SidebarVBox/ProfilePanel/ProfileRow/ProfileText" unique_id=702025886]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.38, 0.86, 0.62, 1)
 theme_override_font_sizes/font_size = 12
 text = "●  Yerel mod"
 
-[node name="MainMargin" type="MarginContainer" parent="." unique_id=2122734598]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 270.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="MainMargin" type="MarginContainer" parent="Shell" unique_id=2122734598]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/margin_left = 30
 theme_override_constants/margin_top = 24
 theme_override_constants/margin_right = 30
 theme_override_constants/margin_bottom = 24
 
-[node name="MainSurface" type="Panel" parent="MainMargin" unique_id=1035341628]
+[node name="MainSurface" type="Panel" parent="Shell/MainMargin" unique_id=1035341628]
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleMainSurface")
 
-[node name="MainVBox" type="VBoxContainer" parent="MainMargin" unique_id=869066663]
+[node name="MainVBox" type="VBoxContainer" parent="Shell/MainMargin" unique_id=869066663]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="Header" type="PanelContainer" parent="MainMargin/MainVBox" unique_id=783684047]
+[node name="Header" type="PanelContainer" parent="Shell/MainMargin/MainVBox" unique_id=783684047]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleHeaderPanel")
 
-[node name="HeaderRow" type="HBoxContainer" parent="MainMargin/MainVBox/Header" unique_id=1609810463]
+[node name="HeaderRow" type="HBoxContainer" parent="Shell/MainMargin/MainVBox/Header" unique_id=1609810463]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="HeaderText" type="VBoxContainer" parent="MainMargin/MainVBox/Header/HeaderRow" unique_id=888277628]
+[node name="HeaderText" type="VBoxContainer" parent="Shell/MainMargin/MainVBox/Header/HeaderRow" unique_id=888277628]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 3
 
-[node name="PageTitle" type="Label" parent="MainMargin/MainVBox/Header/HeaderRow/HeaderText" unique_id=787998527]
+[node name="PageTitle" type="Label" parent="Shell/MainMargin/MainVBox/Header/HeaderRow/HeaderText" unique_id=787998527]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 32
 text = "Kütüphane"
 
-[node name="PageSubtitle" type="Label" parent="MainMargin/MainVBox/Header/HeaderRow/HeaderText" unique_id=530326816]
+[node name="PageSubtitle" type="Label" parent="Shell/MainMargin/MainVBox/Header/HeaderRow/HeaderText" unique_id=530326816]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.58, 0.67, 0.77, 1)
 theme_override_font_sizes/font_size = 13
 text = "Tüm oyunlarını tek merkezden yönet."
 
-[node name="LibrarySearch" type="LineEdit" parent="MainMargin/MainVBox/Header/HeaderRow" unique_id=1303464810]
+[node name="LibrarySearch" type="LineEdit" parent="Shell/MainMargin/MainVBox/Header/HeaderRow" unique_id=1303464810]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(330, 44)
 layout_mode = 2
@@ -827,7 +850,7 @@ theme_override_styles/focus = SubResource("StyleSearchFocus")
 placeholder_text = "Oyunlarda ara..."
 clear_button_enabled = true
 
-[node name="SearchIcon" type="TextureRect" parent="MainMargin/MainVBox/Header/HeaderRow/LibrarySearch" unique_id=941435457]
+[node name="SearchIcon" type="TextureRect" parent="Shell/MainMargin/MainVBox/Header/HeaderRow/LibrarySearch" unique_id=941435457]
 modulate = Color(0.72, 0.88, 1, 0.94)
 texture_filter = 3
 layout_mode = 1
@@ -844,30 +867,50 @@ texture = ExtResource("18_search")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="ConnectionPill" type="PanelContainer" parent="MainMargin/MainVBox/Header/HeaderRow" unique_id=1336106454]
+[node name="ConnectionPill" type="PanelContainer" parent="Shell/MainMargin/MainVBox/Header/HeaderRow" unique_id=1336106454]
 custom_minimum_size = Vector2(172, 44)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StylePill")
 
-[node name="ConnectionLabel" type="Label" parent="MainMargin/MainVBox/Header/HeaderRow/ConnectionPill" unique_id=1262917151]
+[node name="ConnectionLabel" type="Label" parent="Shell/MainMargin/MainVBox/Header/HeaderRow/ConnectionPill" unique_id=1262917151]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.48, 0.91, 0.72, 1)
 theme_override_font_sizes/font_size = 13
 text = "●  PARDEX CORE HAZIR"
 
-[node name="LibraryContent" type="VBoxContainer" parent="MainMargin/MainVBox" unique_id=1813944092]
+[node name="WindowChrome" parent="Shell/MainMargin/MainVBox/Header/HeaderRow" instance=ExtResource("31_chrome")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HomeContent" parent="Shell/MainMargin/MainVBox" instance=ExtResource("30_home")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="LibraryContent" type="VBoxContainer" parent="Shell/MainMargin/MainVBox" unique_id=1813944092]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 18
 
-[node name="Hero" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent" unique_id=1358431032]
+[node name="LibraryScroll" type="ScrollContainer" parent="Shell/MainMargin/MainVBox/LibraryContent"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="LibraryBody" type="VBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+
+[node name="Hero" type="PanelContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody" unique_id=1358431032]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 244)
 clip_contents = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleHero")
 
-[node name="HeroImage" type="TextureRect" parent="MainMargin/MainVBox/LibraryContent/Hero" unique_id=904840859]
+[node name="HeroImage" type="TextureRect" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero" unique_id=904840859]
 material = SubResource("MaterialHeroRounded")
 layout_mode = 2
 mouse_filter = 2
@@ -875,34 +918,34 @@ texture = ExtResource("13_top_banner")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="HeroShade" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/Hero" unique_id=1481190725]
+[node name="HeroShade" type="ColorRect" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero" unique_id=1481190725]
 layout_mode = 2
 mouse_filter = 2
 color = Color(0.005, 0.018, 0.032, 0.24)
 
-[node name="HeroContent" type="MarginContainer" parent="MainMargin/MainVBox/LibraryContent/Hero" unique_id=2140622132]
+[node name="HeroContent" type="MarginContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero" unique_id=2140622132]
 layout_mode = 2
 theme_override_constants/margin_left = 28
 theme_override_constants/margin_top = 22
 theme_override_constants/margin_right = 28
 theme_override_constants/margin_bottom = 22
 
-[node name="HeroRow" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent" unique_id=391817466]
+[node name="HeroRow" type="HBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent" unique_id=391817466]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="HeroText" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow" unique_id=715223022]
+[node name="HeroText" type="VBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow" unique_id=715223022]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="HeroEyebrow" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText" unique_id=1614088281]
+[node name="HeroEyebrow" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroText" unique_id=1614088281]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "PARDEX / GAME HUB"
 
-[node name="HeroTitle" type="RichTextLabel" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText" unique_id=1240548734]
+[node name="HeroTitle" type="RichTextLabel" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroText" unique_id=1240548734]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 mouse_filter = 2
@@ -913,18 +956,18 @@ text = "[b]Oyun dünyalarının [color=#55E7FF]tek kapısı[/color][/b]"
 fit_content = true
 scroll_active = false
 
-[node name="HeroBody" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText" unique_id=1090598853]
+[node name="HeroBody" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroText" unique_id=1090598853]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.77, 0.84, 0.92, 1)
 theme_override_font_sizes/font_size = 14
 text = "Oyunlarını başlat, arkadaşlarına katıl, çevrimiçi odalarını yönet.
 PARDEX ile tüm oyun deneyimin tek bir yerde."
 
-[node name="QuickActions" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText" unique_id=1153843039]
+[node name="QuickActions" type="HBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroText" unique_id=1153843039]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="HeroPlayButton" type="Button" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText/QuickActions" unique_id=1937718524]
+[node name="HeroPlayButton" type="Button" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroText/QuickActions" unique_id=1937718524]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
@@ -936,7 +979,7 @@ text = "OYNA"
 icon = ExtResource("15_hero_play")
 expand_icon = true
 
-[node name="HeroFriendsButton" type="Button" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText/QuickActions" unique_id=54154444]
+[node name="HeroFriendsButton" type="Button" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroText/QuickActions" unique_id=54154444]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
@@ -948,7 +991,7 @@ text = "ARKADAŞLARINLA BULUŞ"
 icon = ExtResource("16_hero_friends")
 expand_icon = true
 
-[node name="HeroRoomsButton" type="Button" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroText/QuickActions" unique_id=445556409]
+[node name="HeroRoomsButton" type="Button" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroText/QuickActions" unique_id=445556409]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
@@ -960,122 +1003,122 @@ text = "ODALAR OLUŞTUR"
 icon = ExtResource("17_hero_rooms")
 expand_icon = true
 
-[node name="HeroRight" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow" unique_id=1774059899]
+[node name="HeroRight" type="VBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow" unique_id=1774059899]
 visible = false
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 theme_override_constants/separation = 7
 alignment = 1
 
-[node name="Mark" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight" unique_id=1717465999]
+[node name="Mark" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight" unique_id=1717465999]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.23, 0.72, 0.91, 0.24)
 theme_override_font_sizes/font_size = 64
 text = "P"
 horizontal_alignment = 1
 
-[node name="Label" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight" unique_id=2090565029]
+[node name="Label" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight" unique_id=2090565029]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.37, 0.65, 0.78, 1)
 theme_override_font_sizes/font_size = 9
 text = "DESKTOP GAME HUB  //  ONLINE"
 horizontal_alignment = 1
 
-[node name="Metrics" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight" unique_id=1024805604]
+[node name="Metrics" type="HBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight" unique_id=1024805604]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="Games" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics" unique_id=1639470318]
+[node name="Games" type="PanelContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight/Metrics" unique_id=1639470318]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleMetric")
 
-[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Games" unique_id=1312144984]
+[node name="VBox" type="VBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight/Metrics/Games" unique_id=1312144984]
 layout_mode = 2
 theme_override_constants/separation = 1
 
-[node name="Value" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Games/VBox" unique_id=671094153]
+[node name="Value" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight/Metrics/Games/VBox" unique_id=671094153]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.93, 1, 1)
 theme_override_font_sizes/font_size = 15
 text = "3"
 horizontal_alignment = 1
 
-[node name="Caption" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Games/VBox" unique_id=1879448834]
+[node name="Caption" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight/Metrics/Games/VBox" unique_id=1879448834]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.53, 0.65, 1)
 theme_override_font_sizes/font_size = 8
 text = "OYUN"
 horizontal_alignment = 1
 
-[node name="Ready" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics" unique_id=1852471641]
+[node name="Ready" type="PanelContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight/Metrics" unique_id=1852471641]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleMetric")
 
-[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Ready" unique_id=1395440988]
+[node name="VBox" type="VBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight/Metrics/Ready" unique_id=1395440988]
 layout_mode = 2
 theme_override_constants/separation = 1
 
-[node name="Value" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Ready/VBox" unique_id=1330970012]
+[node name="Value" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight/Metrics/Ready/VBox" unique_id=1330970012]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.38, 0.9, 0.64, 1)
 theme_override_font_sizes/font_size = 15
 text = "1"
 horizontal_alignment = 1
 
-[node name="Caption" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Ready/VBox" unique_id=299082609]
+[node name="Caption" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight/Metrics/Ready/VBox" unique_id=299082609]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.53, 0.65, 1)
 theme_override_font_sizes/font_size = 8
 text = "ONLINE"
 horizontal_alignment = 1
 
-[node name="Dev" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics" unique_id=969945778]
+[node name="Dev" type="PanelContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight/Metrics" unique_id=969945778]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleMetric")
 
-[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Dev" unique_id=1061214477]
+[node name="VBox" type="VBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight/Metrics/Dev" unique_id=1061214477]
 layout_mode = 2
 theme_override_constants/separation = 1
 
-[node name="Value" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Dev/VBox" unique_id=1782049203]
+[node name="Value" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight/Metrics/Dev/VBox" unique_id=1782049203]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.86, 0.7, 0.38, 1)
 theme_override_font_sizes/font_size = 15
 text = "2"
 horizontal_alignment = 1
 
-[node name="Caption" type="Label" parent="MainMargin/MainVBox/LibraryContent/Hero/HeroContent/HeroRow/HeroRight/Metrics/Dev/VBox" unique_id=993044595]
+[node name="Caption" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/Hero/HeroContent/HeroRow/HeroRight/Metrics/Dev/VBox" unique_id=993044595]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.53, 0.65, 1)
 theme_override_font_sizes/font_size = 8
 text = "GELİŞİM"
 horizontal_alignment = 1
 
-[node name="SectionHeader" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent" unique_id=482314275]
+[node name="SectionHeader" type="PanelContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody" unique_id=482314275]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleSectionBar")
 
-[node name="SectionRow" type="HBoxContainer" parent="MainMargin/MainVBox/LibraryContent/SectionHeader" unique_id=1332322283]
+[node name="SectionRow" type="HBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/SectionHeader" unique_id=1332322283]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Accent" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/SectionHeader/SectionRow" unique_id=624783426]
+[node name="Accent" type="ColorRect" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/SectionHeader/SectionRow" unique_id=624783426]
 custom_minimum_size = Vector2(30, 3)
 layout_mode = 2
 size_flags_vertical = 4
 color = Color(0.28, 0.92, 1, 1)
 
-[node name="SectionTitle" type="Label" parent="MainMargin/MainVBox/LibraryContent/SectionHeader/SectionRow" unique_id=913930626]
+[node name="SectionTitle" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/SectionHeader/SectionRow" unique_id=913930626]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.88, 0.93, 0.98, 1)
 theme_override_font_sizes/font_size = 14
 text = "O Y U N   K Ü T Ü P H A N E S İ"
 
-[node name="GameCount" type="Label" parent="MainMargin/MainVBox/LibraryContent/SectionHeader/SectionRow" unique_id=671243092]
+[node name="GameCount" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/SectionHeader/SectionRow" unique_id=671243092]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.42, 0.52, 0.64, 1)
@@ -1083,34 +1126,35 @@ theme_override_font_sizes/font_size = 11
 text = "3 OYUN"
 horizontal_alignment = 2
 
-[node name="GameGrid" type="GridContainer" parent="MainMargin/MainVBox/LibraryContent" unique_id=942368590]
+[node name="GameGrid" type="GridContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody" unique_id=942368590]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/h_separation = 18
 theme_override_constants/v_separation = 18
 columns = 3
 
-[node name="VexCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=1790321724]
+[node name="VexCard" type="PanelContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid" unique_id=1790321724]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 366)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleCard")
 
-[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard" unique_id=1559008233]
+[node name="VBox" type="VBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/VexCard" unique_id=1559008233]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Art" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox" unique_id=486302366]
+[node name="Art" type="PanelContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/VexCard/VBox" unique_id=486302366]
 custom_minimum_size = Vector2(0, 150)
 clip_contents = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleArtVex")
 
-[node name="ArtContent" type="Control" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox/Art" unique_id=1559673130]
+[node name="ArtContent" type="Control" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/VexCard/VBox/Art" unique_id=1559673130]
 layout_mode = 2
 
-[node name="VexPlaceholder" type="TextureRect" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox/Art/ArtContent" unique_id=191597749]
+[node name="VexPlaceholder" type="TextureRect" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/VexCard/VBox/Art/ArtContent" unique_id=191597749]
 modulate = Color(1, 1, 1, 0.78)
 texture_filter = 3
 layout_mode = 1
@@ -1124,7 +1168,7 @@ texture = ExtResource("19_vex_placeholder")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="TopLine" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox/Art/ArtContent" unique_id=465911586]
+[node name="TopLine" type="ColorRect" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/VexCard/VBox/Art/ArtContent" unique_id=465911586]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -1132,7 +1176,7 @@ offset_bottom = 2.0
 grow_horizontal = 2
 color = Color(0.57, 0.39, 0.95, 0.92)
 
-[node name="VexStatus" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox/Art/ArtContent" unique_id=257181380]
+[node name="VexStatus" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/VexCard/VBox/Art/ArtContent" unique_id=257181380]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 12.0
@@ -1144,19 +1188,19 @@ theme_override_font_sizes/font_size = 10
 theme_override_styles/normal = SubResource("StyleBadge")
 text = "GELİŞTİRİLİYOR"
 
-[node name="Title" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox" unique_id=1809277446]
+[node name="Title" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/VexCard/VBox" unique_id=1809277446]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 20
 text = "VEX"
 
-[node name="Genre" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox" unique_id=1305026954]
+[node name="Genre" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/VexCard/VBox" unique_id=1305026954]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
 theme_override_font_sizes/font_size = 12
 text = "AKSİYON   •   GODOT 4.7"
 
-[node name="VexPath" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox" unique_id=492251823]
+[node name="VexPath" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/VexCard/VBox" unique_id=492251823]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.54, 0.64, 1)
@@ -1164,11 +1208,11 @@ theme_override_font_sizes/font_size = 12
 text = "Windows sürümü oyun tamamlandığında hazırlanacak."
 text_overrun_behavior = 3
 
-[node name="Flex" type="Control" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox" unique_id=434451724]
+[node name="Flex" type="Control" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/VexCard/VBox" unique_id=434451724]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="VexPlayButton" type="Button" parent="MainMargin/MainVBox/LibraryContent/GameGrid/VexCard/VBox" unique_id=1934389754]
+[node name="VexPlayButton" type="Button" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/VexCard/VBox" unique_id=1934389754]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
@@ -1181,27 +1225,27 @@ theme_override_styles/hover = SubResource("StyleButtonHover")
 theme_override_styles/disabled = SubResource("StyleButtonDisabled")
 text = "BAĞLA"
 
-[node name="KorsanCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=984548125]
+[node name="KorsanCard" type="PanelContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid" unique_id=984548125]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 366)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleCardOnline")
 
-[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard" unique_id=348700139]
+[node name="VBox" type="VBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/KorsanCard" unique_id=348700139]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Art" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox" unique_id=234829534]
+[node name="Art" type="PanelContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/KorsanCard/VBox" unique_id=234829534]
 custom_minimum_size = Vector2(0, 150)
 clip_contents = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleArtKorsan")
 
-[node name="ArtContent" type="Control" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox/Art" unique_id=1685368440]
+[node name="ArtContent" type="Control" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/KorsanCard/VBox/Art" unique_id=1685368440]
 layout_mode = 2
 
-[node name="KorsanPlaceholder" type="TextureRect" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox/Art/ArtContent" unique_id=711849803]
+[node name="KorsanPlaceholder" type="TextureRect" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/KorsanCard/VBox/Art/ArtContent" unique_id=711849803]
 modulate = Color(1, 1, 1, 0.78)
 texture_filter = 3
 layout_mode = 1
@@ -1215,7 +1259,7 @@ texture = ExtResource("20_korsan_placeholder")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="TopLine" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox/Art/ArtContent" unique_id=2065368315]
+[node name="TopLine" type="ColorRect" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/KorsanCard/VBox/Art/ArtContent" unique_id=2065368315]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -1223,7 +1267,7 @@ offset_bottom = 2.0
 grow_horizontal = 2
 color = Color(0.91, 0.62, 0.18, 0.92)
 
-[node name="KorsanStatus" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox/Art/ArtContent" unique_id=946838839]
+[node name="KorsanStatus" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/KorsanCard/VBox/Art/ArtContent" unique_id=946838839]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 12.0
@@ -1235,19 +1279,19 @@ theme_override_font_sizes/font_size = 10
 theme_override_styles/normal = SubResource("StyleBadgeOnline")
 text = "PARDEX ONLINE HAZIR"
 
-[node name="Title" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox" unique_id=2045617748]
+[node name="Title" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/KorsanCard/VBox" unique_id=2045617748]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 20
 text = "Korsanların Hazinesi"
 
-[node name="Genre" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox" unique_id=790923583]
+[node name="Genre" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/KorsanCard/VBox" unique_id=790923583]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
 theme_override_font_sizes/font_size = 12
 text = "MASA OYUNU   •   1–4 OYUNCU"
 
-[node name="KorsanPath" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox" unique_id=486971852]
+[node name="KorsanPath" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/KorsanCard/VBox" unique_id=486971852]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.54, 0.64, 1)
@@ -1255,11 +1299,11 @@ theme_override_font_sizes/font_size = 12
 text = "Online oda ve dedicated oyun sunucusu hazır."
 text_overrun_behavior = 3
 
-[node name="Flex" type="Control" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox" unique_id=126981942]
+[node name="Flex" type="Control" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/KorsanCard/VBox" unique_id=126981942]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="KorsanPlayButton" type="Button" parent="MainMargin/MainVBox/LibraryContent/GameGrid/KorsanCard/VBox" unique_id=1214730114]
+[node name="KorsanPlayButton" type="Button" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/KorsanCard/VBox" unique_id=1214730114]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
@@ -1271,27 +1315,27 @@ theme_override_styles/pressed = SubResource("StyleGoldButtonHover")
 theme_override_styles/hover = SubResource("StyleGoldButtonHover")
 text = "▶  OYNA"
 
-[node name="FirtinaCard" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid" unique_id=765973551]
+[node name="FirtinaCard" type="PanelContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid" unique_id=765973551]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 366)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleCard")
 
-[node name="VBox" type="VBoxContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard" unique_id=1063823684]
+[node name="VBox" type="VBoxContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/FirtinaCard" unique_id=1063823684]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Art" type="PanelContainer" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox" unique_id=717860700]
+[node name="Art" type="PanelContainer" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/FirtinaCard/VBox" unique_id=717860700]
 custom_minimum_size = Vector2(0, 150)
 clip_contents = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleArtFirtina")
 
-[node name="ArtContent" type="Control" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox/Art" unique_id=702910863]
+[node name="ArtContent" type="Control" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/FirtinaCard/VBox/Art" unique_id=702910863]
 layout_mode = 2
 
-[node name="FirtinaPlaceholder" type="TextureRect" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox/Art/ArtContent" unique_id=1093512951]
+[node name="FirtinaPlaceholder" type="TextureRect" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/FirtinaCard/VBox/Art/ArtContent" unique_id=1093512951]
 modulate = Color(1, 1, 1, 0.78)
 texture_filter = 3
 layout_mode = 1
@@ -1305,7 +1349,7 @@ texture = ExtResource("21_firtina_placeholder")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="TopLine" type="ColorRect" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox/Art/ArtContent" unique_id=1310270351]
+[node name="TopLine" type="ColorRect" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/FirtinaCard/VBox/Art/ArtContent" unique_id=1310270351]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
@@ -1313,7 +1357,7 @@ offset_bottom = 2.0
 grow_horizontal = 2
 color = Color(0.24, 0.72, 0.82, 0.92)
 
-[node name="FirtinaStatus" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox/Art/ArtContent" unique_id=229557784]
+[node name="FirtinaStatus" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/FirtinaCard/VBox/Art/ArtContent" unique_id=229557784]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 12.0
@@ -1325,19 +1369,19 @@ theme_override_font_sizes/font_size = 10
 theme_override_styles/normal = SubResource("StyleBadge")
 text = "GELİŞTİRİLİYOR"
 
-[node name="Title" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox" unique_id=2007660749]
+[node name="Title" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/FirtinaCard/VBox" unique_id=2007660749]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 20
 text = "Fırtına Vadisi"
 
-[node name="Genre" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox" unique_id=625385527]
+[node name="Genre" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/FirtinaCard/VBox" unique_id=625385527]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.56, 0.65, 1)
 theme_override_font_sizes/font_size = 12
 text = "MACERA   •   GODOT 4.7"
 
-[node name="FirtinaPath" type="Label" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox" unique_id=1659347159]
+[node name="FirtinaPath" type="Label" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/FirtinaCard/VBox" unique_id=1659347159]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.54, 0.64, 1)
@@ -1345,11 +1389,11 @@ theme_override_font_sizes/font_size = 12
 text = "Windows sürümü oyun tamamlandığında hazırlanacak."
 text_overrun_behavior = 3
 
-[node name="Flex" type="Control" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox" unique_id=1245361863]
+[node name="Flex" type="Control" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/FirtinaCard/VBox" unique_id=1245361863]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="FirtinaPlayButton" type="Button" parent="MainMargin/MainVBox/LibraryContent/GameGrid/FirtinaCard/VBox" unique_id=2064887589]
+[node name="FirtinaPlayButton" type="Button" parent="Shell/MainMargin/MainVBox/LibraryContent/LibraryScroll/LibraryBody/GameGrid/FirtinaCard/VBox" unique_id=2064887589]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
@@ -1386,3 +1430,13 @@ theme_override_font_sizes/font_size = 14
 text = "Hazır"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="WindowFrame" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("32_frame")

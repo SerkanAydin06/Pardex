@@ -84,9 +84,12 @@ func _run() -> void:
 	await process_frame
 
 	var required_paths := [
-		"Sidebar/SidebarMargin/SidebarVBox/FriendsButton",
-		"Sidebar/SidebarMargin/SidebarVBox/RoomsButton",
-		"MainMargin/MainVBox/Header/HeaderRow/ConnectionPill/ConnectionLabel",
+		"Shell/Sidebar/SidebarMargin/SidebarVBox/HomeButton",
+		"Shell/Sidebar/SidebarMargin/SidebarVBox/FriendsButton",
+		"Shell/Sidebar/SidebarMargin/SidebarVBox/RoomsButton",
+		"Shell/MainMargin/MainVBox/Header/HeaderRow/ConnectionPill/ConnectionLabel",
+		"Shell/MainMargin/MainVBox/Header/HeaderRow/WindowChrome",
+		"Shell/MainMargin/MainVBox/HomeContent",
 	]
 	for node_path in required_paths:
 		if main_scene.get_node_or_null(node_path) == null:
