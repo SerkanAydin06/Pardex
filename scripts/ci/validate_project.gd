@@ -14,6 +14,7 @@ const RESOURCES := [
     "res://scripts/online/pardex_presence_ui.gd",
     "res://scripts/ui/pardex_home_ui.gd",
     "res://scripts/ui/pardex_adaptive_window.gd",
+    "res://scripts/ui/pardex_library_responsive.gd",
     "res://scripts/ci/boot_smoke.gd",
 ]
 
