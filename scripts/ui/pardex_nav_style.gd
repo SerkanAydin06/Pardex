@@ -20,8 +20,8 @@ func _bind() -> void:
 	if sidebar == null:
 		_retry()
 		return
-	for name in ["HomeButton", "LibraryButton", "FriendsButton", "RoomsButton", "SettingsButton"]:
-		var button := sidebar.get_node_or_null(name) as Button
+	for button_name in ["HomeButton", "LibraryButton", "FriendsButton", "RoomsButton", "SettingsButton"]:
+		var button := sidebar.get_node_or_null(button_name) as Button
 		if button == null:
 			_retry()
 			return
