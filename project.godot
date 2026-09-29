@@ -3,8 +3,8 @@
 ; since the parameters that go here are not all obvious.
 ;
 ; Format:
-;   [section] ; section goes between []
-;   param=value ; assign values to parameter
+;   [section] ; section between []
+;   param=value
 
 config_version=5
 
@@ -25,8 +25,10 @@ PardexGameLauncher="*res://scripts/online/pardex_game_launcher.gd"
 PardexNotifications="*res://scripts/online/pardex_notifications.gd"
 PardexPresenceUI="*res://scripts/online/pardex_presence_ui.gd"
 PardexHomeUI="*res://scripts/ui/pardex_home_ui.gd"
+PardexNavStyle="*res://scripts/ui/pardex_nav_style.gd"
 PardexBrandUI="*res://scripts/ui/pardex_brand_ui.gd"
 PardexAdaptiveWindow="*res://scripts/ui/pardex_adaptive_window.gd"
+PardexWindowChrome="*res://scripts/ui/pardex_window_chrome.gd"
 PardexLibraryResponsive="*res://scripts/ui/pardex_library_responsive.gd"
 PardexSecondaryScroll="*res://scripts/ui/pardex_secondary_scroll.gd"
 
@@ -34,7 +36,7 @@ PardexSecondaryScroll="*res://scripts/ui/pardex_secondary_scroll.gd"
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/size/mode=3
+window/size/mode=0
 window/size/window_width_override=1440
 window/size/window_height_override=900
 window/stretch/mode="canvas_items"
