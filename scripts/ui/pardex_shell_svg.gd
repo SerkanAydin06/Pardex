@@ -4,7 +4,7 @@ extends PanelContainer
 # generated icon textures during _ready(). Attached to BrandHeader so it is
 # part of the scene and runs after the main shell has finished building.
 
-const BRAND := preload("res://assets/ui/brand_pardex_symbol_premium.png")
+const BRAND := preload("res://assets/ui/brand_pardex_symbol.png")
 const STORE := preload("res://assets/ui/svg/icon_store.svg")
 const LIBRARY := preload("res://assets/ui/svg/icon_library.svg")
 const FRIENDS := preload("res://assets/ui/svg/icon_friends.svg")
