@@ -1,9 +1,13 @@
 extends VBoxContainer
 
-# Arkadaşlar / Sohbet: friend list with tabs, a conversation panel and the
-# game party / voice cards. Friends, requests, presence, rooms and invites are
-# live PARDEX Online data. Messaging and voice have no server support yet, so
-# those panels say so instead of showing made-up conversations.
+# Arkadaşlar: hero, online friends, friends in game, conversation panel, the
+# party card (PARDEX Online rooms), pending requests and suggestions.
+#
+# The party card is the whole room flow — create, join by code, share the
+# code, invite friends, ready up, start the game and leave — so PARDEX needs
+# no separate "Odalar" tab. Friends, presence, requests, invites and rooms are
+# live data; messaging, voice and friend suggestions have no server support
+# yet and say so.
 
 signal navigate(page: String)
 signal toast(message: String)
@@ -11,63 +15,59 @@ signal toast(message: String)
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 
-const TABS := [["all", "Tümü"], ["online", "Çevrimiçi"], ["in_game", "Oyunlarda"], ["pending", "Bekleyenler"]]
-
-var _tab := "all"
-var _tab_buttons: Dictionary = {}
-var _filter := ""
+var _show_all := false
 var _selected_id := ""
 var _columns: HBoxContainer
-var _list_panel: Control
-var _list: VBoxContainer
+var _left: VBoxContainer
+var _online_title: Label
+var _online_list: VBoxContainer
+var _playing_title: Label
+var _playing_row: HBoxContainer
 var _chat_panel: Control
 var _chat_header: HBoxContainer
 var _chat_body: VBoxContainer
-var _right_column: Control
-var _party_card: VBoxContainer
+var _right: VBoxContainer
+var _party: VBoxContainer
+var _requests_title: Label
+var _requests_list: VBoxContainer
+var _hero_bullets: Control
 var _friend_menu: PopupMenu
 var _menu_account_id := ""
 var _add_dialog: AcceptDialog
 var _add_results: VBoxContainer
 var _add_hint: Label
 var _last_search := ""
+var _code_dialog: ConfirmationDialog
+var _code_edit: LineEdit
+var _invite_picker: PopupMenu
 var _invite_dialog: ConfirmationDialog
 var _active_invite_id := ""
 
 
 func _ready() -> void:
-	add_theme_constant_override("separation", 12)
+	add_theme_constant_override("separation", 0)
+	var body := UI.vbox(16)
+	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	add_child(UI.scroll_page(body))
+	body.add_child(_build_hero())
 
-	var header := UI.hbox(12)
-	add_child(header)
-	var titles := UI.vbox(2)
-	UI.expand(titles)
-	titles.add_child(UI.label("Arkadaşlar  /  Sohbet", 26, UI.TEXT, true))
-	titles.add_child(UI.label("Oyunlar daha güzel, birlikte oynayınca.", 13, UI.TEXT_2))
-	header.add_child(titles)
-	var add_button := UI.button("+  Arkadaş Ekle", "primary", 13, 38)
-	add_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	add_button.pressed.connect(_open_add_dialog)
-	header.add_child(add_button)
-
-	var tabs := UI.hbox(4)
-	add_child(tabs)
-	for entry in TABS:
-		var tab_button := _tab_button(str(entry[1]))
-		tab_button.pressed.connect(_select_tab.bind(str(entry[0])))
-		tabs.add_child(tab_button)
-		_tab_buttons[entry[0]] = tab_button
-
-	_columns = UI.hbox(12)
+	_columns = UI.hbox(16)
 	_columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	add_child(_columns)
-	_columns.add_child(_build_list_panel())
-	_columns.add_child(_build_chat_panel())
-	_columns.add_child(_build_right_column())
+	_columns.custom_minimum_size.y = 560
+	body.add_child(_columns)
+	_columns.add_child(_build_left())
+	_columns.add_child(_build_chat())
+	_columns.add_child(_build_right())
 
 	_build_friend_menu()
 	_build_add_dialog()
+	_build_code_dialog()
 	_build_invite_dialog()
+	_invite_picker = PopupMenu.new()
+	add_child(_invite_picker)
+	_invite_picker.index_pressed.connect(func(index: int):
+		PardexOnline.send_room_invite(str(_invite_picker.get_item_metadata(index)))
+	)
 
 	PardexOnline.social_state_changed.connect(func(_state): _render())
 	PardexOnline.connection_state_changed.connect(_on_connection_state_changed)
@@ -83,14 +83,15 @@ func _ready() -> void:
 
 
 func apply_layout(content_width: float) -> void:
-	_right_column.visible = content_width >= 900.0
-	_chat_panel.visible = content_width >= 640.0
-	_list_panel.size_flags_horizontal = Control.SIZE_FILL if _chat_panel.visible else Control.SIZE_EXPAND_FILL
-	_list_panel.custom_minimum_size.x = clampf(content_width * 0.27, 230.0, 300.0) if _chat_panel.visible else 0.0
-	_right_column.custom_minimum_size.x = clampf(content_width * 0.24, 220.0, 280.0)
+	_right.visible = content_width >= 980.0
+	_chat_panel.visible = content_width >= 700.0
+	_hero_bullets.visible = content_width >= 960.0
+	_left.size_flags_horizontal = Control.SIZE_FILL if _chat_panel.visible else Control.SIZE_EXPAND_FILL
+	_left.custom_minimum_size.x = clampf(content_width * 0.33, 300.0, 470.0) if _chat_panel.visible else 0.0
+	_right.custom_minimum_size.x = clampf(content_width * 0.3, 320.0, 430.0)
 
 
-# ---------------------------------------------------------------- data
+# ------------------------------------------------------------------ data
 
 func _friends() -> Array:
 	var value = PardexOnline.social_state.get("friends", [])
@@ -109,11 +110,11 @@ func _presence(profile: Dictionary) -> String:
 func _activity(profile: Dictionary) -> String:
 	var presence := _presence(profile)
 	var game_name := str(profile.get("game_name", ""))
-	if presence == "in_game" and not game_name.is_empty():
-		return game_name + " oynuyor"
-	if bool(profile.get("in_room", false)) and not game_name.is_empty():
-		return "%s odasında  %d/%d" % [game_name, int(profile.get("room_member_count", 0)), int(profile.get("room_max_players", 0))]
-	return UI.presence_label(presence)
+	if not game_name.is_empty() and (presence == "in_game" or bool(profile.get("in_room", false))):
+		return game_name
+	if presence == "offline":
+		return "Çevrimdışı"
+	return "Ana Menüde"
 
 
 func _find_friend(account_id: String) -> Dictionary:
@@ -123,238 +124,264 @@ func _find_friend(account_id: String) -> Dictionary:
 	return {}
 
 
-# ---------------------------------------------------------------- tabs + list
-
-func _tab_button(text: String) -> Button:
-	var item := Button.new()
-	item.text = text
-	item.toggle_mode = true
-	item.focus_mode = Control.FOCUS_NONE
-	item.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	item.custom_minimum_size.y = 34
-	item.add_theme_font_size_override("font_size", 13)
-	var normal := UI.box(Color.TRANSPARENT, 0)
-	normal.content_margin_left = 14
-	normal.content_margin_right = 14
-	var active := normal.duplicate() as StyleBoxFlat
-	active.border_color = UI.ACCENT
-	active.border_width_bottom = 2
-	active.bg_color = Color(UI.ACCENT, 0.08)
-	for state in ["normal", "hover"]:
-		item.add_theme_stylebox_override(state, normal)
-	for state in ["pressed", "hover_pressed"]:
-		item.add_theme_stylebox_override(state, active)
-	item.add_theme_color_override("font_color", UI.TEXT_2)
-	item.add_theme_color_override("font_hover_color", UI.TEXT)
-	item.add_theme_color_override("font_pressed_color", UI.ACCENT)
-	item.add_theme_color_override("font_hover_pressed_color", UI.ACCENT)
-	return item
+func _room() -> Dictionary:
+	return PardexOnline.current_room
 
 
-func _select_tab(tab: String) -> void:
-	_tab = tab
-	_render()
+func _room_members() -> Array:
+	var members = _room().get("members", [])
+	return members if typeof(members) == TYPE_ARRAY else []
 
 
-func _build_list_panel() -> Control:
-	_list_panel = UI.panel(10)
-	_list_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var column := UI.vbox(8)
-	_list_panel.add_child(column)
-	var search := UI.search_field("Arkadaş listesinde ara...", 34)
-	search.text_changed.connect(func(value: String):
-		_filter = value.strip_edges().to_lower()
-		_render_list()
+func _friend_in_my_room(account_id: String) -> bool:
+	for member in _room_members():
+		if typeof(member) == TYPE_DICTIONARY and str(member.get("account_id", "")) == account_id:
+			return true
+	return false
+
+
+# ------------------------------------------------------------------ hero
+
+func _build_hero() -> Control:
+	var frame := UI.image(Catalog.texture("res://assets/ui/home_hero_banner.png"), Vector2(0, 250), 16)
+	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
+	frame.add_child(UI.shade(0.95, true))
+	var row := UI.hbox(20)
+	frame.add_child(UI.margin(row, 30, 24, 20, 22))
+	var text := UI.vbox(10)
+	UI.expand(text)
+	row.add_child(text)
+	var tag := UI.panel(0, UI.box(Color(UI.BG, 0.6), 8, UI.BORDER_HI, 1, 8))
+	tag.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	tag.add_child(UI.label("ARKADAŞLAR", 13, UI.ACCENT, true))
+	text.add_child(tag)
+	text.add_child(UI.label("Arkadaşların", 46, UI.TEXT, true))
+	text.add_child(UI.label("Oyunlar daha eğlenceli, birlikte daha güçlü.", 17, UI.TEXT_2))
+	text.add_child(UI.vspacer())
+	var actions := UI.hbox(14)
+	text.add_child(actions)
+	var add := UI.button("Arkadaş Ekle", "primary", 16, 52, "user_plus")
+	add.custom_minimum_size.x = 220
+	add.pressed.connect(_open_add_dialog)
+	actions.add_child(add)
+	var party := UI.button("Parti Kur", "ghost", 16, 52, "friends")
+	party.custom_minimum_size.x = 200
+	party.pressed.connect(_create_party)
+	actions.add_child(party)
+
+	var bullets := UI.panel(0, UI.box(Color(UI.BG, 0.72), 12, UI.BORDER_HI, 1, 18))
+	bullets.custom_minimum_size.x = 330
+	var list := UI.vbox(16)
+	list.alignment = BoxContainer.ALIGNMENT_CENTER
+	bullets.add_child(list)
+	for bullet in [
+		["friends", "Birlikte Oyna", "Arkadaşlarını davet et, parti kur."],
+		["headphones", "Sesli Sohbet", "Oyun içi sesli sohbet yakında."],
+		["user_plus", "Yeni Arkadaşlar Keşfet", "PARDEX kullanıcılarını adıyla bul."],
+	]:
+		var line := UI.hbox(14)
+		line.add_child(UI.icon(str(bullet[0]), 28, UI.ACCENT))
+		var copy := UI.vbox(2)
+		copy.add_child(UI.label(str(bullet[1]), 15, UI.TEXT, true))
+		copy.add_child(UI.label(str(bullet[2]), 13, UI.TEXT_2))
+		line.add_child(copy)
+		list.add_child(line)
+	_hero_bullets = bullets
+	row.add_child(bullets)
+	return frame
+
+
+# ------------------------------------------------------------------ left column
+
+func _build_left() -> Control:
+	_left = UI.vbox(16)
+	_left.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var online := UI.panel(14)
+	online.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var column := UI.vbox(10)
+	online.add_child(column)
+	var header := UI.section_header("Çevrimiçi", "Tümünü Gör", 18, "users_group", UI.GREEN)
+	_online_title = header.get_node("Title") as Label
+	var toggle := header.get_node("Link") as Button
+	toggle.pressed.connect(func():
+		_show_all = not _show_all
+		toggle.text = ("Çevrimiçileri Göster" if _show_all else "Tümünü Gör") + "  "
+		_render_online()
 	)
-	column.add_child(search)
+	column.add_child(header)
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_online_list = UI.vbox(6)
+	_online_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_online_list)
 	column.add_child(scroll)
-	_list = UI.vbox(2)
-	_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(_list)
-	return _list_panel
+	_left.add_child(online)
+
+	var playing := UI.panel(14)
+	var playing_column := UI.vbox(10)
+	playing.add_child(playing_column)
+	var playing_header := UI.section_header("Oyun Oynayanlar", "", 18, "gamepad", UI.GREEN)
+	_playing_title = playing_header.get_node("Title") as Label
+	playing_column.add_child(playing_header)
+	_playing_row = UI.hbox(14)
+	playing_column.add_child(_playing_row)
+	_left.add_child(playing)
+	return _left
 
 
 func _render() -> void:
 	var friends := _friends()
-	var counts := {"all": friends.size(), "online": 0, "in_game": 0,
-		"pending": _requests("incoming_requests").size() + _requests("outgoing_requests").size()}
-	for profile in friends:
-		if typeof(profile) != TYPE_DICTIONARY:
-			continue
-		var presence := _presence(profile)
-		if presence != "offline":
-			counts["online"] += 1
-		if presence == "in_game":
-			counts["in_game"] += 1
-	for entry in TABS:
-		var tab_button := _tab_buttons[entry[0]] as Button
-		tab_button.text = "%s   %d" % [entry[1], counts[entry[0]]]
-		tab_button.set_pressed_no_signal(entry[0] == _tab)
 	if _selected_id.is_empty() or _find_friend(_selected_id).is_empty():
 		_selected_id = ""
 		for profile in friends:
-			if typeof(profile) == TYPE_DICTIONARY:
+			if typeof(profile) == TYPE_DICTIONARY and _presence(profile) != "offline":
 				_selected_id = str(profile.get("account_id", ""))
 				break
-	_render_list()
+		if _selected_id.is_empty() and not friends.is_empty() and typeof(friends[0]) == TYPE_DICTIONARY:
+			_selected_id = str(friends[0].get("account_id", ""))
+	_render_online()
+	_render_playing()
 	_render_chat()
 	_render_party()
+	_render_requests()
 
 
-func _render_list() -> void:
-	UI.clear(_list)
-	if not PardexOnline.is_online() and _friends().is_empty():
-		_list.add_child(UI.empty_state("⚡", "PARDEX Online bağlantısı bekleniyor", "Arkadaş listen bağlantı kurulunca yüklenir."))
+func _render_online() -> void:
+	UI.clear(_online_list)
+	var friends := _friends()
+	var shown := friends.filter(func(p): return typeof(p) == TYPE_DICTIONARY and (_show_all or _presence(p) != "offline"))
+	var online_count := friends.filter(func(p): return typeof(p) == TYPE_DICTIONARY and _presence(p) != "offline").size()
+	_online_title.text = ("Tüm Arkadaşlar (%d)" % friends.size()) if _show_all else ("Çevrimiçi (%d)" % online_count)
+	if friends.is_empty():
+		var message := "PARDEX Online bağlantısı bekleniyor" if not PardexOnline.is_online() else "Henüz arkadaşın yok"
+		_online_list.add_child(UI.empty_state("friends", message, "‘Arkadaş Ekle’ ile PARDEX kullanıcılarını bul.", true))
 		return
-	if _tab == "pending":
-		_render_pending()
+	if shown.is_empty():
+		_online_list.add_child(UI.empty_state("friends", "Şu an çevrimiçi arkadaşın yok", "", true))
 		return
-	var shown := 0
-	for profile in _friends():
-		if typeof(profile) != TYPE_DICTIONARY:
-			continue
-		var presence := _presence(profile)
-		if _tab == "online" and presence == "offline":
-			continue
-		if _tab == "in_game" and presence != "in_game":
-			continue
-		if not _filter.is_empty() and not (_filter in str(profile.get("display_name", "")).to_lower()):
-			continue
-		_list.add_child(_friend_row(profile))
-		shown += 1
-	if shown == 0:
-		var message := "Henüz arkadaşın yok" if _friends().is_empty() else "Bu listede kimse yok"
-		_list.add_child(UI.empty_state("◎", message, "‘Arkadaş Ekle’ ile PARDEX kullanıcılarını bul." if _friends().is_empty() else ""))
+	for profile in shown:
+		_online_list.add_child(_friend_row(profile))
 
 
 func _friend_row(profile: Dictionary) -> Control:
 	var account_id := str(profile.get("account_id", ""))
 	var name := str(profile.get("display_name", "Pardus"))
+	var presence := _presence(profile)
 	var selected := account_id == _selected_id
-	var row := Button.new()
-	row.focus_mode = Control.FOCUS_NONE
-	row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	row.custom_minimum_size.y = 50
-	var normal := UI.box(Color(UI.ACCENT, 0.12) if selected else Color.TRANSPARENT, 8)
-	var hover := UI.box(Color(UI.ACCENT, 0.16) if selected else Color(1, 1, 1, 0.04), 8)
-	row.add_theme_stylebox_override("normal", normal)
-	row.add_theme_stylebox_override("hover", hover)
-	row.add_theme_stylebox_override("pressed", hover)
-	row.pressed.connect(func():
-		_selected_id = account_id
-		_render_list()
-		_render_chat()
+	var holder := UI.panel(0, UI.box(Color(UI.ACCENT, 0.1) if selected else Color(UI.SURFACE_2, 0.55), 10, Color(UI.ACCENT, 0.5) if selected else UI.BORDER, 1, 8))
+	holder.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	holder.gui_input.connect(func(event: InputEvent):
+		var mouse := event as InputEventMouseButton
+		if mouse != null and mouse.pressed and mouse.button_index == MOUSE_BUTTON_LEFT:
+			_selected_id = account_id
+			_render_online()
+			_render_chat()
 	)
-	var line := UI.hbox(10)
-	line.set_anchors_preset(Control.PRESET_FULL_RECT)
-	line.offset_left = 8
-	line.offset_right = -4
-	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(line)
-	var avatar := UI.avatar(name, 36, _presence(profile))
-	avatar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	line.add_child(avatar)
-	var text := UI.vbox(0)
+	var row := UI.hbox(10)
+	holder.add_child(row)
+	row.add_child(UI.avatar(name, 42, presence))
+	var text := UI.vbox(1)
 	text.alignment = BoxContainer.ALIGNMENT_CENTER
-	UI.expand(text)
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	text.add_child(UI.fit(UI.label(name, 13, UI.TEXT, true)))
-	text.add_child(UI.fit(UI.label(_activity(profile), 11, UI.presence_color(_presence(profile)) if _presence(profile) == "in_game" else UI.TEXT_3)))
-	line.add_child(text)
-	var more := UI.icon_button("⋮", "Seçenekler", 28)
-	more.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	more.pressed.connect(func(): _open_friend_menu(profile, more))
-	line.add_child(more)
-	return row
-
-
-func _render_pending() -> void:
-	var incoming := _requests("incoming_requests")
-	var outgoing := _requests("outgoing_requests")
-	if incoming.is_empty() and outgoing.is_empty():
-		_list.add_child(UI.empty_state("✉", "Bekleyen istek yok"))
-		return
-	for profile in incoming:
-		if typeof(profile) == TYPE_DICTIONARY:
-			var account_id := str(profile.get("account_id", ""))
-			_list.add_child(_request_row(profile, "Sana istek gönderdi", [
-				["Kabul", "primary", func(): PardexOnline.accept_friend_request(account_id)],
-				["Reddet", "ghost", func(): PardexOnline.decline_friend_request(account_id)],
-			]))
-	for profile in outgoing:
-		if typeof(profile) == TYPE_DICTIONARY:
-			var account_id := str(profile.get("account_id", ""))
-			_list.add_child(_request_row(profile, "İstek gönderildi", [
-				["İptal", "ghost", func(): PardexOnline.cancel_friend_request(account_id)],
-			]))
-
-
-func _request_row(profile: Dictionary, note: String, actions: Array) -> Control:
-	var name := str(profile.get("display_name", "Pardus"))
-	var holder := UI.panel(0, UI.box(Color.TRANSPARENT, 8, Color.TRANSPARENT, 0, 6))
-	var column := UI.vbox(6)
-	holder.add_child(column)
-	var line := UI.hbox(10)
-	column.add_child(line)
-	line.add_child(UI.avatar(name, 34, _presence(profile)))
-	var text := UI.vbox(0)
 	UI.expand(text)
-	text.add_child(UI.label(name, 13, UI.TEXT, true))
-	text.add_child(UI.label(note, 11, UI.TEXT_3))
-	line.add_child(text)
-	var buttons := UI.hbox(6)
-	column.add_child(buttons)
-	for action in actions:
-		var item := UI.button(str(action[0]), str(action[1]), 11, 28)
-		UI.expand(item)
-		item.pressed.connect(action[2])
-		buttons.add_child(item)
+	var name_row := UI.hbox(8)
+	name_row.add_child(UI.label(name, 14, UI.TEXT, true))
+	var dot := UI.label("●", 11, UI.presence_color(presence))
+	name_row.add_child(dot)
+	name_row.add_child(UI.expand(UI.fit(UI.label(UI.presence_label(presence), 12, UI.presence_color(presence)))))
+	text.add_child(name_row)
+	text.add_child(UI.fit(UI.label(_activity(profile), 12, UI.TEXT_2)))
+	row.add_child(text)
+	var action := _row_action(profile)
+	if action != null:
+		row.add_child(action)
+	var more := UI.icon_button("dots", "Seçenekler", 32)
+	more.pressed.connect(func(): _open_friend_menu(profile, more))
+	row.add_child(more)
 	return holder
 
 
-# ---------------------------------------------------------------- chat
+# The one room action that fits this friend right now.
+func _row_action(profile: Dictionary) -> Button:
+	var account_id := str(profile.get("account_id", ""))
+	var presence := _presence(profile)
+	if bool(profile.get("room_joinable", false)) and not _friend_in_my_room(account_id):
+		var join := UI.button("Katıl", "ghost", 12, 34, "gamepad")
+		join.add_theme_stylebox_override("normal", UI.box(Color(UI.ACCENT_DARK, 0.55), 9, UI.ACCENT, 1))
+		join.custom_minimum_size.x = 92
+		join.pressed.connect(func(): PardexOnline.join_friend_room(account_id))
+		return join
+	if presence != "offline" and not _room().is_empty() and not _friend_in_my_room(account_id) and not bool(_room().get("launching", false)):
+		var invite := UI.button("Davet Et", "ghost", 12, 34, "user_plus")
+		invite.custom_minimum_size.x = 104
+		invite.pressed.connect(func(): PardexOnline.send_room_invite(account_id))
+		return invite
+	if presence != "offline":
+		var message := UI.button("Mesaj Gönder", "ghost", 12, 34)
+		message.pressed.connect(func():
+			_selected_id = account_id
+			_render_online()
+			_render_chat()
+		)
+		return message
+	return null
 
-func _build_chat_panel() -> Control:
+
+func _render_playing() -> void:
+	UI.clear(_playing_row)
+	var playing := _friends().filter(func(p): return typeof(p) == TYPE_DICTIONARY and _presence(p) == "in_game")
+	_playing_title.text = "Oyun Oynayanlar (%d)" % playing.size()
+	if playing.is_empty():
+		_playing_row.add_child(UI.expand(UI.empty_state("gamepad", "Şu an oyunda arkadaşın yok", "", true)))
+		return
+	for profile in playing.slice(0, 5):
+		var cell := UI.vbox(4)
+		cell.custom_minimum_size.x = 84
+		var center := CenterContainer.new()
+		center.add_child(UI.avatar(str(profile.get("display_name", "P")), 56, "in_game", UI.ACCENT))
+		cell.add_child(center)
+		var name_label := UI.fit(UI.label(str(profile.get("display_name", "")), 13, UI.TEXT, true))
+		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		cell.add_child(name_label)
+		var game_label := UI.fit(UI.label(str(profile.get("game_name", "")), 11, UI.TEXT_2))
+		game_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		cell.add_child(game_label)
+		_playing_row.add_child(cell)
+
+
+# ------------------------------------------------------------------ chat
+
+func _build_chat() -> Control:
 	_chat_panel = UI.panel(0)
 	UI.expand(_chat_panel)
 	_chat_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var column := UI.vbox(0)
 	_chat_panel.add_child(column)
-	var header_box := UI.panel(0, UI.box(Color.TRANSPARENT, 0, Color.TRANSPARENT, 0, 12))
-	column.add_child(header_box)
-	_chat_header = UI.hbox(10)
-	header_box.add_child(_chat_header)
-	var divider := ColorRect.new()
-	divider.color = UI.BORDER
-	divider.custom_minimum_size.y = 1
-	column.add_child(divider)
+	_chat_header = UI.hbox(12)
+	column.add_child(UI.margin(_chat_header, 16, 14, 14, 14))
+	column.add_child(UI.divider())
 	_chat_body = UI.vbox(10)
 	_chat_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var body_margin := MarginContainer.new()
+	var body_margin := UI.margin(_chat_body, 18, 16, 18, 16)
 	body_margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	for side in ["left", "right", "top", "bottom"]:
-		body_margin.add_theme_constant_override("margin_" + side, 16)
-	body_margin.add_child(_chat_body)
 	column.add_child(body_margin)
-	var input_margin := MarginContainer.new()
-	for side in ["left", "right", "bottom"]:
-		input_margin.add_theme_constant_override("margin_" + side, 12)
-	column.add_child(input_margin)
-	var input_row := UI.hbox(8)
-	input_margin.add_child(input_row)
+	var input_row := UI.hbox(10)
+	column.add_child(UI.margin(input_row, 14, 0, 14, 14))
+	var attach := UI.icon_button("plus", "Ek gönder (yakında)", 44, UI.TEXT_2, true)
+	attach.disabled = true
+	input_row.add_child(attach)
 	var input := LineEdit.new()
-	input.placeholder_text = "Mesaj yaz...  (mesajlaşma yakında)"
+	input.placeholder_text = "Bir mesaj yaz...  (mesajlaşma yakında)"
 	input.editable = false
-	input.custom_minimum_size.y = 38
+	input.custom_minimum_size.y = 44
 	input.add_theme_font_size_override("font_size", 13)
 	input.add_theme_color_override("font_placeholder_color", UI.TEXT_3)
-	input.add_theme_stylebox_override("read_only", UI.box(UI.SURFACE_2, 9, UI.BORDER, 1, 10))
+	input.add_theme_stylebox_override("read_only", UI.box(Color(UI.SURFACE, 0.9), 10, UI.BORDER, 1, 12))
 	UI.expand(input)
 	input_row.add_child(input)
-	var send := UI.icon_button("➤", "Gönder", 38)
+	var send := UI.icon_button("send", "Gönder (yakında)", 44, UI.TEXT, true)
+	send.add_theme_stylebox_override("disabled", UI.box(Color(UI.ACCENT_DARK, 0.6), 10, UI.ACCENT_DARK, 1))
 	send.disabled = true
 	input_row.add_child(send)
 	return _chat_panel
@@ -365,143 +392,238 @@ func _render_chat() -> void:
 	UI.clear(_chat_body)
 	var profile := _find_friend(_selected_id)
 	if profile.is_empty():
-		_chat_header.add_child(UI.label("Sohbet", 14, UI.TEXT, true))
-		_chat_body.add_child(UI.empty_state("💬", "Bir arkadaş seç", "Arkadaşlarını soldaki listeden seçebilirsin."))
+		_chat_header.add_child(UI.label("Sohbet", 16, UI.TEXT, true))
+		_chat_body.add_child(UI.empty_state("message", "Bir arkadaş seç", "Arkadaşların soldaki listede görünür."))
 		return
 	var name := str(profile.get("display_name", "Pardus"))
-	_chat_header.add_child(UI.avatar(name, 38, _presence(profile)))
-	var titles := UI.vbox(0)
+	var presence := _presence(profile)
+	_chat_header.add_child(UI.avatar(name, 44, presence))
+	var titles := UI.vbox(1)
 	UI.expand(titles)
-	titles.add_child(UI.fit(UI.label(name, 14, UI.TEXT, true)))
-	titles.add_child(UI.fit(UI.label(_activity(profile), 11, UI.TEXT_3)))
+	titles.add_child(UI.fit(UI.label(name, 16, UI.TEXT, true)))
+	var status := UI.hbox(6)
+	status.add_child(UI.label("●", 11, UI.presence_color(presence)))
+	status.add_child(UI.expand(UI.fit(UI.label("%s - %s" % [UI.presence_label(presence), _activity(profile)] if presence == "in_game" else UI.presence_label(presence), 12, UI.TEXT_2))))
+	titles.add_child(status)
 	_chat_header.add_child(titles)
-	for glyph in [["✆", "Sesli arama yakında"], ["▣", "Görüntülü arama yakında"]]:
-		var item := UI.icon_button(str(glyph[0]), str(glyph[1]), 32)
+	for spec in [["phone", "Sesli arama yakında"], ["video", "Görüntülü arama yakında"]]:
+		var item := UI.icon_button(str(spec[0]), str(spec[1]), 40, UI.TEXT_2, true)
 		item.disabled = true
 		_chat_header.add_child(item)
-	var more := UI.icon_button("⋯", "Seçenekler", 32)
+	var more := UI.icon_button("dots", "Seçenekler", 40, UI.TEXT_2, true)
 	more.pressed.connect(func(): _open_friend_menu(profile, more))
 	_chat_header.add_child(more)
 
-	_chat_body.add_child(UI.empty_state("💬", "%s ile sohbet yakında" % name,
-		"PARDEX mesajlaşması henüz hazır değil. Şimdilik birlikte oynamak için odana davet edebilir ya da odasına katılabilirsin."))
-	var action := _room_action(profile)
-	if action != null:
+	_chat_body.add_child(UI.empty_state("message", "%s ile sohbet yakında" % name,
+		"PARDEX mesajlaşması henüz hazır değil. Şimdilik birlikte oynamak için partine davet edebilir ya da onun partisine katılabilirsin."))
+	var action := _row_action(profile)
+	if action != null and action.text != "Mesaj Gönder":
 		var holder := CenterContainer.new()
 		holder.add_child(action)
 		_chat_body.add_child(holder)
+	_chat_body.add_child(UI.vspacer())
 
 
-# The one room action that makes sense for this friend right now.
-func _room_action(profile: Dictionary) -> Button:
-	var account_id := str(profile.get("account_id", ""))
-	var presence := _presence(profile)
-	var room := PardexOnline.current_room
-	if _friend_in_my_room(account_id):
-		var same := UI.button("Aynı odadasınız", "ghost", 12, 34)
-		same.disabled = true
-		return same
-	if bool(profile.get("room_joinable", false)):
-		var join := UI.button("Odasına Katıl", "primary", 12, 34)
-		join.pressed.connect(func(): PardexOnline.join_friend_room(account_id))
-		return join
-	if presence != "offline" and not room.is_empty() and not bool(room.get("launching", false)):
-		var invite := UI.button("Odama Davet Et", "primary", 12, 34)
-		invite.pressed.connect(func(): PardexOnline.send_room_invite(account_id))
-		return invite
-	return null
+# ------------------------------------------------------------------ right column
 
+func _build_right() -> Control:
+	_right = UI.vbox(16)
+	_right.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var party := UI.panel(16)
+	_party = UI.vbox(12)
+	party.add_child(_party)
+	_right.add_child(party)
 
-func _friend_in_my_room(account_id: String) -> bool:
-	var members = PardexOnline.current_room.get("members", [])
-	if typeof(members) != TYPE_ARRAY:
-		return false
-	for member in members:
-		if typeof(member) == TYPE_DICTIONARY and str(member.get("account_id", "")) == account_id:
-			return true
-	return false
+	var requests := UI.panel(16)
+	var requests_column := UI.vbox(10)
+	requests.add_child(requests_column)
+	var header := UI.section_header("Bekleyen Davetler", "", 18)
+	_requests_title = header.get_node("Title") as Label
+	requests_column.add_child(header)
+	_requests_list = UI.vbox(10)
+	requests_column.add_child(_requests_list)
+	_right.add_child(requests)
 
-
-# ---------------------------------------------------------------- party + voice
-
-func _build_right_column() -> Control:
-	var column := UI.vbox(12)
-	column.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_right_column = column
-
-	var party := UI.panel(12)
-	_party_card = UI.vbox(10)
-	party.add_child(_party_card)
-	column.add_child(party)
-
-	var voice := UI.panel(12)
-	var voice_column := UI.vbox(8)
-	voice.add_child(voice_column)
-	voice_column.add_child(UI.label("Aktif Ses Odası", 14, UI.ACCENT, true))
-	var line := UI.hbox(10)
-	voice_column.add_child(line)
-	var icon := UI.panel(0, UI.box(UI.SURFACE_2, 8, UI.BORDER, 1, 6))
-	icon.add_child(UI.label("🎧", 14, UI.TEXT_2))
-	line.add_child(icon)
-	var text := UI.vbox(0)
-	text.add_child(UI.label("Genel Sohbet", 13, UI.TEXT, true))
-	text.add_child(UI.label("Sesli sohbet yakında", 11, UI.TEXT_3))
-	line.add_child(text)
-	var join_voice := UI.button("Sese Katıl", "ghost", 12, 36)
-	join_voice.disabled = true
-	join_voice.tooltip_text = "PARDEX sesli sohbeti henüz hazır değil."
-	voice_column.add_child(join_voice)
-	column.add_child(voice)
-	return column
+	var suggestions := UI.panel(16)
+	suggestions.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var suggestions_column := UI.vbox(10)
+	suggestions.add_child(suggestions_column)
+	suggestions_column.add_child(UI.section_header("Önerilen Arkadaşlar", "", 18))
+	var line := UI.hbox(12)
+	line.add_child(UI.icon_tile("user_plus", 44, UI.ACCENT))
+	var copy := UI.vbox(2)
+	UI.expand(copy)
+	copy.add_child(UI.label("Öneriler yakında", 14, UI.TEXT, true))
+	copy.add_child(UI.wrapped(UI.label("Şimdilik arkadaşlarını adıyla arayabilirsin.", 12, UI.TEXT_2)))
+	line.add_child(copy)
+	var find := UI.button("Ara", "ghost", 12, 34, "search")
+	find.pressed.connect(_open_add_dialog)
+	line.add_child(find)
+	suggestions_column.add_child(line)
+	_right.add_child(suggestions)
+	return _right
 
 
 func _render_party() -> void:
-	UI.clear(_party_card)
-	_party_card.add_child(UI.label("Oyun Partisi", 14, UI.TEXT, true))
-	var game := Catalog.game("korsanlar")
-	var art := UI.image(Catalog.texture(str(game["banner"])), Vector2(0, 92), 8)
-	_party_card.add_child(art)
-	var room := PardexOnline.current_room
-	var members: Array = room.get("members", []) if typeof(room.get("members", [])) == TYPE_ARRAY else []
-	var avatars := UI.hbox(6)
+	UI.clear(_party)
+	var room := _room()
+	var in_room := not room.is_empty()
+	var header := UI.hbox(10)
+	header.add_child(UI.icon("users_group", 22, UI.PURPLE))
+	header.add_child(UI.expand(UI.label("Parti" + (" • %s" % str(room.get("code", ""))) if in_room else "Parti Kur", 18, UI.TEXT, true)))
+	var help := UI.icon_button("help", "Parti, arkadaşlarınla aynı oyuna girmek için kurduğun PARDEX Online odasıdır.", 30)
+	header.add_child(help)
+	_party.add_child(header)
+
+	var members := _room_members()
+	var slots := UI.hbox(12)
+	slots.alignment = BoxContainer.ALIGNMENT_CENTER
+	var ready_count := 0
+	var self_ready := false
 	for member in members:
-		if typeof(member) == TYPE_DICTIONARY:
-			avatars.add_child(UI.avatar(str(member.get("display_name", "P")), 30, "online" if bool(member.get("ready", false)) else "", UI.SURFACE))
-	var free_slots := int(room.get("max_players", 4)) - members.size() if not room.is_empty() else 4
-	for _slot in maxi(0, free_slots):
-		var slot := Panel.new()
-		slot.custom_minimum_size = Vector2(30, 30)
-		slot.add_theme_stylebox_override("panel", UI.box(Color.TRANSPARENT, 15, UI.BORDER_HI, 1))
-		avatars.add_child(slot)
-	_party_card.add_child(avatars)
+		if typeof(member) != TYPE_DICTIONARY:
+			continue
+		var ready := bool(member.get("ready", false))
+		ready_count += int(ready)
+		if str(member.get("user_id", "")) == PardexOnline.user_id:
+			self_ready = ready
+		var avatar := UI.avatar(str(member.get("display_name", "P")), 60, "online" if ready else "away", UI.ACCENT)
+		avatar.tooltip_text = "%s  •  %s" % [str(member.get("display_name", "")), "Hazır" if ready else "Bekliyor"]
+		avatar.mouse_filter = Control.MOUSE_FILTER_PASS
+		slots.add_child(avatar)
+	var max_players := int(room.get("max_players", 4)) if in_room else 4
+	for _slot in maxi(0, max_players - members.size()):
+		var add := UI.icon_button("plus", "Arkadaş davet et", 60, UI.TEXT_2)
+		add.add_theme_stylebox_override("normal", UI.box(Color.TRANSPARENT, 30, UI.BORDER_HI, 1))
+		add.add_theme_stylebox_override("hover", UI.box(Color(1, 1, 1, 0.05), 30, UI.ACCENT, 1))
+		add.pressed.connect(_open_invite_picker.bind(add))
+		slots.add_child(add)
+	_party.add_child(slots)
 
-	var action_row := UI.hbox(6)
-	if room.is_empty():
-		_party_card.add_child(UI.label(str(game["title"]), 13, UI.TEXT, true))
-		_party_card.add_child(UI.label("Parti kur, arkadaşlarını davet et.", 11, UI.TEXT_3))
-		var create := UI.button("Parti Kur", "gold", 13, 38)
-		create.disabled = not PardexOnline.is_online()
-		create.pressed.connect(func(): PardexOnline.create_room("korsanlar", 4))
-		action_row.add_child(UI.expand(create))
+	var game := Catalog.game(str(room.get("game_id", "korsanlar")) if in_room else "korsanlar")
+	var launching := bool(room.get("launching", false))
+	var is_host := str(room.get("host_id", "")) == PardexOnline.user_id
+	var all_ready := members.size() >= 2 and ready_count == members.size()
+	var status_text := "%s  •  Arkadaşlarınla aynı odada oyna." % str(game.get("title", "PARDEX"))
+	if in_room:
+		status_text = "%s  •  %d/%d oyuncu hazır" % [str(game.get("title", "")), ready_count, max_players]
+		if launching:
+			status_text = "Oyun başlatılıyor…"
+	var status := UI.fit(UI.label(status_text, 12, UI.GREEN if launching else UI.TEXT_2))
+	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_party.add_child(status)
+
+	var main_action: Button
+	if not in_room:
+		main_action = UI.button("Parti Kur", "primary", 15, 46, "friends")
+		main_action.disabled = not PardexOnline.is_online()
+		main_action.pressed.connect(_create_party)
+	elif is_host and all_ready:
+		main_action = UI.button("Oyunu Başlat", "gold", 15, 46, "play")
+		main_action.disabled = launching or not str(room.get("game_server_url", "")).begins_with("ws")
+		if main_action.disabled and not launching:
+			main_action.tooltip_text = "Oyun sunucusu henüz atanmadı."
+		main_action.pressed.connect(PardexOnline.request_start_game)
 	else:
-		var ready := 0
-		for member in members:
-			if typeof(member) == TYPE_DICTIONARY and bool(member.get("ready", false)):
-				ready += 1
-		_party_card.add_child(UI.label("%s  •  Oda %s" % [str(game["title"]), str(room.get("code", ""))], 13, UI.TEXT, true))
-		_party_card.add_child(UI.label("%d/%d oyuncu hazır" % [ready, int(room.get("max_players", 4))], 11, UI.TEXT_3))
-		var manage := UI.button("Partiyi Yönet", "gold", 13, 38)
-		manage.pressed.connect(func(): navigate.emit("rooms"))
-		action_row.add_child(UI.expand(manage))
-	var more := UI.button("▾", "ghost", 12, 38)
-	more.custom_minimum_size.x = 38
-	more.tooltip_text = "Oda koduyla katıl"
-	more.pressed.connect(func(): navigate.emit("rooms"))
-	action_row.add_child(more)
-	_party_card.add_child(action_row)
+		main_action = UI.button("Hazır Değilim" if self_ready else "Hazırım", "success" if self_ready else "primary", 15, 46, "check")
+		main_action.disabled = launching
+		main_action.pressed.connect(func(): PardexOnline.set_ready(not self_ready))
+		if is_host and not all_ready:
+			main_action.tooltip_text = "En az 2 oyuncu hazır olduğunda oyunu başlatabilirsin."
+	_party.add_child(main_action)
+
+	var row := UI.hbox(10)
+	if in_room:
+		var share := UI.button("Kodu Paylaş", "ghost", 13, 42, "link")
+		share.pressed.connect(func():
+			DisplayServer.clipboard_set(str(room.get("code", "")))
+			toast.emit("Parti kodu kopyalandı: %s" % str(room.get("code", "")))
+		)
+		row.add_child(UI.expand(share))
+		var invite := UI.button("Davet Gönder", "ghost", 13, 42, "user_plus")
+		invite.pressed.connect(_open_invite_picker.bind(invite))
+		row.add_child(UI.expand(invite))
+	else:
+		var join := UI.button("Kodla Katıl", "ghost", 13, 42, "link")
+		join.disabled = not PardexOnline.is_online()
+		join.pressed.connect(func():
+			_code_edit.text = ""
+			_code_dialog.popup_centered()
+			_code_edit.grab_focus()
+		)
+		row.add_child(UI.expand(join))
+		var voice := UI.button("Sesli Oda", "ghost", 13, 42, "headphones")
+		voice.disabled = true
+		voice.tooltip_text = "Sesli sohbet yakında."
+		row.add_child(UI.expand(voice))
+	_party.add_child(row)
+	if in_room:
+		var leave := UI.button("Partiden Ayrıl", "link", 12, 26, "log_out")
+		leave.add_theme_color_override("font_color", UI.RED)
+		leave.add_theme_color_override("font_hover_color", UI.RED.lightened(0.2))
+		leave.add_theme_color_override("icon_normal_color", UI.RED)
+		leave.pressed.connect(PardexOnline.leave_room)
+		_party.add_child(leave)
 
 
-# ---------------------------------------------------------------- menus + dialogs
+func _create_party() -> void:
+	if not PardexOnline.is_online():
+		toast.emit("Parti kurmak için PARDEX Online bağlantısı gerekli.")
+		return
+	if not _room().is_empty():
+		toast.emit("Zaten bir partidesin.")
+		return
+	PardexOnline.create_room("korsanlar", 4)
+
+
+func _open_invite_picker(anchor: Control) -> void:
+	if _room().is_empty():
+		_create_party()
+		return
+	_invite_picker.clear()
+	for profile in _friends():
+		if typeof(profile) != TYPE_DICTIONARY or _presence(profile) == "offline":
+			continue
+		var account_id := str(profile.get("account_id", ""))
+		if _friend_in_my_room(account_id):
+			continue
+		_invite_picker.add_item(str(profile.get("display_name", "Pardus")))
+		_invite_picker.set_item_metadata(_invite_picker.item_count - 1, account_id)
+	if _invite_picker.item_count == 0:
+		toast.emit("Davet edilebilecek çevrimiçi arkadaşın yok.")
+		return
+	var rect := anchor.get_global_rect()
+	_invite_picker.popup(Rect2i(Vector2i(rect.position + Vector2(0, rect.size.y + 4)), Vector2i.ZERO))
+
+
+func _render_requests() -> void:
+	UI.clear(_requests_list)
+	var incoming := _requests("incoming_requests")
+	_requests_title.text = "Bekleyen Davetler (%d)" % incoming.size()
+	if incoming.is_empty():
+		_requests_list.add_child(UI.empty_state("mail", "Bekleyen arkadaşlık isteği yok", "", true))
+		return
+	for profile in incoming.slice(0, 3):
+		if typeof(profile) != TYPE_DICTIONARY:
+			continue
+		var account_id := str(profile.get("account_id", ""))
+		var row := UI.hbox(10)
+		row.add_child(UI.avatar(str(profile.get("display_name", "P")), 44, _presence(profile)))
+		var text := UI.vbox(1)
+		UI.expand(text)
+		text.add_child(UI.fit(UI.label(str(profile.get("display_name", "Pardus")), 14, UI.TEXT, true)))
+		text.add_child(UI.fit(UI.label("Sana arkadaşlık isteği gönderdi.", 11, UI.TEXT_2)))
+		row.add_child(text)
+		var accept := UI.button("Kabul Et", "primary", 12, 34)
+		accept.pressed.connect(func(): PardexOnline.accept_friend_request(account_id))
+		row.add_child(accept)
+		var decline := UI.button("Reddet", "ghost", 12, 34)
+		decline.pressed.connect(func(): PardexOnline.decline_friend_request(account_id))
+		row.add_child(decline)
+		_requests_list.add_child(row)
+
+
+# ------------------------------------------------------------------ menus + dialogs
 
 func _build_friend_menu() -> void:
 	_friend_menu = PopupMenu.new()
@@ -517,10 +639,9 @@ func _build_friend_menu() -> void:
 func _open_friend_menu(profile: Dictionary, anchor: Control) -> void:
 	_menu_account_id = str(profile.get("account_id", ""))
 	_friend_menu.clear()
-	var room := PardexOnline.current_room
-	_friend_menu.add_item("Odama davet et", 0)
-	_friend_menu.set_item_disabled(0, room.is_empty() or _presence(profile) == "offline" or _friend_in_my_room(_menu_account_id))
-	_friend_menu.add_item("Odasına katıl", 1)
+	_friend_menu.add_item("Partime davet et", 0)
+	_friend_menu.set_item_disabled(0, _room().is_empty() or _presence(profile) == "offline" or _friend_in_my_room(_menu_account_id))
+	_friend_menu.add_item("Partisine katıl", 1)
 	_friend_menu.set_item_disabled(1, not bool(profile.get("room_joinable", false)))
 	_friend_menu.add_separator()
 	_friend_menu.add_item("Arkadaşlıktan çıkar", 2)
@@ -532,26 +653,26 @@ func _build_add_dialog() -> void:
 	_add_dialog = AcceptDialog.new()
 	_add_dialog.title = "Arkadaş Ekle"
 	_add_dialog.ok_button_text = "Kapat"
-	_add_dialog.min_size = Vector2i(460, 420)
+	_add_dialog.min_size = Vector2i(480, 440)
 	add_child(_add_dialog)
 	var column := UI.vbox(10)
 	_add_dialog.add_child(column)
 	var search_row := UI.hbox(8)
 	column.add_child(search_row)
-	var field := UI.search_field("Kullanıcı adı veya PARDEX kimliği...", 38)
+	var field := UI.search_field("Kullanıcı adı veya PARDEX kimliği...", 40)
 	UI.expand(field)
 	search_row.add_child(field)
-	var go := UI.button("Ara", "primary", 13, 38)
+	var go := UI.button("Ara", "primary", 13, 40)
 	search_row.add_child(go)
 	go.pressed.connect(func(): _search_users(field.text))
 	field.text_submitted.connect(_search_users)
 	_add_hint = UI.label("PARDEX kullanıcılarını adıyla bul.", 12, UI.TEXT_3)
 	column.add_child(_add_hint)
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size.y = 260
+	scroll.custom_minimum_size.y = 280
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	column.add_child(scroll)
-	_add_results = UI.vbox(6)
+	_add_results = UI.vbox(8)
 	_add_results.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll.add_child(_add_results)
 
@@ -580,30 +701,55 @@ func _on_search_results(results: Array) -> void:
 		if typeof(profile) != TYPE_DICTIONARY:
 			continue
 		var account_id := str(profile.get("account_id", ""))
-		var relationship := str(profile.get("relationship", "none"))
 		var row := UI.hbox(10)
-		row.add_child(UI.avatar(str(profile.get("display_name", "P")), 34, _presence(profile)))
+		row.add_child(UI.avatar(str(profile.get("display_name", "P")), 36, _presence(profile)))
 		var text := UI.vbox(0)
 		UI.expand(text)
 		text.add_child(UI.label(str(profile.get("display_name", "Pardus")), 13, UI.TEXT, true))
 		text.add_child(UI.label("#" + str(profile.get("tag", account_id.right(6).to_upper())), 11, UI.TEXT_3))
 		row.add_child(text)
 		var action: Button
-		match relationship:
+		match str(profile.get("relationship", "none")):
 			"friend":
-				action = UI.button("Arkadaşsınız", "ghost", 11, 30)
+				action = UI.button("Arkadaşsınız", "ghost", 11, 32)
 				action.disabled = true
 			"incoming":
-				action = UI.button("Kabul Et", "primary", 11, 30)
+				action = UI.button("Kabul Et", "primary", 11, 32)
 				action.pressed.connect(func(): PardexOnline.accept_friend_request(account_id))
 			"outgoing":
-				action = UI.button("İsteği İptal Et", "ghost", 11, 30)
+				action = UI.button("İsteği İptal Et", "ghost", 11, 32)
 				action.pressed.connect(func(): PardexOnline.cancel_friend_request(account_id))
 			_:
-				action = UI.button("Ekle", "primary", 11, 30)
+				action = UI.button("Ekle", "primary", 11, 32, "user_plus")
 				action.pressed.connect(func(): PardexOnline.send_friend_request(account_id))
 		row.add_child(action)
 		_add_results.add_child(row)
+
+
+func _build_code_dialog() -> void:
+	_code_dialog = ConfirmationDialog.new()
+	_code_dialog.title = "Kodla Partiye Katıl"
+	_code_dialog.ok_button_text = "Katıl"
+	_code_dialog.cancel_button_text = "Vazgeç"
+	_code_dialog.min_size = Vector2i(380, 150)
+	add_child(_code_dialog)
+	var column := UI.vbox(8)
+	_code_dialog.add_child(column)
+	column.add_child(UI.label("Arkadaşının paylaştığı 5 karakterlik parti kodunu gir.", 13, UI.TEXT_2))
+	_code_edit = LineEdit.new()
+	_code_edit.placeholder_text = "Örn. K7P2Q"
+	_code_edit.max_length = 5
+	_code_edit.custom_minimum_size.y = 40
+	column.add_child(_code_edit)
+	var submit := func():
+		var code := _code_edit.text.strip_edges().to_upper()
+		if code.length() == 5:
+			PardexOnline.join_room(code)
+			_code_dialog.hide()
+		else:
+			toast.emit("Parti kodu 5 karakter olmalı.")
+	_code_dialog.confirmed.connect(submit)
+	_code_edit.text_submitted.connect(func(_text: String): submit.call())
 
 
 func _on_connection_state_changed(state: String) -> void:
@@ -614,7 +760,7 @@ func _on_connection_state_changed(state: String) -> void:
 
 func _build_invite_dialog() -> void:
 	_invite_dialog = ConfirmationDialog.new()
-	_invite_dialog.title = "PARDEX Oda Daveti"
+	_invite_dialog.title = "PARDEX Parti Daveti"
 	_invite_dialog.ok_button_text = "Katıl"
 	_invite_dialog.cancel_button_text = "Reddet"
 	_invite_dialog.min_size = Vector2i(460, 200)
@@ -639,7 +785,7 @@ func _on_room_invite_received(invite: Dictionary) -> void:
 	if not _active_invite_id.is_empty() and _active_invite_id != invite_id:
 		PardexOnline.decline_room_invite(_active_invite_id)
 	_active_invite_id = invite_id
-	_invite_dialog.dialog_text = "%s seni %s odasına davet ediyor.\n\nOda: %s   •   Oyuncular: %d / %d" % [
+	_invite_dialog.dialog_text = "%s seni %s partisine davet ediyor.\n\nParti kodu: %s   •   Oyuncular: %d / %d" % [
 		str(invite.get("from_display_name", "Bir arkadaşın")),
 		str(invite.get("game_name", "PARDEX Oyunu")),
 		str(invite.get("room_code", "")),
@@ -656,6 +802,6 @@ func _on_room_invite_closed(invite_id: String, reason: String) -> void:
 	_active_invite_id = ""
 	_invite_dialog.hide()
 	if was_visible and reason == "expired":
-		toast.emit("Oda davetinin süresi doldu.")
+		toast.emit("Parti davetinin süresi doldu.")
 	elif was_visible and reason in ["room_closed", "room_full", "room_in_game"]:
-		toast.emit("Davet edilen oda artık katılıma uygun değil.")
+		toast.emit("Davet edilen parti artık katılıma uygun değil.")

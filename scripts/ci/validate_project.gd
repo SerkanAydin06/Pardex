@@ -3,7 +3,6 @@ extends SceneTree
 const RESOURCES := [
     "res://scenes/main.tscn",
     "res://scenes/ui/window_chrome.tscn",
-    "res://scenes/screens/rooms.tscn",
     "res://scenes/screens/settings.tscn",
     "res://scripts/main.gd",
     "res://scripts/online/pardex_identity_guard.gd",
@@ -14,11 +13,11 @@ const RESOURCES := [
     "res://scripts/ui/pardex_window_frame.gd",
     "res://scripts/ui/pardex_text_fit.gd",
     "res://scripts/ui/pardex_ui.gd",
-    "res://scripts/ui/pardex_asset_binding.gd",
     "res://scripts/data/pardex_catalog.gd",
-    "res://scripts/pages/home_page.gd",
-    "res://scripts/pages/discover_page.gd",
     "res://scripts/pages/social_page.gd",
+    "res://scripts/pages/store_page.gd",
+    "res://scripts/pages/library_page.gd",
+    "res://scripts/ui/pardex_icons.gd",
     "res://scripts/pages/profile_page.gd",
     "res://scripts/ci/boot_smoke.gd",
 ]
