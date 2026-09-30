@@ -82,9 +82,16 @@ func _on_main_resized() -> void:
 	if main == null:
 		return
 	# Match the brand header to the responsive sidebar width used by main.gd.
-	custom_minimum_size.x = 214.0 if main.size.x <= WINDOW_NARROW else 258.0
+	var target_width := 214.0 if main.size.x <= WINDOW_NARROW else 258.0
+	custom_minimum_size = Vector2(target_width, custom_minimum_size.y)
 
 
 func _on_node_added(node: Node) -> void:
 	if node.name == "NotificationButton":
-		call_deferred("_apply_notification", node)
+		call_deferred("_apply_notification_by_id", node.get_instance_id())
+
+
+func _apply_notification_by_id(instance_id: int) -> void:
+	var instance := instance_from_id(instance_id)
+	if instance is Node:
+		_apply_notification(instance as Node)
