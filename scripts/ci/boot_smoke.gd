@@ -84,12 +84,13 @@ func _run() -> void:
 	await process_frame
 
 	var required_paths := [
+		"Root/Header/BrandHeader/BrandMargin/Brand/Logo",
+		"Root/Header/ActionHeader/ActionMargin/HeaderRow/WindowChrome",
 		"Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/StoreButton",
 		"Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/LibraryButton",
 		"Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/FriendsButton",
 		"Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/ProfileButton",
 		"Root/Body/Sidebar/SidebarColumn/ProfilePanel/ProfileRow/SettingsButton",
-		"Root/Header/HeaderRow/WindowChrome",
 		"Root/Body/MainMargin/Pages/StorePage",
 		"Root/Body/MainMargin/Pages/FriendsPage",
 	]

@@ -11,14 +11,17 @@ const RESOURCES := [
     "res://scripts/online/pardex_game_launcher.gd",
     "res://scripts/online/pardex_notifications.gd",
     "res://scripts/ui/pardex_window_frame.gd",
+    "res://scripts/ui/pardex_window_icon_state.gd",
+    "res://scripts/ui/pardex_shell_svg.gd",
     "res://scripts/ui/pardex_text_fit.gd",
     "res://scripts/ui/pardex_ui.gd",
+    "res://scripts/ui/pardex_icons.gd",
     "res://scripts/data/pardex_catalog.gd",
     "res://scripts/pages/social_page.gd",
     "res://scripts/pages/store_page.gd",
     "res://scripts/pages/library_page.gd",
-    "res://scripts/ui/pardex_icons.gd",
     "res://scripts/pages/profile_page.gd",
+    "res://scripts/screens/account_recovery.gd",
     "res://scripts/ci/boot_smoke.gd",
 ]
 
