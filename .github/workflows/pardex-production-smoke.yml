@@ -12,7 +12,6 @@ on:
       - "server/package.json"
       - "server/package-lock.json"
       - "server/Dockerfile"
-      - ".github/workflows/pardex-production-smoke.yml"
   schedule:
     - cron: "23 */6 * * *"
   workflow_dispatch:
