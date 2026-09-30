@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/svg/window_minimize.svg" id="2_minimize"]
 [ext_resource type="Texture2D" path="res://assets/ui/svg/window_maximize.svg" id="3_maximize"]
 [ext_resource type="Texture2D" path="res://assets/ui/svg/window_close.svg" id="4_close"]
+[ext_resource type="Script" path="res://scripts/ui/pardex_window_icon_state.gd" id="5_state"]
 
 [sub_resource type="StyleBoxFlat" id="IconNormal"]
 bg_color = Color(0.015, 0.035, 0.055, 0.0)
@@ -95,6 +96,7 @@ theme_override_colors/icon_hover_color = Color(0.94, 0.98, 1, 1)
 theme_override_styles/normal = SubResource("IconNormal")
 theme_override_styles/hover = SubResource("IconHover")
 theme_override_styles/pressed = SubResource("IconHover")
+script = ExtResource("5_state")
 
 [node name="CloseButton" type="Button" parent="."]
 custom_minimum_size = Vector2(40, 38)
