@@ -1,5 +1,11 @@
 [gd_scene format=3]
 
+[ext_resource type="Texture2D" path="res://assets/ui/svg/icon_reward.svg" id="1_reward"]
+[ext_resource type="Texture2D" path="res://assets/ui/svg/window_minimize.svg" id="2_minimize"]
+[ext_resource type="Texture2D" path="res://assets/ui/svg/window_maximize.svg" id="3_maximize"]
+[ext_resource type="Texture2D" path="res://assets/ui/svg/window_close.svg" id="4_close"]
+[ext_resource type="Script" path="res://scripts/ui/pardex_window_icon_state.gd" id="5_state"]
+
 [sub_resource type="StyleBoxFlat" id="IconNormal"]
 bg_color = Color(0.015, 0.035, 0.055, 0.0)
 corner_radius_top_left = 10
@@ -8,72 +14,102 @@ corner_radius_bottom_left = 10
 corner_radius_bottom_right = 10
 
 [sub_resource type="StyleBoxFlat" id="IconHover"]
-bg_color = Color(0.04, 0.10, 0.15, 0.95)
+bg_color = Color(0.055, 0.12, 0.19, 0.92)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.10, 0.27, 0.38, 0.95)
+border_color = Color(0.13, 0.47, 0.68, 0.92)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_left = 10
 corner_radius_bottom_right = 10
+shadow_color = Color(0.12, 0.62, 1, 0.18)
+shadow_size = 6
 
 [sub_resource type="StyleBoxFlat" id="CloseHover"]
-bg_color = Color(0.62, 0.08, 0.12, 0.95)
+bg_color = Color(0.72, 0.075, 0.12, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.28, 0.34, 0.95)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_left = 10
 corner_radius_bottom_right = 10
+shadow_color = Color(1, 0.12, 0.18, 0.24)
+shadow_size = 7
 
 [node name="WindowChrome" type="HBoxContainer"]
 size_flags_vertical = 4
-theme_override_constants/separation = 2
+theme_override_constants/separation = 4
 
 [node name="SecondaryAction" type="Button" parent="."]
-custom_minimum_size = Vector2(32, 32)
+custom_minimum_size = Vector2(38, 38)
 layout_mode = 2
 focus_mode = 0
 tooltip_text = "PARDEX"
-theme_override_colors/font_color = Color(0.98, 0.72, 0.24, 1)
-theme_override_font_sizes/font_size = 14
+mouse_default_cursor_shape = 2
+icon = ExtResource("1_reward")
+icon_alignment = 1
+expand_icon = false
+theme_override_constants/icon_max_width = 19
+theme_override_colors/icon_normal_color = Color(0.98, 0.72, 0.24, 1)
+theme_override_colors/icon_hover_color = Color(1, 0.83, 0.42, 1)
 theme_override_styles/normal = SubResource("IconNormal")
 theme_override_styles/hover = SubResource("IconHover")
-text = "♛"
+theme_override_styles/pressed = SubResource("IconHover")
 
 [node name="Separator" type="VSeparator" parent="."]
 custom_minimum_size = Vector2(8, 0)
 layout_mode = 2
 
 [node name="MinimizeButton" type="Button" parent="."]
-custom_minimum_size = Vector2(38, 32)
+custom_minimum_size = Vector2(40, 38)
 layout_mode = 2
 focus_mode = 0
 tooltip_text = "Simge durumuna küçült"
-theme_override_colors/font_color = Color(0.72, 0.82, 0.94, 1)
-theme_override_font_sizes/font_size = 14
+mouse_default_cursor_shape = 2
+icon = ExtResource("2_minimize")
+icon_alignment = 1
+expand_icon = false
+theme_override_constants/icon_max_width = 18
+theme_override_colors/icon_normal_color = Color(0.76, 0.84, 0.95, 1)
+theme_override_colors/icon_hover_color = Color(0.94, 0.98, 1, 1)
 theme_override_styles/normal = SubResource("IconNormal")
 theme_override_styles/hover = SubResource("IconHover")
-text = "—"
+theme_override_styles/pressed = SubResource("IconHover")
 
 [node name="MaximizeButton" type="Button" parent="."]
-custom_minimum_size = Vector2(38, 32)
+custom_minimum_size = Vector2(40, 38)
 layout_mode = 2
 focus_mode = 0
 tooltip_text = "Büyüt / Geri yükle"
-theme_override_colors/font_color = Color(0.72, 0.82, 0.94, 1)
-theme_override_font_sizes/font_size = 14
+mouse_default_cursor_shape = 2
+icon = ExtResource("3_maximize")
+icon_alignment = 1
+expand_icon = false
+theme_override_constants/icon_max_width = 18
+theme_override_colors/icon_normal_color = Color(0.76, 0.84, 0.95, 1)
+theme_override_colors/icon_hover_color = Color(0.94, 0.98, 1, 1)
 theme_override_styles/normal = SubResource("IconNormal")
 theme_override_styles/hover = SubResource("IconHover")
-text = "□"
+theme_override_styles/pressed = SubResource("IconHover")
+script = ExtResource("5_state")
 
 [node name="CloseButton" type="Button" parent="."]
-custom_minimum_size = Vector2(38, 32)
+custom_minimum_size = Vector2(40, 38)
 layout_mode = 2
 focus_mode = 0
 tooltip_text = "Kapat"
-theme_override_colors/font_color = Color(0.82, 0.88, 0.98, 1)
-theme_override_font_sizes/font_size = 14
+mouse_default_cursor_shape = 2
+icon = ExtResource("4_close")
+icon_alignment = 1
+expand_icon = false
+theme_override_constants/icon_max_width = 18
+theme_override_colors/icon_normal_color = Color(0.78, 0.85, 0.96, 1)
+theme_override_colors/icon_hover_color = Color(1, 1, 1, 1)
 theme_override_styles/normal = SubResource("IconNormal")
 theme_override_styles/hover = SubResource("CloseHover")
-text = "×"
+theme_override_styles/pressed = SubResource("CloseHover")
