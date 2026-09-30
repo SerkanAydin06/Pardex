@@ -230,9 +230,9 @@ func _render_shelves() -> void:
 		_new_row.add_child(_new_card(entry))
 
 
-func _heart(game_id: String, size := 34.0) -> Button:
+func _heart(game_id: String, icon_size := 34.0) -> Button:
 	var wished := Catalog.is_wishlisted(game_id)
-	var heart := UI.icon_button("heart_fill" if wished else "heart", "İstek listesi", size, UI.RED if wished else UI.TEXT, true)
+	var heart := UI.icon_button("heart_fill" if wished else "heart", "İstek listesi", icon_size, UI.RED if wished else UI.TEXT, true)
 	heart.add_theme_stylebox_override("normal", UI.box(Color(UI.BG, 0.65), 9, Color(1, 1, 1, 0.18), 1))
 	heart.pressed.connect(func():
 		var added := Catalog.toggle_wishlist(game_id)
