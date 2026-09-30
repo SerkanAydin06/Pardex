@@ -167,9 +167,9 @@ static func add_playtime(game_id: String, seconds: int) -> void:
 
 static func add_event(kind: String, text: String, game_id := "") -> void:
 	var config := _load()
-	var events: Array = config.get_value("pardex", "events", [])
-	events.push_front({"kind": kind, "text": text, "game": game_id, "at": int(Time.get_unix_time_from_system())})
-	config.set_value("pardex", "events", events.slice(0, MAX_EVENTS))
+	var event_log: Array = config.get_value("pardex", "events", [])
+	event_log.push_front({"kind": kind, "text": text, "game": game_id, "at": int(Time.get_unix_time_from_system())})
+	config.set_value("pardex", "events", event_log.slice(0, MAX_EVENTS))
 	config.save(ACTIVITY_PATH)
 
 
