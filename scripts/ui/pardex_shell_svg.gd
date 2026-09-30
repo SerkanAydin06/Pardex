@@ -4,6 +4,7 @@ extends PanelContainer
 # generated icon textures during _ready(). Attached to BrandHeader so it is
 # part of the scene and runs after the main shell has finished building.
 
+const BRAND := preload("res://assets/ui/svg/brand_pardex_symbol.svg")
 const STORE := preload("res://assets/ui/svg/icon_store.svg")
 const LIBRARY := preload("res://assets/ui/svg/icon_library.svg")
 const FRIENDS := preload("res://assets/ui/svg/icon_friends.svg")
@@ -27,6 +28,7 @@ func _apply_shell_assets() -> void:
 	_apply_search(main)
 	_apply_notification(main.find_child("NotificationButton", true, false))
 	_apply_brand(main)
+	_keep_header_actions_visible(main)
 	if not main.resized.is_connected(_on_main_resized):
 		main.resized.connect(_on_main_resized)
 	_on_main_resized()
@@ -74,7 +76,20 @@ func _apply_brand(main: Control) -> void:
 		title.add_theme_color_override("font_color", Color("3bc8ff"))
 	var logo := main.find_child("Logo", true, false) as TextureRect
 	if logo != null:
+		logo.texture = BRAND
 		logo.custom_minimum_size = Vector2(58, 58)
+
+
+func _keep_header_actions_visible(main: Control) -> void:
+	var chrome := main.find_child("WindowChrome", true, false)
+	if chrome == null:
+		return
+	var secondary := chrome.get_node_or_null("SecondaryAction") as Button
+	if secondary != null:
+		secondary.visible = true
+	var separator := chrome.get_node_or_null("Separator") as Control
+	if separator != null:
+		separator.visible = true
 
 
 func _on_main_resized() -> void:
@@ -84,6 +99,15 @@ func _on_main_resized() -> void:
 	# Match the brand header to the responsive sidebar width used by main.gd.
 	var target_width := 214.0 if main.size.x <= WINDOW_NARROW else 258.0
 	custom_minimum_size = Vector2(target_width, custom_minimum_size.y)
+	# main.gd applies its responsive rules in the same resize cycle; reassert the
+	# reference header actions afterwards so the reward button is not hidden.
+	call_deferred("_keep_header_actions_visible_by_id", main.get_instance_id())
+
+
+func _keep_header_actions_visible_by_id(instance_id: int) -> void:
+	var instance := instance_from_id(instance_id)
+	if instance is Control:
+		_keep_header_actions_visible(instance as Control)
 
 
 func _on_node_added(node: Node) -> void:
