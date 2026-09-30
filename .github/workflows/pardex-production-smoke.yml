@@ -39,10 +39,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Verify exact Railway deploy and test live PARDEX Online
+      - name: Verify Railway deploy when applicable and test live PARDEX Online
         env:
           PARDEX_ONLINE_URL: wss://pardex-online-production.up.railway.app
           PARDEX_GAME_SERVER_URL: wss://korsan-game-production.up.railway.app
-          EXPECTED_DEPLOY_COMMIT: ${{ github.sha }}
+          # Railway only redeploys pardex-online for server/** changes. Exact SHA
+          # verification is therefore valid for server push runs, but scheduled
+          # and manual health checks must test the currently deployed service.
+          EXPECTED_DEPLOY_COMMIT: ${{ github.event_name == 'push' && github.sha || '' }}
           DEPLOYMENT_WAIT_MS: "240000"
         run: node production_smoke_test.js
