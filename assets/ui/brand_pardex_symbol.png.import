@@ -3,15 +3,11 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c7vk4l6xuv02s"
-path="res://.godot/imported/brand_pardex_symbol.png-b1c9de063c898e79c0ec5d356bbf06ec.ctex"
-metadata={
-"vram_texture": false
-}
+valid=false
 
 [deps]
 
 source_file="res://assets/ui/brand_pardex_symbol.png"
-dest_files=["res://.godot/imported/brand_pardex_symbol.png-b1c9de063c898e79c0ec5d356bbf06ec.ctex"]
 
 [params]
 
