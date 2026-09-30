@@ -1,16 +1,16 @@
 [gd_scene format=3 uid="uid://c4ee5q51bjoxw"]
 
 [ext_resource type="Script" uid="uid://b862qcsk55r27" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="Texture2D" path="res://assets/ui/svg/brand_pardex_symbol.svg" id="2_logo"]
-[ext_resource type="Texture2D" path="res://assets/ui/left_banner.png" id="3_sidebar_art"]
+[ext_resource type="Texture2D" uid="uid://d3i1b1a4uerot" path="res://assets/ui/left_banner.png" id="3_sidebar_art"]
+[ext_resource type="Texture2D" uid="uid://ctpfuf4f04t5p" path="res://assets/ui/brand_pardex_app_icon.png" id="3_ya4ey"]
 [ext_resource type="PackedScene" path="res://scenes/ui/window_chrome.tscn" id="4_chrome"]
-[ext_resource type="Script" path="res://scripts/ui/pardex_window_frame.gd" id="5_frame"]
-[ext_resource type="Texture2D" path="res://assets/ui/svg/icon_store.svg" id="6_store"]
-[ext_resource type="Texture2D" path="res://assets/ui/svg/icon_library.svg" id="7_library"]
-[ext_resource type="Texture2D" path="res://assets/ui/svg/icon_friends.svg" id="8_friends"]
-[ext_resource type="Texture2D" path="res://assets/ui/svg/icon_profile.svg" id="9_profile"]
-[ext_resource type="Texture2D" path="res://assets/ui/svg/icon_settings.svg" id="10_settings"]
-[ext_resource type="Script" path="res://scripts/ui/pardex_shell_svg.gd" id="11_shell_svg"]
+[ext_resource type="Script" uid="uid://mgpwwfj1217y" path="res://scripts/ui/pardex_window_frame.gd" id="5_frame"]
+[ext_resource type="Texture2D" uid="uid://qoqb5ojeu5vi" path="res://assets/ui/svg/icon_store.svg" id="6_store"]
+[ext_resource type="Texture2D" uid="uid://b5or14ygpyusu" path="res://assets/ui/svg/icon_library.svg" id="7_library"]
+[ext_resource type="Texture2D" uid="uid://bla1mcb7pkjbi" path="res://assets/ui/svg/icon_friends.svg" id="8_friends"]
+[ext_resource type="Texture2D" uid="uid://c47svr2t6j33r" path="res://assets/ui/svg/icon_profile.svg" id="9_profile"]
+[ext_resource type="Texture2D" uid="uid://dwdhyxn6g0xsq" path="res://assets/ui/svg/icon_settings.svg" id="10_settings"]
+[ext_resource type="Script" uid="uid://bfa65onpxc8q4" path="res://scripts/ui/pardex_shell_svg.gd" id="11_shell_svg"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.024, 0.039, 0.078, 1)
@@ -68,7 +68,7 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[node name="Pardex" type="Control"]
+[node name="Pardex" type="Control" unique_id=1736552998]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -77,7 +77,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_main")
 
-[node name="Background" type="Panel" parent="."]
+[node name="Background" type="Panel" parent="." unique_id=1850354537]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -87,51 +87,52 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBg")
 
-[node name="Root" type="VBoxContainer" parent="."]
+[node name="Root" type="VBoxContainer" parent="." unique_id=1296784067]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 0
 
-[node name="Header" type="HBoxContainer" parent="Root"]
+[node name="Header" type="HBoxContainer" parent="Root" unique_id=603264199]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="BrandHeader" type="PanelContainer" parent="Root/Header"]
+[node name="BrandHeader" type="PanelContainer" parent="Root/Header" unique_id=1279653957]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(258, 76)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBrandHeader")
 script = ExtResource("11_shell_svg")
 
-[node name="BrandMargin" type="MarginContainer" parent="Root/Header/BrandHeader"]
+[node name="BrandMargin" type="MarginContainer" parent="Root/Header/BrandHeader" unique_id=1683864142]
 layout_mode = 2
 theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="Brand" type="HBoxContainer" parent="Root/Header/BrandHeader/BrandMargin"]
+[node name="Brand" type="HBoxContainer" parent="Root/Header/BrandHeader/BrandMargin" unique_id=1882973394]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 12
 
-[node name="Logo" type="TextureRect" parent="Root/Header/BrandHeader/BrandMargin/Brand"]
-texture_filter = 2
+[node name="Logo" type="TextureRect" parent="Root/Header/BrandHeader/BrandMargin/Brand" unique_id=42183744]
+texture_filter = 3
 custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("2_logo")
+texture = ExtResource("3_ya4ey")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="BrandTitle" type="Label" parent="Root/Header/BrandHeader/BrandMargin/Brand"]
+[node name="BrandTitle" type="Label" parent="Root/Header/BrandHeader/BrandMargin/Brand" unique_id=537160389]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.153, 0.78, 1, 1)
 theme_override_colors/font_outline_color = Color(0.03, 0.16, 0.3, 1)
@@ -140,53 +141,53 @@ theme_override_font_sizes/font_size = 31
 text = "PARDEX"
 vertical_alignment = 1
 
-[node name="ActionHeader" type="PanelContainer" parent="Root/Header"]
+[node name="ActionHeader" type="PanelContainer" parent="Root/Header" unique_id=132332832]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleTopBar")
 
-[node name="ActionMargin" type="MarginContainer" parent="Root/Header/ActionHeader"]
+[node name="ActionMargin" type="MarginContainer" parent="Root/Header/ActionHeader" unique_id=735393972]
 layout_mode = 2
 theme_override_constants/margin_left = 18
 theme_override_constants/margin_top = 9
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 9
 
-[node name="HeaderRow" type="HBoxContainer" parent="Root/Header/ActionHeader/ActionMargin"]
+[node name="HeaderRow" type="HBoxContainer" parent="Root/Header/ActionHeader/ActionMargin" unique_id=1028471516]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="SearchSlot" type="MarginContainer" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow"]
+[node name="SearchSlot" type="MarginContainer" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow" unique_id=1714028206]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(340, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.15
 
-[node name="HeaderSpacer" type="Control" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow"]
+[node name="HeaderSpacer" type="Control" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow" unique_id=1231245376]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.9
 mouse_filter = 2
 
-[node name="WindowChrome" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow" instance=ExtResource("4_chrome")]
+[node name="WindowChrome" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow" unique_id=1452125407 instance=ExtResource("4_chrome")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Body" type="HBoxContainer" parent="Root"]
+[node name="Body" type="HBoxContainer" parent="Root" unique_id=193809749]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 0
 
-[node name="Sidebar" type="PanelContainer" parent="Root/Body"]
+[node name="Sidebar" type="PanelContainer" parent="Root/Body" unique_id=1553084847]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(258, 0)
 clip_contents = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleSidebar")
 
-[node name="SidebarArt" type="TextureRect" parent="Root/Body/Sidebar"]
+[node name="SidebarArt" type="TextureRect" parent="Root/Body/Sidebar" unique_id=211822399]
 texture_filter = 4
 layout_mode = 2
 mouse_filter = 2
@@ -194,76 +195,76 @@ texture = ExtResource("3_sidebar_art")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="SidebarFade" type="TextureRect" parent="Root/Body/Sidebar"]
+[node name="SidebarFade" type="TextureRect" parent="Root/Body/Sidebar" unique_id=2091640364]
 layout_mode = 2
 mouse_filter = 2
 texture = SubResource("SidebarFade")
 expand_mode = 1
 
-[node name="SidebarColumn" type="VBoxContainer" parent="Root/Body/Sidebar"]
+[node name="SidebarColumn" type="VBoxContainer" parent="Root/Body/Sidebar" unique_id=1834986443]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="NavMargin" type="MarginContainer" parent="Root/Body/Sidebar/SidebarColumn"]
+[node name="NavMargin" type="MarginContainer" parent="Root/Body/Sidebar/SidebarColumn" unique_id=650370731]
 layout_mode = 2
 theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 14
 
-[node name="NavList" type="VBoxContainer" parent="Root/Body/Sidebar/SidebarColumn/NavMargin"]
+[node name="NavList" type="VBoxContainer" parent="Root/Body/Sidebar/SidebarColumn/NavMargin" unique_id=2112598100]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="StoreButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList"]
+[node name="StoreButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=8374623]
 unique_name_in_owner = true
 layout_mode = 2
-icon = ExtResource("6_store")
 text = "Mağaza"
+icon = ExtResource("6_store")
 
-[node name="LibraryButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList"]
+[node name="LibraryButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=1560595283]
 unique_name_in_owner = true
 layout_mode = 2
-icon = ExtResource("7_library")
 text = "Kütüphane"
+icon = ExtResource("7_library")
 
-[node name="FriendsButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList"]
+[node name="FriendsButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=927633788]
 unique_name_in_owner = true
 layout_mode = 2
-icon = ExtResource("8_friends")
 text = "Arkadaşlar"
+icon = ExtResource("8_friends")
 
-[node name="ProfileButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList"]
+[node name="ProfileButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=214693986]
 unique_name_in_owner = true
 layout_mode = 2
-icon = ExtResource("9_profile")
 text = "Profil"
+icon = ExtResource("9_profile")
 
-[node name="SidebarFlex" type="Control" parent="Root/Body/Sidebar/SidebarColumn"]
+[node name="SidebarFlex" type="Control" parent="Root/Body/Sidebar/SidebarColumn" unique_id=500491621]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="ProfilePanel" type="PanelContainer" parent="Root/Body/Sidebar/SidebarColumn"]
+[node name="ProfilePanel" type="PanelContainer" parent="Root/Body/Sidebar/SidebarColumn" unique_id=1238081404]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleProfileCard")
 
-[node name="ProfileRow" type="HBoxContainer" parent="Root/Body/Sidebar/SidebarColumn/ProfilePanel"]
+[node name="ProfileRow" type="HBoxContainer" parent="Root/Body/Sidebar/SidebarColumn/ProfilePanel" unique_id=550109251]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="AvatarSlot" type="CenterContainer" parent="Root/Body/Sidebar/SidebarColumn/ProfilePanel/ProfileRow"]
+[node name="AvatarSlot" type="CenterContainer" parent="Root/Body/Sidebar/SidebarColumn/ProfilePanel/ProfileRow" unique_id=1545631370]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="ProfileText" type="VBoxContainer" parent="Root/Body/Sidebar/SidebarColumn/ProfilePanel/ProfileRow"]
+[node name="ProfileText" type="VBoxContainer" parent="Root/Body/Sidebar/SidebarColumn/ProfilePanel/ProfileRow" unique_id=762913328]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
 alignment = 1
 
-[node name="UserName" type="Label" parent="Root/Body/Sidebar/SidebarColumn/ProfilePanel/ProfileRow/ProfileText"]
+[node name="UserName" type="Label" parent="Root/Body/Sidebar/SidebarColumn/ProfilePanel/ProfileRow/ProfileText" unique_id=1743984570]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.933, 0.953, 0.984, 1)
@@ -271,18 +272,18 @@ theme_override_font_sizes/font_size = 16
 text = "Pardus"
 text_overrun_behavior = 3
 
-[node name="OnlineState" type="Button" parent="Root/Body/Sidebar/SidebarColumn/ProfilePanel/ProfileRow/ProfileText"]
+[node name="OnlineState" type="Button" parent="Root/Body/Sidebar/SidebarColumn/ProfilePanel/ProfileRow/ProfileText" unique_id=461624782]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Durumunu değiştir"
 focus_mode = 0
 mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 14
-flat = true
 text = "Çevrimdışı"
+flat = true
 alignment = 0
 
-[node name="SettingsButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/ProfilePanel/ProfileRow"]
+[node name="SettingsButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/ProfilePanel/ProfileRow" unique_id=1088869706]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(42, 42)
 layout_mode = 2
@@ -293,7 +294,7 @@ mouse_default_cursor_shape = 2
 icon = ExtResource("10_settings")
 flat = true
 
-[node name="MainMargin" type="MarginContainer" parent="Root/Body"]
+[node name="MainMargin" type="MarginContainer" parent="Root/Body" unique_id=986132467]
 unique_name_in_owner = true
 clip_contents = true
 layout_mode = 2
@@ -303,12 +304,12 @@ theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 18
 theme_override_constants/margin_bottom = 16
 
-[node name="Pages" type="VBoxContainer" parent="Root/Body/MainMargin"]
+[node name="Pages" type="VBoxContainer" parent="Root/Body/MainMargin" unique_id=1337987426]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="ToastPanel" type="PanelContainer" parent="."]
+[node name="ToastPanel" type="PanelContainer" parent="." unique_id=1518637206]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 7
@@ -325,7 +326,7 @@ grow_vertical = 0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleToast")
 
-[node name="ToastLabel" type="Label" parent="ToastPanel"]
+[node name="ToastLabel" type="Label" parent="ToastPanel" unique_id=457873708]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.84, 0.9, 0.97, 1)
@@ -335,7 +336,8 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="WindowFrame" type="Control" parent="."]
+[node name="WindowFrame" type="Control" parent="." unique_id=278207126]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
