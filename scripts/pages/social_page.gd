@@ -9,7 +9,6 @@ extends VBoxContainer
 # live data; messaging, voice and friend suggestions have no server support
 # yet and say so.
 
-signal navigate(page: String)
 signal toast(message: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
@@ -71,7 +70,7 @@ func _ready() -> void:
 
 	PardexOnline.social_state_changed.connect(func(_state): _render())
 	PardexOnline.connection_state_changed.connect(_on_connection_state_changed)
-	PardexOnline.room_state_changed.connect(func(_room): _render())
+	PardexOnline.room_state_changed.connect(func(_room_state): _render())
 	PardexOnline.room_left.connect(_render)
 	PardexOnline.user_search_results.connect(_on_search_results)
 	PardexOnline.social_notice.connect(func(message: String): toast.emit(message))
@@ -266,7 +265,7 @@ func _render_online() -> void:
 
 func _friend_row(profile: Dictionary) -> Control:
 	var account_id := str(profile.get("account_id", ""))
-	var name := str(profile.get("display_name", "Pardus"))
+	var display_name := str(profile.get("display_name", "Pardus"))
 	var presence := _presence(profile)
 	var selected := account_id == _selected_id
 	var holder := UI.panel(0, UI.box(Color(UI.ACCENT, 0.1) if selected else Color(UI.SURFACE_2, 0.55), 10, Color(UI.ACCENT, 0.5) if selected else UI.BORDER, 1, 8))
@@ -280,13 +279,13 @@ func _friend_row(profile: Dictionary) -> Control:
 	)
 	var row := UI.hbox(10)
 	holder.add_child(row)
-	row.add_child(UI.avatar(name, 42, presence))
+	row.add_child(UI.avatar(display_name, 42, presence))
 	var text := UI.vbox(1)
 	text.alignment = BoxContainer.ALIGNMENT_CENTER
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	UI.expand(text)
 	var name_row := UI.hbox(8)
-	name_row.add_child(UI.label(name, 14, UI.TEXT, true))
+	name_row.add_child(UI.label(display_name, 14, UI.TEXT, true))
 	var dot := UI.label("●", 11, UI.presence_color(presence))
 	name_row.add_child(dot)
 	name_row.add_child(UI.expand(UI.fit(UI.label(UI.presence_label(presence), 12, UI.presence_color(presence)))))
@@ -395,12 +394,12 @@ func _render_chat() -> void:
 		_chat_header.add_child(UI.label("Sohbet", 16, UI.TEXT, true))
 		_chat_body.add_child(UI.empty_state("message", "Bir arkadaş seç", "Arkadaşların soldaki listede görünür."))
 		return
-	var name := str(profile.get("display_name", "Pardus"))
+	var display_name := str(profile.get("display_name", "Pardus"))
 	var presence := _presence(profile)
-	_chat_header.add_child(UI.avatar(name, 44, presence))
+	_chat_header.add_child(UI.avatar(display_name, 44, presence))
 	var titles := UI.vbox(1)
 	UI.expand(titles)
-	titles.add_child(UI.fit(UI.label(name, 16, UI.TEXT, true)))
+	titles.add_child(UI.fit(UI.label(display_name, 16, UI.TEXT, true)))
 	var status := UI.hbox(6)
 	status.add_child(UI.label("●", 11, UI.presence_color(presence)))
 	status.add_child(UI.expand(UI.fit(UI.label("%s - %s" % [UI.presence_label(presence), _activity(profile)] if presence == "in_game" else UI.presence_label(presence), 12, UI.TEXT_2))))
@@ -414,7 +413,7 @@ func _render_chat() -> void:
 	more.pressed.connect(func(): _open_friend_menu(profile, more))
 	_chat_header.add_child(more)
 
-	_chat_body.add_child(UI.empty_state("message", "%s ile sohbet yakında" % name,
+	_chat_body.add_child(UI.empty_state("message", "%s ile sohbet yakında" % display_name,
 		"PARDEX mesajlaşması henüz hazır değil. Şimdilik birlikte oynamak için partine davet edebilir ya da onun partisine katılabilirsin."))
 	var action := _row_action(profile)
 	if action != null and action.text != "Mesaj Gönder":
@@ -483,12 +482,12 @@ func _render_party() -> void:
 	for member in members:
 		if typeof(member) != TYPE_DICTIONARY:
 			continue
-		var ready := bool(member.get("ready", false))
-		ready_count += int(ready)
+		var member_ready := bool(member.get("ready", false))
+		ready_count += int(member_ready)
 		if str(member.get("user_id", "")) == PardexOnline.user_id:
-			self_ready = ready
-		var avatar := UI.avatar(str(member.get("display_name", "P")), 60, "online" if ready else "away", UI.ACCENT)
-		avatar.tooltip_text = "%s  •  %s" % [str(member.get("display_name", "")), "Hazır" if ready else "Bekliyor"]
+			self_ready = member_ready
+		var avatar := UI.avatar(str(member.get("display_name", "P")), 60, "online" if member_ready else "away", UI.ACCENT)
+		avatar.tooltip_text = "%s  •  %s" % [str(member.get("display_name", "")), "Hazır" if member_ready else "Bekliyor"]
 		avatar.mouse_filter = Control.MOUSE_FILTER_PASS
 		slots.add_child(avatar)
 	var max_players := int(room.get("max_players", 4)) if in_room else 4
