@@ -106,7 +106,9 @@ func _slides() -> Array:
 
 
 func _build_hero() -> Control:
-	var frame := UI.image(null, Vector2(0, 330), 16)
+	# Fixed height: every slide reserves two title lines and two body lines,
+	# so the banner does not change size when the carousel moves.
+	var frame := UI.image(null, Vector2(0, 400), 16)
 	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
 	_hero_art = frame.get_node("Art") as TextureRect
 	frame.add_child(UI.shade(0.95, true))
@@ -126,8 +128,13 @@ func _build_hero() -> Control:
 	tag_holder.add_child(tag_row)
 	text.add_child(tag_holder)
 	_hero_title = UI.label("", 42, UI.TEXT, true)
+	_hero_title.custom_minimum_size.y = 118
+	_hero_title.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	text.add_child(_hero_title)
 	_hero_body = UI.label("", 16, UI.TEXT_2)
+	_hero_body.custom_minimum_size.y = 54
+	_hero_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_hero_body.max_lines_visible = 2
 	text.add_child(_hero_body)
 	var actions := UI.hbox(14)
 	text.add_child(actions)
