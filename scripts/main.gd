@@ -61,6 +61,7 @@ var _session_poll_elapsed := 0.0
 
 func _ready() -> void:
 	_build_search()
+	_style_brand()
 	_load_settings()
 	_apply_window_preferences()
 	_create_pages()
@@ -81,12 +82,31 @@ func _ready() -> void:
 # ------------------------------------------------------------------ shell
 
 func _build_search() -> void:
-	search_field = UI.search_field("Oyun, tür, stüdyo veya içerik ara...", 46)
+	search_field = UI.search_field("Oyun, tür, stüdyo veya içerik ara...", 38)
 	search_field.name = "LibrarySearch"
 	search_field.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	search_field.add_theme_font_size_override("font_size", 15)
+	search_field.add_theme_font_size_override("font_size", 14)
 	search_field.text_changed.connect(_on_search_changed)
 	%SearchSlot.add_child(search_field)
+
+
+# PARDEX wordmark in Orbitron (SIL Open Font License, assets/fonts).
+func _style_brand() -> void:
+	var font_file := load("res://assets/fonts/Orbitron.ttf") as FontFile
+	if font_file == null:
+		return
+	var brand_font := FontVariation.new()
+	brand_font.base_font = font_file
+	brand_font.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): 800}
+	brand_font.spacing_glyph = 2
+	var title := %Brand.get_node("BrandTitle") as Label
+	title.add_theme_font_override("font", brand_font)
+	title.add_theme_font_size_override("font_size", 27)
+	title.add_theme_constant_override("outline_size", 0)
+	title.add_theme_color_override("font_shadow_color", Color(UI.ACCENT, 0.45))
+	title.add_theme_constant_override("shadow_outline_size", 6)
+	title.add_theme_constant_override("shadow_offset_x", 0)
+	title.add_theme_constant_override("shadow_offset_y", 0)
 
 
 func _create_pages() -> void:

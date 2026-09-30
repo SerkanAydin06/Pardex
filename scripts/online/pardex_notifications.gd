@@ -101,13 +101,13 @@ func _make_badge(parent_button: Button) -> PanelContainer:
 func _create_notification_button() -> void:
 	_notification_button = Button.new()
 	_notification_button.name = "NotificationButton"
-	_notification_button.custom_minimum_size = Vector2(48, 48)
+	_notification_button.custom_minimum_size = Vector2(36, 34)
 	_notification_button.focus_mode = Control.FOCUS_NONE
 	_notification_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	_notification_button.tooltip_text = "Bildirimler"
 	_notification_button.icon = PardexIcons.texture("bell", 52)
 	_notification_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_notification_button.add_theme_constant_override("icon_max_width", 26)
+	_notification_button.add_theme_constant_override("icon_max_width", 20)
 	_notification_button.add_theme_color_override("icon_normal_color", Color(0.86, 0.91, 0.98, 1.0))
 	_notification_button.add_theme_color_override("icon_hover_color", Color(1, 1, 1, 1))
 	_notification_button.add_theme_stylebox_override("normal", _notification_button_style(false))

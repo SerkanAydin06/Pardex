@@ -84,7 +84,7 @@ theme_override_constants/separation = 0
 
 [node name="Header" type="PanelContainer" parent="Root"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 76)
+custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleTopBar")
 
@@ -102,7 +102,7 @@ theme_override_constants/separation = 12
 
 [node name="Logo" type="TextureRect" parent="Root/Header/HeaderRow/Brand"]
 texture_filter = 4
-custom_minimum_size = Vector2(44, 44)
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -255,7 +255,7 @@ clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 16
+theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 18
 theme_override_constants/margin_bottom = 16
 
