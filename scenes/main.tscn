@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/svg/icon_friends.svg" id="8_friends"]
 [ext_resource type="Texture2D" path="res://assets/ui/svg/icon_profile.svg" id="9_profile"]
 [ext_resource type="Texture2D" path="res://assets/ui/svg/icon_settings.svg" id="10_settings"]
+[ext_resource type="Script" path="res://scripts/ui/pardex_shell_svg.gd" id="11_shell_svg"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.024, 0.039, 0.078, 1)
@@ -102,22 +103,23 @@ theme_override_constants/separation = 0
 
 [node name="BrandHeader" type="PanelContainer" parent="Root/Header"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(280, 76)
+custom_minimum_size = Vector2(258, 76)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBrandHeader")
+script = ExtResource("11_shell_svg")
 
 [node name="BrandMargin" type="MarginContainer" parent="Root/Header/BrandHeader"]
 layout_mode = 2
-theme_override_constants/margin_left = 22
+theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 18
+theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
 [node name="Brand" type="HBoxContainer" parent="Root/Header/BrandHeader/BrandMargin"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 12
 
 [node name="Logo" type="TextureRect" parent="Root/Header/BrandHeader/BrandMargin/Brand"]
 texture_filter = 2
@@ -179,7 +181,7 @@ theme_override_constants/separation = 0
 
 [node name="Sidebar" type="PanelContainer" parent="Root/Body"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(280, 0)
+custom_minimum_size = Vector2(258, 0)
 clip_contents = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleSidebar")
