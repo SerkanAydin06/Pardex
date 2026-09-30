@@ -252,12 +252,11 @@ func _apply_responsive_layout() -> void:
 		var button := get_node("%" + button_name) as Button
 		button.add_theme_font_size_override("font_size", 16 if narrow else 19)
 		button.add_theme_constant_override("h_separation", 14 if narrow else 20)
-	%WindowChrome.get_node("SecondaryAction").visible = false
+	%WindowChrome.get_node("SecondaryAction").visible = true
 	%WindowChrome.get_node("Separator").visible = true
 	var content_width := width - sidebar_width - float(outer * 2)
 	for page in [_store_page, _library_page, _social_page, _profile_page]:
 		page.apply_layout(content_width)
-
 
 # ------------------------------------------------------------------ presence
 
