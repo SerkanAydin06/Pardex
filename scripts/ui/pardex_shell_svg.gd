@@ -1,10 +1,10 @@
 extends PanelContainer
 
-# Keeps the desktop shell on real SVG assets even when legacy helpers assign
+# Keeps the desktop shell on real vector/raster brand assets even when legacy helpers assign
 # generated icon textures during _ready(). Attached to BrandHeader so it is
 # part of the scene and runs after the main shell has finished building.
 
-const BRAND := preload("res://assets/ui/svg/brand_pardex_symbol.svg")
+const BRAND := preload("res://assets/ui/brand_pardex_symbol_premium.png")
 const STORE := preload("res://assets/ui/svg/icon_store.svg")
 const LIBRARY := preload("res://assets/ui/svg/icon_library.svg")
 const FRIENDS := preload("res://assets/ui/svg/icon_friends.svg")
