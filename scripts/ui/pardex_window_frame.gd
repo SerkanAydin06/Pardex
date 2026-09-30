@@ -10,6 +10,9 @@ const CORNER := 12.0
 
 
 func _ready() -> void:
+	# main.tscn keeps this helper visually empty; it still must be visible so
+	# its child resize handles can receive mouse input around the window edges.
+	show()
 	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_RESIZE_DISABLED, false)
 	DisplayServer.window_set_flag(DisplayServer.WINDOW_FLAG_BORDERLESS, true)
 	_apply_app_icon()
@@ -23,6 +26,10 @@ func _ready() -> void:
 	(chrome.get_node("CloseButton") as Button).pressed.connect(
 		func(): main.call("_quit_application")
 	)
+	var secondary := chrome.get_node_or_null("SecondaryAction") as Button
+	if secondary != null:
+		secondary.tooltip_text = "PARDEX Ödülleri — yakında"
+		secondary.pressed.connect(func(): main.call("_show_toast", "PARDEX Ödülleri yakında."))
 	(main.get_node("%Header") as Control).gui_input.connect(_on_header_input)
 
 	_add_edge(DisplayServer.WINDOW_EDGE_TOP, CURSOR_VSIZE, Rect2(CORNER, 0, -CORNER, EDGE), Vector4(0, 0, 1, 0))
