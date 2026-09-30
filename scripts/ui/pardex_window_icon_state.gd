@@ -5,6 +5,9 @@ const RESTORE := preload("res://assets/ui/svg/window_restore.svg")
 
 func _ready() -> void:
 	pressed.connect(func(): call_deferred("_refresh_icon"))
+	var root_window := get_tree().root
+	if root_window != null and not root_window.size_changed.is_connected(_refresh_icon):
+		root_window.size_changed.connect(_refresh_icon)
 	call_deferred("_refresh_icon")
 
 
