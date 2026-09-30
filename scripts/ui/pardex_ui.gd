@@ -1,26 +1,33 @@
 extends RefCounted
 
-# PARDEX visual language: colors, panel/button styles and small widget
-# factories shared by the shell and every page, so all screens match the
-# reference design (dark navy surfaces, cyan accent, rounded cards).
+# PARDEX visual language: colors, panel/button styles and widget factories
+# shared by the shell and every page, matching the reference design (deep navy
+# glass panels, cyan accent, gold highlights, outline icons).
 
-const BG := Color("070b14")
-const SIDEBAR := Color("0a101c")
-const SURFACE := Color("0f1726")
-const SURFACE_2 := Color("131d2f")
-const BORDER := Color("1c2a40")
-const BORDER_HI := Color("2a4a70")
-const ACCENT := Color("2aa8ff")
-const ACCENT_DARK := Color("0f6fb8")
-const GOLD := Color("f2b544")
-const TEXT := Color("e8eef8")
-const TEXT_2 := Color("9aa8bd")
-const TEXT_3 := Color("67748a")
-const GREEN := Color("3ed27a")
-const AMBER := Color("f0b84f")
-const RED := Color("ff6b63")
+const Icons := preload("res://scripts/ui/pardex_icons.gd")
+
+const BG := Color("060a14")
+const SIDEBAR := Color("080d1a")
+const SURFACE := Color("0c1424")
+const SURFACE_2 := Color("111b30")
+const GLASS := Color(0.05, 0.08, 0.15, 0.78)
+const BORDER := Color("1a2944")
+const BORDER_HI := Color("2b4a78")
+const ACCENT := Color("27a9ff")
+const ACCENT_2 := Color("1686e0")
+const ACCENT_DARK := Color("0d4f8f")
+const GOLD := Color("f5b93c")
+const TEXT := Color("eef3fb")
+const TEXT_2 := Color("a3b1c8")
+const TEXT_3 := Color("6b7990")
+const GREEN := Color("35d07a")
+const AMBER := Color("f3b644")
+const RED := Color("ff5d5d")
 const CYAN := Color("5fd0ff")
+const PURPLE := Color("b06bff")
 
+
+# ------------------------------------------------------------------ styles
 
 static func box(bg: Color, radius := 12, border := Color.TRANSPARENT, border_width := 0, pad := 0) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
@@ -34,32 +41,24 @@ static func box(bg: Color, radius := 12, border := Color.TRANSPARENT, border_wid
 	return style
 
 
-static func card_style(pad := 14) -> StyleBoxFlat:
-	return box(SURFACE, 12, BORDER, 1, pad)
+static func card_style(pad := 14, radius := 12) -> StyleBoxFlat:
+	var style := box(Color(SURFACE, 0.92), radius, BORDER, 1, pad)
+	return style
 
+
+static func glow_style(pad := 0, radius := 12, color := ACCENT) -> StyleBoxFlat:
+	var style := box(Color(SURFACE, 0.95), radius, Color(color, 0.55), 1, pad)
+	style.shadow_color = Color(color, 0.18)
+	style.shadow_size = 10
+	return style
+
+
+# ------------------------------------------------------------------ layout
 
 static func panel(pad := 14, style: StyleBox = null) -> PanelContainer:
 	var container := PanelContainer.new()
 	container.add_theme_stylebox_override("panel", style if style != null else card_style(pad))
 	return container
-
-
-static func label(text: String, size := 14, color := TEXT, bold := false) -> Label:
-	var item := Label.new()
-	item.text = text
-	item.add_theme_font_size_override("font_size", size)
-	item.add_theme_color_override("font_color", color)
-	if bold:
-		item.add_theme_constant_override("outline_size", 1)
-		item.add_theme_color_override("font_outline_color", color)
-	return item
-
-
-# Single-line text that may be cut with "…" when its row is narrow. Only use it
-# where the parent chain gives the label the row's full width.
-static func fit(item: Label) -> Label:
-	item.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	return item
 
 
 static func vbox(separation := 8) -> VBoxContainer:
@@ -74,9 +73,26 @@ static func hbox(separation := 8) -> HBoxContainer:
 	return container
 
 
+static func margin(child: Control, left := 0, top := 0, right := 0, bottom := 0) -> MarginContainer:
+	var container := MarginContainer.new()
+	container.add_theme_constant_override("margin_left", left)
+	container.add_theme_constant_override("margin_top", top)
+	container.add_theme_constant_override("margin_right", right)
+	container.add_theme_constant_override("margin_bottom", bottom)
+	container.add_child(child)
+	return container
+
+
 static func spacer() -> Control:
 	var item := Control.new()
 	item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	item.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return item
+
+
+static func vspacer() -> Control:
+	var item := Control.new()
+	item.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	item.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return item
 
@@ -87,8 +103,98 @@ static func expand(control: Control, ratio := 1.0) -> Control:
 	return control
 
 
-# kind: "primary" (cyan), "gold", "ghost" (dark outline), "link" (text only)
-static func button(text: String, kind := "primary", font_size := 13, height := 36.0) -> Button:
+static func scroll_page(child: Control) -> ScrollContainer:
+	var scroll := ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	child.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(child)
+	return scroll
+
+
+static func divider() -> ColorRect:
+	var line := ColorRect.new()
+	line.color = BORDER
+	line.custom_minimum_size.y = 1
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return line
+
+
+static func clear(node: Node) -> void:
+	for child in node.get_children():
+		node.remove_child(child)
+		child.queue_free()
+
+
+# ------------------------------------------------------------------ text
+
+static func label(text: String, size := 14, color := TEXT, bold := false) -> Label:
+	var item := Label.new()
+	item.text = text
+	item.add_theme_font_size_override("font_size", size)
+	item.add_theme_color_override("font_color", color)
+	if bold:
+		item.add_theme_constant_override("outline_size", 1 if size < 22 else 2)
+		item.add_theme_color_override("font_outline_color", color)
+	return item
+
+
+# Single-line text that may be cut with "…". Only for labels whose parent
+# chain hands them the row's full width.
+static func fit(item: Label) -> Label:
+	item.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	item.clip_text = true
+	return item
+
+
+static func wrapped(item: Label) -> Label:
+	item.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	return item
+
+
+# ------------------------------------------------------------------ icons
+
+static func icon(name: String, size := 20, color := TEXT) -> TextureRect:
+	var rect := TextureRect.new()
+	rect.texture = Icons.texture(name, size * 2)
+	rect.custom_minimum_size = Vector2(size, size)
+	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	rect.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	rect.modulate = color
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	return rect
+
+
+# Rounded square holding an icon, like the stat and list tiles in the design.
+static func icon_tile(name: String, size := 44, color := ACCENT, bg := SURFACE_2) -> PanelContainer:
+	var tile := panel(0, box(bg, 10, BORDER, 1))
+	tile.custom_minimum_size = Vector2(size, size)
+	tile.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var center := CenterContainer.new()
+	center.add_child(icon(name, int(size * 0.5), color))
+	tile.add_child(center)
+	return tile
+
+
+static func _apply_icon(item: Button, icon_name: String, icon_size: int, color: Color) -> void:
+	if icon_name.is_empty():
+		return
+	item.icon = Icons.texture(icon_name, icon_size * 2)
+	item.expand_icon = false
+	item.add_theme_constant_override("icon_max_width", icon_size)
+	item.add_theme_constant_override("h_separation", 8)
+	for state in ["icon_normal_color", "icon_hover_color", "icon_pressed_color", "icon_focus_color"]:
+		item.add_theme_color_override(state, color)
+	item.add_theme_color_override("icon_disabled_color", TEXT_3)
+
+
+# ------------------------------------------------------------------ buttons
+
+# kind: "primary" (cyan), "gold", "ghost" (dark outline), "link" (text only),
+# "success" (green)
+static func button(text: String, kind := "primary", font_size := 13, height := 36.0, icon_name := "") -> Button:
 	var item := Button.new()
 	item.text = text
 	item.focus_mode = Control.FOCUS_NONE
@@ -96,27 +202,39 @@ static func button(text: String, kind := "primary", font_size := 13, height := 3
 	item.custom_minimum_size.y = height
 	item.add_theme_font_size_override("font_size", font_size)
 	var bg := ACCENT
-	var fg := Color("04121f")
-	var border := Color.TRANSPARENT
+	var fg := Color("031423")
+	var border := Color(ACCENT.lightened(0.3), 0.8)
 	match kind:
 		"gold":
 			bg = GOLD
-			fg = Color("1d1403")
+			fg = Color("241703")
+			border = GOLD.lightened(0.2)
+		"success":
+			bg = Color(GREEN, 0.22)
+			fg = GREEN.lightened(0.2)
+			border = Color(GREEN, 0.6)
 		"ghost":
-			bg = Color(1, 1, 1, 0.04)
+			bg = Color(SURFACE_2, 0.85)
 			fg = TEXT
 			border = BORDER_HI
 		"link":
 			bg = Color.TRANSPARENT
 			fg = ACCENT
-	var normal := box(bg, 8, border, 1 if border.a > 0 else 0)
+			border = Color.TRANSPARENT
+	var normal := box(bg, 9, border, 1 if border.a > 0 else 0)
 	normal.content_margin_left = 16
 	normal.content_margin_right = 16
+	if kind == "primary":
+		normal.shadow_color = Color(ACCENT, 0.28)
+		normal.shadow_size = 8
 	var hover := normal.duplicate() as StyleBoxFlat
-	hover.bg_color = bg.lightened(0.12) if kind != "link" else Color(1, 1, 1, 0.04)
+	hover.bg_color = bg.lightened(0.1) if kind != "link" else Color(1, 1, 1, 0.04)
+	if kind == "ghost":
+		hover.border_color = ACCENT
 	var disabled := normal.duplicate() as StyleBoxFlat
 	disabled.bg_color = Color(1, 1, 1, 0.05) if kind != "link" else Color.TRANSPARENT
 	disabled.border_color = BORDER
+	disabled.shadow_size = 0
 	item.add_theme_stylebox_override("normal", normal)
 	item.add_theme_stylebox_override("hover", hover)
 	item.add_theme_stylebox_override("pressed", hover)
@@ -125,21 +243,39 @@ static func button(text: String, kind := "primary", font_size := 13, height := 3
 	item.add_theme_color_override("font_hover_color", fg)
 	item.add_theme_color_override("font_pressed_color", fg)
 	item.add_theme_color_override("font_disabled_color", TEXT_3)
+	_apply_icon(item, icon_name, 16 if font_size < 15 else 18, fg)
 	return item
 
 
-static func icon_button(text: String, tooltip := "", size := 34.0) -> Button:
+static func link(text: String, font_size := 13) -> Button:
+	var item := button(text + "  ", "link", font_size, 24)
+	item.icon = Icons.texture("arrow_right", 28)
+	item.icon_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	item.add_theme_constant_override("icon_max_width", 14)
+	for state in ["icon_normal_color", "icon_hover_color", "icon_pressed_color"]:
+		item.add_theme_color_override(state, ACCENT)
+	var flat := box(Color.TRANSPARENT, 6)
+	for state in ["normal", "hover", "pressed"]:
+		item.add_theme_stylebox_override(state, flat)
+	return item
+
+
+static func icon_button(icon_name: String, tooltip := "", size := 36.0, color := TEXT_2, framed := false) -> Button:
 	var item := Button.new()
-	item.text = text
 	item.tooltip_text = tooltip
 	item.focus_mode = Control.FOCUS_NONE
 	item.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	item.custom_minimum_size = Vector2(size, size)
-	item.add_theme_font_size_override("font_size", 15)
-	item.add_theme_color_override("font_color", TEXT_2)
-	item.add_theme_color_override("font_hover_color", TEXT)
-	var normal := box(Color(1, 1, 1, 0.0), 8)
-	var hover := box(Color(1, 1, 1, 0.07), 8)
+	item.icon = Icons.texture(icon_name, int(size))
+	item.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	item.expand_icon = false
+	item.add_theme_constant_override("icon_max_width", int(size * 0.5))
+	item.add_theme_color_override("icon_normal_color", color)
+	item.add_theme_color_override("icon_hover_color", TEXT)
+	item.add_theme_color_override("icon_pressed_color", TEXT)
+	item.add_theme_color_override("icon_disabled_color", Color(TEXT_3, 0.6))
+	var normal := box(Color(SURFACE_2, 0.9) if framed else Color.TRANSPARENT, 9, BORDER if framed else Color.TRANSPARENT, 1 if framed else 0)
+	var hover := box(Color(1, 1, 1, 0.08), 9, BORDER_HI if framed else Color.TRANSPARENT, 1 if framed else 0)
 	item.add_theme_stylebox_override("normal", normal)
 	item.add_theme_stylebox_override("hover", hover)
 	item.add_theme_stylebox_override("pressed", hover)
@@ -147,21 +283,24 @@ static func icon_button(text: String, tooltip := "", size := 34.0) -> Button:
 	return item
 
 
-static func chip(text: String, active := false, font_size := 12) -> Button:
+# Segmented filter tab (Tümü / Yüklü / ...), optionally with an icon.
+static func segment(text: String, icon_name := "", active := false) -> Button:
 	var item := Button.new()
 	item.text = text
 	item.toggle_mode = true
 	item.button_pressed = active
 	item.focus_mode = Control.FOCUS_NONE
 	item.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	item.custom_minimum_size.y = 30
-	item.add_theme_font_size_override("font_size", font_size)
-	var normal := box(SURFACE_2, 8, BORDER, 1)
-	normal.content_margin_left = 14
-	normal.content_margin_right = 14
-	var on := box(ACCENT, 8)
-	on.content_margin_left = 14
-	on.content_margin_right = 14
+	item.custom_minimum_size.y = 42
+	item.add_theme_font_size_override("font_size", 13)
+	var normal := box(Color(SURFACE, 0.9), 8, BORDER, 1)
+	normal.content_margin_left = 18
+	normal.content_margin_right = 18
+	var on := box(ACCENT, 8, ACCENT.lightened(0.3), 1)
+	on.content_margin_left = 18
+	on.content_margin_right = 18
+	on.shadow_color = Color(ACCENT, 0.3)
+	on.shadow_size = 8
 	var hover := normal.duplicate() as StyleBoxFlat
 	hover.border_color = BORDER_HI
 	item.add_theme_stylebox_override("normal", normal)
@@ -170,24 +309,35 @@ static func chip(text: String, active := false, font_size := 12) -> Button:
 	item.add_theme_stylebox_override("hover_pressed", on)
 	item.add_theme_color_override("font_color", TEXT_2)
 	item.add_theme_color_override("font_hover_color", TEXT)
-	item.add_theme_color_override("font_pressed_color", Color("04121f"))
-	item.add_theme_color_override("font_hover_pressed_color", Color("04121f"))
+	item.add_theme_color_override("font_pressed_color", Color("031423"))
+	item.add_theme_color_override("font_hover_pressed_color", Color("031423"))
+	if not icon_name.is_empty():
+		_apply_icon(item, icon_name, 16, TEXT_2)
+		item.add_theme_color_override("icon_pressed_color", Color("031423"))
 	return item
 
 
-static func tag(text: String, color := ACCENT, font_size := 10) -> PanelContainer:
-	var style := box(Color(color, 0.16), 5, Color(color, 0.55), 1)
-	style.content_margin_left = 8
-	style.content_margin_right = 8
-	style.content_margin_top = 2
-	style.content_margin_bottom = 2
+# Small colored pill: "Yüklü", "Yeni", "Popüler", "Aktif"...
+static func pill(text: String, color := ACCENT, icon_name := "", font_size := 11, solid := false) -> PanelContainer:
+	var style := box(color if solid else Color(color, 0.18), 12, Color(color, 0.7), 1)
+	style.content_margin_left = 9
+	style.content_margin_right = 10
+	style.content_margin_top = 3
+	style.content_margin_bottom = 3
 	var holder := panel(0, style)
 	holder.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	holder.add_child(label(text, font_size, color.lightened(0.35)))
+	holder.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var row := hbox(5)
+	holder.add_child(row)
+	var fg := Color("06121f") if solid else color.lightened(0.35)
+	if not icon_name.is_empty():
+		row.add_child(icon(icon_name, font_size + 2, fg))
+	row.add_child(label(text, font_size, fg, solid))
 	return holder
 
 
-static func search_field(placeholder: String, height := 36.0) -> LineEdit:
+static func search_field(placeholder: String, height := 40.0) -> LineEdit:
 	var field := LineEdit.new()
 	field.placeholder_text = placeholder
 	field.custom_minimum_size.y = height
@@ -195,31 +345,34 @@ static func search_field(placeholder: String, height := 36.0) -> LineEdit:
 	field.add_theme_font_size_override("font_size", 13)
 	field.add_theme_color_override("font_color", TEXT)
 	field.add_theme_color_override("font_placeholder_color", TEXT_3)
-	var normal := box(SURFACE_2, 9, BORDER, 1)
-	normal.content_margin_left = 34
+	var normal := box(Color(SURFACE, 0.9), 10, BORDER, 1)
+	normal.content_margin_left = 40
 	normal.content_margin_right = 10
 	var focus := normal.duplicate() as StyleBoxFlat
-	focus.border_color = ACCENT_DARK
+	focus.border_color = ACCENT_2
 	field.add_theme_stylebox_override("normal", normal)
 	field.add_theme_stylebox_override("focus", focus)
 	field.add_theme_stylebox_override("read_only", normal)
-	var glass := label("⌕", 17, TEXT_3)
+	var glass := icon("search", 18, TEXT_2)
 	glass.set_anchors_preset(Control.PRESET_CENTER_LEFT)
-	glass.offset_left = 12
-	glass.offset_top = -12
-	glass.offset_bottom = 12
-	glass.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	glass.offset_left = 14
+	glass.offset_top = -9
+	glass.offset_right = 32
+	glass.offset_bottom = 9
 	field.add_child(glass)
 	return field
 
 
-# Rounded image (poster/banner/thumbnail) that fills its box, cropping to cover.
+# ------------------------------------------------------------------ media
+
+# Rounded image that fills its box, cropping to cover.
 static func image(texture: Texture2D, min_size := Vector2.ZERO, radius := 10) -> PanelContainer:
 	var frame := PanelContainer.new()
 	frame.clip_children = CanvasItem.CLIP_CHILDREN_AND_DRAW
 	frame.custom_minimum_size = min_size
 	frame.add_theme_stylebox_override("panel", box(SURFACE_2, radius))
 	var rect := TextureRect.new()
+	rect.name = "Art"
 	rect.texture = texture
 	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
@@ -229,19 +382,19 @@ static func image(texture: Texture2D, min_size := Vector2.ZERO, radius := 10) ->
 	return frame
 
 
-# Vertical fade over artwork so text on top stays readable.
-static func shade(strength := 0.85, from_left := false) -> TextureRect:
+# Fade over artwork so text on top stays readable.
+static func shade(strength := 0.85, from_left := false, color := BG) -> TextureRect:
 	var gradient := Gradient.new()
-	gradient.set_color(0, Color(BG, strength))
-	gradient.set_color(1, Color(BG, 0.0))
+	gradient.set_color(0, Color(color, strength))
+	gradient.set_color(1, Color(color, 0.0))
 	var texture := GradientTexture2D.new()
 	texture.gradient = gradient
 	if from_left:
 		texture.fill_from = Vector2(0, 0.5)
-		texture.fill_to = Vector2(0.75, 0.5)
+		texture.fill_to = Vector2(0.72, 0.5)
 	else:
 		texture.fill_from = Vector2(0.5, 1.0)
-		texture.fill_to = Vector2(0.5, 0.35)
+		texture.fill_to = Vector2(0.5, 0.3)
 	var rect := TextureRect.new()
 	rect.texture = texture
 	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -253,21 +406,23 @@ static func shade(strength := 0.85, from_left := false) -> TextureRect:
 static func avatar(name: String, size := 40.0, presence := "", ring := Color.TRANSPARENT) -> Control:
 	var holder := Control.new()
 	holder.custom_minimum_size = Vector2(size, size)
+	holder.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var circle := Label.new()
 	circle.set_anchors_preset(Control.PRESET_FULL_RECT)
-	circle.text = name.strip_edges().left(1).to_upper() if not name.strip_edges().is_empty() else "P"
+	var clean := name.strip_edges()
+	circle.text = clean.left(1).to_upper() if not clean.is_empty() else "P"
 	circle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	circle.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	circle.add_theme_font_size_override("font_size", int(size * 0.42))
-	circle.add_theme_color_override("font_color", Color("dff4ff"))
-	var hue := float(hash(name) % 360) / 360.0
-	var fill := Color.from_hsv(hue, 0.45, 0.42)
-	var style := box(fill, int(size / 2.0), ring, 2 if ring.a > 0 else 0)
+	circle.add_theme_color_override("font_color", Color("e8f6ff"))
+	var hue := float(absi(hash(clean)) % 360) / 360.0
+	var fill := Color.from_hsv(hue, 0.5, 0.45)
+	var style := box(fill, int(size / 2.0), ring, maxi(2, int(size / 22.0)) if ring.a > 0 else 0)
 	circle.add_theme_stylebox_override("normal", style)
 	holder.add_child(circle)
 	if not presence.is_empty():
-		var dot_size := maxf(9.0, size * 0.26)
+		var dot_size := maxf(10.0, size * 0.27)
 		var dot := Panel.new()
 		dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		dot.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
@@ -285,58 +440,75 @@ static func progress(value: float, color := ACCENT, height := 5.0) -> ProgressBa
 	bar.max_value = 1.0
 	bar.value = clampf(value, 0.0, 1.0)
 	bar.custom_minimum_size.y = height
+	bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	bar.add_theme_stylebox_override("background", box(Color(1, 1, 1, 0.08), int(height)))
 	bar.add_theme_stylebox_override("fill", box(color, int(height)))
 	return bar
 
 
-# Title row used at the top of cards: "Başlık ............ Tümünü Gör →"
-static func section_header(title: String, link_text := "", title_size := 15) -> HBoxContainer:
-	var row := hbox(8)
-	row.add_child(expand(label(title, title_size, TEXT, true)))
+# ------------------------------------------------------------------ blocks
+
+# "Başlık (3) ............ Tümünü Gör →"
+static func section_header(title: String, link_text := "", title_size := 18, icon_name := "", icon_color := ACCENT) -> HBoxContainer:
+	var row := hbox(10)
+	if not icon_name.is_empty():
+		row.add_child(icon(icon_name, title_size + 2, icon_color))
+	var heading := label(title, title_size, TEXT, true)
+	heading.name = "Title"
+	row.add_child(heading)
+	var fill := spacer()
+	fill.name = "Fill"
+	row.add_child(fill)
 	if not link_text.is_empty():
-		var link := button(link_text, "link", 12, 24)
-		link.name = "Link"
-		row.add_child(link)
+		var go := link(link_text, 13)
+		go.name = "Link"
+		row.add_child(go)
 	return row
 
 
-static func empty_state(icon: String, title: String, body := "") -> VBoxContainer:
-	var column := vbox(6)
+# Icon tile + big value + caption (profile and library stats).
+static func stat_tile(icon_name: String, value: String, caption: String, color := ACCENT) -> PanelContainer:
+	var card := panel(0, box(Color(SURFACE, 0.85), 12, BORDER, 1, 12))
+	var row := hbox(12)
+	card.add_child(row)
+	row.add_child(icon_tile(icon_name, 46, color))
+	var text := vbox(0)
+	text.alignment = BoxContainer.ALIGNMENT_CENTER
+	text.add_child(label(value, 22, TEXT, true))
+	text.add_child(fit(label(caption, 12, TEXT_2)))
+	row.add_child(expand(text))
+	return card
+
+
+static func empty_state(icon_name: String, title: String, body := "", compact := false) -> VBoxContainer:
+	var column := vbox(4 if compact else 8)
 	column.alignment = BoxContainer.ALIGNMENT_CENTER
 	column.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var glyph := label(icon, 26, TEXT_3)
-	glyph.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var glyph := CenterContainer.new()
+	glyph.add_child(icon(icon_name, 22 if compact else 30, TEXT_3))
 	column.add_child(glyph)
-	var heading := label(title, 14, TEXT_2)
+	var heading := label(title, 13 if compact else 14, TEXT_2)
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(heading)
 	if not body.is_empty():
-		var detail := label(body, 12, TEXT_3)
+		var detail := wrapped(label(body, 12, TEXT_3))
 		detail.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		column.add_child(detail)
 	return column
-
-
-static func clear(node: Node) -> void:
-	for child in node.get_children():
-		node.remove_child(child)
-		child.queue_free()
 
 
 static func presence_label(presence: String) -> String:
 	match presence:
 		"in_game": return "Oyunda"
 		"busy": return "Meşgul"
-		"away": return "Uzakta"
+		"away": return "Boşta"
 		"online": return "Çevrimiçi"
 		_: return "Çevrimdışı"
 
 
 static func presence_color(presence: String) -> Color:
 	match presence:
-		"in_game": return CYAN
+		"in_game": return GREEN
 		"busy": return RED
 		"away": return AMBER
 		"online": return GREEN

@@ -3,6 +3,8 @@ extends Node
 # The main scene intentionally keeps its editor workflow for sibling Godot
 # projects. This autoload handles exported PARDEX builds, where the launcher
 # must start a packaged game executable instead.
+signal game_process_started(game_id: String, pid: int)
+
 const KORSAN_GAME_ID := "korsanlar"
 const KORSAN_EXECUTABLE_ENV := "PARDEX_KORSAN_EXECUTABLE"
 
@@ -44,6 +46,7 @@ func _on_game_start_requested(payload: Dictionary) -> void:
 		_show_toast(main_scene, "Korsanların Hazinesi paketi başlatılamadı.")
 		return
 
+	game_process_started.emit(KORSAN_GAME_ID, pid)
 	_show_toast(main_scene, "Korsanların Hazinesi PARDEX oturumuyla başlatıldı.")
 
 
