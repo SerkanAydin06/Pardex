@@ -1,0 +1,29 @@
+{
+  "model": "sonnet",
+  "effortLevel": "medium",
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
+    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "6000",
+    "DISABLE_NON_ESSENTIAL_MODEL_CALLS": "1"
+  },
+  "permissions": {
+    "deny": [
+      "Read(.godot/**)",
+      "Read(node_modules/**)",
+      "Read(server/node_modules/**)",
+      "Read(server/data/**)",
+      "Read(.git/**)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/*.key)",
+      "Read(**/*.pem)"
+    ],
+    "ask": [
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -fd:*)",
+      "Bash(rm -rf:*)",
+      "Bash(npm publish:*)"
+    ]
+  }
+}
