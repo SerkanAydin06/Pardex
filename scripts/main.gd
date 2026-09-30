@@ -276,7 +276,8 @@ func _open_presence_menu() -> void:
 		_show_toast("Durum seçmek için PARDEX Online bağlantısı gerekli.")
 		return
 	var rect := online_state_button.get_global_rect()
-	_presence_menu.popup(Rect2i(Vector2i(rect.position.x, rect.position.y - 96), Vector2i.ZERO))
+	var popup_position := Vector2i(roundi(rect.position.x), roundi(rect.position.y - 96.0))
+	_presence_menu.popup(Rect2i(popup_position, Vector2i.ZERO))
 
 
 func _render_presence() -> void:
