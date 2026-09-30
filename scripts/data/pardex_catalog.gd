@@ -216,20 +216,20 @@ static func ago(unix_time: int) -> String:
 	if seconds < 60:
 		return "Az önce"
 	if seconds < 3600:
-		return "%d dk önce" % (seconds / 60)
+		return "%d dk önce" % floori(float(seconds) / 60.0)
 	if seconds < 86400:
-		return "%d saat önce" % (seconds / 3600)
+		return "%d saat önce" % floori(float(seconds) / 3600.0)
 	if seconds < 86400 * 7:
-		return "%d gün önce" % (seconds / 86400)
-	return "%d hafta önce" % (seconds / (86400 * 7))
+		return "%d gün önce" % floori(float(seconds) / 86400.0)
+	return "%d hafta önce" % floori(float(seconds) / float(86400 * 7))
 
 
 static func hours(seconds: int) -> String:
 	if seconds <= 0:
 		return "0 saat"
 	if seconds < 3600:
-		return "%d dk" % maxi(1, seconds / 60)
-	return "%d saat" % (seconds / 3600)
+		return "%d dk" % maxi(1, floori(float(seconds) / 60.0))
+	return "%d saat" % floori(float(seconds) / 3600.0)
 
 
 static func date_text(unix_time: int) -> String:
