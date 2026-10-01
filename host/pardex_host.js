@@ -60,15 +60,36 @@ function saveConfig() {
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), "utf8");
 }
 
-function findKorsanExecutable() {
+// The game server runs either from an exported KorsanlarinHazinesi.exe or,
+// while there is no export yet, from the Godot project folder via Godot.
+function isProjectFolder(target) {
+  return Boolean(target) && fs.existsSync(path.join(target, "project.godot"));
+}
+
+function findKorsanGame() {
   const name = IS_WINDOWS ? "KorsanlarinHazinesi.exe" : "KorsanlarinHazinesi.x86_64";
+  const folders = [
+    path.join(ROOT, "..", "Korsanlarin-Hazinesi"),
+    path.join(ROOT, "..", "korsanlarin-hazinesi"),
+  ];
   const candidates = [
-    path.join(ROOT, "..", "Korsanlarin-Hazinesi", "build", name),
-    path.join(ROOT, "..", "korsanlarin-hazinesi", "build", name),
+    ...folders.map((folder) => path.join(folder, "build", name)),
     path.join(ROOT, "build", "games", "korsanlar", name),
     path.join(ROOT, "games", "korsanlar", name),
+    ...folders,
   ];
-  return candidates.find((candidate) => fs.existsSync(candidate)) || "";
+  return candidates.find((candidate) => isProjectFolder(candidate) || (fs.existsSync(candidate) && fs.statSync(candidate).isFile())) || "";
+}
+
+function cleanPath(answer) {
+  // Accept a dragged project.godot file as its folder.
+  const value = answer.trim().replace(/^"|"$/g, "");
+  return path.basename(value).toLowerCase() === "project.godot" ? path.dirname(value) : value;
+}
+
+function gameIsConfigured() {
+  if (!config.korsan_exe || !fs.existsSync(config.korsan_exe)) return false;
+  return !isProjectFolder(config.korsan_exe) || Boolean(config.godot_exe && fs.existsSync(config.godot_exe));
 }
 
 async function setupConfig() {
@@ -79,17 +100,26 @@ async function setupConfig() {
     changed = true;
   }
   if (config.korsan_exe === undefined || (config.korsan_exe && !fs.existsSync(config.korsan_exe))) {
-    const found = findKorsanExecutable();
-    if (found) {
-      config.korsan_exe = found;
-    } else {
+    config.korsan_exe = findKorsanGame();
+    if (!config.korsan_exe) {
       console.log("");
-      log("Korsanların Hazinesi oyun sunucusu için dışa aktarılmış oyun dosyası gerekli.");
-      log("Örnek: C:\\Oyunlar\\Korsanlarin-Hazinesi\\build\\KorsanlarinHazinesi.exe");
-      const answer = await ask("KorsanlarinHazinesi.exe yolu (atlamak için boş bırak): ");
+      log("Korsanların Hazinesi oyun sunucusu için oyunun yerini bilmem gerekiyor.");
+      log("Exe yoksa Godot'ta açtığın proje klasörünü yaz (içinde project.godot olan klasör).");
+      log("Örnek: C:\\Oyunlar\\Korsanlarin-Hazinesi");
+      const answer = cleanPath(await ask("Oyun proje klasörü ya da KorsanlarinHazinesi.exe (atlamak için boş bırak): "));
       config.korsan_exe = answer && fs.existsSync(answer) ? answer : "";
-      if (answer && !config.korsan_exe) log("Dosya bulunamadı; oyun sunucusu bu sefer açılmayacak.");
+      if (answer && !config.korsan_exe) log("Bulunamadı; oyun sunucusu bu sefer açılmayacak.");
     }
+    changed = true;
+  }
+  if (isProjectFolder(config.korsan_exe) && !(config.godot_exe && fs.existsSync(config.godot_exe))) {
+    console.log("");
+    log("Oyunu proje klasöründen açmak için Godot programının yeri gerekiyor.");
+    log("Godot'u açtığın .exe dosyasını bu pencereye sürükleyip bırakabilirsin.");
+    log("Örnek: C:\\Godot\\Godot_v4.7.2-stable_win64.exe");
+    const answer = cleanPath(await ask("Godot .exe yolu: "));
+    config.godot_exe = answer && fs.existsSync(answer) ? answer : "";
+    if (!config.godot_exe) log("Godot bulunamadı; oyun sunucusu bu sefer açılmayacak.");
     changed = true;
   }
   if (!LOCAL_ONLY && !config.github_token) {
@@ -191,20 +221,24 @@ async function waitForHealth() {
 }
 
 function startGameServer() {
-  if (!config.korsan_exe) return false;
+  if (!gameIsConfigured()) return false;
   const env = {
     ...process.env,
     PARDEX_GAME_SERVER_TOKEN: config.game_token,
     PARDEX_SESSION: "*",
   };
-  track("Korsanların Hazinesi oyun sunucusu", spawn(config.korsan_exe, [
+  const fromProject = isProjectFolder(config.korsan_exe);
+  const program = fromProject ? config.godot_exe : config.korsan_exe;
+  const cwd = fromProject ? config.korsan_exe : path.dirname(config.korsan_exe);
+  track("Korsanların Hazinesi oyun sunucusu", spawn(program, [
     "--headless",
+    ...(fromProject ? ["--path", config.korsan_exe] : []),
     "res://scenes/pardex_dedicated_server.tscn",
     "--",
     "--pardex-dedicated",
     `--pardex-port=${GAME_PORT}`,
     `--pardex-online-server=ws://127.0.0.1:${ONLINE_PORT}`,
-  ], { cwd: path.dirname(config.korsan_exe), env, stdio: ["ignore", "inherit", "inherit"], windowsHide: true }), false);
+  ], { cwd, env, stdio: ["ignore", "inherit", "inherit"], windowsHide: true }), false);
   return true;
 }
 
@@ -278,12 +312,12 @@ async function main() {
   ensureServerDependencies();
 
   let onlineUrl = `ws://127.0.0.1:${ONLINE_PORT}`;
-  let gameUrl = config.korsan_exe ? `ws://127.0.0.1:${GAME_PORT}` : "";
+  let gameUrl = gameIsConfigured() ? `ws://127.0.0.1:${GAME_PORT}` : "";
   if (!LOCAL_ONLY) {
     const cloudflared = await ensureCloudflared();
     log("İnternet tünelleri açılıyor...");
     const tunnels = [openTunnel(cloudflared, ONLINE_PORT, "PARDEX tüneli")];
-    if (config.korsan_exe) tunnels.push(openTunnel(cloudflared, GAME_PORT, "Oyun tüneli"));
+    if (gameIsConfigured()) tunnels.push(openTunnel(cloudflared, GAME_PORT, "Oyun tüneli"));
     [onlineUrl, gameUrl = ""] = await Promise.all(tunnels);
   }
 
@@ -299,7 +333,7 @@ async function main() {
   console.log("");
   log("SUNUCU AÇIK");
   log(`PARDEX adresi : ${onlineUrl}`);
-  log(gameStarted ? `Oyun sunucusu: ${gameUrl}` : "Oyun sunucusu: kapalı (KorsanlarinHazinesi.exe ayarlanmadı)");
+  log(gameStarted ? `Oyun sunucusu: ${gameUrl}` : "Oyun sunucusu: kapalı (oyun yolu ayarlanmadı)");
   log(LOCAL_ONLY
     ? "Yerel test modu: yalnızca bu bilgisayar bağlanabilir."
     : "Arkadaşların PARDEX'i açınca otomatik bağlanır. Bu pencere açık kaldıkça sunucu çalışır.");
