@@ -122,10 +122,14 @@ func _create_notification_button() -> void:
 		_header_row.move_child(_notification_button, window_chrome.get_index())
 
 	_notification_button_badge = _make_badge(_notification_button)
-	_notification_button_badge.offset_left = -22.0
-	_notification_button_badge.offset_top = -18.0
-	_notification_button_badge.offset_right = 2.0
-	_notification_button_badge.offset_bottom = 6.0
+	_notification_button_badge.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_notification_button_badge.offset_left = -12.0
+	_notification_button_badge.offset_top = -4.0
+	_notification_button_badge.offset_right = 6.0
+	_notification_button_badge.offset_bottom = 12.0
+	var bell_count := _notification_button_badge.get_node("Count") as Label
+	bell_count.custom_minimum_size = Vector2(16, 16)
+	bell_count.add_theme_font_size_override("font_size", 10)
 
 
 func _create_notification_panel() -> void:

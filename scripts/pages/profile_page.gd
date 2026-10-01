@@ -67,7 +67,7 @@ func refresh() -> void:
 
 func apply_layout(content_width: float) -> void:
 	_columns.vertical = content_width < 1000.0
-	_right.custom_minimum_size.x = 0.0 if _columns.vertical else clampf(content_width * 0.28, 320.0, 420.0)
+	_right.custom_minimum_size.x = 0.0 if _columns.vertical else clampf(content_width * 0.3, 340.0, 420.0)
 	_right.size_flags_horizontal = Control.SIZE_EXPAND_FILL if _columns.vertical else Control.SIZE_FILL
 
 
@@ -87,13 +87,7 @@ func _build_banner() -> Control:
 	row.add_child(text)
 	_name_label = UI.label("", 42, UI.TEXT, true)
 	text.add_child(_name_label)
-	var level_row := UI.hbox(12)
-	level_row.add_child(UI.pill("Seviye yakında", UI.ACCENT, "", 13, true))
-	var bar := UI.progress(0.0, UI.ACCENT, 6)
-	bar.custom_minimum_size.x = 200
-	level_row.add_child(bar)
-	level_row.add_child(UI.label("0 XP", 12, UI.TEXT_2))
-	text.add_child(level_row)
+	text.add_child(UI.pill("Seviye sistemi yakında", UI.ACCENT, "trophy", 12, true))
 	text.add_child(UI.label("“Oyunlar daha güzel, birlikte oynayınca.”", 16, UI.TEXT))
 	var bottom := UI.hbox(14)
 	_status_row = UI.hbox(8)
@@ -115,8 +109,8 @@ func _render_identity() -> void:
 	var avatar := UI.avatar(display_name, 176, presence, UI.ACCENT)
 	_avatar_slot.add_child(avatar)
 	UI.clear(_status_row)
-	_status_row.add_child(UI.label("●", 16, UI.presence_color(presence)))
-	_status_row.add_child(UI.label(UI.presence_label(presence), 16, UI.presence_color(presence)))
+	var status_color := UI.presence_color(presence) if presence != "offline" else UI.TEXT_2
+	_status_row.add_child(UI.pill(UI.presence_label(presence), status_color, "", 13))
 
 
 func _render_stats() -> void:
@@ -125,7 +119,7 @@ func _render_stats() -> void:
 	for stat in [
 		["gamepad", str(Catalog.GAMES.size()), "Oyun Sayısı", UI.ACCENT],
 		["trophy", "0", "Başarım", UI.GOLD],
-		["clock", Catalog.hours(Catalog.total_playtime()), "Toplam Oynama Süresi", UI.ACCENT],
+		["clock", Catalog.hours(Catalog.total_playtime()), "Oynama Süresi", UI.ACCENT],
 		["friends", str((friends as Array).size() if typeof(friends) == TYPE_ARRAY else 0), "Arkadaş Sayısı", UI.ACCENT],
 	]:
 		_stats_row.add_child(UI.expand(UI.stat_tile(str(stat[0]), str(stat[1]), str(stat[2]), stat[3])))
@@ -254,11 +248,11 @@ func _render_account() -> void:
 	_account_list.add_child(UI.divider())
 	_account_list.add_child(_account_row("calendar", Catalog.date_text(Catalog.joined_at()), "PARDEX'e katıldı"))
 	_account_list.add_child(UI.divider())
-	var recovery := UI.link("Kod oluştur", 12)
+	var recovery := UI.link("Oluştur", 12)
 	recovery.pressed.connect(func(): navigate.emit("settings"))
-	_account_list.add_child(_account_row("shield", "Hesap Kurtarma", "Kurtarma koduyla hesabını başka bilgisayara taşı", recovery))
+	_account_list.add_child(_account_row("shield", "Hesap Kurtarma", "Kurtarma kodu ile taşı", recovery))
 	_account_list.add_child(UI.divider())
-	var plus_row := _account_row("crown", "PARDEX Plus", "Daha fazla ayrıcalık yakında!", UI.pill("Yakında", UI.GOLD, "", 11), UI.GOLD)
+	var plus_row := _account_row("crown", "PARDEX Plus", "Ayrıcalıklar yakında", UI.pill("Yakında", UI.GOLD, "", 11), UI.GOLD)
 	_account_list.add_child(plus_row)
 
 

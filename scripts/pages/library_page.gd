@@ -87,7 +87,7 @@ func apply_layout(content_width: float) -> void:
 		control.custom_minimum_size.x = 0.0 if _top.vertical else clampf(content_width * 0.32, 320.0, 460.0)
 	_grid.columns = 1 if _list_view else clampi(floori((content_width + 14.0) / 210.0), 2, 6)
 	if _toolbar != null:
-		_toolbar.vertical = content_width < 1180.0
+		_toolbar.vertical = content_width < 1040.0
 
 
 # ------------------------------------------------------------------ data
@@ -142,8 +142,8 @@ func _build_hero() -> Control:
 func _render_stats() -> void:
 	UI.clear(_stats_row)
 	for stat in [
-		["gamepad", str(_count("all")), "Sahip Olunan Oyun", UI.ACCENT],
-		["download", str(_count("installed")), "Yüklü Oyun", UI.ACCENT],
+		["gamepad", str(_count("all")), "Sahip Olunan", UI.ACCENT],
+		["download", str(_count("installed")), "Yüklü", UI.ACCENT],
 		["clock", str(_count("recent")), "Son Oynanan", UI.ACCENT],
 		["heart", str(_count("favorites")), "Favoriler", UI.RED],
 	]:
@@ -200,7 +200,7 @@ func _build_toolbar() -> Control:
 		_filter_buttons[entry[0]] = segment
 	bar.add_child(UI.spacer())
 	var search := UI.search_field("Kütüphanede ara...", 42)
-	search.custom_minimum_size.x = 220
+	search.custom_minimum_size.x = 200
 	search.text_changed.connect(set_query)
 	bar.add_child(search)
 	var sort := OptionButton.new()

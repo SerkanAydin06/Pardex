@@ -14,7 +14,7 @@ const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const SLIDE_SECONDS := 8.0
 const HERO_HEIGHT := 300.0
 const HERO_TITLE_HEIGHT := 80.0
-const HERO_BODY_HEIGHT := 38.0
+const HERO_BODY_HEIGHT := 46.0
 
 var _slide := 0
 var _hero_art: TextureRect
@@ -153,6 +153,10 @@ func _build_hero() -> Control:
 	_hero_body.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	body_slot.add_child(_hero_body)
 
+	var gap := Control.new()
+	gap.custom_minimum_size.y = 10
+	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text.add_child(gap)
 	var actions := UI.hbox(12)
 	text.add_child(actions)
 	var explore := UI.button("Şimdi İncele", "primary", 14, 44, "arrow_right")
@@ -264,7 +268,6 @@ func _availability(entry: Dictionary) -> Control:
 	var color: Color = {"green": UI.GREEN, "amber": UI.AMBER, "muted": UI.TEXT_3}[state[2]]
 	var row := UI.hbox(10)
 	row.add_child(UI.pill(str(state[0]), color, str(state[1]), 12, state[2] == "green"))
-	row.add_child(UI.label("Oynanabilir" if bool(entry["playable"]) else "Çok yakında", 14, UI.TEXT, true))
 	return row
 
 
@@ -332,7 +335,7 @@ func _new_card(entry: Dictionary) -> Control:
 	UI.expand(text)
 	text.add_child(UI.fit(UI.label(str(entry["title"]), 14, UI.TEXT, true)))
 	text.add_child(UI.fit(UI.label("  ".join(entry["genres"]), 12, UI.TEXT_3)))
-	text.add_child(UI.label("Oynanabilir" if bool(entry["playable"]) else "Çok yakında", 14, UI.TEXT, true))
+	text.add_child(_availability(entry))
 	row.add_child(text)
 	var heart := _heart(game_id, 32)
 	heart.size_flags_vertical = Control.SIZE_SHRINK_BEGIN

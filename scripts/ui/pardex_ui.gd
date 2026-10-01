@@ -53,6 +53,72 @@ static func glow_style(pad := 0, radius := 12, color := ACCENT) -> StyleBoxFlat:
 	return style
 
 
+# ------------------------------------------------------------------ theme
+
+# App-wide defaults: thin rounded scrollbars, readable base text, and the
+# same inputs/buttons the pages use, so older scene screens match too.
+static func app_theme() -> Theme:
+	var theme := Theme.new()
+	theme.default_font_size = 14
+	for bar in ["VScrollBar", "HScrollBar"]:
+		var track := box(Color(1, 1, 1, 0.03), 4)
+		track.set_content_margin_all(2)
+		theme.set_stylebox("scroll", bar, track)
+		theme.set_stylebox("scroll_focus", bar, track)
+		theme.set_stylebox("grabber", bar, box(Color(BORDER_HI, 0.9), 4))
+		theme.set_stylebox("grabber_highlight", bar, box(ACCENT_DARK, 4))
+		theme.set_stylebox("grabber_pressed", bar, box(ACCENT_2, 4))
+	var field := box(Color(SURFACE, 0.95), 10, BORDER, 1, 0)
+	field.content_margin_left = 14
+	field.content_margin_right = 14
+	var field_focus := field.duplicate() as StyleBoxFlat
+	field_focus.border_color = ACCENT_2
+	theme.set_stylebox("normal", "LineEdit", field)
+	theme.set_stylebox("focus", "LineEdit", field_focus)
+	theme.set_stylebox("read_only", "LineEdit", field)
+	theme.set_color("font_color", "LineEdit", TEXT)
+	theme.set_color("font_placeholder_color", "LineEdit", TEXT_3)
+	theme.set_font_size("font_size", "LineEdit", 14)
+	var popup := box(SURFACE_2, 10, BORDER_HI, 1, 6)
+	theme.set_stylebox("panel", "PopupMenu", popup)
+	theme.set_stylebox("hover", "PopupMenu", box(Color(ACCENT, 0.18), 6))
+	theme.set_color("font_color", "PopupMenu", TEXT)
+	theme.set_color("font_hover_color", "PopupMenu", TEXT)
+	theme.set_font_size("font_size", "PopupMenu", 14)
+	theme.set_stylebox("panel", "PopupPanel", popup)
+	theme.set_stylebox("panel", "AcceptDialog", box(SURFACE, 12, BORDER_HI, 1, 16))
+	theme.set_stylebox("embedded_border", "Window", box(SURFACE, 12, BORDER_HI, 1, 0))
+	theme.set_color("title_color", "Window", TEXT)
+	return theme
+
+
+# Restyle a scene-built screen (Ayarlar) to the shared card/button language.
+static func restyle_screen(node: Node) -> void:
+	for child in node.get_children():
+		if child is PanelContainer and not (child.get_parent() is PanelContainer):
+			(child as PanelContainer).add_theme_stylebox_override("panel", card_style(20, 14))
+		elif child is CheckButton:
+			pass
+		elif child is Button:
+			var source := child as Button
+			var kind := "primary" if not source.disabled else "ghost"
+			var styled := button(source.text, kind, 13, 42)
+			for state in ["normal", "hover", "pressed", "disabled"]:
+				source.add_theme_stylebox_override(state, styled.get_theme_stylebox(state))
+			for color_name in ["font_color", "font_hover_color", "font_pressed_color", "font_disabled_color"]:
+				source.add_theme_color_override(color_name, styled.get_theme_color(color_name))
+			source.add_theme_font_size_override("font_size", 13)
+			source.custom_minimum_size.y = maxf(source.custom_minimum_size.y, 42.0)
+			source.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			styled.free()
+		elif child is LineEdit:
+			var edit := child as LineEdit
+			for state in ["normal", "focus", "read_only"]:
+				edit.remove_theme_stylebox_override(state)
+			edit.custom_minimum_size.y = maxf(edit.custom_minimum_size.y, 42.0)
+		restyle_screen(child)
+
+
 # ------------------------------------------------------------------ layout
 
 static func panel(pad := 14, style: StyleBox = null) -> PanelContainer:
@@ -468,10 +534,10 @@ static func section_header(title: String, link_text := "", title_size := 18, ico
 
 # Icon tile + big value + caption (profile and library stats).
 static func stat_tile(icon_name: String, value: String, caption: String, color := ACCENT) -> PanelContainer:
-	var card := panel(0, box(Color(SURFACE, 0.85), 12, BORDER, 1, 12))
-	var row := hbox(12)
+	var card := panel(0, box(Color(SURFACE, 0.85), 12, BORDER, 1, 10))
+	var row := hbox(10)
 	card.add_child(row)
-	row.add_child(icon_tile(icon_name, 46, color))
+	row.add_child(icon_tile(icon_name, 40, color))
 	var text := vbox(0)
 	text.alignment = BoxContainer.ALIGNMENT_CENTER
 	text.add_child(label(value, 22, TEXT, true))
