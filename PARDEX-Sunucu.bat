@@ -45,4 +45,4 @@ if not exist "%PARDEX_NODE_DIR%\node.exe" (
 :run
 if defined PARDEX_NODE_DIR set "PATH=%PARDEX_NODE_DIR%;%PATH%"
 node host\pardex_host.js %*
-pause
+if /i not "%~1"=="--gizli" pause

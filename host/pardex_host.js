@@ -34,6 +34,10 @@ const IS_WINDOWS = process.platform === "win32";
 
 let config = loadConfig();
 let children = [];
+let lastPanelPoll = 0;
+// Runs hidden (no console), so exit by itself once the panel window has been
+// closed while the server is off. A running server keeps going until stopped.
+const IDLE_EXIT_MS = Number(process.env.PARDEX_IDLE_EXIT_MS || 45_000);
 const logs = [];
 const state = {
   phase: "stopped", // stopped | starting | running | stopping | error
@@ -417,7 +421,10 @@ async function handle(request, response) {
     response.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
     return response.end(fs.readFileSync(PANEL_PATH));
   }
-  if (request.method === "GET" && url.pathname === "/api/state") return sendJson(response, publicState());
+  if (request.method === "GET" && url.pathname === "/api/state") {
+    lastPanelPoll = Date.now();
+    return sendJson(response, publicState());
+  }
   if (request.method !== "POST") return sendJson(response, { error: "not found" }, 404);
 
   const body = await readBody(request);
@@ -457,14 +464,39 @@ async function handle(request, response) {
   }
 }
 
+// Prefer Edge/Chrome "app" mode: the panel gets its own window without tabs
+// or an address bar, so it feels like a normal program.
+function findAppBrowser() {
+  const bases = [process.env["ProgramFiles(x86)"], process.env.ProgramFiles, process.env.LOCALAPPDATA].filter(Boolean);
+  const candidates = bases.flatMap((base) => [
+    path.join(base, "Microsoft", "Edge", "Application", "msedge.exe"),
+    path.join(base, "Google", "Chrome", "Application", "chrome.exe"),
+  ]);
+  return candidates.find((candidate) => fs.existsSync(candidate)) || "";
+}
+
 function openBrowser(url) {
   if (process.env.PARDEX_NO_BROWSER) return;
-  if (IS_WINDOWS) spawn("cmd", ["/c", "start", "", url], { detached: true, stdio: "ignore", windowsHide: true }).unref();
+  const appBrowser = IS_WINDOWS ? findAppBrowser() : "";
+  if (appBrowser) {
+    spawn(appBrowser, [`--app=${url}`, "--window-size=1000,940"], { detached: true, stdio: "ignore" }).unref();
+  } else if (IS_WINDOWS) spawn("cmd", ["/c", "start", "", url], { detached: true, stdio: "ignore", windowsHide: true }).unref();
   else if (process.platform === "darwin") spawn("open", [url], { detached: true, stdio: "ignore" }).unref();
+}
+
+function exitWhenIdle() {
+  setInterval(() => {
+    const idle = state.phase === "stopped" || state.phase === "error";
+    if (idle && lastPanelPoll && Date.now() - lastPanelPoll > IDLE_EXIT_MS) {
+      log("Panel kapatıldı ve sunucu kapalı; çıkılıyor.");
+      process.exit(0);
+    }
+  }, 5000);
 }
 
 function main() {
   ensureDefaults();
+  exitWhenIdle();
   const panelUrl = `http://127.0.0.1:${PANEL_PORT}/`;
   const server = http.createServer((request, response) => {
     handle(request, response).catch((error) => sendJson(response, { error: error.message }, 500));
