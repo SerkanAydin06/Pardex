@@ -13,6 +13,8 @@ const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const SLIDE_SECONDS := 8.0
 const HERO_HEIGHT := 300.0
+const HERO_TITLE_HEIGHT := 80.0
+const HERO_BODY_HEIGHT := 38.0
 
 var _slide := 0
 var _hero_art: TextureRect
@@ -107,7 +109,8 @@ func _slides() -> Array:
 
 
 func _build_hero() -> Control:
-	# Shared page-hero height keeps the shell visually stable while changing tabs.
+	# Fixed outer height plus fixed two-line text slots keeps every carousel slide
+	# on exactly the same geometry, regardless of title/body length.
 	var frame := UI.image(null, Vector2(0, HERO_HEIGHT), 16)
 	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
 	_hero_art = frame.get_node("Art") as TextureRect
@@ -116,7 +119,7 @@ func _build_hero() -> Control:
 
 	var row := UI.hbox(20)
 	frame.add_child(UI.margin(row, 30, 20, 24, 16))
-	var text := UI.vbox(8)
+	var text := UI.vbox(4)
 	UI.expand(text)
 	row.add_child(text)
 	var tag_row := UI.hbox(8)
@@ -127,15 +130,29 @@ func _build_hero() -> Control:
 	tag_holder.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	tag_holder.add_child(tag_row)
 	text.add_child(tag_holder)
-	_hero_title = UI.label("", 38, UI.TEXT, true)
-	_hero_title.custom_minimum_size.y = 48
+
+	var title_slot := Control.new()
+	title_slot.custom_minimum_size.y = HERO_TITLE_HEIGHT
+	title_slot.clip_contents = true
+	text.add_child(title_slot)
+	_hero_title = UI.label("", 34, UI.TEXT, true)
+	_hero_title.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_hero_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_hero_title.max_lines_visible = 2
 	_hero_title.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-	text.add_child(_hero_title)
+	title_slot.add_child(_hero_title)
+
+	var body_slot := Control.new()
+	body_slot.custom_minimum_size.y = HERO_BODY_HEIGHT
+	body_slot.clip_contents = true
+	text.add_child(body_slot)
 	_hero_body = UI.label("", 14, UI.TEXT_2)
-	_hero_body.custom_minimum_size.y = 40
+	_hero_body.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_hero_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hero_body.max_lines_visible = 2
-	text.add_child(_hero_body)
+	_hero_body.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	body_slot.add_child(_hero_body)
+
 	var actions := UI.hbox(12)
 	text.add_child(actions)
 	var explore := UI.button("Şimdi İncele", "primary", 14, 44, "arrow_right")
