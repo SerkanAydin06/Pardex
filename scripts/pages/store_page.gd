@@ -90,7 +90,7 @@ func apply_layout(content_width: float) -> void:
 func _slides() -> Array:
 	var result := [{
 		"tag": "OYUNLARIN YENİ EVİ",
-		"title": "PARDEX Mağazaya\nHoş Geldin",
+		"title": "PARDEX Mağazaya Hoş Geldin",
 		"body": "Yeni oyunları keşfet, arkadaşlarınla oyna\nve öne çıkan içerikleri hemen incele.",
 		"banner": "res://assets/ui/home_hero_banner.png",
 		"game": "",
@@ -128,7 +128,7 @@ func _build_hero() -> Control:
 	tag_holder.add_child(tag_row)
 	text.add_child(tag_holder)
 	_hero_title = UI.label("", 38, UI.TEXT, true)
-	_hero_title.custom_minimum_size.y = 78
+	_hero_title.custom_minimum_size.y = 48
 	_hero_title.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	text.add_child(_hero_title)
 	_hero_body = UI.label("", 14, UI.TEXT_2)
