@@ -60,6 +60,7 @@ var _session_poll_elapsed := 0.0
 
 
 func _ready() -> void:
+	theme = UI.app_theme()
 	_build_search()
 	_style_brand()
 	_load_settings()
@@ -150,6 +151,7 @@ func _add_settings_page() -> void:
 	wrapper.hide()
 	_pages["settings"] = wrapper
 	TextFit.apply(_settings_content)
+	UI.restyle_screen(_settings_content)
 
 	(_settings_content.get_node("ProfilePanel/VBox/ProfileRow/SaveProfileButton") as Button).pressed.connect(_save_profile_from_settings)
 	(_settings_content.get_node("OnlinePanel/VBox/ServerRow/ConnectButton") as Button).pressed.connect(_save_online_settings_and_connect)

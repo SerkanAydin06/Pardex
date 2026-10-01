@@ -15,6 +15,8 @@ const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const HERO_HEIGHT := 300.0
 
+const ROW_ACTION_WIDTH := 104.0
+
 var _show_all := false
 var _selected_id := ""
 var _columns: HBoxContainer
@@ -285,13 +287,12 @@ func _friend_row(profile: Dictionary) -> Control:
 	text.alignment = BoxContainer.ALIGNMENT_CENTER
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	UI.expand(text)
-	var name_row := UI.hbox(8)
-	name_row.add_child(UI.label(display_name, 14, UI.TEXT, true))
-	var dot := UI.label("●", 11, UI.presence_color(presence))
-	name_row.add_child(dot)
-	name_row.add_child(UI.expand(UI.fit(UI.label(UI.presence_label(presence), 12, UI.presence_color(presence)))))
-	text.add_child(name_row)
-	text.add_child(UI.fit(UI.label(_activity(profile), 12, UI.TEXT_2)))
+	text.add_child(UI.fit(UI.label(display_name, 14, UI.TEXT, true)))
+	# Second line: the game for friends playing or in a party, else presence.
+	var game_name := str(profile.get("game_name", ""))
+	var detail := game_name if not game_name.is_empty() and (presence == "in_game" or bool(profile.get("in_room", false))) else UI.presence_label(presence)
+	var status := UI.fit(UI.label("●  " + detail, 12, UI.presence_color(presence) if presence != "offline" else UI.TEXT_3))
+	text.add_child(status)
 	row.add_child(text)
 	var action := _row_action(profile)
 	if action != null:
@@ -309,16 +310,17 @@ func _row_action(profile: Dictionary) -> Button:
 	if bool(profile.get("room_joinable", false)) and not _friend_in_my_room(account_id):
 		var join := UI.button("Katıl", "ghost", 12, 34, "gamepad")
 		join.add_theme_stylebox_override("normal", UI.box(Color(UI.ACCENT_DARK, 0.55), 9, UI.ACCENT, 1))
-		join.custom_minimum_size.x = 92
+		join.custom_minimum_size.x = ROW_ACTION_WIDTH
 		join.pressed.connect(func(): PardexOnline.join_friend_room(account_id))
 		return join
 	if presence != "offline" and not _room().is_empty() and not _friend_in_my_room(account_id) and not bool(_room().get("launching", false)):
 		var invite := UI.button("Davet Et", "ghost", 12, 34, "user_plus")
-		invite.custom_minimum_size.x = 104
+		invite.custom_minimum_size.x = ROW_ACTION_WIDTH
 		invite.pressed.connect(func(): PardexOnline.send_room_invite(account_id))
 		return invite
 	if presence != "offline":
-		var message := UI.button("Mesaj Gönder", "ghost", 12, 34)
+		var message := UI.button("Mesaj", "ghost", 12, 34, "message")
+		message.custom_minimum_size.x = ROW_ACTION_WIDTH
 		message.pressed.connect(func():
 			_selected_id = account_id
 			_render_online()
@@ -417,7 +419,7 @@ func _render_chat() -> void:
 	_chat_body.add_child(UI.empty_state("message", "%s ile sohbet yakında" % display_name,
 		"PARDEX mesajlaşması henüz hazır değil. Şimdilik birlikte oynamak için partine davet edebilir ya da onun partisine katılabilirsin."))
 	var action := _row_action(profile)
-	if action != null and action.text != "Mesaj Gönder":
+	if action != null and action.text != "Mesaj":
 		var holder := CenterContainer.new()
 		holder.add_child(action)
 		_chat_body.add_child(holder)
