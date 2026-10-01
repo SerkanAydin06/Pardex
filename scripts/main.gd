@@ -7,7 +7,7 @@ extends Control
 
 const APP_VERSION := "0.1.0"
 const SETTINGS_PATH := "user://pardex.cfg"
-const DEFAULT_SERVER_URL := "wss://pardex-online-production.up.railway.app"
+const DEFAULT_SERVER_URL := ""
 const DEFAULT_WINDOW_SIZE := Vector2i(1440, 900)
 const MIN_WINDOW_SIZE := Vector2i(1024, 640)
 const WINDOW_STATE_SAVE_INTERVAL := 1.0
@@ -414,7 +414,7 @@ func _load_settings() -> void:
 	if _display_name.is_empty():
 		_display_name = "Pardus"
 	_server_url = str(config.get_value("online", "server_url", DEFAULT_SERVER_URL)).strip_edges()
-	if _server_url.is_empty() or _server_url == "ws://127.0.0.1:8765":
+	if PardexOnline.is_automatic_url(_server_url):
 		_server_url = DEFAULT_SERVER_URL
 	_start_fullscreen = bool(config.get_value("display", "start_fullscreen", false))
 	_saved_window_size = Vector2i(
@@ -463,9 +463,9 @@ func _save_profile_from_settings() -> void:
 func _save_online_settings_and_connect() -> void:
 	var server_url_edit := _settings_content.get_node("OnlinePanel/VBox/ServerRow/ServerUrlEdit") as LineEdit
 	var requested_url := server_url_edit.text.strip_edges()
-	if requested_url.is_empty():
+	if PardexOnline.is_automatic_url(requested_url):
 		requested_url = DEFAULT_SERVER_URL
-	if not requested_url.begins_with("ws://") and not requested_url.begins_with("wss://"):
+	elif not requested_url.begins_with("ws://") and not requested_url.begins_with("wss://"):
 		_show_toast("Sunucu adresi ws:// veya wss:// ile başlamalı.")
 		return
 	_server_url = requested_url

@@ -17,8 +17,16 @@ signal recovery_code_created(code: String)
 signal account_recovered(account_id: String, display_name: String)
 signal account_recovery_failed(message: String)
 
-const DEFAULT_SERVER_URL := "wss://pardex-online-production.up.railway.app"
-const LEGACY_LOCAL_SERVER_URL := "ws://127.0.0.1:8765"
+# Empty server_url = automatic: the host PC publishes its current tunnel
+# address to online.json on the sunucu-adresi branch (host/pardex_host.js) and
+# every client reads it from there, so friends never type an address.
+const DEFAULT_SERVER_URL := ""
+const ADDRESS_BOARD_URL := "https://api.github.com/repos/SerkanAydin06/Pardex/contents/online.json?ref=sunucu-adresi"
+const ADDRESS_REFRESH_SECONDS := 65.0
+const LEGACY_SERVER_URLS := [
+	"ws://127.0.0.1:8765",
+	"wss://pardex-online-production.up.railway.app",
+]
 const IDENTITY_PATH := "user://pardex_identity.cfg"
 const RECONNECT_DELAY := 3.0
 const HEARTBEAT_INTERVAL := 20.0
@@ -29,6 +37,11 @@ const VALID_PRESENCE := ["online", "away", "busy"]
 const RECOVERY_HEX := "0123456789ABCDEF"
 
 var server_url := DEFAULT_SERVER_URL
+var _resolved_url := ""
+var _address_age := INF
+var _address_resolving := false
+var _host_closed_reported := false
+var _address_request: HTTPRequest
 var display_name := "Pardus"
 var user_id := ""
 var account_id := ""
@@ -59,6 +72,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	_address_age += delta
 	if _socket == null:
 		if not _manual_disconnect and connection_state == "offline":
 			_reconnect_elapsed += delta
@@ -111,7 +125,8 @@ func _process(delta: float) -> void:
 
 func configure(url: String, player_name: String) -> void:
 	var normalized_url := url.strip_edges()
-	server_url = DEFAULT_SERVER_URL if normalized_url.is_empty() or normalized_url == LEGACY_LOCAL_SERVER_URL else normalized_url
+	server_url = DEFAULT_SERVER_URL if is_automatic_url(normalized_url) else normalized_url
+	_address_age = INF
 	var normalized_name := player_name.strip_edges()
 	display_name = normalized_name.left(24) if not normalized_name.is_empty() else "Pardus"
 
@@ -130,6 +145,15 @@ func connect_server() -> void:
 		_load_or_create_identity()
 
 	_manual_disconnect = false
+	# GitHub allows 60 anonymous requests per hour, so the address is asked at
+	# most about once a minute; in between the last known address is reused.
+	if server_url.is_empty() and _address_age >= ADDRESS_REFRESH_SECONDS:
+		_resolve_address()
+		return
+	var target_url := get_active_server_url()
+	if target_url.is_empty():
+		_set_connection_state("offline")
+		return
 	_hello_sent = false
 	_no_delay_configured = false
 	_session_ready = false
@@ -138,13 +162,65 @@ func connect_server() -> void:
 	_server_silence_elapsed = 0.0
 	_socket = WebSocketPeer.new()
 	_socket.outbound_buffer_size = WEBSOCKET_OUTBOUND_BUFFER_SIZE
-	var connection_error := _socket.connect_to_url(server_url)
+	var connection_error := _socket.connect_to_url(target_url)
 	if connection_error != OK:
 		_socket = null
 		_set_connection_state("offline")
 		online_error.emit("PARDEX Online sunucusuna bağlantı başlatılamadı.")
 		return
 	_set_connection_state("connecting")
+
+
+static func is_automatic_url(url: String) -> bool:
+	var clean := url.strip_edges()
+	return clean.is_empty() or LEGACY_SERVER_URLS.has(clean)
+
+
+func get_active_server_url() -> String:
+	return _resolved_url if server_url.is_empty() else server_url
+
+
+func _resolve_address() -> void:
+	if _address_resolving:
+		return
+	if _address_request == null:
+		_address_request = HTTPRequest.new()
+		_address_request.timeout = 8.0
+		add_child(_address_request)
+		_address_request.request_completed.connect(_on_address_resolved)
+	_address_resolving = true
+	_set_connection_state("connecting")
+	var board_url := OS.get_environment("PARDEX_ADDRESS_BOARD_URL").strip_edges()
+	if board_url.is_empty():
+		board_url = ADDRESS_BOARD_URL
+	var headers := PackedStringArray(["Accept: application/vnd.github.raw+json", "Cache-Control: no-cache"])
+	if _address_request.request(board_url, headers) != OK:
+		_on_address_resolved(HTTPRequest.RESULT_CANT_CONNECT, 0, PackedStringArray(), PackedByteArray())
+
+
+func _on_address_resolved(result: int, code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
+	_address_resolving = false
+	_address_age = 0.0
+	var url := ""
+	if result == HTTPRequest.RESULT_SUCCESS and code == 200:
+		var data: Variant = JSON.parse_string(body.get_string_from_utf8())
+		if data is Dictionary:
+			url = str((data as Dictionary).get("online", "")).strip_edges()
+	if url.begins_with("wss://") or url.begins_with("ws://"):
+		_resolved_url = url
+	elif result == HTTPRequest.RESULT_SUCCESS and code == 200:
+		_resolved_url = ""
+	if _resolved_url.is_empty():
+		# The host PC is closed (or the board is unreachable): stay offline and
+		# let the normal reconnect loop ask again.
+		_set_connection_state("offline")
+		if not _host_closed_reported:
+			_host_closed_reported = true
+			online_error.emit("PARDEX sunucusu şu anda kapalı.")
+		return
+	_host_closed_reported = false
+	if not _manual_disconnect:
+		connect_server()
 
 
 func reconnect_server() -> void:
@@ -391,7 +467,7 @@ func build_game_launch_args(expected_game_id: String) -> PackedStringArray:
 	args.append("--pardex-account=%s" % account_id)
 	args.append("--pardex-name=%s" % display_name)
 	args.append("--pardex-role=%s" % ("host" if is_room_host() else "client"))
-	args.append("--pardex-online-server=%s" % server_url)
+	args.append("--pardex-online-server=%s" % get_active_server_url())
 	args.append("--pardex-game-server=%s" % get_game_server_url())
 	return args
 

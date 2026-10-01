@@ -31,7 +31,7 @@ func build_game_launch_args(expected_game_id: String) -> PackedStringArray:
 	args.append("--pardex-player=%s" % user_id)
 	args.append("--pardex-name=%s" % display_name)
 	args.append("--pardex-role=%s" % ("host" if is_room_host() else "client"))
-	args.append("--pardex-url=%s" % server_url)
+	args.append("--pardex-url=%s" % get_active_server_url())
 	args.append("--pardex-game-server=%s" % get_game_server_url())
 	args.append("--pardex-match=%s" % match_id)
 	args.append("--pardex-ticket=%s" % launch_ticket)

@@ -344,7 +344,7 @@ text = "●  PARDEX ONLINE"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
 theme_override_font_sizes/font_size = 14
-text = "Geliştirme aşamasında bağlanılacak WebSocket sunucusunu burada belirleyebilirsin. Yayın sürümünde bu adres otomatik olacak."
+text = "Boş bırakırsan PARDEX sunucusu otomatik bulunur. Yalnızca test için farklı bir ws:// veya wss:// adresi yazabilirsin."
 autowrap_mode = 2
 
 [node name="ServerRow" type="HBoxContainer" parent="OnlinePanel/VBox"]
@@ -359,7 +359,7 @@ theme_override_colors/font_placeholder_color = Color(0.38, 0.44, 0.53, 1)
 theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("Input")
 theme_override_styles/focus = SubResource("InputFocus")
-placeholder_text = "wss://pardex-online-production.up.railway.app"
+placeholder_text = "Otomatik (boş bırak)"
 
 [node name="ConnectButton" type="Button" parent="OnlinePanel/VBox/ServerRow"]
 layout_mode = 2
