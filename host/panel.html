@@ -139,7 +139,7 @@ function toast(text) {
   el.textContent = text;
   el.style.display = "block";
   clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => { el.style.display = "none"; }, 2600);
+  toast.timer = setTimeout(() => { el.style.display = "none"; }, 5000);
 }
 
 async function api(path, body) {
@@ -197,7 +197,9 @@ $("saveBtn").onclick = async () => {
   const body = { korsan_path: $("korsanPath").value, godot_exe: $("godotExe").value };
   if ($("token").value.trim()) body.github_token = $("token").value.trim();
   editing = false;
-  render(await api("/api/config", body));
+  const result = await api("/api/config", body);
+  render(result);
+  if (result.error) { toast(result.error); return; }
   $("token").value = "";
   toast("Ayarlar kaydedildi.");
 };

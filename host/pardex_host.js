@@ -76,6 +76,12 @@ function cleanPath(value) {
   return path.basename(clean).toLowerCase() === "project.godot" ? path.dirname(clean) : clean;
 }
 
+// Pull the real token out of whatever was pasted (labels, quotes, spaces).
+function extractToken(value) {
+  const match = String(value || "").match(/github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{20,}/);
+  return match ? match[0] : "";
+}
+
 function isProjectFolder(target) {
   return Boolean(target) && fs.existsSync(path.join(target, "project.godot"));
 }
@@ -242,7 +248,7 @@ async function github(method, endpoint, body) {
     method,
     headers: {
       Accept: "application/vnd.github+json",
-      Authorization: `Bearer ${config.github_token}`,
+      Authorization: `Bearer ${extractToken(config.github_token)}`,
       "User-Agent": "pardex-host",
       "X-GitHub-Api-Version": "2022-11-28",
     },
@@ -304,7 +310,7 @@ async function startServer(localOnly) {
   state.gameUrl = "";
   try {
     setPhase("starting", "Sunucu başlatılıyor...");
-    if (!state.localOnly && !config.github_token) {
+    if (!state.localOnly && !extractToken(config.github_token)) {
       throw new Error("Önce GitHub anahtarını kaydet (Ayarlar bölümü).");
     }
     ensureServerDependencies();
@@ -379,7 +385,7 @@ function publicState() {
     config: {
       korsan_path: config.korsan_exe || "",
       godot_exe: config.godot_exe || "",
-      has_token: Boolean(config.github_token),
+      has_token: Boolean(extractToken(config.github_token)),
     },
     game,
     canBrowse: IS_WINDOWS,
@@ -420,7 +426,14 @@ async function handle(request, response) {
     case "/api/config": {
       if (typeof body.korsan_path === "string") config.korsan_exe = cleanPath(body.korsan_path);
       if (typeof body.godot_exe === "string") config.godot_exe = cleanPath(body.godot_exe);
-      if (typeof body.github_token === "string" && body.github_token.trim()) config.github_token = body.github_token.trim();
+      if (typeof body.github_token === "string" && body.github_token.trim()) {
+        const token = extractToken(body.github_token);
+        if (!token) {
+          log("Yapıştırılan metinde GitHub anahtarı bulunamadı; anahtar kaydedilmedi.");
+          return sendJson(response, { ...publicState(), error: "Bu bir GitHub anahtarı değil. Anahtar github_pat_ ile başlar; yalnızca onu kopyala." });
+        }
+        config.github_token = token;
+      }
       saveConfig();
       log("Ayarlar kaydedildi.");
       return sendJson(response, publicState());
