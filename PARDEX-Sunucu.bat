@@ -21,10 +21,14 @@ if not errorlevel 1 (
 echo Node.js indiriliyor (yalnizca ilk sefer, kurulum gerekmez)...
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$ErrorActionPreference='Stop';" ^
+  "$ProgressPreference='SilentlyContinue';" ^
   "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12;" ^
-  "$v=(Invoke-RestMethod 'https://nodejs.org/dist/index.json' | Where-Object { $_.lts } | Select-Object -First 1).version;" ^
+  "$all=Invoke-RestMethod -UseBasicParsing 'https://nodejs.org/dist/index.json';" ^
+  "$v=[string](@($all | Where-Object { $_.lts })[0].version);" ^
+  "if (-not $v.StartsWith('v')) { throw 'Node.js surumu bulunamadi.' };" ^
+  "Write-Host ('Node.js '+$v+' indiriliyor...');" ^
   "$zip=Join-Path $env:TEMP ('node-'+$v+'.zip');" ^
-  "Invoke-WebRequest ('https://nodejs.org/dist/'+$v+'/node-'+$v+'-win-x64.zip') -OutFile $zip;" ^
+  "Invoke-WebRequest -UseBasicParsing ('https://nodejs.org/dist/'+$v+'/node-'+$v+'-win-x64.zip') -OutFile $zip;" ^
   "$tmp=Join-Path $env:TEMP 'pardex-node';" ^
   "if (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force };" ^
   "Expand-Archive $zip $tmp -Force;" ^
