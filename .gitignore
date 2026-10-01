@@ -25,3 +25,8 @@ npm-debug.log*
 # IDE settings
 .vscode/
 .idea/
+
+# PARDEX ev sunucusu (yerel anahtar, araçlar ve sosyal veri)
+host/pardex_host.local.json
+host/bin/
+host/data/
