@@ -11,7 +11,8 @@ Arkadaşların hiçbir ayar yapmaz: PARDEX açılışta senin sunucunun güncel 
    - **Korsanların Hazinesi:** oyunun proje klasörü (içinde `project.godot` olan) ya da dışa aktarılmış exe.
      PARDEX klasörüyle yan yana `Korsanlarin-Hazinesi` klasöründeyse kendisi bulur. **Klasör Seç** ile de seçebilirsin.
    - **Godot programı:** proje klasörü kullanılıyorsa Godot'u açtığın .exe (**Dosya Seç**).
-   - **GitHub anahtarı:** paneldeki "Anahtar nasıl alınır?" adımlarını izle. Yalnızca bu bilgisayarda saklanır.
+   - **GitHub anahtarı:** https://github.com/settings/tokens/new?scopes=public_repo&description=PARDEX%20Sunucu bağlantısını aç, en alttaki **Generate token**'a bas,
+     çıkan `ghp_...` anahtarını panele yapıştır. Yalnızca bu bilgisayarda saklanır.
 3. **Sunucuyu Başlat**'a bas, yeşil **Sunucu açık** yazısını bekle (~10–20 sn).
 4. Bitince **Sunucuyu Durdur**. Arkadaşlarının PARDEX'i "sunucu kapalı" görür.
 

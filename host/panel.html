@@ -99,16 +99,15 @@
     </div>
     <div class="field">
       <label for="token">GitHub anahtarı</label>
-      <div class="row"><input type="password" id="token" placeholder="github_pat_..." autocomplete="off"></div>
+      <div class="row"><input type="password" id="token" placeholder="ghp_..." autocomplete="off"></div>
       <div class="hint" id="tokenHint"></div>
       <details style="margin-top:8px">
         <summary>Anahtar nasıl alınır?</summary>
         <ol class="steps">
-          <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Bu bağlantıyı aç</a> (GitHub hesabınla). <i>Token name</i>: PARDEX, <i>Expiration</i>: istediğin süre.</li>
-          <li><i>Repository access</i> → <b>Only select repositories</b> → listeden <b>SerkanAydin06/Pardex</b>'i seç.</li>
-          <li><i>Permissions</i> bölümünde <b>Contents</b> iznini bul (gerekirse <i>Add permissions</i>'a bas) ve <b>Read and write</b> yap.
-            <br><span style="color:#fbbf24">"Read-only" kalırsa çalışmaz.</span></li>
-          <li><i>Generate token</i>'a bas, çıkan anahtarı buraya yapıştır ve <b>Kaydet</b>'e bas.</li>
+          <li><a href="https://github.com/settings/tokens/new?scopes=public_repo&description=PARDEX%20Sunucu" target="_blank" rel="noopener"><b>Bu bağlantıyı aç</b></a> (GitHub hesabınla). Gerekli izin (<b>public_repo</b>) hazır işaretli gelir.</li>
+          <li><i>Expiration</i> için istediğin süreyi seç (ör. <b>No expiration</b> ya da 1 yıl).</li>
+          <li>Sayfanın en altındaki yeşil <b>Generate token</b>'a bas.</li>
+          <li>Çıkan <b>ghp_</b> ile başlayan anahtarı kopyala, buraya yapıştır ve <b>Kaydet</b>'e bas.</li>
         </ol>
         <div class="hint">Anahtar yalnızca bu bilgisayarda saklanır; arkadaşlarının sunucunu otomatik bulması için kullanılır.</div>
       </details>

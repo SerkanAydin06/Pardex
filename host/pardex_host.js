@@ -261,9 +261,8 @@ async function github(method, endpoint, body) {
 function githubError(what, reply) {
   const reason = reply.data && reply.data.message ? ` GitHub: "${reply.data.message}".` : "";
   const fix = reply.status === 401
-    ? " Anahtar geçersiz ya da süresi dolmuş; yeni anahtar oluştur."
-    : " Anahtarı yeniden oluştur: Repository access → Only select repositories → SerkanAydin06/Pardex," +
-      " Permissions → Contents → Read and write.";
+    ? " Anahtar geçersiz ya da süresi dolmuş; panelden yeni anahtar oluştur."
+    : " Anahtarın yazma izni yok. Paneldeki 'Anahtar nasıl alınır?' bağlantısıyla yeni (klasik, ghp_) anahtar oluşturup kaydet.";
   return new Error(`${what} (HTTP ${reply.status}).${reason}${fix}`);
 }
 
@@ -430,7 +429,7 @@ async function handle(request, response) {
         const token = extractToken(body.github_token);
         if (!token) {
           log("Yapıştırılan metinde GitHub anahtarı bulunamadı; anahtar kaydedilmedi.");
-          return sendJson(response, { ...publicState(), error: "Bu bir GitHub anahtarı değil. Anahtar github_pat_ ile başlar; yalnızca onu kopyala." });
+          return sendJson(response, { ...publicState(), error: "Bu bir GitHub anahtarı değil. Anahtar ghp_ ya da github_pat_ ile başlar; yalnızca onu kopyala." });
         }
         config.github_token = token;
       }
