@@ -6,9 +6,10 @@ Arkadaşların hiçbir ayar yapmaz: PARDEX açılışta senin sunucunun güncel 
 ## İlk kurulum (bir kere)
 
 1. Repoyu bilgisayarına indir (GitHub Desktop ya da `git clone`).
-2. Korsanların Hazinesi'ni Godot'tan **Windows Desktop** olarak dışa aktar
-   (`build/KorsanlarinHazinesi.exe`). PARDEX reposuyla yan yana `Korsanlarin-Hazinesi` klasöründeyse otomatik bulunur;
-   değilse ilk açılışta yolu sorar.
+2. Korsanların Hazinesi için exe gerekmez: script oyunu Godot ile proje klasöründen çalıştırır.
+   PARDEX reposuyla yan yana `Korsanlarin-Hazinesi` klasöründeyse kendisi bulur; değilse klasörü sorar.
+   Ardından bir kere Godot .exe dosyasının yerini sorar (dosyayı pencereye sürükleyip bırakabilirsin).
+   İleride dışa aktarılmış `KorsanlarinHazinesi.exe` olursa onu da kabul eder.
 3. `PARDEX-Sunucu.bat` dosyasına çift tıkla.
    - Node.js yoksa kurulum yapmadan `host/bin/node` klasörüne kendisi indirir (yalnızca ilk sefer).
    - Senden bir kere **GitHub anahtarı** ister. Ekrandaki 4 adımı izle:
