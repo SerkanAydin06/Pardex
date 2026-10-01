@@ -10,7 +10,7 @@ Arkadaşların hiçbir ayar yapmaz: PARDEX açılışta senin sunucunun güncel 
    (`build/KorsanlarinHazinesi.exe`). PARDEX reposuyla yan yana `Korsanlarin-Hazinesi` klasöründeyse otomatik bulunur;
    değilse ilk açılışta yolu sorar.
 3. `PARDEX-Sunucu.bat` dosyasına çift tıkla.
-   - Node.js yoksa kendisi kurar; kurulum bitince dosyayı tekrar aç.
+   - Node.js yoksa kurulum yapmadan `host/bin/node` klasörüne kendisi indirir (yalnızca ilk sefer).
    - Senden bir kere **GitHub anahtarı** ister. Ekrandaki 4 adımı izle:
      https://github.com/settings/personal-access-tokens/new →
      *Only select repositories: SerkanAydin06/Pardex* → *Contents: Read and write* → *Generate token*.
