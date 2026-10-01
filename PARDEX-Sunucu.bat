@@ -27,15 +27,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$v=[string](@($all | Where-Object { $_.lts })[0].version);" ^
   "if (-not $v.StartsWith('v')) { throw 'Node.js surumu bulunamadi.' };" ^
   "Write-Host ('Node.js '+$v+' indiriliyor...');" ^
-  "$zip=Join-Path $env:TEMP ('node-'+$v+'.zip');" ^
-  "Invoke-WebRequest -UseBasicParsing ('https://nodejs.org/dist/'+$v+'/node-'+$v+'-win-x64.zip') -OutFile $zip;" ^
-  "$tmp=Join-Path $env:TEMP 'pardex-node';" ^
-  "if (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force };" ^
-  "Expand-Archive $zip $tmp -Force;" ^
   "New-Item -ItemType Directory -Force 'host\bin' | Out-Null;" ^
-  "if (Test-Path 'host\bin\node') { Remove-Item 'host\bin\node' -Recurse -Force };" ^
-  "Move-Item (Join-Path $tmp ('node-'+$v+'-win-x64')) 'host\bin\node';" ^
-  "Remove-Item $zip -Force"
+  "$zip='host\bin\node-download.zip'; $tmp='host\bin\node-download';" ^
+  "Invoke-WebRequest -UseBasicParsing ('https://nodejs.org/dist/'+$v+'/node-'+$v+'-win-x64.zip') -OutFile $zip;" ^
+  "if (Test-Path -LiteralPath $tmp) { Remove-Item -LiteralPath $tmp -Recurse -Force };" ^
+  "Expand-Archive -LiteralPath $zip -DestinationPath $tmp -Force;" ^
+  "if (Test-Path -LiteralPath 'host\bin\node') { Remove-Item -LiteralPath 'host\bin\node' -Recurse -Force };" ^
+  "Move-Item -LiteralPath ($tmp+'\node-'+$v+'-win-x64') -Destination 'host\bin\node';" ^
+  "Remove-Item -LiteralPath $zip, $tmp -Recurse -Force -ErrorAction SilentlyContinue"
 if not exist "%PARDEX_NODE_DIR%\node.exe" (
   echo.
   echo Node.js indirilemedi. Internet baglantisini kontrol edip tekrar dene.
