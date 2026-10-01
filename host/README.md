@@ -3,31 +3,24 @@
 Sunucu senin bilgisayarında çalışır, arkadaşların internetten bağlanır. Ücret, hesap, port açma yok.
 Arkadaşların hiçbir ayar yapmaz: PARDEX açılışta senin sunucunun güncel adresini GitHub'dan otomatik okur.
 
-## İlk kurulum (bir kere)
+## Kullanım
 
-1. Repoyu bilgisayarına indir (GitHub Desktop ya da `git clone`).
-2. Korsanların Hazinesi için exe gerekmez: script oyunu Godot ile proje klasöründen çalıştırır.
-   PARDEX reposuyla yan yana `Korsanlarin-Hazinesi` klasöründeyse kendisi bulur; değilse klasörü sorar.
-   Ardından bir kere Godot .exe dosyasının yerini sorar (dosyayı pencereye sürükleyip bırakabilirsin).
-   İleride dışa aktarılmış `KorsanlarinHazinesi.exe` olursa onu da kabul eder.
-3. `PARDEX-Sunucu.bat` dosyasına çift tıkla.
-   - Node.js yoksa kurulum yapmadan `host/bin/node` klasörüne kendisi indirir (yalnızca ilk sefer).
-   - Senden bir kere **GitHub anahtarı** ister. Ekrandaki 4 adımı izle:
-     https://github.com/settings/personal-access-tokens/new →
-     *Only select repositories: SerkanAydin06/Pardex* → *Contents: Read and write* → *Generate token*.
-     Anahtar yalnızca bu bilgisayarda (`host/pardex_host.local.json`) saklanır, GitHub'a yüklenmez.
+1. `PARDEX-Sunucu.bat` dosyasına çift tıkla. Tarayıcıda **PARDEX Sunucu Paneli** açılır.
+   (İlk seferde Node.js'i kurulum yapmadan `host/bin/node` klasörüne kendisi indirir.)
+2. İlk sefer **Ayarlar** bölümünü doldur ve **Kaydet**'e bas:
+   - **Korsanların Hazinesi:** oyunun proje klasörü (içinde `project.godot` olan) ya da dışa aktarılmış exe.
+     PARDEX klasörüyle yan yana `Korsanlarin-Hazinesi` klasöründeyse kendisi bulur. **Klasör Seç** ile de seçebilirsin.
+   - **Godot programı:** proje klasörü kullanılıyorsa Godot'u açtığın .exe (**Dosya Seç**).
+   - **GitHub anahtarı:** paneldeki "Anahtar nasıl alınır?" adımlarını izle. Yalnızca bu bilgisayarda saklanır.
+3. **Sunucuyu Başlat**'a bas, yeşil **Sunucu açık** yazısını bekle (~10–20 sn).
+4. Bitince **Sunucuyu Durdur**. Arkadaşlarının PARDEX'i "sunucu kapalı" görür.
 
-## Her oyun gecesi
-
-1. `PARDEX-Sunucu.bat` dosyasına çift tıkla, **SUNUCU AÇIK** yazısını bekle (~10 sn).
-2. Arkadaşlarına "açtım" de. PARDEX'leri açıksa en geç 1 dakika içinde kendiliğinden bağlanırlar.
-3. Bitince pencerede **Ctrl+C**'ye bas. Sunucu kapanır ve arkadaşlarının PARDEX'i "sunucu kapalı" görür.
-
-Bilgisayar uyku moduna geçerse sunucu durur; oynarken uyku modunu kapat.
+Sunucu açıkken siyah bat penceresini kapatma; panel sekmesini kapatsan da sunucu çalışmaya devam eder
+(tekrar görmek için bat dosyasını yeniden aç). Oynarken bilgisayarın uyku moduna geçmemeli.
 
 ## Bilmen gerekenler
 
 - Arkadaşlıklar ve profiller `host/data/social.json` dosyasında, senin bilgisayarında durur. Ara sıra yedekle.
-- Ayarları sıfırlamak (GitHub anahtarını ya da oyun yolunu değiştirmek) için `host/pardex_host.local.json` dosyasını sil.
-- Yalnızca kendi bilgisayarında test etmek için: `PARDEX-Sunucu.bat --yerel` (tünel açmaz, adres yayınlamaz).
+- "Yalnızca bu bilgisayarda test et" kutusu tünel açmadan ve adres yayınlamadan yerel deneme yapar.
+- Sorun olursa paneldeki **Kayıtlar** bölümünü bana gönder.
 - Arkadaşlarının PARDEX'inde Ayarlar → PARDEX Online alanı **boş** kalmalı (boş = otomatik).

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PARDEX Sunucu Paneli</title>
+<style>
+  :root {
+    --bg: #05080f; --panel: #0b1220; --panel-2: #0f1a2c; --border: #1b2a42;
+    --text: #e8f0fb; --text-2: #9fb0c8; --text-3: #61708a;
+    --cyan: #2fb8ff; --cyan-2: #1d8fe0; --green: #34d399; --amber: #fbbf24; --red: #f87171;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--text); background: radial-gradient(1200px 600px at 70% -10%, #0d2240 0%, var(--bg) 60%);
+    font: 15px/1.5 "Segoe UI", system-ui, sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 28px 16px 40px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+  .brand { font-weight: 800; letter-spacing: .14em; font-size: 22px; color: var(--cyan); }
+  .brand small { display: block; letter-spacing: .02em; font-weight: 500; font-size: 13px; color: var(--text-2); }
+  .card { background: linear-gradient(180deg, var(--panel-2), var(--panel)); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+  h2 { margin: 0 0 14px; font-size: 16px; }
+  .status { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--text-3); box-shadow: 0 0 0 4px #ffffff0d; flex: none; }
+  .dot.running { background: var(--green); box-shadow: 0 0 14px var(--green); }
+  .dot.starting, .dot.stopping { background: var(--amber); animation: pulse 1s infinite; }
+  .dot.error { background: var(--red); }
+  @keyframes pulse { 50% { opacity: .35; } }
+  .status-text { flex: 1; min-width: 220px; }
+  .status-text b { font-size: 18px; display: block; }
+  .status-text span { color: var(--text-2); }
+  button {
+    font: inherit; font-weight: 600; border-radius: 10px; border: 1px solid var(--border); background: #13203a; color: var(--text);
+    padding: 10px 18px; cursor: pointer; transition: filter .15s, background .15s;
+  }
+  button:hover:not(:disabled) { filter: brightness(1.2); }
+  button:disabled { opacity: .45; cursor: default; }
+  button.primary { background: linear-gradient(180deg, var(--cyan), var(--cyan-2)); border-color: transparent; color: #04111f; min-width: 190px; padding: 12px 22px; font-size: 16px; }
+  button.danger { background: #3a1620; border-color: #5b2230; color: #ffd5d5; min-width: 190px; padding: 12px 22px; font-size: 16px; }
+  button.small { padding: 8px 14px; font-size: 14px; }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-weight: 600; margin-bottom: 4px; }
+  .hint { color: var(--text-3); font-size: 13px; margin-top: 4px; }
+  .hint.ok { color: var(--green); } .hint.warn { color: var(--amber); }
+  input[type=text], input[type=password] {
+    flex: 1; min-width: 0; font: inherit; color: var(--text); background: #060b15; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
+  }
+  input:focus { outline: 2px solid #2fb8ff55; border-color: var(--cyan); }
+  .check { display: flex; gap: 8px; align-items: center; color: var(--text-2); margin-top: 14px; font-size: 14px; }
+  .address { margin-top: 14px; display: none; gap: 8px; flex-direction: column; }
+  .address div { background: #060b15; border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-family: Consolas, monospace; font-size: 13px; color: var(--text-2); overflow-wrap: anywhere; }
+  .steps { margin: 8px 0 0; padding-left: 20px; color: var(--text-2); font-size: 14px; }
+  .steps a { color: var(--cyan); }
+  details summary { cursor: pointer; color: var(--text-2); font-weight: 600; }
+  pre { margin: 12px 0 0; max-height: 280px; overflow: auto; background: #04070d; border: 1px solid var(--border); border-radius: 10px; padding: 10px; font-size: 12px; color: var(--text-2); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: #13203a; border: 1px solid var(--cyan); padding: 10px 18px; border-radius: 10px; display: none; }
+  @media (max-width: 600px) { .row { flex-wrap: wrap; } button.primary, button.danger { width: 100%; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">PARDEX<small>Sunucu Paneli</small></div>
+    <button class="small" id="quitBtn" title="Sunucuyu kapatır ve paneli sonlandırır">Paneli Kapat</button>
+  </header>
+
+  <section class="card">
+    <div class="status">
+      <div class="dot" id="dot"></div>
+      <div class="status-text"><b id="phaseText">Sunucu kapalı</b><span id="message">Başlatmak için düğmeye bas.</span></div>
+      <button class="primary" id="toggleBtn">Sunucuyu Başlat</button>
+    </div>
+    <label class="check"><input type="checkbox" id="localOnly"> Yalnızca bu bilgisayarda test et (arkadaşlar bağlanamaz)</label>
+    <div class="address" id="address">
+      <div id="onlineUrl"></div>
+      <div id="gameUrl"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Ayarlar</h2>
+    <div class="field">
+      <label for="korsanPath">Korsanların Hazinesi</label>
+      <div class="row">
+        <input type="text" id="korsanPath" placeholder="Proje klasörü (project.godot olan) ya da KorsanlarinHazinesi.exe">
+        <button class="small browse" data-kind="folder" data-target="korsanPath">Klasör Seç</button>
+      </div>
+      <div class="hint" id="gameHint"></div>
+    </div>
+    <div class="field" id="godotField">
+      <label for="godotExe">Godot programı</label>
+      <div class="row">
+        <input type="text" id="godotExe" placeholder="C:\Godot\Godot_v4.7.2-stable_win64.exe">
+        <button class="small browse" data-kind="godot" data-target="godotExe">Dosya Seç</button>
+      </div>
+      <div class="hint">Oyun proje klasöründen açılırken kullanılır. Godot'u açtığın .exe dosyası.</div>
+    </div>
+    <div class="field">
+      <label for="token">GitHub anahtarı</label>
+      <div class="row"><input type="password" id="token" placeholder="github_pat_..." autocomplete="off"></div>
+      <div class="hint" id="tokenHint"></div>
+      <details style="margin-top:8px">
+        <summary>Anahtar nasıl alınır?</summary>
+        <ol class="steps">
+          <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Bu bağlantıyı aç</a> (GitHub hesabınla).</li>
+          <li><i>Repository access</i> → <i>Only select repositories</i> → <b>SerkanAydin06/Pardex</b>.</li>
+          <li><i>Permissions</i> → <i>Repository permissions</i> → <b>Contents: Read and write</b>.</li>
+          <li><i>Generate token</i>'a bas, çıkan anahtarı buraya yapıştır ve Kaydet'e bas.</li>
+        </ol>
+        <div class="hint">Anahtar yalnızca bu bilgisayarda saklanır; arkadaşlarının sunucunu otomatik bulması için kullanılır.</div>
+      </details>
+    </div>
+    <button class="small" id="saveBtn">Kaydet</button>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>Kayıtlar (sorun olursa buradan bak)</summary>
+      <pre id="logs"></pre>
+    </details>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const PHASES = {
+  stopped: "Sunucu kapalı", starting: "Başlatılıyor...", running: "Sunucu açık",
+  stopping: "Kapatılıyor...", error: "Bir sorun oluştu",
+};
+let editing = false;
+let lastLogCount = -1;
+
+function toast(text) {
+  const el = $("toast");
+  el.textContent = text;
+  el.style.display = "block";
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => { el.style.display = "none"; }, 2600);
+}
+
+async function api(path, body) {
+  const options = body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+  const response = await fetch(path, options);
+  return response.json();
+}
+
+function render(s) {
+  $("dot").className = "dot " + s.phase;
+  $("phaseText").textContent = PHASES[s.phase] || s.phase;
+  $("message").textContent = s.message;
+  const busy = s.phase === "starting" || s.phase === "stopping";
+  const on = s.phase === "running" || s.phase === "starting";
+  const btn = $("toggleBtn");
+  btn.textContent = on ? "Sunucuyu Durdur" : "Sunucuyu Başlat";
+  btn.className = on ? "danger" : "primary";
+  btn.disabled = s.phase === "stopping";
+  $("localOnly").disabled = on || busy;
+  $("address").style.display = s.onlineUrl ? "flex" : "none";
+  $("onlineUrl").textContent = "PARDEX: " + s.onlineUrl;
+  $("gameUrl").textContent = "Oyun: " + (s.gameUrl || "kapalı");
+
+  if (!editing) {
+    $("korsanPath").value = s.config.korsan_path;
+    $("godotExe").value = s.config.godot_exe;
+  }
+  $("godotField").style.display = s.game.needsGodot ? "block" : "none";
+  $("gameHint").textContent = s.game.text;
+  $("gameHint").className = "hint " + (s.game.ok ? "ok" : "warn");
+  $("tokenHint").textContent = s.config.has_token ? "Anahtar kayıtlı. Değiştirmek için yenisini yapıştırıp Kaydet'e bas." : "Henüz anahtar yok. Aşağıdaki adımları izle.";
+  $("tokenHint").className = "hint " + (s.config.has_token ? "ok" : "warn");
+  document.querySelectorAll(".browse").forEach((b) => { b.style.display = s.canBrowse ? "" : "none"; });
+
+  if (s.logs.length !== lastLogCount) {
+    lastLogCount = s.logs.length;
+    const pre = $("logs");
+    const atBottom = pre.scrollTop + pre.clientHeight >= pre.scrollHeight - 8;
+    pre.textContent = s.logs.join("\n");
+    if (atBottom) pre.scrollTop = pre.scrollHeight;
+  }
+}
+
+async function refresh() {
+  try { render(await api("/api/state")); } catch { $("message").textContent = "Panel bağlantısı koptu. PARDEX-Sunucu.bat penceresi kapanmış olabilir."; }
+}
+
+$("toggleBtn").onclick = async () => {
+  const s = await api("/api/state");
+  if (s.phase === "running" || s.phase === "starting") render(await api("/api/stop", {}));
+  else render(await api("/api/start", { local: $("localOnly").checked }));
+};
+
+$("saveBtn").onclick = async () => {
+  const body = { korsan_path: $("korsanPath").value, godot_exe: $("godotExe").value };
+  if ($("token").value.trim()) body.github_token = $("token").value.trim();
+  editing = false;
+  render(await api("/api/config", body));
+  $("token").value = "";
+  toast("Ayarlar kaydedildi.");
+};
+
+document.querySelectorAll(".browse").forEach((b) => {
+  b.onclick = async () => {
+    b.disabled = true;
+    const result = await api("/api/browse", { kind: b.dataset.kind });
+    b.disabled = false;
+    if (result.path) { $(b.dataset.target).value = result.path; editing = true; toast("Seçildi. Kaydet'e basmayı unutma."); }
+  };
+});
+
+["korsanPath", "godotExe"].forEach((id) => $(id).addEventListener("input", () => { editing = true; }));
+
+$("quitBtn").onclick = async () => {
+  if (!confirm("Sunucu kapatılıp panel sonlandırılsın mı?")) return;
+  await api("/api/quit", {}).catch(() => {});
+  document.body.innerHTML = '<div class="wrap"><div class="card"><b>Panel kapatıldı.</b><br><span style="color:#9fb0c8">Tekrar açmak için PARDEX-Sunucu.bat dosyasına çift tıkla.</span></div></div>';
+};
+
+refresh();
+setInterval(refresh, 1000);
+</script>
+</body>
+</html>
