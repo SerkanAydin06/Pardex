@@ -12,6 +12,7 @@ signal toast(message: String)
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const SLIDE_SECONDS := 8.0
+const HERO_HEIGHT := 300.0
 
 var _slide := 0
 var _hero_art: TextureRect
@@ -106,81 +107,80 @@ func _slides() -> Array:
 
 
 func _build_hero() -> Control:
-	# Fixed height: every slide reserves two title lines and two body lines,
-	# so the banner does not change size when the carousel moves.
-	var frame := UI.image(null, Vector2(0, 400), 16)
+	# Shared page-hero height keeps the shell visually stable while changing tabs.
+	var frame := UI.image(null, Vector2(0, HERO_HEIGHT), 16)
 	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
 	_hero_art = frame.get_node("Art") as TextureRect
 	frame.add_child(UI.shade(0.95, true))
 	frame.add_child(UI.shade(0.55))
 
 	var row := UI.hbox(20)
-	frame.add_child(UI.margin(row, 36, 30, 26, 18))
-	var text := UI.vbox(12)
+	frame.add_child(UI.margin(row, 30, 20, 24, 16))
+	var text := UI.vbox(8)
 	UI.expand(text)
 	row.add_child(text)
 	var tag_row := UI.hbox(8)
-	tag_row.add_child(UI.icon("crown", 16, UI.ACCENT))
-	_hero_tag = UI.label("", 13, UI.ACCENT, true)
+	tag_row.add_child(UI.icon("crown", 15, UI.ACCENT))
+	_hero_tag = UI.label("", 12, UI.ACCENT, true)
 	tag_row.add_child(_hero_tag)
 	var tag_holder := UI.panel(0, UI.box(Color(UI.BG, 0.6), 8, UI.BORDER_HI, 1, 8))
 	tag_holder.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	tag_holder.add_child(tag_row)
 	text.add_child(tag_holder)
-	_hero_title = UI.label("", 42, UI.TEXT, true)
-	_hero_title.custom_minimum_size.y = 118
+	_hero_title = UI.label("", 38, UI.TEXT, true)
+	_hero_title.custom_minimum_size.y = 78
 	_hero_title.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	text.add_child(_hero_title)
-	_hero_body = UI.label("", 16, UI.TEXT_2)
-	_hero_body.custom_minimum_size.y = 54
+	_hero_body = UI.label("", 14, UI.TEXT_2)
+	_hero_body.custom_minimum_size.y = 40
 	_hero_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hero_body.max_lines_visible = 2
 	text.add_child(_hero_body)
-	var actions := UI.hbox(14)
+	var actions := UI.hbox(12)
 	text.add_child(actions)
-	var explore := UI.button("Şimdi İncele", "primary", 15, 50, "arrow_right")
+	var explore := UI.button("Şimdi İncele", "primary", 14, 44, "arrow_right")
 	explore.icon_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	explore.custom_minimum_size.x = 200
+	explore.custom_minimum_size.x = 190
 	explore.pressed.connect(_explore_slide)
 	actions.add_child(explore)
-	var wish := UI.button("İstek Listesi", "ghost", 15, 50, "heart")
-	wish.custom_minimum_size.x = 180
+	var wish := UI.button("İstek Listesi", "ghost", 14, 44, "heart")
+	wish.custom_minimum_size.x = 170
 	wish.pressed.connect(_toggle_slide_wishlist)
 	actions.add_child(wish)
 	text.add_child(UI.vspacer())
 
-	var pager := UI.hbox(10)
+	var pager := UI.hbox(8)
 	pager.alignment = BoxContainer.ALIGNMENT_CENTER
-	var prev := UI.icon_button("chevron_left", "Önceki", 28)
+	var prev := UI.icon_button("chevron_left", "Önceki", 24)
 	prev.pressed.connect(func(): _show_slide(_slide - 1))
 	pager.add_child(prev)
-	_hero_dots = UI.hbox(8)
+	_hero_dots = UI.hbox(7)
 	pager.add_child(_hero_dots)
 	for index in _slides().size():
 		var dot := Button.new()
-		dot.custom_minimum_size = Vector2(10, 10)
+		dot.custom_minimum_size = Vector2(9, 9)
 		dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		dot.focus_mode = Control.FOCUS_NONE
 		dot.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		dot.pressed.connect(_show_slide.bind(index))
 		_hero_dots.add_child(dot)
-	var next := UI.icon_button("chevron_right", "Sonraki", 28)
+	var next := UI.icon_button("chevron_right", "Sonraki", 24)
 	next.pressed.connect(func(): _show_slide(_slide + 1))
 	pager.add_child(next)
 	text.add_child(pager)
 
-	var features := UI.vbox(22)
+	var features := UI.vbox(14)
 	features.alignment = BoxContainer.ALIGNMENT_CENTER
-	features.custom_minimum_size.x = 190
+	features.custom_minimum_size.x = 180
 	for feature in [
 		["star", "PARDEX\nORİJİNALLERİ"],
 		["check_circle", "GÜVENLİ\nOYUN OTURUMU"],
 		["gamepad", "ONLINE\nODALAR"],
 		["friends", "AKTİF\nTOPLULUK"],
 	]:
-		var line := UI.hbox(14)
-		line.add_child(UI.icon(str(feature[0]), 30, UI.ACCENT))
-		line.add_child(UI.label(str(feature[1]), 12, UI.TEXT_2, true))
+		var line := UI.hbox(12)
+		line.add_child(UI.icon(str(feature[0]), 26, UI.ACCENT))
+		line.add_child(UI.label(str(feature[1]), 11, UI.TEXT_2, true))
 		features.add_child(line)
 	_hero_features = features
 	row.add_child(features)
