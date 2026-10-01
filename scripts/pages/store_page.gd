@@ -29,6 +29,42 @@ var _content_width := 1200.0
 
 
 func _ready() -> void:
+	# The layout lives in scenes/pages/store_page.tscn; building from code only
+	# happens when the script runs without its scene (tools/bake_page_scenes.gd).
+	if get_child_count() == 0:
+		_build()
+		UI.own(self)
+	_bind()
+	_render_shelves()
+	_show_slide(0)
+	var timer := Timer.new()
+	timer.wait_time = SLIDE_SECONDS
+	timer.autostart = true
+	timer.timeout.connect(func(): if is_visible_in_tree(): _show_slide(_slide + 1))
+	add_child(timer)
+	visibility_changed.connect(func(): if is_visible_in_tree(): _render_shelves())
+
+
+func _bind() -> void:
+	_hero_art = %HeroArt
+	_hero_tag = %HeroTag
+	_hero_title = %HeroTitle
+	_hero_body = %HeroBody
+	_hero_dots = %HeroDots
+	_hero_features = %HeroFeatures
+	_featured = %FeaturedGrid
+	_new_row = %NewGrid
+	(%FeaturedLink as Button).pressed.connect(func(): navigate.emit("library"))
+	(%NewLink as Button).pressed.connect(func(): navigate.emit("library"))
+	(%ExploreButton as Button).pressed.connect(_explore_slide)
+	(%WishButton as Button).pressed.connect(_toggle_slide_wishlist)
+	(%PrevButton as Button).pressed.connect(func(): _show_slide(_slide - 1))
+	(%NextButton as Button).pressed.connect(func(): _show_slide(_slide + 1))
+	for index in _hero_dots.get_child_count():
+		(_hero_dots.get_child(index) as Button).pressed.connect(_show_slide.bind(index))
+
+
+func _build() -> void:
 	add_theme_constant_override("separation", 0)
 	var body := UI.vbox(16)
 	add_child(UI.scroll_page(body))
@@ -38,10 +74,9 @@ func _ready() -> void:
 	var featured_header := UI.section_header("Öne Çıkanlar", "Tümünü Gör", 22)
 	featured_header.add_child(UI.pill("Editörün Seçimi", UI.GOLD, "crown", 11))
 	featured_header.move_child(featured_header.get_child(-1), 1)
-	(featured_header.get_node("Link") as Button).pressed.connect(func(): navigate.emit("library"))
+	UI.named(featured_header.get_node("Link"), "FeaturedLink")
 	body.add_child(featured_header)
-	_featured = _grid()
-	body.add_child(_featured)
+	body.add_child(UI.named(_grid(), "FeaturedGrid"))
 
 	var deals_header := UI.section_header("İndirimler", "Tümünü Gör", 20, "percent", UI.RED)
 	deals_header.add_child(UI.label("Kaçırılmayacak fırsatlar, sınırlı süreli indirimler.", 13, UI.TEXT_2))
@@ -56,19 +91,9 @@ func _ready() -> void:
 	var new_header := UI.section_header("Yeni Gelenler", "Tümünü Gör", 20, "sparkles", UI.ACCENT)
 	new_header.add_child(UI.label("En yeni oyunlar şimdi PARDEX'te.", 13, UI.TEXT_2))
 	new_header.move_child(new_header.get_child(-1), 2)
-	(new_header.get_node("Link") as Button).pressed.connect(func(): navigate.emit("library"))
+	UI.named(new_header.get_node("Link"), "NewLink")
 	body.add_child(new_header)
-	_new_row = _grid()
-	body.add_child(_new_row)
-
-	_render_shelves()
-	_show_slide(0)
-	var timer := Timer.new()
-	timer.wait_time = SLIDE_SECONDS
-	timer.autostart = true
-	timer.timeout.connect(func(): if is_visible_in_tree(): _show_slide(_slide + 1))
-	add_child(timer)
-	visibility_changed.connect(func(): if is_visible_in_tree(): _render_shelves())
+	body.add_child(UI.named(_grid(), "NewGrid"))
 
 
 func _grid() -> GridContainer:
@@ -113,7 +138,7 @@ func _build_hero() -> Control:
 	# on exactly the same geometry, regardless of title/body length.
 	var frame := UI.image(null, Vector2(0, HERO_HEIGHT), 16)
 	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
-	_hero_art = frame.get_node("Art") as TextureRect
+	UI.named(frame.get_node("Art"), "HeroArt")
 	frame.add_child(UI.shade(0.95, true))
 	frame.add_child(UI.shade(0.55))
 
@@ -124,8 +149,7 @@ func _build_hero() -> Control:
 	row.add_child(text)
 	var tag_row := UI.hbox(8)
 	tag_row.add_child(UI.icon("crown", 15, UI.ACCENT))
-	_hero_tag = UI.label("", 12, UI.ACCENT, true)
-	tag_row.add_child(_hero_tag)
+	tag_row.add_child(UI.named(UI.label("", 12, UI.ACCENT, true), "HeroTag"))
 	var tag_holder := UI.panel(0, UI.box(Color(UI.BG, 0.6), 8, UI.BORDER_HI, 1, 8))
 	tag_holder.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	tag_holder.add_child(tag_row)
@@ -135,23 +159,23 @@ func _build_hero() -> Control:
 	title_slot.custom_minimum_size.y = HERO_TITLE_HEIGHT
 	title_slot.clip_contents = true
 	text.add_child(title_slot)
-	_hero_title = UI.label("", 34, UI.TEXT, true)
-	_hero_title.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_hero_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_hero_title.max_lines_visible = 2
-	_hero_title.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-	title_slot.add_child(_hero_title)
+	var title := UI.named(UI.label("", 34, UI.TEXT, true), "HeroTitle") as Label
+	title.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	title.max_lines_visible = 2
+	title.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	title_slot.add_child(title)
 
 	var body_slot := Control.new()
 	body_slot.custom_minimum_size.y = HERO_BODY_HEIGHT
 	body_slot.clip_contents = true
 	text.add_child(body_slot)
-	_hero_body = UI.label("", 14, UI.TEXT_2)
-	_hero_body.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_hero_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_hero_body.max_lines_visible = 2
-	_hero_body.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	body_slot.add_child(_hero_body)
+	var hero_body := UI.named(UI.label("", 14, UI.TEXT_2), "HeroBody") as Label
+	hero_body.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	hero_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hero_body.max_lines_visible = 2
+	hero_body.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	body_slot.add_child(hero_body)
 
 	var gap := Control.new()
 	gap.custom_minimum_size.y = 10
@@ -162,32 +186,26 @@ func _build_hero() -> Control:
 	var explore := UI.button("Şimdi İncele", "primary", 14, 44, "arrow_right")
 	explore.icon_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	explore.custom_minimum_size.x = 190
-	explore.pressed.connect(_explore_slide)
-	actions.add_child(explore)
+	actions.add_child(UI.named(explore, "ExploreButton"))
 	var wish := UI.button("İstek Listesi", "ghost", 14, 44, "heart")
 	wish.custom_minimum_size.x = 170
-	wish.pressed.connect(_toggle_slide_wishlist)
-	actions.add_child(wish)
+	actions.add_child(UI.named(wish, "WishButton"))
 	text.add_child(UI.vspacer())
 
 	var pager := UI.hbox(8)
 	pager.alignment = BoxContainer.ALIGNMENT_CENTER
-	var prev := UI.icon_button("chevron_left", "Önceki", 24)
-	prev.pressed.connect(func(): _show_slide(_slide - 1))
-	pager.add_child(prev)
-	_hero_dots = UI.hbox(7)
-	pager.add_child(_hero_dots)
+	pager.add_child(UI.named(UI.icon_button("chevron_left", "Önceki", 24), "PrevButton"))
+	var dots := UI.named(UI.hbox(7), "HeroDots")
+	pager.add_child(dots)
 	for index in _slides().size():
 		var dot := Button.new()
 		dot.custom_minimum_size = Vector2(9, 9)
 		dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		dot.focus_mode = Control.FOCUS_NONE
 		dot.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-		dot.pressed.connect(_show_slide.bind(index))
-		_hero_dots.add_child(dot)
-	var next := UI.icon_button("chevron_right", "Sonraki", 24)
-	next.pressed.connect(func(): _show_slide(_slide + 1))
-	pager.add_child(next)
+		dot.name = "Dot%d" % index
+		dots.add_child(dot)
+	pager.add_child(UI.named(UI.icon_button("chevron_right", "Sonraki", 24), "NextButton"))
 	text.add_child(pager)
 
 	var features := UI.vbox(14)
@@ -203,8 +221,7 @@ func _build_hero() -> Control:
 		line.add_child(UI.icon(str(feature[0]), 26, UI.ACCENT))
 		line.add_child(UI.label(str(feature[1]), 11, UI.TEXT_2, true))
 		features.add_child(line)
-	_hero_features = features
-	row.add_child(features)
+	row.add_child(UI.named(features, "HeroFeatures"))
 	return frame
 
 

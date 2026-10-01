@@ -27,32 +27,52 @@ var _right: VBoxContainer
 
 
 func _ready() -> void:
-	add_theme_constant_override("separation", 0)
-	_columns = BoxContainer.new()
-	_columns.add_theme_constant_override("separation", 16)
-	add_child(UI.scroll_page(_columns))
-
-	var main := UI.vbox(14)
-	UI.expand(main, 2.4)
-	_columns.add_child(main)
-	main.add_child(_build_banner())
-	_stats_row = UI.hbox(12)
-	main.add_child(_stats_row)
-	main.add_child(_build_badges())
-	main.add_child(_build_achievements())
-	main.add_child(_build_favorites())
-
-	_right = UI.vbox(16)
-	UI.expand(_right, 1.0)
-	_columns.add_child(_right)
-	_right.add_child(_build_account())
-	_right.add_child(_build_events())
-
+	# The layout lives in scenes/pages/profile_page.tscn; building from code
+	# only happens when the script runs without its scene.
+	if get_child_count() == 0:
+		_build()
+		UI.own(self)
+	_bind()
 	PardexOnline.presence_changed.connect(func(_p): _render_identity())
 	PardexOnline.connection_state_changed.connect(func(_s): refresh())
 	PardexOnline.social_state_changed.connect(func(_s): refresh())
 	visibility_changed.connect(func(): if is_visible_in_tree(): refresh())
 	refresh()
+
+
+func _bind() -> void:
+	_columns = %Columns
+	_avatar_slot = %AvatarSlot
+	_name_label = %NameLabel
+	_status_row = %StatusRow
+	_stats_row = %StatsRow
+	_favorites_row = %FavoritesRow
+	_account_list = %AccountList
+	_events_list = %EventsList
+	_right = %RightColumn
+	(%EditProfileButton as Button).pressed.connect(func(): navigate.emit("settings"))
+	(%FavoritesLink as Button).pressed.connect(func(): navigate.emit("library"))
+	(%AccountSettingsButton as Button).pressed.connect(func(): navigate.emit("settings"))
+
+
+func _build() -> void:
+	add_theme_constant_override("separation", 0)
+	var columns := UI.named(BoxContainer.new(), "Columns") as BoxContainer
+	columns.add_theme_constant_override("separation", 16)
+	add_child(UI.scroll_page(columns))
+	var main := UI.vbox(14)
+	UI.expand(main, 2.4)
+	columns.add_child(main)
+	main.add_child(_build_banner())
+	main.add_child(UI.named(UI.hbox(12), "StatsRow"))
+	main.add_child(_build_badges())
+	main.add_child(_build_achievements())
+	main.add_child(_build_favorites())
+	var right := UI.named(UI.vbox(16), "RightColumn") as VBoxContainer
+	UI.expand(right, 1.0)
+	columns.add_child(right)
+	right.add_child(_build_account())
+	right.add_child(_build_events())
 
 
 func refresh() -> void:
@@ -79,25 +99,20 @@ func _build_banner() -> Control:
 	frame.add_child(UI.shade(0.92, true))
 	var row := UI.hbox(24)
 	frame.add_child(UI.margin(row, 30, 20, 24, 20))
-	_avatar_slot = CenterContainer.new()
-	row.add_child(_avatar_slot)
+	row.add_child(UI.named(CenterContainer.new(), "AvatarSlot"))
 	var text := UI.vbox(10)
 	text.alignment = BoxContainer.ALIGNMENT_CENTER
 	UI.expand(text)
 	row.add_child(text)
-	_name_label = UI.label("", 42, UI.TEXT, true)
-	text.add_child(_name_label)
+	text.add_child(UI.named(UI.label("", 42, UI.TEXT, true), "NameLabel"))
 	text.add_child(UI.pill("Seviye sistemi yakında", UI.ACCENT, "trophy", 12, true))
 	text.add_child(UI.label("“Oyunlar daha güzel, birlikte oynayınca.”", 16, UI.TEXT))
 	var bottom := UI.hbox(14)
-	_status_row = UI.hbox(8)
-	bottom.add_child(_status_row)
+	bottom.add_child(UI.named(UI.hbox(8), "StatusRow"))
 	bottom.add_child(UI.spacer())
 	var edit := UI.button("Profili Düzenle", "ghost", 15, 48, "pencil")
-	edit.custom_minimum_size.x = 200
 	edit.add_theme_stylebox_override("normal", UI.box(Color(UI.BG, 0.75), 10, UI.BORDER_HI, 1))
-	edit.pressed.connect(func(): navigate.emit("settings"))
-	bottom.add_child(edit)
+	bottom.add_child(UI.named(edit, "EditProfileButton"))
 	text.add_child(bottom)
 	return frame
 
@@ -178,10 +193,9 @@ func _build_favorites() -> Control:
 	var column := UI.vbox(12)
 	card.add_child(column)
 	var header := UI.section_header("Favori Oyunlar", "Tümünü Gör", 20)
-	(header.get_node("Link") as Button).pressed.connect(func(): navigate.emit("library"))
+	UI.named(header.get_node("Link"), "FavoritesLink")
 	column.add_child(header)
-	_favorites_row = UI.hbox(12)
-	column.add_child(_favorites_row)
+	column.add_child(UI.named(UI.hbox(12), "FavoritesRow"))
 	return card
 
 
@@ -215,12 +229,9 @@ func _build_account() -> Control:
 	card.add_child(column)
 	var header := UI.hbox(8)
 	header.add_child(UI.expand(UI.label("Hesap Bilgileri", 22, UI.TEXT, true)))
-	var gear := UI.icon_button("gear", "Ayarlar", 34, UI.ACCENT)
-	gear.pressed.connect(func(): navigate.emit("settings"))
-	header.add_child(gear)
+	header.add_child(UI.named(UI.icon_button("gear", "Ayarlar", 34, UI.ACCENT), "AccountSettingsButton"))
 	column.add_child(header)
-	_account_list = UI.vbox(0)
-	column.add_child(_account_list)
+	column.add_child(UI.named(UI.vbox(0), "AccountList"))
 	return card
 
 
@@ -262,8 +273,7 @@ func _build_events() -> Control:
 	var column := UI.vbox(12)
 	card.add_child(column)
 	column.add_child(UI.section_header("Son Etkinlikler", "", 22))
-	_events_list = UI.vbox(12)
-	column.add_child(_events_list)
+	column.add_child(UI.named(UI.vbox(12), "EventsList"))
 	return card
 
 

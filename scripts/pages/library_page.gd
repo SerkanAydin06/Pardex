@@ -34,33 +34,73 @@ var _content_width := 1200.0
 
 
 func _ready() -> void:
-	add_theme_constant_override("separation", 0)
-	var body := UI.vbox(16)
-	add_child(UI.scroll_page(body))
-
-	_top = BoxContainer.new()
-	_top.add_theme_constant_override("separation", 16)
-	body.add_child(_top)
-	_top.add_child(_build_hero())
-	_top.add_child(_build_quick_start())
-
-	body.add_child(_build_toolbar())
-	_grid = GridContainer.new()
-	_grid.add_theme_constant_override("h_separation", 14)
-	_grid.add_theme_constant_override("v_separation", 14)
-	body.add_child(_grid)
-
-	_bottom = BoxContainer.new()
-	_bottom.add_theme_constant_override("separation", 16)
-	body.add_child(_bottom)
-	_bottom.add_child(_build_recent())
-	_bottom.add_child(_build_continue())
-
+	# The layout lives in scenes/pages/library_page.tscn; building from code
+	# only happens when the script runs without its scene.
+	if get_child_count() == 0:
+		_build()
+		UI.own(self)
+	_bind()
 	_game_menu = PopupMenu.new()
 	add_child(_game_menu)
 	_game_menu.id_pressed.connect(_on_menu)
 	visibility_changed.connect(func(): if is_visible_in_tree(): refresh())
 	refresh()
+
+
+func _bind() -> void:
+	_top = %TopRow
+	_bottom = %BottomRow
+	_stats_row = %StatsRow
+	_quick_list = %QuickList
+	_toolbar = %Toolbar
+	_grid = %GameGrid
+	_recent_row = %RecentRow
+	_continue_list = %ContinueList
+	_grid_button = %GridViewButton
+	_list_button = %ListViewButton
+	for entry in FILTERS:
+		var segment := get_node("%Filter_" + str(entry[0])) as Button
+		_filter_buttons[entry[0]] = segment
+		segment.pressed.connect(func():
+			_filter = str(entry[0])
+			_render_filters()
+			_render_grid()
+		)
+	(%LibrarySearchField as LineEdit).text_changed.connect(set_query)
+	(%SortOption as OptionButton).item_selected.connect(func(index: int):
+		_sort = index
+		_render_grid()
+	)
+	_grid_button.pressed.connect(_set_view.bind(false))
+	_list_button.pressed.connect(_set_view.bind(true))
+	(%RecentLink as Button).pressed.connect(func():
+		_filter = "recent"
+		_render_filters()
+		_render_grid()
+	)
+	_set_view(false)
+
+
+func _build() -> void:
+	add_theme_constant_override("separation", 0)
+	var body := UI.vbox(16)
+	add_child(UI.scroll_page(body))
+	var top := UI.named(BoxContainer.new(), "TopRow") as BoxContainer
+	top.add_theme_constant_override("separation", 16)
+	body.add_child(top)
+	top.add_child(_build_hero())
+	top.add_child(_build_quick_start())
+	body.add_child(_build_toolbar())
+	var grid := UI.named(GridContainer.new(), "GameGrid") as GridContainer
+	grid.columns = 5
+	grid.add_theme_constant_override("h_separation", 14)
+	grid.add_theme_constant_override("v_separation", 14)
+	body.add_child(grid)
+	var bottom := UI.named(BoxContainer.new(), "BottomRow") as BoxContainer
+	bottom.add_theme_constant_override("separation", 16)
+	body.add_child(bottom)
+	bottom.add_child(_build_recent())
+	bottom.add_child(_build_continue())
 
 
 func set_query(query: String) -> void:
@@ -134,8 +174,7 @@ func _build_hero() -> Control:
 	column.add_child(UI.label("Oyun Kütüphanen", 42, UI.TEXT, true))
 	column.add_child(UI.label("Tüm oyunların, her zaman seninle.\nKeşfet, oyna ve macerana kaldığın yerden devam et.", 15, UI.TEXT_2))
 	column.add_child(UI.vspacer())
-	_stats_row = UI.hbox(10)
-	column.add_child(_stats_row)
+	column.add_child(UI.named(UI.hbox(10), "StatsRow"))
 	return frame
 
 
@@ -157,8 +196,7 @@ func _build_quick_start() -> Control:
 	var column := UI.vbox(10)
 	card.add_child(column)
 	column.add_child(UI.section_header("Hızlı Başlat", "", 20))
-	_quick_list = UI.vbox(8)
-	column.add_child(_quick_list)
+	column.add_child(UI.named(UI.vbox(8), "QuickList"))
 	return card
 
 
@@ -183,26 +221,19 @@ func _render_quick_start() -> void:
 # ------------------------------------------------------------------ toolbar + grid
 
 func _build_toolbar() -> Control:
-	_toolbar = BoxContainer.new()
-	_toolbar.add_theme_constant_override("separation", 10)
+	var toolbar := UI.named(BoxContainer.new(), "Toolbar") as BoxContainer
+	toolbar.add_theme_constant_override("separation", 10)
 	var segments := UI.hbox(0)
-	_toolbar.add_child(segments)
+	toolbar.add_child(segments)
 	var bar := UI.hbox(10)
-	_toolbar.add_child(UI.expand(bar))
+	toolbar.add_child(UI.expand(bar))
 	for entry in FILTERS:
 		var segment := UI.segment(str(entry[1]), str(entry[2]), entry[0] == _filter)
-		segment.pressed.connect(func():
-			_filter = str(entry[0])
-			_render_filters()
-			_render_grid()
-		)
-		segments.add_child(segment)
-		_filter_buttons[entry[0]] = segment
+		segments.add_child(UI.named(segment, "Filter_" + str(entry[0])))
 	bar.add_child(UI.spacer())
 	var search := UI.search_field("Kütüphanede ara...", 42)
 	search.custom_minimum_size.x = 200
-	search.text_changed.connect(set_query)
-	bar.add_child(search)
+	bar.add_child(UI.named(search, "LibrarySearchField"))
 	var sort := OptionButton.new()
 	sort.focus_mode = Control.FOCUS_NONE
 	sort.custom_minimum_size = Vector2(170, 42)
@@ -213,19 +244,10 @@ func _build_toolbar() -> Control:
 	sort_style.content_margin_left = 14
 	for state in ["normal", "hover", "pressed"]:
 		sort.add_theme_stylebox_override(state, sort_style)
-	sort.item_selected.connect(func(index: int):
-		_sort = index
-		_render_grid()
-	)
-	bar.add_child(sort)
-	_grid_button = UI.icon_button("grid", "Izgara görünümü", 42, UI.TEXT_2, true)
-	_list_button = UI.icon_button("list", "Liste görünümü", 42, UI.TEXT_2, true)
-	_grid_button.pressed.connect(_set_view.bind(false))
-	_list_button.pressed.connect(_set_view.bind(true))
-	bar.add_child(_grid_button)
-	bar.add_child(_list_button)
-	_set_view(false)
-	return _toolbar
+	bar.add_child(UI.named(sort, "SortOption"))
+	bar.add_child(UI.named(UI.icon_button("grid", "Izgara görünümü", 42, UI.ACCENT, true), "GridViewButton"))
+	bar.add_child(UI.named(UI.icon_button("list", "Liste görünümü", 42, UI.TEXT_2, true), "ListViewButton"))
+	return toolbar
 
 
 func _set_view(list_view: bool) -> void:
@@ -369,14 +391,9 @@ func _build_recent() -> Control:
 	var column := UI.vbox(12)
 	card.add_child(column)
 	var header := UI.section_header("Son Oynananlar", "Tümünü Gör", 20)
-	(header.get_node("Link") as Button).pressed.connect(func():
-		_filter = "recent"
-		_render_filters()
-		_render_grid()
-	)
+	UI.named(header.get_node("Link"), "RecentLink")
 	column.add_child(header)
-	_recent_row = UI.hbox(12)
-	column.add_child(_recent_row)
+	column.add_child(UI.named(UI.hbox(12), "RecentRow"))
 	return card
 
 
@@ -404,8 +421,7 @@ func _build_continue() -> Control:
 	var column := UI.vbox(12)
 	card.add_child(column)
 	column.add_child(UI.section_header("Devam Et", "", 20))
-	_continue_list = UI.vbox(10)
-	column.add_child(_continue_list)
+	column.add_child(UI.named(UI.vbox(10), "ContinueList"))
 	return card
 
 

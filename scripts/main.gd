@@ -12,15 +12,9 @@ const DEFAULT_WINDOW_SIZE := Vector2i(1440, 900)
 const MIN_WINDOW_SIZE := Vector2i(1024, 640)
 const WINDOW_STATE_SAVE_INTERVAL := 1.0
 const SESSION_POLL_INTERVAL := 5.0
-const SETTINGS_SCENE := preload("res://scenes/screens/settings.tscn")
-const TextFit := preload("res://scripts/ui/pardex_text_fit.gd")
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Icons := preload("res://scripts/ui/pardex_icons.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
-const StorePage := preload("res://scripts/pages/store_page.gd")
-const LibraryPage := preload("res://scripts/pages/library_page.gd")
-const SocialPage := preload("res://scripts/pages/social_page.gd")
-const ProfilePage := preload("res://scripts/pages/profile_page.gd")
 
 const WINDOW_NARROW := 1280
 const NAV := {
@@ -111,12 +105,13 @@ func _style_brand() -> void:
 
 
 func _create_pages() -> void:
-	_store_page = _add_page("store", StorePage.new())
-	_library_page = _add_page("library", LibraryPage.new())
-	_social_page = _add_page("friends", SocialPage.new())
-	_profile_page = _add_page("profile", ProfilePage.new())
-	_settings_content = SETTINGS_SCENE.instantiate() as VBoxContainer
-	_add_settings_page()
+	_store_page = _bind_page("store", "StorePage")
+	_library_page = _bind_page("library", "LibraryPage")
+	_social_page = _bind_page("friends", "FriendsPage")
+	_profile_page = _bind_page("profile", "ProfilePage")
+	_bind_page("settings", "SettingsPage")
+	_settings_content = %Pages.get_node("SettingsPage/%SettingsContent") as VBoxContainer
+	_bind_settings_page()
 	for page in [_store_page, _library_page, _social_page, _profile_page]:
 		if page.has_signal("navigate"):
 			page.navigate.connect(_navigate)
@@ -126,33 +121,16 @@ func _create_pages() -> void:
 			page.toast.connect(_show_toast)
 
 
-func _add_page(page_name: String, page: VBoxContainer) -> VBoxContainer:
-	page.name = page_name.capitalize() + "Page"
-	page.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	%Pages.add_child(page)
+# Pages are real scene instances (scenes/pages/*.tscn) under %Pages so they
+# can be edited in the Godot editor.
+func _bind_page(page_name: String, node_name: String) -> VBoxContainer:
+	var page := %Pages.get_node(node_name) as VBoxContainer
 	page.hide()
 	_pages[page_name] = page
 	return page
 
 
-# Settings is the older scene-built screen: it gets a title, a scroll wrapper
-# and the automatic text-fit policy.
-func _add_settings_page() -> void:
-	var wrapper := UI.vbox(14)
-	wrapper.name = "SettingsPage"
-	wrapper.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var heading := UI.vbox(2)
-	heading.add_child(UI.label("Ayarlar", 30, UI.TEXT, true))
-	heading.add_child(UI.label("PARDEX profilini, hesabını ve bağlantı ayarlarını yönet.", 14, UI.TEXT_2))
-	wrapper.add_child(heading)
-	_settings_content.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	wrapper.add_child(UI.scroll_page(_settings_content))
-	%Pages.add_child(wrapper)
-	wrapper.hide()
-	_pages["settings"] = wrapper
-	TextFit.apply(_settings_content)
-	UI.restyle_screen(_settings_content)
-
+func _bind_settings_page() -> void:
 	(_settings_content.get_node("ProfilePanel/VBox/ProfileRow/SaveProfileButton") as Button).pressed.connect(_save_profile_from_settings)
 	(_settings_content.get_node("OnlinePanel/VBox/ServerRow/ConnectButton") as Button).pressed.connect(_save_online_settings_and_connect)
 	(_settings_content.get_node("DisplayPanel/VBox/FullscreenOnStart") as CheckButton).toggled.connect(_on_fullscreen_toggled)
