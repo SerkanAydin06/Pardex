@@ -127,11 +127,9 @@ function ensureDefaults() {
 function ensureServerDependencies() {
   if (fs.existsSync(path.join(SERVER_DIR, "node_modules", "ws"))) return;
   log("Sunucu bileşenleri kuruluyor (yalnızca ilk sefer)...");
-  const result = spawnSync(IS_WINDOWS ? "npm.cmd" : "npm", ["install", "--omit=dev"], {
-    cwd: SERVER_DIR,
-    stdio: "inherit",
-    shell: IS_WINDOWS,
-  });
+  const result = IS_WINDOWS
+    ? spawnSync("npm.cmd install --omit=dev --no-fund --no-update-notifier", { cwd: SERVER_DIR, stdio: "inherit", shell: true })
+    : spawnSync("npm", ["install", "--omit=dev", "--no-fund"], { cwd: SERVER_DIR, stdio: "inherit" });
   if (result.status !== 0) throw new Error("Sunucu bileşenleri kurulamadı (npm install).");
 }
 
@@ -254,6 +252,15 @@ async function github(method, endpoint, body) {
   return { status: response.status, data };
 }
 
+function githubError(what, reply) {
+  const reason = reply.data && reply.data.message ? ` GitHub: "${reply.data.message}".` : "";
+  const fix = reply.status === 401
+    ? " Anahtar geçersiz ya da süresi dolmuş; yeni anahtar oluştur."
+    : " Anahtarı yeniden oluştur: Repository access → Only select repositories → SerkanAydin06/Pardex," +
+      " Permissions → Contents → Read and write.";
+  return new Error(`${what} (HTTP ${reply.status}).${reason}${fix}`);
+}
+
 async function publishAddress(onlineUrl) {
   const filePath = `/contents/${ADDRESS_FILE}`;
   let current = await github("GET", `${filePath}?ref=${ADDRESS_BRANCH}`);
@@ -261,13 +268,13 @@ async function publishAddress(onlineUrl) {
     const branch = await github("GET", `/git/ref/heads/${ADDRESS_BRANCH}`);
     if (branch.status === 404) {
       const main = await github("GET", "/git/ref/heads/main");
-      if (main.status !== 200) throw new Error(`GitHub anahtarı reddedildi (HTTP ${main.status}). Anahtarı kontrol et.`);
+      if (main.status !== 200) throw githubError("GitHub anahtarı reddedildi", main);
       const created = await github("POST", "/git/refs", { ref: `refs/heads/${ADDRESS_BRANCH}`, sha: main.data.object.sha });
-      if (created.status !== 201) throw new Error(`Adres dalı oluşturulamadı (HTTP ${created.status}). Anahtarın "Contents: Read and write" izni olmalı.`);
+      if (created.status !== 201) throw githubError("Adres dalı oluşturulamadı", created);
     }
     current = { status: 404, data: {} };
   } else if (current.status !== 200) {
-    throw new Error(`GitHub anahtarı reddedildi (HTTP ${current.status}). Anahtarı kontrol et.`);
+    throw githubError("GitHub anahtarı reddedildi", current);
   }
   const content = JSON.stringify({ online: onlineUrl, updated_at: new Date().toISOString() }, null, 2) + "\n";
   const result = await github("PUT", filePath, {
@@ -277,7 +284,7 @@ async function publishAddress(onlineUrl) {
     sha: current.data.sha,
   });
   if (result.status !== 200 && result.status !== 201) {
-    throw new Error(`Sunucu adresi yayınlanamadı (HTTP ${result.status}). Anahtarın "Contents: Read and write" izni olmalı.`);
+    throw githubError("Sunucu adresi yayınlanamadı", result);
   }
 }
 
