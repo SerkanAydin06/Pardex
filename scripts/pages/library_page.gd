@@ -11,6 +11,7 @@ const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const FILTERS := [["all", "Tümü", ""], ["installed", "Yüklü", "download"], ["recent", "Son Oynanan", "clock"], ["favorites", "Favoriler", "heart"]]
 const SORTS := ["En Son Eklenen", "A → Z", "Son Oynanan"]
+const HERO_HEIGHT := 300.0
 
 var _filter := "all"
 var _query := ""
@@ -117,12 +118,12 @@ func _count(kind: String) -> int:
 # ------------------------------------------------------------------ hero
 
 func _build_hero() -> Control:
-	var frame := UI.image(Catalog.texture("res://assets/ui/home_hero_banner.png"), Vector2(0, 300), 16)
+	var frame := UI.image(Catalog.texture("res://assets/ui/home_hero_banner.png"), Vector2(0, HERO_HEIGHT), 16)
 	UI.expand(frame, 2.0)
 	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
 	frame.add_child(UI.shade(0.95, true))
 	var column := UI.vbox(10)
-	frame.add_child(UI.margin(column, 30, 26, 24, 22))
+	frame.add_child(UI.margin(column, 30, 20, 24, 20))
 	var tag := UI.panel(0, UI.box(Color(UI.BG, 0.6), 8, UI.BORDER_HI, 1, 8))
 	tag.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	var tag_row := UI.hbox(8)
