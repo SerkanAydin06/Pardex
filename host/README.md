@@ -5,8 +5,9 @@ Arkadaşların hiçbir ayar yapmaz: PARDEX açılışta senin sunucunun güncel 
 
 ## Kullanım
 
-1. `PARDEX-Sunucu.bat` dosyasına çift tıkla. Tarayıcıda **PARDEX Sunucu Paneli** açılır.
-   (İlk seferde Node.js'i kurulum yapmadan `host/bin/node` klasörüne kendisi indirir.)
+1. **`PARDEX-Sunucu-Paneli.vbs`** dosyasına çift tıkla. **PARDEX Sunucu Paneli** kendi penceresinde açılır,
+   siyah pencere çıkmaz. (İlk seferde Node.js'i `host/bin/node` klasörüne indirirken bir kez görünür pencere açılır.)
+   Masaüstüne kısayol: dosyaya sağ tık → Gönder → Masaüstü (kısayol oluştur).
 2. İlk sefer **Ayarlar** bölümünü doldur ve **Kaydet**'e bas:
    - **Korsanların Hazinesi:** oyunun proje klasörü (içinde `project.godot` olan) ya da dışa aktarılmış exe.
      PARDEX klasörüyle yan yana `Korsanlarin-Hazinesi` klasöründeyse kendisi bulur. **Klasör Seç** ile de seçebilirsin.
@@ -16,8 +17,9 @@ Arkadaşların hiçbir ayar yapmaz: PARDEX açılışta senin sunucunun güncel 
 3. **Sunucuyu Başlat**'a bas, yeşil **Sunucu açık** yazısını bekle (~10–20 sn).
 4. Bitince **Sunucuyu Durdur**. Arkadaşlarının PARDEX'i "sunucu kapalı" görür.
 
-Sunucu açıkken siyah bat penceresini kapatma; panel sekmesini kapatsan da sunucu çalışmaya devam eder
-(tekrar görmek için bat dosyasını yeniden aç). Oynarken bilgisayarın uyku moduna geçmemeli.
+Panel penceresini kapatsan da açık sunucu arka planda çalışır; paneli tekrar açmak için .vbs dosyasına yeniden çift tıkla.
+Tamamen kapatmak için panelde **Paneli Kapat**. Sunucu kapalıyken panel penceresini kapatırsan arka plan da kendiliğinden kapanır.
+Oynarken bilgisayarın uyku moduna geçmemeli. (Sorun ararken `PARDEX-Sunucu.bat` ile görünür pencerede de açabilirsin.)
 
 ## Bilmen gerekenler
 
