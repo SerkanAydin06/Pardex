@@ -1,27 +1,27 @@
 #!/usr/bin/env node
 "use strict";
 
-// PARDEX ev sunucusu.
+// PARDEX Sunucu Paneli.
 //
-// Sunucuyu oyunu kuran kişinin bilgisayarında çalıştırır:
-//   1. PARDEX Online sunucusu (server/production_server.js), 127.0.0.1:8765
-//   2. Korsanların Hazinesi oyun sunucusu (dışa aktarılmış .exe, headless), 127.0.0.1:8766
-//   3. Her ikisi için ücretsiz Cloudflare Quick Tunnel (hesap gerekmez)
+// Tarayıcıda açılan bir panelden, oyunu kuran kişinin bilgisayarında:
+//   1. PARDEX Online sunucusunu (server/production_server.js, 127.0.0.1:8765)
+//   2. Korsanların Hazinesi oyun sunucusunu (exe ya da Godot proje klasörü, 127.0.0.1:8766)
+//   3. Her ikisi için ücretsiz Cloudflare Quick Tunnel'ı açar
 //   4. Güncel wss:// adresini GitHub'daki sunucu-adresi dalına online.json olarak yazar.
 // PARDEX istemcileri adresi oradan okur; arkadaşların hiçbir ayar yapmaz.
 //
 // Kullanım: PARDEX-Sunucu.bat (Windows) veya `node host/pardex_host.js`.
-// `--yerel` yalnızca bu bilgisayarda test eder (tünel ve GitHub güncellemesi yok).
 
 const fs = require("fs");
+const http = require("http");
 const path = require("path");
 const crypto = require("crypto");
-const readline = require("readline");
 const { spawn, spawnSync } = require("child_process");
 
 const ROOT = path.resolve(__dirname, "..");
 const SERVER_DIR = path.join(ROOT, "server");
 const BIN_DIR = path.join(__dirname, "bin");
+const PANEL_PATH = path.join(__dirname, "panel.html");
 const CONFIG_PATH = path.join(__dirname, "pardex_host.local.json");
 const DATA_PATH = path.join(__dirname, "data", "social.json");
 const REPO = "SerkanAydin06/Pardex";
@@ -29,23 +29,33 @@ const ADDRESS_BRANCH = "sunucu-adresi";
 const ADDRESS_FILE = "online.json";
 const ONLINE_PORT = 8765;
 const GAME_PORT = 8766;
-const LOCAL_ONLY = process.argv.includes("--yerel");
+const PANEL_PORT = Number(process.env.PARDEX_PANEL_PORT || 8790);
 const IS_WINDOWS = process.platform === "win32";
 
-const children = [];
-let shuttingDown = false;
-let config = {};
+let config = loadConfig();
+let children = [];
+const logs = [];
+const state = {
+  phase: "stopped", // stopped | starting | running | stopping | error
+  message: "Başlatmak için düğmeye bas.",
+  onlineUrl: "",
+  gameUrl: "",
+  localOnly: false,
+};
 
-function log(message) {
-  console.log(`[PARDEX] ${message}`);
+// ------------------------------------------------------------------ helpers
+
+function log(message, source = "PARDEX") {
+  const line = `[${new Date().toLocaleTimeString("tr-TR")}] ${source}: ${message}`;
+  console.log(line);
+  logs.push(line);
+  if (logs.length > 300) logs.splice(0, logs.length - 300);
 }
 
-function ask(question) {
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  return new Promise((resolve) => rl.question(question, (answer) => {
-    rl.close();
-    resolve(answer.trim().replace(/^"|"$/g, ""));
-  }));
+function setPhase(phase, message) {
+  state.phase = phase;
+  state.message = message;
+  log(message);
 }
 
 function loadConfig() {
@@ -60,10 +70,18 @@ function saveConfig() {
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), "utf8");
 }
 
-// The game server runs either from an exported KorsanlarinHazinesi.exe or,
-// while there is no export yet, from the Godot project folder via Godot.
+function cleanPath(value) {
+  // Accept quoted paths and a dragged project.godot file as its folder.
+  const clean = String(value || "").trim().replace(/^"|"$/g, "");
+  return path.basename(clean).toLowerCase() === "project.godot" ? path.dirname(clean) : clean;
+}
+
 function isProjectFolder(target) {
   return Boolean(target) && fs.existsSync(path.join(target, "project.godot"));
+}
+
+function isFile(target) {
+  return Boolean(target) && fs.existsSync(target) && fs.statSync(target).isFile();
 }
 
 function findKorsanGame() {
@@ -75,65 +93,36 @@ function findKorsanGame() {
   const candidates = [
     ...folders.map((folder) => path.join(folder, "build", name)),
     path.join(ROOT, "build", "games", "korsanlar", name),
-    path.join(ROOT, "games", "korsanlar", name),
     ...folders,
   ];
-  return candidates.find((candidate) => isProjectFolder(candidate) || (fs.existsSync(candidate) && fs.statSync(candidate).isFile())) || "";
+  return candidates.find((candidate) => isProjectFolder(candidate) || isFile(candidate)) || "";
 }
 
-function cleanPath(answer) {
-  // Accept a dragged project.godot file as its folder.
-  const value = answer.trim().replace(/^"|"$/g, "");
-  return path.basename(value).toLowerCase() === "project.godot" ? path.dirname(value) : value;
+function gameStatus() {
+  const target = config.korsan_exe || "";
+  if (!target) return { ok: false, needsGodot: false, text: "Oyun yolu seçilmedi; yalnızca PARDEX açılır." };
+  if (isProjectFolder(target)) {
+    if (isFile(config.godot_exe)) return { ok: true, needsGodot: true, text: "Proje klasöründen Godot ile açılacak." };
+    return { ok: false, needsGodot: true, text: "Proje klasörü için Godot .exe dosyasını seç." };
+  }
+  if (isFile(target)) return { ok: true, needsGodot: false, text: "Dışa aktarılmış oyun dosyası kullanılacak." };
+  return { ok: false, needsGodot: false, text: "Seçilen oyun yolu bulunamadı." };
 }
 
-function gameIsConfigured() {
-  if (!config.korsan_exe || !fs.existsSync(config.korsan_exe)) return false;
-  return !isProjectFolder(config.korsan_exe) || Boolean(config.godot_exe && fs.existsSync(config.godot_exe));
-}
-
-async function setupConfig() {
-  config = loadConfig();
+function ensureDefaults() {
   let changed = false;
   if (!config.game_token) {
     config.game_token = crypto.randomBytes(32).toString("hex");
     changed = true;
   }
-  if (config.korsan_exe === undefined || (config.korsan_exe && !fs.existsSync(config.korsan_exe))) {
+  if (config.korsan_exe === undefined) {
     config.korsan_exe = findKorsanGame();
-    if (!config.korsan_exe) {
-      console.log("");
-      log("Korsanların Hazinesi oyun sunucusu için oyunun yerini bilmem gerekiyor.");
-      log("Exe yoksa Godot'ta açtığın proje klasörünü yaz (içinde project.godot olan klasör).");
-      log("Örnek: C:\\Oyunlar\\Korsanlarin-Hazinesi");
-      const answer = cleanPath(await ask("Oyun proje klasörü ya da KorsanlarinHazinesi.exe (atlamak için boş bırak): "));
-      config.korsan_exe = answer && fs.existsSync(answer) ? answer : "";
-      if (answer && !config.korsan_exe) log("Bulunamadı; oyun sunucusu bu sefer açılmayacak.");
-    }
-    changed = true;
-  }
-  if (isProjectFolder(config.korsan_exe) && !(config.godot_exe && fs.existsSync(config.godot_exe))) {
-    console.log("");
-    log("Oyunu proje klasöründen açmak için Godot programının yeri gerekiyor.");
-    log("Godot'u açtığın .exe dosyasını bu pencereye sürükleyip bırakabilirsin.");
-    log("Örnek: C:\\Godot\\Godot_v4.7.2-stable_win64.exe");
-    const answer = cleanPath(await ask("Godot .exe yolu: "));
-    config.godot_exe = answer && fs.existsSync(answer) ? answer : "";
-    if (!config.godot_exe) log("Godot bulunamadı; oyun sunucusu bu sefer açılmayacak.");
-    changed = true;
-  }
-  if (!LOCAL_ONLY && !config.github_token) {
-    console.log("");
-    log("İlk kurulum: arkadaşlarının sunucuyu otomatik bulması için GitHub anahtarı gerekiyor.");
-    log("1) https://github.com/settings/personal-access-tokens/new adresini aç.");
-    log("2) Repository access: Only select repositories -> SerkanAydin06/Pardex");
-    log("3) Permissions -> Repository permissions -> Contents: Read and write");
-    log("4) Generate token'a bas ve çıkan anahtarı buraya yapıştır.");
-    config.github_token = await ask("GitHub anahtarı: ");
     changed = true;
   }
   if (changed) saveConfig();
 }
+
+// ------------------------------------------------------------------ processes
 
 function ensureServerDependencies() {
   if (fs.existsSync(path.join(SERVER_DIR, "node_modules", "ws"))) return;
@@ -143,7 +132,7 @@ function ensureServerDependencies() {
     stdio: "inherit",
     shell: IS_WINDOWS,
   });
-  if (result.status !== 0) throw new Error("npm install başarısız oldu.");
+  if (result.status !== 0) throw new Error("Sunucu bileşenleri kurulamadı (npm install).");
 }
 
 async function ensureCloudflared() {
@@ -154,7 +143,7 @@ async function ensureCloudflared() {
   const asset = IS_WINDOWS ? "cloudflared-windows-amd64.exe" : "cloudflared-linux-amd64";
   log("Cloudflare tünel aracı indiriliyor (yalnızca ilk sefer)...");
   const response = await fetch(`https://github.com/cloudflare/cloudflared/releases/latest/download/${asset}`);
-  if (!response.ok) throw new Error(`cloudflared indirilemedi (HTTP ${response.status}).`);
+  if (!response.ok) throw new Error(`Tünel aracı indirilemedi (HTTP ${response.status}).`);
   fs.mkdirSync(BIN_DIR, { recursive: true });
   fs.writeFileSync(local, Buffer.from(await response.arrayBuffer()));
   if (!IS_WINDOWS) fs.chmodSync(local, 0o755);
@@ -163,10 +152,19 @@ async function ensureCloudflared() {
 
 function track(label, child, critical) {
   children.push(child);
+  const forward = (chunk) => {
+    for (const line of String(chunk).split(/\r?\n/)) {
+      if (line.trim()) log(line.trim(), label);
+    }
+  };
+  child.stdout?.on("data", forward);
+  child.stderr?.on("data", forward);
+  child.on("error", (error) => log(`başlatılamadı: ${error.message}`, label));
   child.on("exit", (code) => {
-    if (shuttingDown) return;
-    log(`${label} kapandı (kod ${code}).`);
-    if (critical) shutdown(1);
+    children = children.filter((item) => item !== child);
+    if (state.phase !== "running" && state.phase !== "starting") return;
+    log(`kapandı (kod ${code}).`, label);
+    if (critical) stopServer(`${label} beklenmedik şekilde kapandı.`);
   });
   return child;
 }
@@ -192,18 +190,18 @@ function openTunnel(cloudflared, port, label) {
 
 function startOnlineServer(gameServerUrl) {
   fs.mkdirSync(path.dirname(DATA_PATH), { recursive: true });
-  const env = {
-    ...process.env,
-    HOST: "127.0.0.1",
-    PORT: String(ONLINE_PORT),
-    PARDEX_SOCIAL_DATA_PATH: DATA_PATH,
-    PARDEX_GAME_SERVER_TOKEN: config.game_token,
-    KORSAN_GAME_SERVER_URL: gameServerUrl,
-  };
-  track("PARDEX Online sunucusu", spawn(process.execPath, ["production_server.js"], {
+  track("PARDEX Online", spawn(process.execPath, ["production_server.js"], {
     cwd: SERVER_DIR,
-    env,
-    stdio: ["ignore", "inherit", "inherit"],
+    env: {
+      ...process.env,
+      HOST: "127.0.0.1",
+      PORT: String(ONLINE_PORT),
+      PARDEX_SOCIAL_DATA_PATH: DATA_PATH,
+      PARDEX_GAME_SERVER_TOKEN: config.game_token,
+      KORSAN_GAME_SERVER_URL: gameServerUrl,
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+    windowsHide: true,
   }), true);
 }
 
@@ -221,16 +219,9 @@ async function waitForHealth() {
 }
 
 function startGameServer() {
-  if (!gameIsConfigured()) return false;
-  const env = {
-    ...process.env,
-    PARDEX_GAME_SERVER_TOKEN: config.game_token,
-    PARDEX_SESSION: "*",
-  };
   const fromProject = isProjectFolder(config.korsan_exe);
   const program = fromProject ? config.godot_exe : config.korsan_exe;
-  const cwd = fromProject ? config.korsan_exe : path.dirname(config.korsan_exe);
-  track("Korsanların Hazinesi oyun sunucusu", spawn(program, [
+  track("Oyun sunucusu", spawn(program, [
     "--headless",
     ...(fromProject ? ["--path", config.korsan_exe] : []),
     "res://scenes/pardex_dedicated_server.tscn",
@@ -238,9 +229,15 @@ function startGameServer() {
     "--pardex-dedicated",
     `--pardex-port=${GAME_PORT}`,
     `--pardex-online-server=ws://127.0.0.1:${ONLINE_PORT}`,
-  ], { cwd, env, stdio: ["ignore", "inherit", "inherit"], windowsHide: true }), false);
-  return true;
+  ], {
+    cwd: fromProject ? config.korsan_exe : path.dirname(config.korsan_exe),
+    env: { ...process.env, PARDEX_GAME_SERVER_TOKEN: config.game_token, PARDEX_SESSION: "*" },
+    stdio: ["ignore", "pipe", "pipe"],
+    windowsHide: true,
+  }), false);
 }
+
+// ------------------------------------------------------------------ address board
 
 async function github(method, endpoint, body) {
   const response = await fetch(`https://api.github.com/repos/${REPO}${endpoint}`, {
@@ -264,16 +261,13 @@ async function publishAddress(onlineUrl) {
     const branch = await github("GET", `/git/ref/heads/${ADDRESS_BRANCH}`);
     if (branch.status === 404) {
       const main = await github("GET", "/git/ref/heads/main");
-      if (main.status !== 200) throw new Error(`GitHub erişimi reddedildi (HTTP ${main.status}). Anahtarı kontrol et.`);
-      const created = await github("POST", "/git/refs", {
-        ref: `refs/heads/${ADDRESS_BRANCH}`,
-        sha: main.data.object.sha,
-      });
-      if (created.status !== 201) throw new Error(`Adres dalı oluşturulamadı (HTTP ${created.status}).`);
+      if (main.status !== 200) throw new Error(`GitHub anahtarı reddedildi (HTTP ${main.status}). Anahtarı kontrol et.`);
+      const created = await github("POST", "/git/refs", { ref: `refs/heads/${ADDRESS_BRANCH}`, sha: main.data.object.sha });
+      if (created.status !== 201) throw new Error(`Adres dalı oluşturulamadı (HTTP ${created.status}). Anahtarın "Contents: Read and write" izni olmalı.`);
     }
     current = { status: 404, data: {} };
   } else if (current.status !== 200) {
-    throw new Error(`GitHub erişimi reddedildi (HTTP ${current.status}). Anahtarı kontrol et.`);
+    throw new Error(`GitHub anahtarı reddedildi (HTTP ${current.status}). Anahtarı kontrol et.`);
   }
   const content = JSON.stringify({ online: onlineUrl, updated_at: new Date().toISOString() }, null, 2) + "\n";
   const result = await github("PUT", filePath, {
@@ -283,67 +277,202 @@ async function publishAddress(onlineUrl) {
     sha: current.data.sha,
   });
   if (result.status !== 200 && result.status !== 201) {
-    throw new Error(`Sunucu adresi yayınlanamadı (HTTP ${result.status}).`);
+    throw new Error(`Sunucu adresi yayınlanamadı (HTTP ${result.status}). Anahtarın "Contents: Read and write" izni olmalı.`);
   }
 }
 
-async function shutdown(code = 0) {
-  if (shuttingDown) return;
-  shuttingDown = true;
-  log("Kapatılıyor...");
-  if (!LOCAL_ONLY && config.github_token) {
-    await Promise.race([
-      publishAddress("").catch(() => {}),
-      new Promise((resolve) => setTimeout(resolve, 5000)),
-    ]);
-  }
+// ------------------------------------------------------------------ start / stop
+
+function killChildren() {
   for (const child of children) {
     try { child.kill(); } catch { /* already gone */ }
   }
-  process.exit(code);
+  children = [];
 }
 
-async function main() {
-  console.log("==============================================");
-  console.log("  PARDEX Sunucusu");
-  console.log("  Kapatmak için bu pencerede Ctrl+C'ye bas.");
-  console.log("==============================================");
-  await setupConfig();
-  ensureServerDependencies();
-
-  let onlineUrl = `ws://127.0.0.1:${ONLINE_PORT}`;
-  let gameUrl = gameIsConfigured() ? `ws://127.0.0.1:${GAME_PORT}` : "";
-  if (!LOCAL_ONLY) {
-    const cloudflared = await ensureCloudflared();
-    log("İnternet tünelleri açılıyor...");
-    const tunnels = [openTunnel(cloudflared, ONLINE_PORT, "PARDEX tüneli")];
-    if (gameIsConfigured()) tunnels.push(openTunnel(cloudflared, GAME_PORT, "Oyun tüneli"));
-    [onlineUrl, gameUrl = ""] = await Promise.all(tunnels);
+async function startServer(localOnly) {
+  if (state.phase === "starting" || state.phase === "running") return;
+  state.localOnly = Boolean(localOnly);
+  state.onlineUrl = "";
+  state.gameUrl = "";
+  try {
+    setPhase("starting", "Sunucu başlatılıyor...");
+    if (!state.localOnly && !config.github_token) {
+      throw new Error("Önce GitHub anahtarını kaydet (Ayarlar bölümü).");
+    }
+    ensureServerDependencies();
+    const game = gameStatus();
+    let onlineUrl = `ws://127.0.0.1:${ONLINE_PORT}`;
+    let gameUrl = game.ok ? `ws://127.0.0.1:${GAME_PORT}` : "";
+    if (!state.localOnly) {
+      const cloudflared = await ensureCloudflared();
+      setPhase("starting", "İnternet tünelleri açılıyor...");
+      const tunnels = [openTunnel(cloudflared, ONLINE_PORT, "PARDEX tüneli")];
+      if (game.ok) tunnels.push(openTunnel(cloudflared, GAME_PORT, "Oyun tüneli"));
+      [onlineUrl, gameUrl = ""] = await Promise.all(tunnels);
+    }
+    startOnlineServer(gameUrl);
+    await waitForHealth();
+    if (game.ok) startGameServer();
+    if (!state.localOnly) {
+      setPhase("starting", "Adres arkadaşlarına duyuruluyor...");
+      await publishAddress(onlineUrl);
+    }
+    state.onlineUrl = onlineUrl;
+    state.gameUrl = gameUrl;
+    setPhase("running", state.localOnly
+      ? "Sunucu açık (yerel test: yalnızca bu bilgisayar bağlanabilir)."
+      : "Sunucu açık. Arkadaşların PARDEX'i açınca otomatik bağlanır.");
+  } catch (error) {
+    killChildren();
+    setPhase("error", error.message);
   }
-
-  startOnlineServer(gameUrl);
-  await waitForHealth();
-  const gameStarted = startGameServer();
-
-  if (!LOCAL_ONLY) {
-    log("Adres arkadaşlarına duyuruluyor...");
-    await publishAddress(onlineUrl);
-  }
-
-  console.log("");
-  log("SUNUCU AÇIK");
-  log(`PARDEX adresi : ${onlineUrl}`);
-  log(gameStarted ? `Oyun sunucusu: ${gameUrl}` : "Oyun sunucusu: kapalı (oyun yolu ayarlanmadı)");
-  log(LOCAL_ONLY
-    ? "Yerel test modu: yalnızca bu bilgisayar bağlanabilir."
-    : "Arkadaşların PARDEX'i açınca otomatik bağlanır. Bu pencere açık kaldıkça sunucu çalışır.");
 }
 
-process.on("SIGINT", () => shutdown(0));
-process.on("SIGTERM", () => shutdown(0));
-if (IS_WINDOWS) process.on("SIGHUP", () => shutdown(0));
+async function stopServer(reason = "Sunucu kapatıldı. Tekrar başlatmak için düğmeye bas.") {
+  if (state.phase === "stopped" || state.phase === "stopping") return;
+  const wasPublic = !state.localOnly && Boolean(state.onlineUrl);
+  state.phase = "stopping";
+  state.message = "Sunucu kapatılıyor...";
+  killChildren();
+  if (wasPublic) {
+    await Promise.race([
+      publishAddress("").catch((error) => log(`Kapalı durumu yayınlanamadı: ${error.message}`)),
+      new Promise((resolve) => setTimeout(resolve, 5000)),
+    ]);
+  }
+  state.onlineUrl = "";
+  state.gameUrl = "";
+  setPhase("stopped", reason);
+}
 
-main().catch((error) => {
-  log(`HATA: ${error.message}`);
-  shutdown(1);
-});
+// ------------------------------------------------------------------ panel
+
+// Native Windows pickers so nobody has to type a path.
+function browse(kind) {
+  if (!IS_WINDOWS) return "";
+  const script = kind === "folder"
+    ? "Add-Type -AssemblyName System.Windows.Forms;" +
+      "$d=New-Object System.Windows.Forms.FolderBrowserDialog;" +
+      "$d.Description='Korsanlarin Hazinesi proje klasorunu sec (icinde project.godot olan)';" +
+      "if($d.ShowDialog((New-Object System.Windows.Forms.Form -Property @{TopMost=$true})) -eq 'OK'){[Console]::Out.Write($d.SelectedPath)}"
+    : "Add-Type -AssemblyName System.Windows.Forms;" +
+      "$d=New-Object System.Windows.Forms.OpenFileDialog;" +
+      `$d.Filter='${kind === "godot" ? "Godot|Godot*.exe|Tum exe dosyalari|*.exe" : "Oyun|*.exe"}';` +
+      "if($d.ShowDialog((New-Object System.Windows.Forms.Form -Property @{TopMost=$true})) -eq 'OK'){[Console]::Out.Write($d.FileName)}";
+  const result = spawnSync("powershell", ["-NoProfile", "-STA", "-Command", script], { encoding: "utf8" });
+  return String(result.stdout || "").trim();
+}
+
+function publicState() {
+  const game = gameStatus();
+  return {
+    ...state,
+    logs: logs.slice(-120),
+    config: {
+      korsan_path: config.korsan_exe || "",
+      godot_exe: config.godot_exe || "",
+      has_token: Boolean(config.github_token),
+    },
+    game,
+    canBrowse: IS_WINDOWS,
+  };
+}
+
+function readBody(request) {
+  return new Promise((resolve) => {
+    let raw = "";
+    request.on("data", (chunk) => { raw += chunk; if (raw.length > 65536) request.destroy(); });
+    request.on("end", () => {
+      try { resolve(JSON.parse(raw || "{}")); } catch { resolve({}); }
+    });
+  });
+}
+
+function sendJson(response, data, status = 200) {
+  response.writeHead(status, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+  response.end(JSON.stringify(data));
+}
+
+async function handle(request, response) {
+  const url = new URL(request.url, "http://127.0.0.1");
+  // Only this computer's browser may drive the panel.
+  const origin = request.headers.origin;
+  if (request.method === "POST" && origin && origin !== `http://127.0.0.1:${PANEL_PORT}` && origin !== `http://localhost:${PANEL_PORT}`) {
+    return sendJson(response, { error: "forbidden" }, 403);
+  }
+  if (request.method === "GET" && url.pathname === "/") {
+    response.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
+    return response.end(fs.readFileSync(PANEL_PATH));
+  }
+  if (request.method === "GET" && url.pathname === "/api/state") return sendJson(response, publicState());
+  if (request.method !== "POST") return sendJson(response, { error: "not found" }, 404);
+
+  const body = await readBody(request);
+  switch (url.pathname) {
+    case "/api/config": {
+      if (typeof body.korsan_path === "string") config.korsan_exe = cleanPath(body.korsan_path);
+      if (typeof body.godot_exe === "string") config.godot_exe = cleanPath(body.godot_exe);
+      if (typeof body.github_token === "string" && body.github_token.trim()) config.github_token = body.github_token.trim();
+      saveConfig();
+      log("Ayarlar kaydedildi.");
+      return sendJson(response, publicState());
+    }
+    case "/api/browse": {
+      const picked = browse(String(body.kind || ""));
+      return sendJson(response, { path: picked ? cleanPath(picked) : "" });
+    }
+    case "/api/start":
+      startServer(Boolean(body.local));
+      return sendJson(response, publicState());
+    case "/api/stop":
+      await stopServer();
+      return sendJson(response, publicState());
+    case "/api/quit":
+      sendJson(response, { ok: true });
+      await stopServer();
+      setTimeout(() => process.exit(0), 200);
+      return undefined;
+    default:
+      return sendJson(response, { error: "not found" }, 404);
+  }
+}
+
+function openBrowser(url) {
+  if (process.env.PARDEX_NO_BROWSER) return;
+  if (IS_WINDOWS) spawn("cmd", ["/c", "start", "", url], { detached: true, stdio: "ignore", windowsHide: true }).unref();
+  else if (process.platform === "darwin") spawn("open", [url], { detached: true, stdio: "ignore" }).unref();
+}
+
+function main() {
+  ensureDefaults();
+  const panelUrl = `http://127.0.0.1:${PANEL_PORT}/`;
+  const server = http.createServer((request, response) => {
+    handle(request, response).catch((error) => sendJson(response, { error: error.message }, 500));
+  });
+  server.on("error", (error) => {
+    if (error.code === "EADDRINUSE") {
+      console.log("PARDEX Sunucu Paneli zaten açık; tarayıcıda gösteriliyor.");
+      openBrowser(panelUrl);
+      setTimeout(() => process.exit(0), 500);
+      return;
+    }
+    throw error;
+  });
+  server.listen(PANEL_PORT, "127.0.0.1", () => {
+    console.log("==============================================");
+    console.log("  PARDEX Sunucu Paneli");
+    console.log(`  ${panelUrl}`);
+    console.log("  Panel tarayıcıda açıldı. Sunucu açıkken bu pencereyi kapatma.");
+    console.log("==============================================");
+    log("Panel hazır.");
+    openBrowser(panelUrl);
+  });
+}
+
+const shutdown = () => stopServer().finally(() => process.exit(0));
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
+process.on("SIGHUP", shutdown);
+
+main();
