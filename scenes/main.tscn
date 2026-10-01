@@ -11,6 +11,11 @@
 [ext_resource type="Texture2D" uid="uid://c47svr2t6j33r" path="res://assets/ui/svg/icon_profile.svg" id="9_profile"]
 [ext_resource type="Texture2D" uid="uid://dwdhyxn6g0xsq" path="res://assets/ui/svg/icon_settings.svg" id="10_settings"]
 [ext_resource type="Script" uid="uid://bfa65onpxc8q4" path="res://scripts/ui/pardex_shell_svg.gd" id="11_shell_svg"]
+[ext_resource type="PackedScene" path="res://scenes/pages/store_page.tscn" id="20_store"]
+[ext_resource type="PackedScene" path="res://scenes/pages/library_page.tscn" id="20_library"]
+[ext_resource type="PackedScene" path="res://scenes/pages/friends_page.tscn" id="20_friends"]
+[ext_resource type="PackedScene" path="res://scenes/pages/profile_page.tscn" id="20_profile"]
+[ext_resource type="PackedScene" path="res://scenes/pages/settings_page.tscn" id="20_settings"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.024, 0.039, 0.078, 1)
@@ -308,6 +313,25 @@ theme_override_constants/margin_bottom = 16
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 0
+
+[node name="StorePage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_store")]
+layout_mode = 2
+
+[node name="LibraryPage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_library")]
+layout_mode = 2
+visible = false
+
+[node name="FriendsPage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_friends")]
+layout_mode = 2
+visible = false
+
+[node name="ProfilePage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_profile")]
+layout_mode = 2
+visible = false
+
+[node name="SettingsPage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_settings")]
+layout_mode = 2
+visible = false
 
 [node name="ToastPanel" type="PanelContainer" parent="." unique_id=1518637206]
 unique_name_in_owner = true

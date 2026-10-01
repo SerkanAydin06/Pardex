@@ -47,20 +47,12 @@ var _active_invite_id := ""
 
 
 func _ready() -> void:
-	add_theme_constant_override("separation", 0)
-	var body := UI.vbox(16)
-	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	add_child(UI.scroll_page(body))
-	body.add_child(_build_hero())
-
-	_columns = UI.hbox(16)
-	_columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_columns.custom_minimum_size.y = 560
-	body.add_child(_columns)
-	_columns.add_child(_build_left())
-	_columns.add_child(_build_chat())
-	_columns.add_child(_build_right())
-
+	# The layout lives in scenes/pages/friends_page.tscn; building from code
+	# only happens when the script runs without its scene.
+	if get_child_count() == 0:
+		_build()
+		UI.own(self)
+	_bind()
 	_build_friend_menu()
 	_build_add_dialog()
 	_build_code_dialog()
@@ -82,6 +74,47 @@ func _ready() -> void:
 	if PardexOnline.is_online():
 		PardexOnline.request_social_state()
 	_render()
+
+
+func _bind() -> void:
+	_columns = %Columns
+	_left = %LeftColumn
+	_online_title = %OnlineTitle
+	_online_list = %OnlineList
+	_playing_title = %PlayingTitle
+	_playing_row = %PlayingRow
+	_chat_panel = %ChatPanel
+	_chat_header = %ChatHeader
+	_chat_body = %ChatBody
+	_right = %RightColumn
+	_party = %PartyCard
+	_requests_title = %RequestsTitle
+	_requests_list = %RequestsList
+	_hero_bullets = %HeroBullets
+	(%AddFriendButton as Button).pressed.connect(_open_add_dialog)
+	(%HeroPartyButton as Button).pressed.connect(_create_party)
+	(%SuggestionSearchButton as Button).pressed.connect(_open_add_dialog)
+	var toggle := %OnlineToggle as Button
+	toggle.pressed.connect(func():
+		_show_all = not _show_all
+		toggle.text = ("Çevrimiçileri Göster" if _show_all else "Tümünü Gör") + "  "
+		_render_online()
+	)
+
+
+func _build() -> void:
+	add_theme_constant_override("separation", 0)
+	var body := UI.vbox(16)
+	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	add_child(UI.scroll_page(body))
+	body.add_child(_build_hero())
+	var columns := UI.named(UI.hbox(16), "Columns") as HBoxContainer
+	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	columns.custom_minimum_size.y = 560
+	body.add_child(columns)
+	columns.add_child(_build_left())
+	columns.add_child(_build_chat())
+	columns.add_child(_build_right())
 
 
 func apply_layout(content_width: float) -> void:
@@ -164,12 +197,10 @@ func _build_hero() -> Control:
 	text.add_child(actions)
 	var add := UI.button("Arkadaş Ekle", "primary", 15, 48, "user_plus")
 	add.custom_minimum_size.x = 210
-	add.pressed.connect(_open_add_dialog)
-	actions.add_child(add)
+	actions.add_child(UI.named(add, "AddFriendButton"))
 	var party := UI.button("Parti Kur", "ghost", 15, 48, "friends")
 	party.custom_minimum_size.x = 190
-	party.pressed.connect(_create_party)
-	actions.add_child(party)
+	actions.add_child(UI.named(party, "HeroPartyButton"))
 
 	var bullets := UI.panel(0, UI.box(Color(UI.BG, 0.72), 12, UI.BORDER_HI, 1, 18))
 	bullets.custom_minimum_size.x = 330
@@ -188,48 +219,41 @@ func _build_hero() -> Control:
 		copy.add_child(UI.label(str(bullet[2]), 13, UI.TEXT_2))
 		line.add_child(copy)
 		list.add_child(line)
-	_hero_bullets = bullets
-	row.add_child(bullets)
+	row.add_child(UI.named(bullets, "HeroBullets"))
 	return frame
 
 
 # ------------------------------------------------------------------ left column
 
 func _build_left() -> Control:
-	_left = UI.vbox(16)
-	_left.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var left := UI.named(UI.vbox(16), "LeftColumn") as VBoxContainer
+	left.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var online := UI.panel(14)
 	online.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var column := UI.vbox(10)
 	online.add_child(column)
 	var header := UI.section_header("Çevrimiçi", "Tümünü Gör", 18, "users_group", UI.GREEN)
-	_online_title = header.get_node("Title") as Label
-	var toggle := header.get_node("Link") as Button
-	toggle.pressed.connect(func():
-		_show_all = not _show_all
-		toggle.text = ("Çevrimiçileri Göster" if _show_all else "Tümünü Gör") + "  "
-		_render_online()
-	)
+	UI.named(header.get_node("Title"), "OnlineTitle")
+	UI.named(header.get_node("Link"), "OnlineToggle")
 	column.add_child(header)
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_online_list = UI.vbox(6)
-	_online_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(_online_list)
+	var online_list := UI.named(UI.vbox(6), "OnlineList") as VBoxContainer
+	online_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(online_list)
 	column.add_child(scroll)
-	_left.add_child(online)
+	left.add_child(online)
 
 	var playing := UI.panel(14)
 	var playing_column := UI.vbox(10)
 	playing.add_child(playing_column)
 	var playing_header := UI.section_header("Oyun Oynayanlar", "", 18, "gamepad", UI.GREEN)
-	_playing_title = playing_header.get_node("Title") as Label
+	UI.named(playing_header.get_node("Title"), "PlayingTitle")
 	playing_column.add_child(playing_header)
-	_playing_row = UI.hbox(14)
-	playing_column.add_child(_playing_row)
-	_left.add_child(playing)
-	return _left
+	playing_column.add_child(UI.named(UI.hbox(14), "PlayingRow"))
+	left.add_child(playing)
+	return left
 
 
 func _render() -> void:
@@ -355,17 +379,16 @@ func _render_playing() -> void:
 # ------------------------------------------------------------------ chat
 
 func _build_chat() -> Control:
-	_chat_panel = UI.panel(0)
-	UI.expand(_chat_panel)
-	_chat_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var chat_panel := UI.named(UI.panel(0), "ChatPanel") as PanelContainer
+	UI.expand(chat_panel)
+	chat_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var column := UI.vbox(0)
-	_chat_panel.add_child(column)
-	_chat_header = UI.hbox(12)
-	column.add_child(UI.margin(_chat_header, 16, 14, 14, 14))
+	chat_panel.add_child(column)
+	column.add_child(UI.margin(UI.named(UI.hbox(12), "ChatHeader"), 16, 14, 14, 14))
 	column.add_child(UI.divider())
-	_chat_body = UI.vbox(10)
-	_chat_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var body_margin := UI.margin(_chat_body, 18, 16, 18, 16)
+	var chat_body := UI.named(UI.vbox(10), "ChatBody") as VBoxContainer
+	chat_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var body_margin := UI.margin(chat_body, 18, 16, 18, 16)
 	body_margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(body_margin)
 	var input_row := UI.hbox(10)
@@ -386,7 +409,7 @@ func _build_chat() -> Control:
 	send.add_theme_stylebox_override("disabled", UI.box(Color(UI.ACCENT_DARK, 0.6), 10, UI.ACCENT_DARK, 1))
 	send.disabled = true
 	input_row.add_child(send)
-	return _chat_panel
+	return chat_panel
 
 
 func _render_chat() -> void:
@@ -419,7 +442,7 @@ func _render_chat() -> void:
 	_chat_body.add_child(UI.empty_state("message", "%s ile sohbet yakında" % display_name,
 		"PARDEX mesajlaşması henüz hazır değil. Şimdilik birlikte oynamak için partine davet edebilir ya da onun partisine katılabilirsin."))
 	var action := _row_action(profile)
-	if action != null and action.text != "Mesaj":
+	if action != null and str(action.get_meta("label", action.text)) != "Mesaj":
 		var holder := CenterContainer.new()
 		holder.add_child(action)
 		_chat_body.add_child(holder)
@@ -429,22 +452,20 @@ func _render_chat() -> void:
 # ------------------------------------------------------------------ right column
 
 func _build_right() -> Control:
-	_right = UI.vbox(16)
-	_right.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var right := UI.named(UI.vbox(16), "RightColumn") as VBoxContainer
+	right.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var party := UI.panel(16)
-	_party = UI.vbox(12)
-	party.add_child(_party)
-	_right.add_child(party)
+	party.add_child(UI.named(UI.vbox(12), "PartyCard"))
+	right.add_child(party)
 
 	var requests := UI.panel(16)
 	var requests_column := UI.vbox(10)
 	requests.add_child(requests_column)
 	var header := UI.section_header("Bekleyen Davetler", "", 18)
-	_requests_title = header.get_node("Title") as Label
+	UI.named(header.get_node("Title"), "RequestsTitle")
 	requests_column.add_child(header)
-	_requests_list = UI.vbox(10)
-	requests_column.add_child(_requests_list)
-	_right.add_child(requests)
+	requests_column.add_child(UI.named(UI.vbox(10), "RequestsList"))
+	right.add_child(requests)
 
 	var suggestions := UI.panel(16)
 	suggestions.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -459,11 +480,10 @@ func _build_right() -> Control:
 	copy.add_child(UI.wrapped(UI.label("Şimdilik arkadaşlarını adıyla arayabilirsin.", 12, UI.TEXT_2)))
 	line.add_child(copy)
 	var find := UI.button("Ara", "ghost", 12, 34, "search")
-	find.pressed.connect(_open_add_dialog)
-	line.add_child(find)
+	line.add_child(UI.named(find, "SuggestionSearchButton"))
 	suggestions_column.add_child(line)
-	_right.add_child(suggestions)
-	return _right
+	right.add_child(suggestions)
+	return right
 
 
 func _render_party() -> void:

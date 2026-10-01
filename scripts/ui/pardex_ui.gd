@@ -5,6 +5,7 @@ extends RefCounted
 # glass panels, cyan accent, gold highlights, outline icons).
 
 const Icons := preload("res://scripts/ui/pardex_icons.gd")
+const ButtonContent := preload("res://scripts/ui/pardex_button_content.gd")
 
 const BG := Color("060a14")
 const SIDEBAR := Color("080d1a")
@@ -186,6 +187,24 @@ static func divider() -> ColorRect:
 	return line
 
 
+# Gives a node a scene-unique name (%Name) so page scripts can find it in their
+# .tscn scene.
+static func named(node: Node, unique: String) -> Node:
+	node.name = unique
+	node.unique_name_in_owner = true
+	return node
+
+
+# Makes `root` the owner of every node below it so the tree can be packed into
+# a scene (popups, dialogs and timers stay runtime-only).
+static func own(root: Node, node: Node = null) -> void:
+	for child in (root if node == null else node).get_children():
+		if child is Window or child is Timer:
+			continue
+		child.owner = root
+		own(root, child)
+
+
 static func clear(node: Node) -> void:
 	for child in node.get_children():
 		node.remove_child(child)
@@ -309,8 +328,42 @@ static func button(text: String, kind := "primary", font_size := 13, height := 3
 	item.add_theme_color_override("font_hover_color", fg)
 	item.add_theme_color_override("font_pressed_color", fg)
 	item.add_theme_color_override("font_disabled_color", TEXT_3)
-	_apply_icon(item, icon_name, 16 if font_size < 15 else 18, fg)
+	if icon_name.is_empty() or kind == "link":
+		_apply_icon(item, icon_name, 16 if font_size < 15 else 18, fg)
+	else:
+		_center_icon_and_text(item, icon_name, 16 if font_size < 15 else 18, fg, font_size)
 	return item
+
+
+# Icon + label as one centered group. A native Button pins its icon to the
+# left edge while the text centers, which leaves the icon stranded on wide
+# buttons ("Profili Düzenle", "Arkadaş Ekle" ...).
+static func _center_icon_and_text(item: Button, icon_name: String, icon_size: int, fg: Color, font_size: int) -> void:
+	var caption := item.text
+	item.text = ""
+	item.set_meta("label", caption)
+	var center := CenterContainer.new()
+	center.set_script(ButtonContent)
+	center.set("color", fg)
+	center.set("disabled_color", TEXT_3)
+	center.name = "Content"
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var group := hbox(9)
+	group.name = "Group"
+	group.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var glyph := icon(icon_name, icon_size, fg)
+	glyph.name = "Icon"
+	group.add_child(glyph)
+	var text := label(caption, font_size, fg)
+	text.name = "Label"
+	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	group.add_child(text)
+	center.add_child(group)
+	item.add_child(center)
+	var font := ThemeDB.fallback_font
+	var text_width := font.get_string_size(caption, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+	item.custom_minimum_size.x = maxf(item.custom_minimum_size.x, ceilf(text_width) + icon_size + 9 + 34)
 
 
 static func link(text: String, font_size := 13) -> Button:

@@ -1,8 +1,8 @@
 extends RefCounted
 
 # Line icon set for the PARDEX shell (24×24 outline style, like the reference
-# design). Icons are SVG path data rasterised at the requested pixel size, so
-# they stay crisp at any size without import settings.
+# design). The same paths live as SVG files in assets/ui/icons (imported at 2×
+# with mipmaps); edit those files to change an icon everywhere.
 
 const PATHS := {
 	"store": '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
@@ -61,7 +61,15 @@ const PATHS := {
 static var _cache := {}
 
 
+const ICON_DIR := "res://assets/ui/icons/%s.svg"
+
+
+# Imported SVG files (assets/ui/icons) are used whenever they exist so scenes
+# reference real texture resources; the inline path data is only a fallback.
 static func texture(name: String, pixels := 20) -> Texture2D:
+	var path := ICON_DIR % name
+	if ResourceLoader.exists(path):
+		return load(path) as Texture2D
 	var key := "%s@%d" % [name, pixels]
 	if _cache.has(key):
 		return _cache[key]
