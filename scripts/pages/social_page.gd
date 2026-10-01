@@ -13,6 +13,7 @@ signal toast(message: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
+const HERO_HEIGHT := 300.0
 
 var _show_all := false
 var _selected_id := ""
@@ -142,11 +143,11 @@ func _friend_in_my_room(account_id: String) -> bool:
 # ------------------------------------------------------------------ hero
 
 func _build_hero() -> Control:
-	var frame := UI.image(Catalog.texture("res://assets/ui/home_hero_banner.png"), Vector2(0, 250), 16)
+	var frame := UI.image(Catalog.texture("res://assets/ui/home_hero_banner.png"), Vector2(0, HERO_HEIGHT), 16)
 	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
 	frame.add_child(UI.shade(0.95, true))
 	var row := UI.hbox(20)
-	frame.add_child(UI.margin(row, 30, 24, 20, 22))
+	frame.add_child(UI.margin(row, 30, 20, 24, 20))
 	var text := UI.vbox(10)
 	UI.expand(text)
 	row.add_child(text)
@@ -154,23 +155,23 @@ func _build_hero() -> Control:
 	tag.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	tag.add_child(UI.label("ARKADAŞLAR", 13, UI.ACCENT, true))
 	text.add_child(tag)
-	text.add_child(UI.label("Arkadaşların", 46, UI.TEXT, true))
-	text.add_child(UI.label("Oyunlar daha eğlenceli, birlikte daha güçlü.", 17, UI.TEXT_2))
+	text.add_child(UI.label("Arkadaşların", 42, UI.TEXT, true))
+	text.add_child(UI.label("Oyunlar daha eğlenceli, birlikte daha güçlü.", 16, UI.TEXT_2))
 	text.add_child(UI.vspacer())
 	var actions := UI.hbox(14)
 	text.add_child(actions)
-	var add := UI.button("Arkadaş Ekle", "primary", 16, 52, "user_plus")
-	add.custom_minimum_size.x = 220
+	var add := UI.button("Arkadaş Ekle", "primary", 15, 48, "user_plus")
+	add.custom_minimum_size.x = 210
 	add.pressed.connect(_open_add_dialog)
 	actions.add_child(add)
-	var party := UI.button("Parti Kur", "ghost", 16, 52, "friends")
-	party.custom_minimum_size.x = 200
+	var party := UI.button("Parti Kur", "ghost", 15, 48, "friends")
+	party.custom_minimum_size.x = 190
 	party.pressed.connect(_create_party)
 	actions.add_child(party)
 
 	var bullets := UI.panel(0, UI.box(Color(UI.BG, 0.72), 12, UI.BORDER_HI, 1, 18))
 	bullets.custom_minimum_size.x = 330
-	var list := UI.vbox(16)
+	var list := UI.vbox(14)
 	list.alignment = BoxContainer.ALIGNMENT_CENTER
 	bullets.add_child(list)
 	for bullet in [
