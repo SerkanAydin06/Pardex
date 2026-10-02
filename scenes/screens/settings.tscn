@@ -213,7 +213,7 @@ theme_override_constants/separation = 8
 layout_mode = 2
 theme_override_colors/font_color = Color(0.48, 0.56, 0.66, 1)
 theme_override_font_sizes/font_size = 12
-text = "HESAP"
+text = "PARDEX KİMLİĞİ"
 
 [node name="AccountValue" type="Label" parent="AccountPanel/VBox/AccountRow"]
 layout_mode = 2
