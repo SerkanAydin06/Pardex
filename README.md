@@ -39,19 +39,18 @@ PARDEX, VEX, Korsanların Hazinesi ve Fırtına Vadisi gibi oyunları tek uygula
 - GitHub Actions üzerinde oda, sosyal, davet, presence, hardening ve account-recovery WebSocket smoke testleri
 - GitHub Actions üzerinde Docker build ve gerçek container `/health` kontrolü
 - GitHub Actions üzerinde Godot 4.7.2 kaynak doğrulaması, asset import ve headless uygulama açılış testi
-- Canlı `wss://` endpoint'e karşı production smoke testi; sunucu değişikliklerinde ve periyodik olarak çalışacak kontrol akışı
+- Eski canlı Railway servisi için elle çalıştırılan production smoke testi
 
-## Canlı PARDEX Online
+## PARDEX Online sunucusu
 
-Production WebSocket adresi:
+PARDEX Online artık ücretli bir bulut servisinde değil, oyunu kuran kişinin bilgisayarında çalışır:
+`PARDEX-Sunucu-Paneli.vbs` ile açılan panel PARDEX sunucusunu ve Korsanların Hazinesi oyun sunucusunu başlatır,
+ikisini ücretsiz Cloudflare tüneliyle internete açar ve güncel `wss://` adresini `sunucu-adresi` dalındaki
+`online.json` dosyasına yazar. İstemci, Ayarlar → PARDEX Online alanı boşken adresi oradan otomatik okur;
+arkadaşların hiçbir ayar yapmaz. Kurulum ve kullanım: `host/README.md`.
 
-```text
-wss://pardex-online-production.up.railway.app
-```
-
-Railway production servisi `/health` health check ile izlenir. PARDEX istemcisi eski yerel varsayılan `ws://127.0.0.1:8765` ayarını görürse otomatik olarak resmi production servisine yönelir.
-
-Arkadaşlık ve hesap kurtarma verilerinin deploy/restart sonrasında korunması için production sunucusunda `PARDEX_SOCIAL_DATA_PATH` kalıcı Railway Volume üzerindeki bir dosyaya yönlendirilmelidir. Mevcut production kurulumu `/data/social.json` kullanır. Ayrıntılar `server/DEPLOYMENT.md` dosyasındadır.
+Arkadaşlık ve hesap verileri sunucuyu açan bilgisayarda `host/data/social.json` dosyasında tutulur.
+Eski Railway kurulumu için notlar `server/DEPLOYMENT.md` dosyasında duruyor.
 
 ## PARDEX kimliği ve hesap kurtarma
 
