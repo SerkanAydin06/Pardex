@@ -95,7 +95,10 @@ func _on_welcome_received(_user_id: String, _display_name: String) -> void:
 
 func _refresh_account_state() -> void:
 	var account_id := PardexOnline.account_id.strip_edges()
-	account_label.text = account_id if not account_id.is_empty() else "Bağlantı bekleniyor"
+	# Same short PARDEX Kimliği as Profil (#TAG); the full id stays in the tooltip.
+	account_label.text = ("#" + account_id.right(6).to_upper()) if not account_id.is_empty() else "Bağlantı bekleniyor"
+	account_label.tooltip_text = account_id
+	account_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	if not PardexOnline.is_online():
 		recovery_state_label.text = "●  PARDEX ONLINE BAĞLANTISI BEKLENİYOR"
 		recovery_state_label.add_theme_color_override("font_color", Color(0.88, 0.72, 0.34, 1))

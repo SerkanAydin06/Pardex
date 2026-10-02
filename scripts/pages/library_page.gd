@@ -199,15 +199,27 @@ func _build_quick_start() -> Control:
 	return card
 
 
+# Narrow side columns: a game title may take two lines instead of "…".
+func _wrapped_title(title: String, font_size: int) -> Label:
+	var label := UI.label(title, font_size, UI.TEXT, true)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.max_lines_visible = 2
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	label.custom_minimum_size.x = 60
+	return label
+
+
 func _render_quick_start() -> void:
 	UI.clear(_quick_list)
 	for entry in Catalog.games_with_stats():
 		var row := UI.hbox(12)
 		row.add_child(UI.image(Catalog.texture(str(entry["cover"])), Vector2(72, 46), 8))
-		row.add_child(UI.expand(UI.fit(UI.label(str(entry["title"]), 15, UI.TEXT, true))))
+		row.add_child(UI.expand(_wrapped_title(str(entry["title"]), 15)))
 		var playable := bool(entry["playable"])
 		var play := UI.button("Oyna" if playable else "Yakında", "primary" if playable else "ghost", 13, 38)
-		play.custom_minimum_size.x = 92
+		play.custom_minimum_size.x = 84
+		play.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		play.disabled = not playable
 		play.pressed.connect(func(): play_requested.emit(str(entry["id"])))
 		row.add_child(play)
@@ -432,15 +444,16 @@ func _render_continue() -> void:
 		longest = maxi(longest, int(entry["playtime"]))
 	for entry in recent.slice(0, 2):
 		var row := UI.hbox(12)
-		row.add_child(UI.image(Catalog.texture(str(entry["cover"])), Vector2(110, 58), 8))
+		row.add_child(UI.image(Catalog.texture(str(entry["cover"])), Vector2(88, 56), 8))
 		var text := UI.vbox(4)
 		UI.expand(text)
-		text.add_child(UI.fit(UI.label(str(entry["title"]), 14, UI.TEXT, true)))
-		text.add_child(UI.fit(UI.label("%s oynandı  •  %s" % [Catalog.hours(int(entry["playtime"])), Catalog.ago(int(entry["last_played"]))], 12, UI.TEXT_2)))
+		text.add_child(_wrapped_title(str(entry["title"]), 14))
+		text.add_child(UI.fit(UI.label("%s  •  %s" % [Catalog.hours(int(entry["playtime"])), Catalog.ago(int(entry["last_played"]))], 12, UI.TEXT_2)))
 		text.add_child(UI.progress(float(entry["playtime"]) / float(longest), UI.ACCENT, 4))
 		row.add_child(text)
 		var play := UI.button("Oyna", "primary", 13, 38)
-		play.custom_minimum_size.x = 88
+		play.custom_minimum_size.x = 84
+		play.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		play.pressed.connect(func(): play_requested.emit(str(entry["id"])))
 		row.add_child(play)
 		_continue_list.add_child(row)

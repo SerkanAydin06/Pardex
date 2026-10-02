@@ -119,7 +119,11 @@ func _add_avatar_row(UI, profile_box: Control) -> void:
 	copy.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	copy.add_theme_constant_override("separation", 2)
 	copy.add_child(UI.label("Profil resmi", 15, UI.TEXT, true))
-	copy.add_child(UI.label("JPG, PNG ya da WEBP. Ortadan kare kırpılır; arkadaşların da görür.", 13, UI.TEXT_2))
+	var hint: Label = UI.label("JPG, PNG ya da WEBP. Ortadan kare kırpılır; arkadaşların da görür.", 13, UI.TEXT_2)
+	# Wrap instead of widening the page (it squeezed the sidebar at 1024 px).
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint.custom_minimum_size.x = 120
+	copy.add_child(hint)
 	row.add_child(copy)
 	var choose: Button = UI.button("Resim Seç", "primary", 14, 42, "image")
 	choose.size_flags_vertical = Control.SIZE_SHRINK_CENTER

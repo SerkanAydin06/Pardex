@@ -268,6 +268,8 @@ func _render_online() -> void:
 	var shown := friends.filter(func(p): return typeof(p) == TYPE_DICTIONARY and (_show_all or _presence(p) != "offline"))
 	var online_count := friends.filter(func(p): return typeof(p) == TYPE_DICTIONARY and _presence(p) != "offline").size()
 	_online_title.text = ("Tüm Arkadaşlar (%d)" % friends.size()) if _show_all else ("Çevrimiçi (%d)" % online_count)
+	# "Tümünü Gör" only makes sense once there are friends to list.
+	(%OnlineToggle as Control).visible = not friends.is_empty()
 	if friends.is_empty():
 		var message := "PARDEX Online bağlantısı bekleniyor" if not PardexOnline.is_online() else "Henüz arkadaşın yok"
 		_online_list.add_child(UI.empty_state("friends", message, "‘Arkadaş Ekle’ ile PARDEX kullanıcılarını bul.", true))
