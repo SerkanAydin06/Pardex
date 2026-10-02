@@ -1142,6 +1142,29 @@ function handleMessage(client, raw) {
     case "set_presence":
       setPresenceStatus(client, message.presence);
       break;
+    case "set_avatar": {
+      if (!requireSocialAccount(client)) return;
+      const result = social.setAvatar(client.accountId, message.data);
+      if (!result.ok) {
+        sendError(client.ws, result.code, "Profil resmi kaydedilemedi. Daha küçük bir JPG/PNG dene.");
+        return;
+      }
+      pushSocialState(client.accountId);
+      pushRelatedSocialStates(client.accountId);
+      break;
+    }
+    case "get_avatar": {
+      if (!requireSocialAccount(client)) return;
+      const targetId = String(message.account_id || "");
+      const avatar = social.getAvatar(targetId);
+      send(client.ws, {
+        type: "avatar_data",
+        account_id: targetId,
+        avatar_id: avatar ? avatar.avatar_id : "",
+        data: avatar ? avatar.data : "",
+      });
+      break;
+    }
     case "join_friend_room":
       joinFriendRoom(client, message.account_id);
       break;

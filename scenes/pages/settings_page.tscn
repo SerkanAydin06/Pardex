@@ -1,93 +1,12 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/screens/account_recovery.gd" id="1_oneql"]
+[ext_resource type="Script" path="res://scripts/ui/pardex_button_content.gd" id="1_iwbum"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/arrow_left.svg" id="2_8lpjv"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/image.svg" id="3_welti"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/trash.svg" id="4_a8wfp"]
+[ext_resource type="Script" path="res://scripts/screens/account_recovery.gd" id="5_x37xv"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k3lhh"]
-content_margin_left = 20.0
-content_margin_top = 20.0
-content_margin_right = 20.0
-content_margin_bottom = 20.0
-bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_knx7t"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.15294118, 0.6627451, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ci7rx"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.23764706, 0.6964706, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iwbum"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8lpjv"]
-content_margin_left = 20.0
-content_margin_top = 20.0
-content_margin_right = 20.0
-content_margin_bottom = 20.0
-bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_welti"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wfbdm"]
 content_margin_left = 16.0
 content_margin_top = 0.0
 content_margin_right = 16.0
@@ -103,7 +22,7 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a8wfp"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j8bw4"]
 content_margin_left = 16.0
 content_margin_top = 0.0
 content_margin_right = 16.0
@@ -118,58 +37,6 @@ corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x37xv"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wfbdm"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.15294118, 0.6627451, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j8bw4"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.23764706, 0.6964706, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vjk2a"]
 content_margin_left = 16.0
@@ -186,57 +53,8 @@ corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3jslg"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hhhtt"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.16, 0.19529411, 0.26941177, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.15294118, 0.6627451, 1, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h8lea"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e7hop"]
 content_margin_left = 20.0
 content_margin_top = 20.0
 content_margin_right = 20.0
@@ -251,6 +69,59 @@ corner_radius_top_left = 14
 corner_radius_top_right = 14
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hhhtt"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.15294118, 0.6627451, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.40705884, 0.7639216, 1, 0.8)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h8lea"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.23764706, 0.6964706, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.40705884, 0.7639216, 1, 0.8)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e7hop"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g4khp"]
 content_margin_left = 16.0
@@ -306,6 +177,54 @@ corner_radius_bottom_left = 9
 shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_21uco"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qgdg3"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.16, 0.19529411, 0.26941177, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.15294118, 0.6627451, 1, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7fa33"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iecak"]
 content_margin_left = 20.0
 content_margin_top = 20.0
 content_margin_right = 20.0
@@ -321,15 +240,302 @@ corner_radius_top_right = 14
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
 
-[node name="SettingsPage" type="VBoxContainer" unique_id=558942025]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kqrod"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4kb21"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.16, 0.19529411, 0.26941177, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.15294118, 0.6627451, 1, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2acj8"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lbrk4"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.15294118, 0.6627451, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.40705884, 0.7639216, 1, 0.8)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tal3i"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.23764706, 0.6964706, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.40705884, 0.7639216, 1, 0.8)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s78bx"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4q3rc"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_itwsi"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.16, 0.19529411, 0.26941177, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.15294118, 0.6627451, 1, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pa4bf"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hit1x"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4hs0q"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.15294118, 0.6627451, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.40705884, 0.7639216, 1, 0.8)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nbfqp"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.23764706, 0.6964706, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.40705884, 0.7639216, 1, 0.8)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4yqvt"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kngm5"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[node name="SettingsPage" type="VBoxContainer" unique_id=855920390]
 size_flags_vertical = 3
 theme_override_constants/separation = 14
 
-[node name="Heading" type="VBoxContainer" parent="." unique_id=1082745724]
+[node name="HeadingRow" type="HBoxContainer" parent="." unique_id=1250816908]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="BackButton" type="Button" parent="HeadingRow" unique_id=295690649]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 40)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_wfbdm")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_j8bw4")
+theme_override_styles/hover = SubResource("StyleBoxFlat_j8bw4")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_vjk2a")
+metadata/label = "Geri"
+
+[node name="Content" type="CenterContainer" parent="HeadingRow/BackButton" unique_id=1343817821]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("1_iwbum")
+color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+
+[node name="Group" type="HBoxContainer" parent="HeadingRow/BackButton/Content" unique_id=454451043]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 9
+
+[node name="Icon" type="TextureRect" parent="HeadingRow/BackButton/Content/Group" unique_id=983134943]
+modulate = Color(0.93333334, 0.9529412, 0.9843137, 1)
+texture_filter = 2
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_8lpjv")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="HeadingRow/BackButton/Content/Group" unique_id=1954031718]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_font_sizes/font_size = 14
+text = "Geri"
+
+[node name="Heading" type="VBoxContainer" parent="HeadingRow" unique_id=108121851]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="Label1" type="Label" parent="Heading" unique_id=1459328281]
+[node name="Label1" type="Label" parent="HeadingRow/Heading" unique_id=2025331426]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -337,51 +543,51 @@ theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 30
 text = "Ayarlar"
 
-[node name="Label2" type="Label" parent="Heading" unique_id=1084442158]
+[node name="Label2" type="Label" parent="HeadingRow/Heading" unique_id=1721310912]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 14
 text = "PARDEX profilini, hesabını ve bağlantı ayarlarını yönet."
 
-[node name="Scroll" type="ScrollContainer" parent="." unique_id=986631967]
+[node name="Scroll" type="ScrollContainer" parent="." unique_id=356407040]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="SettingsContent" type="VBoxContainer" parent="Scroll" unique_id=1835832597]
+[node name="SettingsContent" type="VBoxContainer" parent="Scroll" unique_id=382699581]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
 theme_override_constants/separation = 12
 
-[node name="ProfilePanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=477934841]
+[node name="ProfilePanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1500228001]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_k3lhh")
+theme_override_styles/panel = SubResource("StyleBoxFlat_3jslg")
 
-[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/ProfilePanel" unique_id=435928175]
+[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/ProfilePanel" unique_id=1004819542]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Section" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=967806622]
+[node name="Section" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=1043411909]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "●  PROFİL"
 text_overrun_behavior = 3
 
-[node name="Description" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=1166767475]
+[node name="Description" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=1081891444]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
 theme_override_font_sizes/font_size = 14
 text = "Arkadaşların ve oyun odalarında görünecek PARDEX adını belirle."
 text_overrun_behavior = 3
 
-[node name="ProfileRow" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=1789827691]
+[node name="ProfileRow" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=1882585599]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="ProfileNameEdit" type="LineEdit" parent="Scroll/SettingsContent/ProfilePanel/VBox/ProfileRow" unique_id=376529234]
+[node name="ProfileNameEdit" type="LineEdit" parent="Scroll/SettingsContent/ProfilePanel/VBox/ProfileRow" unique_id=957778532]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -391,7 +597,7 @@ theme_override_font_sizes/font_size = 15
 placeholder_text = "Pardus"
 max_length = 24
 
-[node name="SaveProfileButton" type="Button" parent="Scroll/SettingsContent/ProfilePanel/VBox/ProfileRow" unique_id=1303229326]
+[node name="SaveProfileButton" type="Button" parent="Scroll/SettingsContent/ProfilePanel/VBox/ProfileRow" unique_id=1223408666]
 custom_minimum_size = Vector2(156, 44)
 layout_mode = 2
 focus_mode = 0
@@ -401,46 +607,173 @@ theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.137
 theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
 theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_knx7t")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ci7rx")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ci7rx")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_iwbum")
-text = "KAYDET"
+theme_override_styles/normal = SubResource("StyleBoxFlat_hhhtt")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_h8lea")
+theme_override_styles/hover = SubResource("StyleBoxFlat_h8lea")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_e7hop")
+text = "Kaydet"
 
-[node name="AccountPanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=327495893]
+[node name="AvatarRow" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=2040970188]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_8lpjv")
-script = ExtResource("1_oneql")
+theme_override_constants/separation = 16
 
-[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/AccountPanel" unique_id=1498028047]
+[node name="AvatarPreview" type="CenterContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow" unique_id=1717187921]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 72)
+layout_mode = 2
+
+[node name="VBoxContainer1" type="VBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow" unique_id=274037591]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="Label1" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/VBoxContainer1" unique_id=1627633356]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 15
+text = "Profil resmi"
+
+[node name="Label2" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/VBoxContainer1" unique_id=1105184595]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
+theme_override_font_sizes/font_size = 13
+text = "JPG, PNG ya da WEBP. Ortadan kare kırpılır; arkadaşların da görür."
+
+[node name="ChooseAvatarButton" type="Button" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow" unique_id=2046050530]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(127, 42)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_g4khp")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_keogx")
+theme_override_styles/hover = SubResource("StyleBoxFlat_keogx")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_qgjds")
+metadata/label = "Resim Seç"
+
+[node name="Content" type="CenterContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton" unique_id=1660770458]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("1_iwbum")
+color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+
+[node name="Group" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton/Content" unique_id=34024187]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 9
+
+[node name="Icon" type="TextureRect" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton/Content/Group" unique_id=343396000]
+modulate = Color(0.011764706, 0.078431375, 0.13725491, 1)
+texture_filter = 2
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("3_welti")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton/Content/Group" unique_id=387408715]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_font_sizes/font_size = 14
+text = "Resim Seç"
+
+[node name="RemoveAvatarButton" type="Button" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow" unique_id=118537331]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(99, 42)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_21uco")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_qgdg3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_qgdg3")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_7fa33")
+metadata/label = "Kaldır"
+
+[node name="Content" type="CenterContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton" unique_id=1001856098]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("1_iwbum")
+color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+
+[node name="Group" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton/Content" unique_id=160894578]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 9
+
+[node name="Icon" type="TextureRect" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton/Content/Group" unique_id=1136906075]
+modulate = Color(0.93333334, 0.9529412, 0.9843137, 1)
+texture_filter = 2
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("4_a8wfp")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton/Content/Group" unique_id=1728207804]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_font_sizes/font_size = 14
+text = "Kaldır"
+
+[node name="AccountPanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1858239632]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_iecak")
+script = ExtResource("5_x37xv")
+
+[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/AccountPanel" unique_id=1645142515]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Section" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=796002806]
+[node name="Section" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1626333985]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "●  HESAP KURTARMA"
 text_overrun_behavior = 3
 
-[node name="Description" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=132950164]
+[node name="Description" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=9574733]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
 theme_override_font_sizes/font_size = 14
 text = "Tek kullanımlık kurtarma kodu ile PARDEX hesabını başka bir bilgisayara güvenli şekilde taşı."
 autowrap_mode = 2
 
-[node name="AccountRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1009553406]
+[node name="AccountRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1955056512]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="AccountTitle" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/AccountRow" unique_id=1678743171]
+[node name="AccountTitle" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/AccountRow" unique_id=540678672]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.48, 0.56, 0.66, 1)
 theme_override_font_sizes/font_size = 12
 text = "HESAP"
 
-[node name="AccountValue" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/AccountRow" unique_id=588440449]
+[node name="AccountValue" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/AccountRow" unique_id=781438514]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.88, 0.92, 0.98, 1)
@@ -448,17 +781,17 @@ theme_override_font_sizes/font_size = 12
 text = "Bağlantı bekleniyor"
 text_overrun_behavior = 3
 
-[node name="RecoveryState" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=520133897]
+[node name="RecoveryState" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1962992712]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.72, 0.34, 1)
 theme_override_font_sizes/font_size = 12
 text = "●  PARDEX ONLINE BAĞLANTISI BEKLENİYOR"
 text_overrun_behavior = 3
 
-[node name="GenerateRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=588827497]
+[node name="GenerateRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=625796735]
 layout_mode = 2
 
-[node name="GenerateHint" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/GenerateRow" unique_id=1388821176]
+[node name="GenerateHint" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/GenerateRow" unique_id=199827738]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.56, 0.63, 0.72, 1)
@@ -466,7 +799,7 @@ theme_override_font_sizes/font_size = 12
 text = "Yeni kod üretildiğinde önceki kod geçersiz olur."
 text_overrun_behavior = 3
 
-[node name="GenerateButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/GenerateRow" unique_id=449719474]
+[node name="GenerateButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/GenerateRow" unique_id=466202037]
 custom_minimum_size = Vector2(196, 42)
 layout_mode = 2
 focus_mode = 0
@@ -476,23 +809,23 @@ theme_override_colors/font_pressed_color = Color(0.93333334, 0.9529412, 0.984313
 theme_override_colors/font_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_welti")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_a8wfp")
-theme_override_styles/hover = SubResource("StyleBoxFlat_a8wfp")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_x37xv")
+theme_override_styles/normal = SubResource("StyleBoxFlat_kqrod")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_4kb21")
+theme_override_styles/hover = SubResource("StyleBoxFlat_4kb21")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_2acj8")
 disabled = true
-text = "KURTARMA KODU OLUŞTUR"
+text = "Kurtarma Kodu Oluştur"
 
-[node name="CodeBox" type="VBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=602016173]
+[node name="CodeBox" type="VBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=507175384]
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="CodeRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox" unique_id=1049978278]
+[node name="CodeRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox" unique_id=650395258]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="CodeEdit" type="LineEdit" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox/CodeRow" unique_id=527532347]
+[node name="CodeEdit" type="LineEdit" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox/CodeRow" unique_id=1071401460]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -500,7 +833,7 @@ theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 14
 editable = false
 
-[node name="CopyButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox/CodeRow" unique_id=889899490]
+[node name="CopyButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox/CodeRow" unique_id=1753926021]
 custom_minimum_size = Vector2(112, 42)
 layout_mode = 2
 focus_mode = 0
@@ -510,31 +843,31 @@ theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.137
 theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
 theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_wfbdm")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_j8bw4")
-theme_override_styles/hover = SubResource("StyleBoxFlat_j8bw4")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_vjk2a")
-text = "KOPYALA"
+theme_override_styles/normal = SubResource("StyleBoxFlat_lbrk4")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tal3i")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tal3i")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_s78bx")
+text = "Kopyala"
 
-[node name="CodeHint" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox" unique_id=1762103566]
+[node name="CodeHint" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox" unique_id=1261749169]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.7, 0.38, 1)
 theme_override_font_sizes/font_size = 12
 text = "Bu kod yalnız burada gösterilir. PARDEX kodun düz metnini sunucuda saklamaz."
 autowrap_mode = 2
 
-[node name="RecoverDescription" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=850228609]
+[node name="RecoverDescription" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1584995479]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.66, 0.72, 0.81, 1)
 theme_override_font_sizes/font_size = 12
 text = "Başka bir cihazdaki hesabı bu bilgisayara bağlamak için kurtarma kodunu gir."
 autowrap_mode = 2
 
-[node name="RecoverRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=109224506]
+[node name="RecoverRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1433014163]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="RecoverCodeEdit" type="LineEdit" parent="Scroll/SettingsContent/AccountPanel/VBox/RecoverRow" unique_id=209772176]
+[node name="RecoverCodeEdit" type="LineEdit" parent="Scroll/SettingsContent/AccountPanel/VBox/RecoverRow" unique_id=392466217]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -544,7 +877,7 @@ theme_override_font_sizes/font_size = 14
 placeholder_text = "PX1-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
 max_length = 48
 
-[node name="RecoverButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/RecoverRow" unique_id=2057557004]
+[node name="RecoverButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/RecoverRow" unique_id=976836356]
 custom_minimum_size = Vector2(156, 42)
 layout_mode = 2
 focus_mode = 0
@@ -554,48 +887,48 @@ theme_override_colors/font_pressed_color = Color(0.93333334, 0.9529412, 0.984313
 theme_override_colors/font_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_3jslg")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_hhhtt")
-theme_override_styles/hover = SubResource("StyleBoxFlat_hhhtt")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_h8lea")
+theme_override_styles/normal = SubResource("StyleBoxFlat_4q3rc")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_itwsi")
+theme_override_styles/hover = SubResource("StyleBoxFlat_itwsi")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_pa4bf")
 disabled = true
-text = "HESABI KURTAR"
+text = "Hesabı Kurtar"
 
-[node name="Status" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1732058162]
+[node name="Status" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=2056715239]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.56, 0.63, 0.72, 1)
 theme_override_font_sizes/font_size = 12
 text = "Kurtarma kodunu parola gibi sakla; paylaşma."
 autowrap_mode = 2
 
-[node name="OnlinePanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1250168953]
+[node name="OnlinePanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1131477219]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_e7hop")
+theme_override_styles/panel = SubResource("StyleBoxFlat_hit1x")
 
-[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/OnlinePanel" unique_id=1080659118]
+[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/OnlinePanel" unique_id=407516920]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Section" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=999256089]
+[node name="Section" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=1469043041]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "●  PARDEX ONLINE"
 text_overrun_behavior = 3
 
-[node name="Description" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=841833007]
+[node name="Description" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=2110790239]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
 theme_override_font_sizes/font_size = 14
 text = "Boş bırakırsan PARDEX sunucusu otomatik bulunur. Yalnızca test için farklı bir ws:// veya wss:// adresi yazabilirsin."
 autowrap_mode = 2
 
-[node name="ServerRow" type="HBoxContainer" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=1051158146]
+[node name="ServerRow" type="HBoxContainer" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=1552202769]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="ServerUrlEdit" type="LineEdit" parent="Scroll/SettingsContent/OnlinePanel/VBox/ServerRow" unique_id=420979942]
+[node name="ServerUrlEdit" type="LineEdit" parent="Scroll/SettingsContent/OnlinePanel/VBox/ServerRow" unique_id=1096279185]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -604,7 +937,7 @@ theme_override_colors/font_placeholder_color = Color(0.38, 0.44, 0.53, 1)
 theme_override_font_sizes/font_size = 15
 placeholder_text = "Otomatik (boş bırak)"
 
-[node name="ConnectButton" type="Button" parent="Scroll/SettingsContent/OnlinePanel/VBox/ServerRow" unique_id=219978780]
+[node name="ConnectButton" type="Button" parent="Scroll/SettingsContent/OnlinePanel/VBox/ServerRow" unique_id=1057612168]
 custom_minimum_size = Vector2(176, 44)
 layout_mode = 2
 focus_mode = 0
@@ -614,49 +947,49 @@ theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.137
 theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
 theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_g4khp")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_keogx")
-theme_override_styles/hover = SubResource("StyleBoxFlat_keogx")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_qgjds")
-text = "BAĞLAN"
+theme_override_styles/normal = SubResource("StyleBoxFlat_4hs0q")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_nbfqp")
+theme_override_styles/hover = SubResource("StyleBoxFlat_nbfqp")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_4yqvt")
+text = "Bağlan"
 
-[node name="State" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=933329413]
+[node name="State" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=2087240934]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.32, 1)
 theme_override_font_sizes/font_size = 14
 text = "●  ÇEVRİMDIŞI"
 text_overrun_behavior = 3
 
-[node name="DisplayPanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1690511964]
+[node name="DisplayPanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=844804577]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_21uco")
+theme_override_styles/panel = SubResource("StyleBoxFlat_kngm5")
 
-[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/DisplayPanel" unique_id=68953500]
+[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/DisplayPanel" unique_id=73529942]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Section" type="Label" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=240220158]
+[node name="Section" type="Label" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=1547374675]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "●  GÖRÜNTÜ"
 text_overrun_behavior = 3
 
-[node name="Title" type="Label" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=1687160152]
+[node name="Title" type="Label" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=1075467974]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 20
 text = "Masaüstü Pencere Modu"
 text_overrun_behavior = 3
 
-[node name="Description" type="Label" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=314944823]
+[node name="Description" type="Label" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=739074816]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
 theme_override_font_sizes/font_size = 14
 text = "PARDEX varsayılan olarak yeniden boyutlandırılabilir 1440 × 900 pencere halinde açılır. Son pencere boyutu ve konumu hatırlanır."
 autowrap_mode = 2
 
-[node name="FullscreenOnStart" type="CheckButton" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=593862624]
+[node name="FullscreenOnStart" type="CheckButton" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=2128802722]
 layout_mode = 2
 focus_mode = 0
 theme_override_colors/font_color = Color(0.86, 0.9, 0.96, 1)
@@ -665,7 +998,7 @@ text = "Tam ekran kullan ve sonraki açılışlarda tam ekran başlat"
 text_overrun_behavior = 3
 clip_text = true
 
-[node name="State" type="Label" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=1304063368]
+[node name="State" type="Label" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=857776947]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.38, 0.86, 0.62, 1)
 theme_override_font_sizes/font_size = 14

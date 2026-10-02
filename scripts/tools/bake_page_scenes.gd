@@ -58,12 +58,20 @@ func _bake_settings() -> void:
 	page.name = "SettingsPage"
 	page.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	page.add_theme_constant_override("separation", 14)
+	var heading_row := HBoxContainer.new()
+	heading_row.name = "HeadingRow"
+	heading_row.add_theme_constant_override("separation", 16)
+	var back: Button = UI.button("Geri", "ghost", 14, 40, "arrow_left")
+	back.custom_minimum_size.x = 110
+	back.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	heading_row.add_child(UI.named(back, "BackButton"))
 	var heading := VBoxContainer.new()
 	heading.name = "Heading"
 	heading.add_theme_constant_override("separation", 2)
 	heading.add_child(UI.label("Ayarlar", 30, UI.TEXT, true))
 	heading.add_child(UI.label("PARDEX profilini, hesabını ve bağlantı ayarlarını yönet.", 14, UI.TEXT_2))
-	page.add_child(heading)
+	heading_row.add_child(heading)
+	page.add_child(heading_row)
 	var content := (load("res://scenes/screens/settings.tscn") as PackedScene).instantiate() as Control
 	content.scene_file_path = ""
 	content.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
@@ -74,6 +82,7 @@ func _bake_settings() -> void:
 	root.add_child(page)
 	TextFit.apply(content)
 	UI.restyle_screen(content)
+	_add_avatar_row(UI, content.get_node("ProfilePanel/VBox"))
 	await process_frame
 	UI.own(page)
 	_tidy_names(page)
@@ -95,3 +104,30 @@ func _tidy_names(node: Node) -> void:
 				index += 1
 			child.name = "%s%d" % [base, index]
 		_tidy_names(child)
+
+
+# Profil resmi: preview + choose/remove, placed under the name field.
+func _add_avatar_row(UI, profile_box: Control) -> void:
+	var row := HBoxContainer.new()
+	row.name = "AvatarRow"
+	row.add_theme_constant_override("separation", 16)
+	var preview := CenterContainer.new()
+	preview.custom_minimum_size = Vector2(72, 72)
+	row.add_child(UI.named(preview, "AvatarPreview"))
+	var copy := VBoxContainer.new()
+	copy.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	copy.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	copy.add_theme_constant_override("separation", 2)
+	copy.add_child(UI.label("Profil resmi", 15, UI.TEXT, true))
+	copy.add_child(UI.label("JPG, PNG ya da WEBP. Ortadan kare kırpılır; arkadaşların da görür.", 13, UI.TEXT_2))
+	row.add_child(copy)
+	var choose: Button = UI.button("Resim Seç", "primary", 14, 42, "image")
+	choose.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(UI.named(choose, "ChooseAvatarButton"))
+	var remove: Button = UI.button("Kaldır", "ghost", 14, 42, "trash")
+	remove.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(UI.named(remove, "RemoveAvatarButton"))
+	profile_box.add_child(row)
+	var name_row := profile_box.get_node_or_null("ProfileRow")
+	if name_row != null:
+		profile_box.move_child(row, name_row.get_index() + 1)

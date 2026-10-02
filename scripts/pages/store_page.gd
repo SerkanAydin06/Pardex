@@ -23,6 +23,7 @@ var _hero_title: Label
 var _hero_body: Label
 var _hero_dots: HBoxContainer
 var _hero_features: Control
+var _query := ""
 var _featured: GridContainer
 var _new_row: GridContainer
 var _content_width := 1200.0
@@ -69,31 +70,44 @@ func _build() -> void:
 	var body := UI.vbox(16)
 	add_child(UI.scroll_page(body))
 
-	body.add_child(_build_hero())
+	# Top bar search results replace the shelves while a query is typed.
+	var results := UI.named(UI.vbox(14), "SearchResults") as VBoxContainer
+	results.visible = false
+	results.add_child(UI.named(UI.label("", 22, UI.TEXT, true), "SearchTitle"))
+	results.add_child(UI.named(_grid(), "SearchGrid"))
+	var no_results := UI.panel(14)
+	no_results.custom_minimum_size.y = 120
+	no_results.add_child(UI.empty_state("search", "Sonuç bulunamadı", "Farklı bir oyun adı ya da tür dene.", true))
+	results.add_child(UI.named(no_results, "SearchEmpty"))
+	body.add_child(results)
+
+	var shelves := UI.named(UI.vbox(16), "Shelves") as VBoxContainer
+	body.add_child(shelves)
+	shelves.add_child(_build_hero())
 
 	var featured_header := UI.section_header("Öne Çıkanlar", "Tümünü Gör", 22)
 	featured_header.add_child(UI.pill("Editörün Seçimi", UI.GOLD, "crown", 11))
 	featured_header.move_child(featured_header.get_child(-1), 1)
 	UI.named(featured_header.get_node("Link"), "FeaturedLink")
-	body.add_child(featured_header)
-	body.add_child(UI.named(_grid(), "FeaturedGrid"))
+	shelves.add_child(featured_header)
+	shelves.add_child(UI.named(_grid(), "FeaturedGrid"))
 
 	var deals_header := UI.section_header("İndirimler", "Tümünü Gör", 20, "percent", UI.RED)
 	deals_header.add_child(UI.label("Kaçırılmayacak fırsatlar, sınırlı süreli indirimler.", 13, UI.TEXT_2))
 	deals_header.move_child(deals_header.get_child(-1), 2)
 	(deals_header.get_node("Link") as Button).visible = false
-	body.add_child(deals_header)
+	shelves.add_child(deals_header)
 	var deals := UI.panel(14)
 	deals.custom_minimum_size.y = 76
 	deals.add_child(UI.empty_state("percent", "Şu an aktif indirim yok", "Kampanyalar başladığında burada görünecek.", true))
-	body.add_child(deals)
+	shelves.add_child(deals)
 
 	var new_header := UI.section_header("Yeni Gelenler", "Tümünü Gör", 20, "sparkles", UI.ACCENT)
 	new_header.add_child(UI.label("En yeni oyunlar şimdi PARDEX'te.", 13, UI.TEXT_2))
 	new_header.move_child(new_header.get_child(-1), 2)
 	UI.named(new_header.get_node("Link"), "NewLink")
-	body.add_child(new_header)
-	body.add_child(UI.named(_grid(), "NewGrid"))
+	shelves.add_child(new_header)
+	shelves.add_child(UI.named(_grid(), "NewGrid"))
 
 
 func _grid() -> GridContainer:
@@ -104,8 +118,35 @@ func _grid() -> GridContainer:
 	return grid
 
 
+## Called by the top bar search while Mağaza is open.
+func set_query(query: String) -> void:
+	_query = query.strip_edges().to_lower()
+	if is_node_ready():
+		_render_search()
+
+
+func _render_search() -> void:
+	var searching := not _query.is_empty()
+	(%Shelves as Control).visible = not searching
+	(%SearchResults as Control).visible = searching
+	if not searching:
+		return
+	var grid := %SearchGrid as GridContainer
+	UI.clear(grid)
+	var count := 0
+	for entry in Catalog.GAMES:
+		var haystack := " ".join([str(entry["title"]), " ".join(entry["genres"]), str(entry["tagline"])]).to_lower()
+		if _query in haystack:
+			grid.add_child(_featured_card(entry))
+			count += 1
+	(%SearchTitle as Label).text = "Arama sonuçları (%d)" % count
+	grid.visible = count > 0
+	(%SearchEmpty as Control).visible = count == 0
+
+
 func apply_layout(content_width: float) -> void:
 	_content_width = content_width
+	(%SearchGrid as GridContainer).columns = 3 if content_width >= 1020.0 else 2
 	_featured.columns = 3 if content_width >= 1020.0 else 2
 	_new_row.columns = 3 if content_width >= 1100.0 else 2
 	if _hero_features != null:
@@ -208,19 +249,12 @@ func _build_hero() -> Control:
 	pager.add_child(UI.named(UI.icon_button("chevron_right", "Sonraki", 24), "NextButton"))
 	text.add_child(pager)
 
-	var features := UI.vbox(14)
-	features.alignment = BoxContainer.ALIGNMENT_CENTER
-	features.custom_minimum_size.x = 180
-	for feature in [
-		["star", "PARDEX\nORİJİNALLERİ"],
-		["check_circle", "GÜVENLİ\nOYUN OTURUMU"],
-		["gamepad", "ONLINE\nODALAR"],
-		["friends", "AKTİF\nTOPLULUK"],
-	]:
-		var line := UI.hbox(12)
-		line.add_child(UI.icon(str(feature[0]), 26, UI.ACCENT))
-		line.add_child(UI.label(str(feature[1]), 11, UI.TEXT_2, true))
-		features.add_child(line)
+	var features := UI.feature_card([
+		["star", "PARDEX Orijinalleri", "PARDEX için geliştirilen oyunlar."],
+		["check_circle", "Güvenli Oyun Oturumu", "Biletli, korumalı bağlantı."],
+		["gamepad", "Online Odalar", "Kodla katıl, birlikte oyna."],
+		["friends", "Aktif Topluluk", "Arkadaşların seni bekliyor."],
+	], 300)
 	row.add_child(UI.named(features, "HeroFeatures"))
 	return frame
 

@@ -1,26 +1,43 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/pages/store_page.gd" id="1_kveyi"]
-[ext_resource type="Texture2D" path="res://assets/ui/home_hero_banner.png" id="2_g3r46"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/crown.svg" id="3_kp775"]
-[ext_resource type="Script" path="res://scripts/ui/pardex_button_content.gd" id="4_iaeb0"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/arrow_right.svg" id="5_iywm8"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/heart.svg" id="6_s5o6p"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/chevron_left.svg" id="7_1k4yc"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/chevron_right.svg" id="8_vytwn"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/star.svg" id="9_73wbi"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/check_circle.svg" id="10_ev38r"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/gamepad.svg" id="11_8s8o4"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/friends.svg" id="12_7fhsp"]
-[ext_resource type="Texture2D" path="res://assets/ui/placeholder_korsan.png" id="13_gns5g"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/download.svg" id="14_j3b0q"]
-[ext_resource type="Texture2D" path="res://assets/ui/placeholder_vex.png" id="15_sa4b1"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/sparkles.svg" id="16_3wpne"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/clock.svg" id="17_1a7j0"]
-[ext_resource type="Texture2D" path="res://assets/ui/placeholder_firtina.png" id="18_oamof"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/percent.svg" id="19_4fkdj"]
+[ext_resource type="Script" path="res://scripts/pages/store_page.gd" id="1_g3r46"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/search.svg" id="2_kp775"]
+[ext_resource type="Texture2D" path="res://assets/ui/home_hero_banner.png" id="3_iaeb0"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/crown.svg" id="4_iywm8"]
+[ext_resource type="Script" path="res://scripts/ui/pardex_button_content.gd" id="5_s5o6p"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/arrow_right.svg" id="6_1k4yc"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/heart.svg" id="7_vytwn"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/chevron_left.svg" id="8_73wbi"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/chevron_right.svg" id="9_ev38r"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/star.svg" id="10_8s8o4"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/check_circle.svg" id="11_7fhsp"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/gamepad.svg" id="12_gns5g"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/friends.svg" id="13_j3b0q"]
+[ext_resource type="Texture2D" path="res://assets/ui/placeholder_korsan.png" id="14_sa4b1"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/check.svg" id="15_3wpne"]
+[ext_resource type="Texture2D" path="res://assets/ui/placeholder_vex.png" id="16_1a7j0"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/sparkles.svg" id="17_oamof"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/clock.svg" id="18_4fkdj"]
+[ext_resource type="Texture2D" path="res://assets/ui/placeholder_firtina.png" id="19_rvhbu"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/percent.svg" id="20_oyvsr"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rvhbu"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3bj7p"]
+content_margin_left = 14.0
+content_margin_top = 14.0
+content_margin_right = 14.0
+content_margin_bottom = 14.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_teix6"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -38,23 +55,23 @@ corner_radius_bottom_left = 16
 shadow_color = Color(0.15294118, 0.6627451, 1, 0.18)
 shadow_size = 10
 
-[sub_resource type="Gradient" id="Gradient_oyvsr"]
+[sub_resource type="Gradient" id="Gradient_a6cw4"]
 colors = PackedColorArray(0.023529412, 0.039215688, 0.078431375, 0.95, 0.023529412, 0.039215688, 0.078431375, 0)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_3bj7p"]
-gradient = SubResource("Gradient_oyvsr")
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ve552"]
+gradient = SubResource("Gradient_a6cw4")
 fill_from = Vector2(0, 0.5)
 fill_to = Vector2(0.72, 0.5)
 
-[sub_resource type="Gradient" id="Gradient_teix6"]
+[sub_resource type="Gradient" id="Gradient_g4ml1"]
 colors = PackedColorArray(0.023529412, 0.039215688, 0.078431375, 0.55, 0.023529412, 0.039215688, 0.078431375, 0)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_a6cw4"]
-gradient = SubResource("Gradient_teix6")
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_yx06j"]
+gradient = SubResource("Gradient_g4ml1")
 fill_from = Vector2(0.5, 1)
 fill_to = Vector2(0.5, 0.3)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ve552"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pmvmd"]
 content_margin_left = 8.0
 content_margin_top = 8.0
 content_margin_right = 8.0
@@ -70,7 +87,7 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g4ml1"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_feavi"]
 content_margin_left = 16.0
 content_margin_top = 0.0
 content_margin_right = 16.0
@@ -88,7 +105,7 @@ corner_radius_bottom_left = 9
 shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
 shadow_size = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yx06j"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eb0iv"]
 content_margin_left = 16.0
 content_margin_top = 0.0
 content_margin_right = 16.0
@@ -106,7 +123,7 @@ corner_radius_bottom_left = 9
 shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
 shadow_size = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pmvmd"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hpplb"]
 content_margin_left = 16.0
 content_margin_top = 0.0
 content_margin_right = 16.0
@@ -123,7 +140,7 @@ corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_feavi"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kt3fq"]
 content_margin_left = 16.0
 content_margin_top = 0.0
 content_margin_right = 16.0
@@ -139,7 +156,7 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eb0iv"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ssmw4"]
 content_margin_left = 16.0
 content_margin_top = 0.0
 content_margin_right = 16.0
@@ -155,7 +172,7 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hpplb"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nf8ii"]
 content_margin_left = 16.0
 content_margin_top = 0.0
 content_margin_right = 16.0
@@ -171,7 +188,7 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kt3fq"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7d4f1"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -182,7 +199,7 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ssmw4"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3puj7"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -193,7 +210,7 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nf8ii"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ymcjn"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -204,76 +221,38 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7d4f1"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.3)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3puj7"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.3)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ymcjn"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.3)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ujbdc"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
+bg_color = Color(1, 1, 1, 0.3)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u74hn"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
+bg_color = Color(1, 1, 1, 0.3)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i28ax"]
-content_margin_left = 9.0
-content_margin_top = 3.0
-content_margin_right = 10.0
-content_margin_bottom = 3.0
-bg_color = Color(0.9607843, 0.7254902, 0.23529412, 0.18)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.9607843, 0.7254902, 0.23529412, 0.7)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.3)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d1ti5"]
 content_margin_left = 0.0
@@ -281,48 +260,39 @@ content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
 bg_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vl62s"]
-content_margin_left = 16.0
+content_margin_left = 0.0
 content_margin_top = 0.0
-content_margin_right = 16.0
+content_margin_right = 0.0
 content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+bg_color = Color(1, 1, 1, 0.08)
 corner_radius_top_left = 9
 corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n1483"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
+content_margin_left = 18.0
+content_margin_top = 18.0
+content_margin_right = 18.0
+content_margin_bottom = 18.0
+bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.74)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="Gradient" id="Gradient_ufeqf"]
-colors = PackedColorArray(0.023529412, 0.039215688, 0.078431375, 0.95, 0.023529412, 0.039215688, 0.078431375, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_eqy3h"]
-gradient = SubResource("Gradient_ufeqf")
-fill_from = Vector2(0.5, 1)
-fill_to = Vector2(0.5, 0.3)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cjr18"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ufeqf"]
 content_margin_left = 9.0
 content_margin_top = 3.0
 content_margin_right = 10.0
@@ -338,279 +308,7 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h2ny0"]
-content_margin_left = 9.0
-content_margin_top = 3.0
-content_margin_right = 10.0
-content_margin_bottom = 3.0
-bg_color = Color(0.9529412, 0.7137255, 0.26666668, 0.18)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.9529412, 0.7137255, 0.26666668, 0.7)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vr478"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.18)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ixrxx"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wf8cr"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wts6m"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="Gradient" id="Gradient_1lp76"]
-colors = PackedColorArray(0.023529412, 0.039215688, 0.078431375, 0.95, 0.023529412, 0.039215688, 0.078431375, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_i4m08"]
-gradient = SubResource("Gradient_1lp76")
-fill_from = Vector2(0.5, 1)
-fill_to = Vector2(0.5, 0.3)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_35x84"]
-content_margin_left = 9.0
-content_margin_top = 3.0
-content_margin_right = 10.0
-content_margin_bottom = 3.0
-bg_color = Color(0.15294118, 0.6627451, 1, 0.18)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.15294118, 0.6627451, 1, 0.7)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gbolw"]
-content_margin_left = 9.0
-content_margin_top = 3.0
-content_margin_right = 10.0
-content_margin_bottom = 3.0
-bg_color = Color(0.41960785, 0.4745098, 0.5647059, 0.18)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.41960785, 0.4745098, 0.5647059, 0.7)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ym3n6"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.18)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_617pv"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mp8oe"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6ykwy"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="Gradient" id="Gradient_1ecvx"]
-colors = PackedColorArray(0.023529412, 0.039215688, 0.078431375, 0.95, 0.023529412, 0.039215688, 0.078431375, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_c4ubw"]
-gradient = SubResource("Gradient_1ecvx")
-fill_from = Vector2(0.5, 1)
-fill_to = Vector2(0.5, 0.3)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a7136"]
-content_margin_left = 9.0
-content_margin_top = 3.0
-content_margin_right = 10.0
-content_margin_bottom = 3.0
-bg_color = Color(0.15294118, 0.6627451, 1, 0.18)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.15294118, 0.6627451, 1, 0.7)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bcvvw"]
-content_margin_left = 9.0
-content_margin_top = 3.0
-content_margin_right = 10.0
-content_margin_bottom = 3.0
-bg_color = Color(0.41960785, 0.4745098, 0.5647059, 0.18)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.41960785, 0.4745098, 0.5647059, 0.7)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gul3p"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.18)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tv1qn"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lipx8"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ld7xb"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eqy3h"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -621,7 +319,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5mgl7"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cjr18"]
 content_margin_left = 16.0
 content_margin_top = 0.0
 content_margin_right = 16.0
@@ -633,7 +331,342 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h2ny0"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="Gradient" id="Gradient_vr478"]
+colors = PackedColorArray(0.023529412, 0.039215688, 0.078431375, 0.95, 0.023529412, 0.039215688, 0.078431375, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ixrxx"]
+gradient = SubResource("Gradient_vr478")
+fill_from = Vector2(0.5, 1)
+fill_to = Vector2(0.5, 0.3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wf8cr"]
+content_margin_left = 9.0
+content_margin_top = 3.0
+content_margin_right = 10.0
+content_margin_bottom = 3.0
+bg_color = Color(0.9607843, 0.7254902, 0.23529412, 0.18)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.9607843, 0.7254902, 0.23529412, 0.7)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wts6m"]
+content_margin_left = 9.0
+content_margin_top = 3.0
+content_margin_right = 10.0
+content_margin_bottom = 3.0
+bg_color = Color(0.20784314, 0.8156863, 0.47843137, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.20784314, 0.8156863, 0.47843137, 0.7)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1lp76"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.18)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i4m08"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.08)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_35x84"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gbolw"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="Gradient" id="Gradient_ym3n6"]
+colors = PackedColorArray(0.023529412, 0.039215688, 0.078431375, 0.95, 0.023529412, 0.039215688, 0.078431375, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_617pv"]
+gradient = SubResource("Gradient_ym3n6")
+fill_from = Vector2(0.5, 1)
+fill_to = Vector2(0.5, 0.3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mp8oe"]
+content_margin_left = 9.0
+content_margin_top = 3.0
+content_margin_right = 10.0
+content_margin_bottom = 3.0
+bg_color = Color(0.15294118, 0.6627451, 1, 0.18)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.15294118, 0.6627451, 1, 0.7)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6ykwy"]
+content_margin_left = 9.0
+content_margin_top = 3.0
+content_margin_right = 10.0
+content_margin_bottom = 3.0
+bg_color = Color(0.41960785, 0.4745098, 0.5647059, 0.18)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.41960785, 0.4745098, 0.5647059, 0.7)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1ecvx"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.18)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c4ubw"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.08)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a7136"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bcvvw"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="Gradient" id="Gradient_gul3p"]
+colors = PackedColorArray(0.023529412, 0.039215688, 0.078431375, 0.95, 0.023529412, 0.039215688, 0.078431375, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_tv1qn"]
+gradient = SubResource("Gradient_gul3p")
+fill_from = Vector2(0.5, 1)
+fill_to = Vector2(0.5, 0.3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lipx8"]
+content_margin_left = 9.0
+content_margin_top = 3.0
+content_margin_right = 10.0
+content_margin_bottom = 3.0
+bg_color = Color(0.15294118, 0.6627451, 1, 0.18)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.15294118, 0.6627451, 1, 0.7)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ld7xb"]
+content_margin_left = 9.0
+content_margin_top = 3.0
+content_margin_right = 10.0
+content_margin_bottom = 3.0
+bg_color = Color(0.41960785, 0.4745098, 0.5647059, 0.18)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.41960785, 0.4745098, 0.5647059, 0.7)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5mgl7"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.18)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ra1ln"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.08)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d6y68"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8r23d"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dqbxq"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0)
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u6uqb"]
 content_margin_left = 14.0
 content_margin_top = 14.0
 content_margin_right = 14.0
@@ -649,7 +682,7 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d6y68"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_suqsq"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -660,7 +693,7 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8r23d"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u3n53"]
 content_margin_left = 16.0
 content_margin_top = 0.0
 content_margin_right = 16.0
@@ -672,7 +705,7 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dqbxq"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cjyp7"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -688,7 +721,7 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u6uqb"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8mbt7"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -699,7 +732,7 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_suqsq"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7bwx7"]
 content_margin_left = 9.0
 content_margin_top = 3.0
 content_margin_right = 10.0
@@ -715,81 +748,17 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u3n53"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_16clf"]
 content_margin_left = 9.0
 content_margin_top = 3.0
 content_margin_right = 10.0
 content_margin_bottom = 3.0
-bg_color = Color(0.9529412, 0.7137255, 0.26666668, 0.18)
+bg_color = Color(0.20784314, 0.8156863, 0.47843137, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.9529412, 0.7137255, 0.26666668, 0.7)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cjyp7"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.18)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8mbt7"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7bwx7"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_16clf"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+border_color = Color(0.20784314, 0.8156863, 0.47843137, 0.7)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
@@ -800,49 +769,6 @@ content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ibmsg"]
-content_margin_left = 9.0
-content_margin_top = 3.0
-content_margin_right = 10.0
-content_margin_bottom = 3.0
-bg_color = Color(0.15294118, 0.6627451, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.15294118, 0.6627451, 1, 0.7)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_thkg7"]
-content_margin_left = 9.0
-content_margin_top = 3.0
-content_margin_right = 10.0
-content_margin_bottom = 3.0
-bg_color = Color(0.41960785, 0.4745098, 0.5647059, 0.18)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.41960785, 0.4745098, 0.5647059, 0.7)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5lwha"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
 bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
 border_width_left = 1
 border_width_top = 1
@@ -854,7 +780,7 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jm1bu"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ibmsg"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -870,7 +796,7 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r3vfb"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_thkg7"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -886,7 +812,7 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6s5mo"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5lwha"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -902,7 +828,7 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_47ecf"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jm1bu"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -913,7 +839,7 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wkd1a"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r3vfb"]
 content_margin_left = 9.0
 content_margin_top = 3.0
 content_margin_right = 10.0
@@ -929,7 +855,7 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rhwwq"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6s5mo"]
 content_margin_left = 9.0
 content_margin_top = 3.0
 content_margin_right = 10.0
@@ -945,7 +871,7 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a5687"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_47ecf"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -961,7 +887,7 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i4q2d"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wkd1a"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -977,7 +903,7 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u1sbj"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rhwwq"]
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
@@ -993,85 +919,259 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[node name="StorePage" type="VBoxContainer" unique_id=257237054]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a5687"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i4q2d"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.06666667, 0.105882354, 0.1882353, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u1sbj"]
+content_margin_left = 9.0
+content_margin_top = 3.0
+content_margin_right = 10.0
+content_margin_bottom = 3.0
+bg_color = Color(0.15294118, 0.6627451, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.15294118, 0.6627451, 1, 0.7)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t0tsv"]
+content_margin_left = 9.0
+content_margin_top = 3.0
+content_margin_right = 10.0
+content_margin_bottom = 3.0
+bg_color = Color(0.41960785, 0.4745098, 0.5647059, 0.18)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.41960785, 0.4745098, 0.5647059, 0.7)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tlrru"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.18)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tk5h7"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.08)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_phkm2"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[node name="StorePage" type="VBoxContainer" unique_id=850492761]
 size_flags_vertical = 3
 theme_override_constants/separation = 0
-script = ExtResource("1_kveyi")
+script = ExtResource("1_g3r46")
 
-[node name="ScrollContainer1" type="ScrollContainer" parent="." unique_id=20308988]
+[node name="ScrollContainer1" type="ScrollContainer" parent="." unique_id=1134593612]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1" unique_id=1943925305]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1" unique_id=1895120064]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 16
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=1692518805]
+[node name="SearchResults" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=375659015]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="SearchTitle" type="Label" parent="ScrollContainer1/VBoxContainer1/SearchResults" unique_id=1369067111]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 22
+
+[node name="SearchGrid" type="GridContainer" parent="ScrollContainer1/VBoxContainer1/SearchResults" unique_id=2130708919]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+columns = 3
+
+[node name="SearchEmpty" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/SearchResults" unique_id=1869208199]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_3bj7p")
+
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/SearchResults/SearchEmpty" unique_id=1629673273]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/SearchResults/SearchEmpty/VBoxContainer1" unique_id=982075230]
+layout_mode = 2
+
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/SearchResults/SearchEmpty/VBoxContainer1/CenterContainer1" unique_id=253796499]
+modulate = Color(0.41960785, 0.4745098, 0.5647059, 1)
+texture_filter = 2
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_kp775")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/SearchResults/SearchEmpty/VBoxContainer1" unique_id=1467104832]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
+theme_override_font_sizes/font_size = 13
+text = "Sonuç bulunamadı"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/SearchResults/SearchEmpty/VBoxContainer1" unique_id=1199118801]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 12
+text = "Farklı bir oyun adı ya da tür dene."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Shelves" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=1283291217]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves" unique_id=857618066]
 clip_children = 2
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_rvhbu")
+theme_override_styles/panel = SubResource("StyleBoxFlat_teix6")
 
-[node name="HeroArt" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1" unique_id=545434404]
+[node name="HeroArt" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1" unique_id=1804187315]
 unique_name_in_owner = true
 texture_filter = 4
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("2_g3r46")
+texture = ExtResource("3_iaeb0")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1" unique_id=1751600260]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1" unique_id=1717930310]
 layout_mode = 2
 mouse_filter = 2
-texture = SubResource("GradientTexture2D_3bj7p")
+texture = SubResource("GradientTexture2D_ve552")
 expand_mode = 1
 
-[node name="TextureRect2" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1" unique_id=522311123]
+[node name="TextureRect2" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1" unique_id=48416155]
 layout_mode = 2
 mouse_filter = 2
-texture = SubResource("GradientTexture2D_a6cw4")
+texture = SubResource("GradientTexture2D_yx06j")
 expand_mode = 1
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1" unique_id=1748743315]
+[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1" unique_id=1078818982]
 layout_mode = 2
 theme_override_constants/margin_left = 30
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 16
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1" unique_id=566593222]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1" unique_id=2090702988]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1" unique_id=2035884262]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1" unique_id=2065161599]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=1035237005]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=846435765]
 layout_mode = 2
 size_flags_horizontal = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_ve552")
+theme_override_styles/panel = SubResource("StyleBoxFlat_pmvmd")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/PanelContainer1" unique_id=1386751943]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/PanelContainer1" unique_id=1075752504]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1271590004]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1973275841]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(15, 15)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("3_kp775")
+texture = ExtResource("4_iywm8")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="HeroTag" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=689976731]
+[node name="HeroTag" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=599252252]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.15294118, 0.6627451, 1, 1)
@@ -1080,12 +1180,12 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 12
 text = "OYUNLARIN YENİ EVİ"
 
-[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=280431287]
+[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=820074383]
 custom_minimum_size = Vector2(0, 80)
 clip_contents = true
 layout_mode = 2
 
-[node name="HeroTitle" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/Control1" unique_id=1047842143]
+[node name="HeroTitle" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/Control1" unique_id=658569432]
 unique_name_in_owner = true
 layout_mode = 0
 anchor_right = 1.0
@@ -1099,12 +1199,12 @@ vertical_alignment = 2
 autowrap_mode = 3
 max_lines_visible = 2
 
-[node name="Control2" type="Control" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=345792559]
+[node name="Control2" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=100297063]
 custom_minimum_size = Vector2(0, 46)
 clip_contents = true
 layout_mode = 2
 
-[node name="HeroBody" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/Control2" unique_id=1307129524]
+[node name="HeroBody" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/Control2" unique_id=961311534]
 unique_name_in_owner = true
 layout_mode = 0
 anchor_right = 1.0
@@ -1116,16 +1216,16 @@ ve öne çıkan içerikleri hemen incele."
 autowrap_mode = 3
 max_lines_visible = 2
 
-[node name="Control3" type="Control" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=1771144348]
+[node name="Control3" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=949292062]
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=536123663]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=850079239]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="ExploreButton" type="Button" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=932653118]
+[node name="ExploreButton" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=1786107825]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(190, 44)
 layout_mode = 2
@@ -1136,45 +1236,45 @@ theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.137
 theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
 theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBoxFlat_g4ml1")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_yx06j")
-theme_override_styles/hover = SubResource("StyleBoxFlat_yx06j")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_pmvmd")
+theme_override_styles/normal = SubResource("StyleBoxFlat_feavi")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_eb0iv")
+theme_override_styles/hover = SubResource("StyleBoxFlat_eb0iv")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_hpplb")
 icon_alignment = 2
 metadata/label = "Şimdi İncele"
 
-[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/ExploreButton" unique_id=1156747865]
+[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/ExploreButton" unique_id=707404709]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-script = ExtResource("4_iaeb0")
+script = ExtResource("5_s5o6p")
 color = Color(0.011764706, 0.078431375, 0.13725491, 1)
 disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 
-[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/ExploreButton/Content" unique_id=1545184199]
+[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/ExploreButton/Content" unique_id=721859067]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 9
 
-[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/ExploreButton/Content/Group" unique_id=361397510]
+[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/ExploreButton/Content/Group" unique_id=1843206910]
 modulate = Color(0.011764706, 0.078431375, 0.13725491, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("5_iywm8")
+texture = ExtResource("6_1k4yc")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/ExploreButton/Content/Group" unique_id=712522842]
+[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/ExploreButton/Content/Group" unique_id=876936581]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
 theme_override_font_sizes/font_size = 14
 text = "Şimdi İncele"
 
-[node name="WishButton" type="Button" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=2107213341]
+[node name="WishButton" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=551321806]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(170, 44)
 layout_mode = 2
@@ -1185,54 +1285,54 @@ theme_override_colors/font_pressed_color = Color(0.93333334, 0.9529412, 0.984313
 theme_override_colors/font_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBoxFlat_feavi")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_eb0iv")
-theme_override_styles/hover = SubResource("StyleBoxFlat_eb0iv")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_hpplb")
+theme_override_styles/normal = SubResource("StyleBoxFlat_kt3fq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ssmw4")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ssmw4")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_nf8ii")
 metadata/label = "İstek Listesi"
 
-[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/WishButton" unique_id=1696660953]
+[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/WishButton" unique_id=235147394]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-script = ExtResource("4_iaeb0")
+script = ExtResource("5_s5o6p")
 color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 
-[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/WishButton/Content" unique_id=2138895719]
+[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/WishButton/Content" unique_id=939980497]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 9
 
-[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/WishButton/Content/Group" unique_id=1274544530]
+[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/WishButton/Content/Group" unique_id=360543188]
 modulate = Color(0.93333334, 0.9529412, 0.9843137, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("6_s5o6p")
+texture = ExtResource("7_vytwn")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/WishButton/Content/Group" unique_id=1359373847]
+[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/WishButton/Content/Group" unique_id=403582674]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_font_sizes/font_size = 14
 text = "İstek Listesi"
 
-[node name="Control4" type="Control" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=2078225208]
+[node name="Control4" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=935488856]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=751817468]
+[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=214506323]
 layout_mode = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="PrevButton" type="Button" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2" unique_id=1544800793]
+[node name="PrevButton" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2" unique_id=1674091177]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
@@ -1244,49 +1344,19 @@ theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.984313
 theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_kt3fq")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ssmw4")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ssmw4")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_kt3fq")
-icon = ExtResource("7_1k4yc")
+theme_override_styles/normal = SubResource("StyleBoxFlat_7d4f1")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3puj7")
+theme_override_styles/hover = SubResource("StyleBoxFlat_3puj7")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_7d4f1")
+icon = ExtResource("8_73wbi")
 icon_alignment = 1
 
-[node name="HeroDots" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2" unique_id=1753992780]
+[node name="HeroDots" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2" unique_id=2105893230]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 7
 
-[node name="Dot0" type="Button" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2/HeroDots" unique_id=361658863]
-custom_minimum_size = Vector2(9, 9)
-layout_mode = 2
-size_flags_vertical = 4
-focus_mode = 0
-mouse_default_cursor_shape = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_nf8ii")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_nf8ii")
-theme_override_styles/hover = SubResource("StyleBoxFlat_nf8ii")
-
-[node name="Dot1" type="Button" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2/HeroDots" unique_id=791415536]
-custom_minimum_size = Vector2(9, 9)
-layout_mode = 2
-size_flags_vertical = 4
-focus_mode = 0
-mouse_default_cursor_shape = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_7d4f1")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_7d4f1")
-theme_override_styles/hover = SubResource("StyleBoxFlat_7d4f1")
-
-[node name="Dot2" type="Button" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2/HeroDots" unique_id=1061094371]
-custom_minimum_size = Vector2(9, 9)
-layout_mode = 2
-size_flags_vertical = 4
-focus_mode = 0
-mouse_default_cursor_shape = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_3puj7")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_3puj7")
-theme_override_styles/hover = SubResource("StyleBoxFlat_3puj7")
-
-[node name="Dot3" type="Button" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2/HeroDots" unique_id=249772629]
+[node name="Dot0" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2/HeroDots" unique_id=1026850867]
 custom_minimum_size = Vector2(9, 9)
 layout_mode = 2
 size_flags_vertical = 4
@@ -1296,7 +1366,37 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_ymcjn")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_ymcjn")
 theme_override_styles/hover = SubResource("StyleBoxFlat_ymcjn")
 
-[node name="NextButton" type="Button" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2" unique_id=933730025]
+[node name="Dot1" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2/HeroDots" unique_id=1304948364]
+custom_minimum_size = Vector2(9, 9)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_ujbdc")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ujbdc")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ujbdc")
+
+[node name="Dot2" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2/HeroDots" unique_id=144077600]
+custom_minimum_size = Vector2(9, 9)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_u74hn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_u74hn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_u74hn")
+
+[node name="Dot3" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2/HeroDots" unique_id=1253879430]
+custom_minimum_size = Vector2(9, 9)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_i28ax")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_i28ax")
+theme_override_styles/hover = SubResource("StyleBoxFlat_i28ax")
+
+[node name="NextButton" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2" unique_id=1979782977]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
@@ -1308,121 +1408,170 @@ theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.984313
 theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_ujbdc")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_u74hn")
-theme_override_styles/hover = SubResource("StyleBoxFlat_u74hn")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_ujbdc")
-icon = ExtResource("8_vytwn")
+theme_override_styles/normal = SubResource("StyleBoxFlat_d1ti5")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_vl62s")
+theme_override_styles/hover = SubResource("StyleBoxFlat_vl62s")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_d1ti5")
+icon = ExtResource("9_ev38r")
 icon_alignment = 1
 
-[node name="HeroFeatures" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1" unique_id=1971155687]
+[node name="HeroFeatures" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1" unique_id=557724571]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 0)
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_n1483")
+
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures" unique_id=287076951]
 layout_mode = 2
 theme_override_constants/separation = 14
 alignment = 1
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures" unique_id=779155244]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1" unique_id=1114496794]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 14
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/HBoxContainer1" unique_id=1221920013]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer1" unique_id=2113926023]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("9_73wbi")
+texture = ExtResource("10_8s8o4")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/HBoxContainer1" unique_id=590279450]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer1" unique_id=1022728592]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
+
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=1095178406]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 15
+text = "PARDEX Orijinalleri"
+
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=1140160757]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_colors/font_outline_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 11
-text = "PARDEX
-ORİJİNALLERİ"
+theme_override_font_sizes/font_size = 13
+text = "PARDEX için geliştirilen oyunlar."
+autowrap_mode = 3
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures" unique_id=1958196895]
+[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1" unique_id=649922677]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 14
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/HBoxContainer2" unique_id=1799490011]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer2" unique_id=612952211]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("10_ev38r")
+texture = ExtResource("11_7fhsp")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/HBoxContainer2" unique_id=357769918]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer2" unique_id=1607650436]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
+
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=1165658203]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 15
+text = "Güvenli Oyun Oturumu"
+
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=1176016377]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_colors/font_outline_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 11
-text = "GÜVENLİ
-OYUN OTURUMU"
+theme_override_font_sizes/font_size = 13
+text = "Biletli, korumalı bağlantı."
+autowrap_mode = 3
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures" unique_id=1555827040]
+[node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1" unique_id=116102212]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 14
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/HBoxContainer3" unique_id=121621006]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer3" unique_id=183236696]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("11_8s8o4")
+texture = ExtResource("12_gns5g")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/HBoxContainer3" unique_id=232509652]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer3" unique_id=827419092]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
+
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer3/VBoxContainer1" unique_id=681282242]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 15
+text = "Online Odalar"
+
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer3/VBoxContainer1" unique_id=1699468468]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_colors/font_outline_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 11
-text = "ONLINE
-ODALAR"
+theme_override_font_sizes/font_size = 13
+text = "Kodla katıl, birlikte oyna."
+autowrap_mode = 3
 
-[node name="HBoxContainer4" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures" unique_id=1506713519]
+[node name="HBoxContainer4" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1" unique_id=857285037]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 14
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/HBoxContainer4" unique_id=1546298763]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer4" unique_id=522359013]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("12_7fhsp")
+texture = ExtResource("13_j3b0q")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/HBoxContainer4" unique_id=630721864]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer4" unique_id=283097704]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
+
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer4/VBoxContainer1" unique_id=1097476613]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 15
+text = "Aktif Topluluk"
+
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/HeroFeatures/VBoxContainer1/HBoxContainer4/VBoxContainer1" unique_id=1583365040]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_colors/font_outline_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 11
-text = "AKTİF
-TOPLULUK"
+theme_override_font_sizes/font_size = 13
+text = "Arkadaşların seni bekliyor."
+autowrap_mode = 3
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=1143315738]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves" unique_id=581900]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="ScrollContainer1/VBoxContainer1/HBoxContainer1" unique_id=1829240191]
+[node name="Title" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer1" unique_id=1765090945]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1430,40 +1579,40 @@ theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 22
 text = "Öne Çıkanlar"
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/HBoxContainer1" unique_id=878814335]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer1" unique_id=1974690568]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_i28ax")
+theme_override_styles/panel = SubResource("StyleBoxFlat_ufeqf")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=1151888399]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer1/PanelContainer1" unique_id=448068481]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=674154854]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1605923253]
 modulate = Color(0.97450984, 0.8215686, 0.5029412, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(13, 13)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("3_kp775")
+texture = ExtResource("4_iywm8")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=474908990]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1881063746]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.97450984, 0.8215686, 0.5029412, 1)
 theme_override_font_sizes/font_size = 11
 text = "Editörün Seçimi"
 
-[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/HBoxContainer1" unique_id=1837126194]
+[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer1" unique_id=76450545]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="FeaturedLink" type="Button" parent="ScrollContainer1/VBoxContainer1/HBoxContainer1" unique_id=775184627]
+[node name="FeaturedLink" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer1" unique_id=736913647]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
@@ -1478,98 +1627,98 @@ theme_override_colors/icon_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_colors/icon_hover_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_constants/icon_max_width = 14
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_d1ti5")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_d1ti5")
-theme_override_styles/hover = SubResource("StyleBoxFlat_d1ti5")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_vl62s")
+theme_override_styles/normal = SubResource("StyleBoxFlat_eqy3h")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_eqy3h")
+theme_override_styles/hover = SubResource("StyleBoxFlat_eqy3h")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_cjr18")
 text = "Tümünü Gör  "
-icon = ExtResource("5_iywm8")
+icon = ExtResource("6_1k4yc")
 icon_alignment = 2
 
-[node name="FeaturedGrid" type="GridContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=1455950540]
+[node name="FeaturedGrid" type="GridContainer" parent="ScrollContainer1/VBoxContainer1/Shelves" unique_id=683367877]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/h_separation = 14
 theme_override_constants/v_separation = 14
 columns = 3
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid" unique_id=1637259890]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid" unique_id=1920099281]
 clip_children = 2
 custom_minimum_size = Vector2(0, 190)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_n1483")
+theme_override_styles/panel = SubResource("StyleBoxFlat_h2ny0")
 
-[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1" unique_id=311450364]
+[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1" unique_id=506261298]
 texture_filter = 4
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("13_gns5g")
+texture = ExtResource("14_sa4b1")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1" unique_id=1164767550]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1" unique_id=1640361985]
 layout_mode = 2
 mouse_filter = 2
-texture = SubResource("GradientTexture2D_eqy3h")
+texture = SubResource("GradientTexture2D_ixrxx")
 expand_mode = 1
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1" unique_id=132796828]
+[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1" unique_id=1239996001]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1" unique_id=484655292]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1" unique_id=1710435665]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 2
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=1129150953]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=567252348]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_cjr18")
+theme_override_styles/panel = SubResource("StyleBoxFlat_wf8cr")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/PanelContainer1" unique_id=1443513356]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/PanelContainer1" unique_id=1762633437]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=2021345767]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=601223979]
 modulate = Color(0.97450984, 0.8215686, 0.5029412, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(14, 14)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("3_kp775")
+texture = ExtResource("4_iywm8")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=487059977]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=219307808]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.97450984, 0.8215686, 0.5029412, 1)
 theme_override_font_sizes/font_size = 12
 text = "Editörün Seçimi"
 
-[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=1273946802]
+[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=1972960958]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=327361159]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=1584520913]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=1032563974]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=1317514945]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 3
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=558344941]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=948106957]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1579,7 +1728,7 @@ text = "Korsanların Hazinesi"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=1805239845]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=1350229666]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
@@ -1587,39 +1736,41 @@ text = "Strateji   Çok Oyunculu"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=29340836]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=1899362557]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=1554869474]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=926641095]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_h2ny0")
+theme_override_styles/panel = SubResource("StyleBoxFlat_wts6m")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=17467769]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=826606785]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=2074505127]
-modulate = Color(0.9694118, 0.8139216, 0.5233333, 1)
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1433021236]
+modulate = Color(0.023529412, 0.07058824, 0.12156863, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(14, 14)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("14_j3b0q")
+texture = ExtResource("15_3wpne")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1922158564]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=560244080]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9694118, 0.8139216, 0.5233333, 1)
+theme_override_colors/font_color = Color(0.023529412, 0.07058824, 0.12156863, 1)
+theme_override_colors/font_outline_color = Color(0.023529412, 0.07058824, 0.12156863, 1)
+theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 12
-text = "Kurulum Gerekli"
+text = "Yüklü"
 
-[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=1180165749]
+[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=1617973023]
 custom_minimum_size = Vector2(38, 38)
 layout_mode = 2
 size_flags_vertical = 8
@@ -1631,90 +1782,90 @@ theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.984313
 theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 19
-theme_override_styles/normal = SubResource("StyleBoxFlat_vr478")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ixrxx")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ixrxx")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_wf8cr")
-icon = ExtResource("6_s5o6p")
+theme_override_styles/normal = SubResource("StyleBoxFlat_1lp76")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_i4m08")
+theme_override_styles/hover = SubResource("StyleBoxFlat_i4m08")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_35x84")
+icon = ExtResource("7_vytwn")
 icon_alignment = 1
 
-[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid" unique_id=222959638]
+[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid" unique_id=2011335488]
 clip_children = 2
 custom_minimum_size = Vector2(0, 190)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_wts6m")
+theme_override_styles/panel = SubResource("StyleBoxFlat_gbolw")
 
-[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2" unique_id=1941584560]
+[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2" unique_id=1272915226]
 texture_filter = 4
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("15_sa4b1")
+texture = ExtResource("16_1a7j0")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2" unique_id=747208088]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2" unique_id=1935039302]
 layout_mode = 2
 mouse_filter = 2
-texture = SubResource("GradientTexture2D_i4m08")
+texture = SubResource("GradientTexture2D_617pv")
 expand_mode = 1
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2" unique_id=75745817]
+[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2" unique_id=24896327]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1" unique_id=643772205]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1" unique_id=1470955325]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 2
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1" unique_id=952994535]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1" unique_id=905859616]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_35x84")
+theme_override_styles/panel = SubResource("StyleBoxFlat_mp8oe")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/PanelContainer1" unique_id=253266985]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/PanelContainer1" unique_id=1929618523]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1375885865]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=209292421]
 modulate = Color(0.44941175, 0.7807843, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(14, 14)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("16_3wpne")
+texture = ExtResource("17_oamof")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1660962334]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=859958863]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.44941175, 0.7807843, 1, 1)
 theme_override_font_sizes/font_size = 12
 text = "Yeni"
 
-[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1" unique_id=532377655]
+[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1" unique_id=1395188797]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1" unique_id=238804470]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1" unique_id=1732304667]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=24495306]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=1416252836]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 3
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=1766135498]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=1843392109]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1724,7 +1875,7 @@ text = "VEX"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=387545634]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=1971086755]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
@@ -1732,39 +1883,39 @@ text = "Aksiyon   Bilim Kurgu"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=2018376522]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=2031631851]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=537937615]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=333901052]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_gbolw")
+theme_override_styles/panel = SubResource("StyleBoxFlat_6ykwy")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=931658299]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=2115433443]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1664146042]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1998697136]
 modulate = Color(0.6227451, 0.65843135, 0.71705884, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(14, 14)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("17_1a7j0")
+texture = ExtResource("18_4fkdj")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=2105100432]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1549161101]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6227451, 0.65843135, 0.71705884, 1)
 theme_override_font_sizes/font_size = 12
 text = "Yakında"
 
-[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=1861915909]
+[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer2/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=94555884]
 custom_minimum_size = Vector2(38, 38)
 layout_mode = 2
 size_flags_vertical = 8
@@ -1776,90 +1927,90 @@ theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.984313
 theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 19
-theme_override_styles/normal = SubResource("StyleBoxFlat_ym3n6")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_617pv")
-theme_override_styles/hover = SubResource("StyleBoxFlat_617pv")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_mp8oe")
-icon = ExtResource("6_s5o6p")
+theme_override_styles/normal = SubResource("StyleBoxFlat_1ecvx")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_c4ubw")
+theme_override_styles/hover = SubResource("StyleBoxFlat_c4ubw")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_a7136")
+icon = ExtResource("7_vytwn")
 icon_alignment = 1
 
-[node name="PanelContainer3" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid" unique_id=1250628036]
+[node name="PanelContainer3" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid" unique_id=784245634]
 clip_children = 2
 custom_minimum_size = Vector2(0, 190)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_6ykwy")
+theme_override_styles/panel = SubResource("StyleBoxFlat_bcvvw")
 
-[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3" unique_id=1307057102]
+[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3" unique_id=1180609171]
 texture_filter = 4
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("18_oamof")
+texture = ExtResource("19_rvhbu")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3" unique_id=798090479]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3" unique_id=1255295076]
 layout_mode = 2
 mouse_filter = 2
-texture = SubResource("GradientTexture2D_c4ubw")
+texture = SubResource("GradientTexture2D_tv1qn")
 expand_mode = 1
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3" unique_id=1302858728]
+[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3" unique_id=565272507]
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1" unique_id=182913605]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1" unique_id=17906368]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 2
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1" unique_id=1874782543]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1" unique_id=905665299]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_a7136")
+theme_override_styles/panel = SubResource("StyleBoxFlat_lipx8")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/PanelContainer1" unique_id=1965302854]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/PanelContainer1" unique_id=2136898982]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=948902515]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1615657120]
 modulate = Color(0.44941175, 0.7807843, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(14, 14)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("16_3wpne")
+texture = ExtResource("17_oamof")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1580438905]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1221648602]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.44941175, 0.7807843, 1, 1)
 theme_override_font_sizes/font_size = 12
 text = "Yeni"
 
-[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1" unique_id=1709156958]
+[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1" unique_id=1428168922]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1" unique_id=2130675825]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1" unique_id=226850893]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=65044127]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=442065667]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 3
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=532987161]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=918832591]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1869,7 +2020,7 @@ text = "Fırtına Vadisi"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=522399718]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=1886520345]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
@@ -1877,39 +2028,39 @@ text = "Macera   RPG"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=58755592]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=2005284450]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=1874471503]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=1341006705]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_bcvvw")
+theme_override_styles/panel = SubResource("StyleBoxFlat_ld7xb")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=1134964393]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=1673437849]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=749367092]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=427019956]
 modulate = Color(0.6227451, 0.65843135, 0.71705884, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(14, 14)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("17_1a7j0")
+texture = ExtResource("18_4fkdj")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=654806837]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=181542674]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6227451, 0.65843135, 0.71705884, 1)
 theme_override_font_sizes/font_size = 12
 text = "Yakında"
 
-[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=717439740]
+[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid/PanelContainer3/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=1363955976]
 custom_minimum_size = Vector2(38, 38)
 layout_mode = 2
 size_flags_vertical = 8
@@ -1921,29 +2072,29 @@ theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.984313
 theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 19
-theme_override_styles/normal = SubResource("StyleBoxFlat_gul3p")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_tv1qn")
-theme_override_styles/hover = SubResource("StyleBoxFlat_tv1qn")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_lipx8")
-icon = ExtResource("6_s5o6p")
+theme_override_styles/normal = SubResource("StyleBoxFlat_5mgl7")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ra1ln")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ra1ln")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_d6y68")
+icon = ExtResource("7_vytwn")
 icon_alignment = 1
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=1232055447]
+[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves" unique_id=438544655]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/HBoxContainer2" unique_id=1258110100]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer2" unique_id=1625330040]
 modulate = Color(1, 0.3647059, 0.3647059, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(22, 22)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("19_4fkdj")
+texture = ExtResource("20_oyvsr")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Title" type="Label" parent="ScrollContainer1/VBoxContainer1/HBoxContainer2" unique_id=1463181117]
+[node name="Title" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer2" unique_id=857245991]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1951,18 +2102,18 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 20
 text = "İndirimler"
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/HBoxContainer2" unique_id=1660291782]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer2" unique_id=1257269266]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
 text = "Kaçırılmayacak fırsatlar, sınırlı süreli indirimler."
 
-[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/HBoxContainer2" unique_id=1925809208]
+[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer2" unique_id=856525247]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="Link" type="Button" parent="ScrollContainer1/VBoxContainer1/HBoxContainer2" unique_id=155890651]
+[node name="Link" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer2" unique_id=124336747]
 visible = false
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
@@ -1977,47 +2128,47 @@ theme_override_colors/icon_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_colors/icon_hover_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_constants/icon_max_width = 14
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_ld7xb")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ld7xb")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ld7xb")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_5mgl7")
+theme_override_styles/normal = SubResource("StyleBoxFlat_8r23d")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_8r23d")
+theme_override_styles/hover = SubResource("StyleBoxFlat_8r23d")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_dqbxq")
 text = "Tümünü Gör  "
-icon = ExtResource("5_iywm8")
+icon = ExtResource("6_1k4yc")
 icon_alignment = 2
 
-[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=134936340]
+[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves" unique_id=1314793758]
 custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_ra1ln")
+theme_override_styles/panel = SubResource("StyleBoxFlat_u6uqb")
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer2" unique_id=9500246]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer2" unique_id=751145450]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 4
 alignment = 1
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer2/VBoxContainer1" unique_id=264904533]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer2/VBoxContainer1" unique_id=1448065513]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer2/VBoxContainer1/CenterContainer1" unique_id=932519094]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer2/VBoxContainer1/CenterContainer1" unique_id=899141484]
 modulate = Color(0.41960785, 0.4745098, 0.5647059, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(22, 22)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("19_4fkdj")
+texture = ExtResource("20_oyvsr")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer2/VBoxContainer1" unique_id=1632384532]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer2/VBoxContainer1" unique_id=104361599]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
 text = "Şu an aktif indirim yok"
 horizontal_alignment = 1
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer2/VBoxContainer1" unique_id=1075264439]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer2/VBoxContainer1" unique_id=682144117]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 12
@@ -2025,22 +2176,22 @@ text = "Kampanyalar başladığında burada görünecek."
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=661074914]
+[node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves" unique_id=1952390327]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/HBoxContainer3" unique_id=1798731434]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer3" unique_id=1886704939]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(22, 22)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("16_3wpne")
+texture = ExtResource("17_oamof")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Title" type="Label" parent="ScrollContainer1/VBoxContainer1/HBoxContainer3" unique_id=533048437]
+[node name="Title" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer3" unique_id=1209302313]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -2048,18 +2199,18 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 20
 text = "Yeni Gelenler"
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/HBoxContainer3" unique_id=845021276]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer3" unique_id=1111642475]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
 text = "En yeni oyunlar şimdi PARDEX'te."
 
-[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/HBoxContainer3" unique_id=683585724]
+[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer3" unique_id=334239422]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="NewLink" type="Button" parent="ScrollContainer1/VBoxContainer1/HBoxContainer3" unique_id=1781042440]
+[node name="NewLink" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/HBoxContainer3" unique_id=1963272960]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
@@ -2074,78 +2225,78 @@ theme_override_colors/icon_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_colors/icon_hover_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_constants/icon_max_width = 14
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_d6y68")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_d6y68")
-theme_override_styles/hover = SubResource("StyleBoxFlat_d6y68")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_8r23d")
+theme_override_styles/normal = SubResource("StyleBoxFlat_suqsq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_suqsq")
+theme_override_styles/hover = SubResource("StyleBoxFlat_suqsq")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_u3n53")
 text = "Tümünü Gör  "
-icon = ExtResource("5_iywm8")
+icon = ExtResource("6_1k4yc")
 icon_alignment = 2
 
-[node name="NewGrid" type="GridContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=482837800]
+[node name="NewGrid" type="GridContainer" parent="ScrollContainer1/VBoxContainer1/Shelves" unique_id=2028926467]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/h_separation = 14
 theme_override_constants/v_separation = 14
 columns = 3
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid" unique_id=1895077359]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid" unique_id=1161698188]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_dqbxq")
+theme_override_styles/panel = SubResource("StyleBoxFlat_cjyp7")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1" unique_id=457120053]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1" unique_id=1159322951]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1" unique_id=633138316]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1" unique_id=1038781810]
 clip_children = 2
 custom_minimum_size = Vector2(130, 80)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_u6uqb")
+theme_override_styles/panel = SubResource("StyleBoxFlat_8mbt7")
 
-[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1" unique_id=1539369544]
+[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1" unique_id=1500656137]
 texture_filter = 4
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("13_gns5g")
+texture = ExtResource("14_sa4b1")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1" unique_id=749726505]
+[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1" unique_id=222494997]
 layout_mode = 2
 theme_override_constants/margin_left = 6
 theme_override_constants/margin_top = 6
 theme_override_constants/margin_right = 6
 theme_override_constants/margin_bottom = 6
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1/MarginContainer1" unique_id=268058303]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1/MarginContainer1" unique_id=1187198179]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 0
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=1957789338]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=1703210822]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=7380975]
+[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=1877704689]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=1723097926]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=1914608247]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_suqsq")
+theme_override_styles/panel = SubResource("StyleBoxFlat_7bwx7")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=2074011937]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=534090601]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=147692448]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=2076677428]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.023529412, 0.07058824, 0.12156863, 1)
 theme_override_colors/font_outline_color = Color(0.023529412, 0.07058824, 0.12156863, 1)
@@ -2153,13 +2304,13 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 11
 text = "Yeni"
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1" unique_id=1485638220]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1" unique_id=125751523]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 3
 alignment = 1
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1" unique_id=2117362044]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1" unique_id=1378292886]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -2169,7 +2320,7 @@ text = "Korsanların Hazinesi"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1" unique_id=743333168]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1" unique_id=1800443695]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 12
@@ -2177,46 +2328,48 @@ text = "Strateji  Çok Oyunculu"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1" unique_id=692629724]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1" unique_id=525164233]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=451332660]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=2144484185]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_u3n53")
+theme_override_styles/panel = SubResource("StyleBoxFlat_16clf")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=2123994264]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=63940794]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=2086965554]
-modulate = Color(0.9694118, 0.8139216, 0.5233333, 1)
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1572637368]
+modulate = Color(0.023529412, 0.07058824, 0.12156863, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(14, 14)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("14_j3b0q")
+texture = ExtResource("15_3wpne")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=81304360]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1702409270]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9694118, 0.8139216, 0.5233333, 1)
+theme_override_colors/font_color = Color(0.023529412, 0.07058824, 0.12156863, 1)
+theme_override_colors/font_outline_color = Color(0.023529412, 0.07058824, 0.12156863, 1)
+theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 12
-text = "Kurulum Gerekli"
+text = "Yüklü"
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1" unique_id=927817299]
+[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1" unique_id=991310952]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 8
 
-[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer1/HBoxContainer1/MarginContainer1" unique_id=714656811]
+[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer1/HBoxContainer1/MarginContainer1" unique_id=115674682]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_vertical = 0
@@ -2228,70 +2381,70 @@ theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.984313
 theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 16
-theme_override_styles/normal = SubResource("StyleBoxFlat_cjyp7")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_8mbt7")
-theme_override_styles/hover = SubResource("StyleBoxFlat_8mbt7")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_7bwx7")
-icon = ExtResource("6_s5o6p")
+theme_override_styles/normal = SubResource("StyleBoxFlat_ovf4q")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ibmsg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ibmsg")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_thkg7")
+icon = ExtResource("7_vytwn")
 icon_alignment = 1
 
-[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid" unique_id=1837579670]
+[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid" unique_id=1189161828]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_16clf")
+theme_override_styles/panel = SubResource("StyleBoxFlat_5lwha")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2" unique_id=135856273]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2" unique_id=1732710095]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1" unique_id=12720435]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1" unique_id=97068622]
 clip_children = 2
 custom_minimum_size = Vector2(130, 80)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_ovf4q")
+theme_override_styles/panel = SubResource("StyleBoxFlat_jm1bu")
 
-[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1" unique_id=668324926]
+[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1" unique_id=1558240079]
 texture_filter = 4
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("15_sa4b1")
+texture = ExtResource("16_1a7j0")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1" unique_id=1048396427]
+[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1" unique_id=629719888]
 layout_mode = 2
 theme_override_constants/margin_left = 6
 theme_override_constants/margin_top = 6
 theme_override_constants/margin_right = 6
 theme_override_constants/margin_bottom = 6
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1/MarginContainer1" unique_id=856119343]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1/MarginContainer1" unique_id=408801191]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 0
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=234165280]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=1694161874]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=1054275295]
+[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=1309475375]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=384249603]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=543367079]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_ibmsg")
+theme_override_styles/panel = SubResource("StyleBoxFlat_r3vfb")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=418226671]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=958421334]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=192944882]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=958739858]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.023529412, 0.07058824, 0.12156863, 1)
 theme_override_colors/font_outline_color = Color(0.023529412, 0.07058824, 0.12156863, 1)
@@ -2299,13 +2452,13 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 11
 text = "Yeni"
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1" unique_id=180222730]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1" unique_id=854945651]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 3
 alignment = 1
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1" unique_id=2074570047]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1" unique_id=1108817355]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -2315,7 +2468,7 @@ text = "VEX"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1" unique_id=294617785]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1" unique_id=1772845538]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 12
@@ -2323,46 +2476,46 @@ text = "Aksiyon  Bilim Kurgu"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1" unique_id=359203778]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1" unique_id=227809607]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=1181544812]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=1456450608]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_thkg7")
+theme_override_styles/panel = SubResource("StyleBoxFlat_6s5mo")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=140209261]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=1052973664]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1414989496]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1615275241]
 modulate = Color(0.6227451, 0.65843135, 0.71705884, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(14, 14)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("17_1a7j0")
+texture = ExtResource("18_4fkdj")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=58518609]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1399877156]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6227451, 0.65843135, 0.71705884, 1)
 theme_override_font_sizes/font_size = 12
 text = "Yakında"
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1" unique_id=1861500413]
+[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1" unique_id=2012098387]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 8
 
-[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer2/HBoxContainer1/MarginContainer1" unique_id=42501291]
+[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer2/HBoxContainer1/MarginContainer1" unique_id=684559176]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_vertical = 0
@@ -2374,70 +2527,70 @@ theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.984313
 theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 16
-theme_override_styles/normal = SubResource("StyleBoxFlat_5lwha")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_jm1bu")
-theme_override_styles/hover = SubResource("StyleBoxFlat_jm1bu")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_r3vfb")
-icon = ExtResource("6_s5o6p")
+theme_override_styles/normal = SubResource("StyleBoxFlat_47ecf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_wkd1a")
+theme_override_styles/hover = SubResource("StyleBoxFlat_wkd1a")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_rhwwq")
+icon = ExtResource("7_vytwn")
 icon_alignment = 1
 
-[node name="PanelContainer3" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid" unique_id=289416688]
+[node name="PanelContainer3" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid" unique_id=1769622857]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_6s5mo")
+theme_override_styles/panel = SubResource("StyleBoxFlat_a5687")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3" unique_id=561011340]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3" unique_id=711799943]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1" unique_id=1275080159]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1" unique_id=2117523020]
 clip_children = 2
 custom_minimum_size = Vector2(130, 80)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_47ecf")
+theme_override_styles/panel = SubResource("StyleBoxFlat_i4q2d")
 
-[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1" unique_id=803166368]
+[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1" unique_id=114699054]
 texture_filter = 4
 layout_mode = 2
 mouse_filter = 2
-texture = ExtResource("18_oamof")
+texture = ExtResource("19_rvhbu")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1" unique_id=333552552]
+[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1" unique_id=2047059082]
 layout_mode = 2
 theme_override_constants/margin_left = 6
 theme_override_constants/margin_top = 6
 theme_override_constants/margin_right = 6
 theme_override_constants/margin_bottom = 6
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1/MarginContainer1" unique_id=1262392743]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1/MarginContainer1" unique_id=599107508]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 0
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=247645649]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=339003449]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=920492055]
+[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=2046609448]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=855117640]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1" unique_id=2005316889]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_wkd1a")
+theme_override_styles/panel = SubResource("StyleBoxFlat_u1sbj")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=126681149]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=135514277]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=55514998]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/PanelContainer1/MarginContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=1675502191]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.023529412, 0.07058824, 0.12156863, 1)
 theme_override_colors/font_outline_color = Color(0.023529412, 0.07058824, 0.12156863, 1)
@@ -2445,13 +2598,13 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 11
 text = "Yeni"
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1" unique_id=587253519]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1" unique_id=853566803]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 3
 alignment = 1
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1" unique_id=694086439]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1" unique_id=308206534]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -2461,7 +2614,7 @@ text = "Fırtına Vadisi"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1" unique_id=911453836]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1" unique_id=202947348]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 12
@@ -2469,46 +2622,46 @@ text = "Macera  RPG"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1" unique_id=9902439]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1" unique_id=808970196]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=1605608007]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=1782876481]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_rhwwq")
+theme_override_styles/panel = SubResource("StyleBoxFlat_t0tsv")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=547271675]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1" unique_id=1591837885]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=415960733]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=791405539]
 modulate = Color(0.6227451, 0.65843135, 0.71705884, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(14, 14)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("17_1a7j0")
+texture = ExtResource("18_4fkdj")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=782353145]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/VBoxContainer1/HBoxContainer1/PanelContainer1/HBoxContainer1" unique_id=60002342]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6227451, 0.65843135, 0.71705884, 1)
 theme_override_font_sizes/font_size = 12
 text = "Yakında"
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1" unique_id=1430289191]
+[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1" unique_id=1880651939]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 8
 
-[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/NewGrid/PanelContainer3/HBoxContainer1/MarginContainer1" unique_id=953183248]
+[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid/PanelContainer3/HBoxContainer1/MarginContainer1" unique_id=62748753]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_vertical = 0
@@ -2520,9 +2673,9 @@ theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.984313
 theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 16
-theme_override_styles/normal = SubResource("StyleBoxFlat_a5687")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_i4q2d")
-theme_override_styles/hover = SubResource("StyleBoxFlat_i4q2d")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_u1sbj")
-icon = ExtResource("6_s5o6p")
+theme_override_styles/normal = SubResource("StyleBoxFlat_tlrru")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tk5h7")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tk5h7")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_phkm2")
+icon = ExtResource("7_vytwn")
 icon_alignment = 1

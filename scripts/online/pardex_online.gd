@@ -13,6 +13,7 @@ signal social_notice(message: String)
 signal room_invite_received(invite: Dictionary)
 signal room_invite_closed(invite_id: String, reason: String)
 signal presence_changed(presence: String)
+signal avatar_ready(account_id: String)
 signal recovery_code_created(code: String)
 signal account_recovered(account_id: String, display_name: String)
 signal account_recovery_failed(message: String)
@@ -28,6 +29,10 @@ const LEGACY_SERVER_URLS := [
 	"wss://pardex-online-production.up.railway.app",
 ]
 const IDENTITY_PATH := "user://pardex_identity.cfg"
+const MY_AVATAR_PATH := "user://pardex_avatar.b64"
+const AVATAR_CACHE_DIR := "user://avatars"
+const AVATAR_PIXELS := 96
+const AVATAR_MAX_BASE64 := 12000
 const RECONNECT_DELAY := 3.0
 const HEARTBEAT_INTERVAL := 20.0
 const SERVER_TIMEOUT := 60.0
@@ -41,6 +46,12 @@ var _resolved_url := ""
 var _address_age := INF
 var _address_resolving := false
 var _host_closed_reported := false
+var _my_avatar := ""
+# False until this device has chosen or removed a picture; then the server's
+# picture (e.g. after account recovery) is adopted instead of overwritten.
+var _my_avatar_known := false
+var _avatar_textures := {}
+var _avatar_requested := {}
 var _address_request: HTTPRequest
 var display_name := "Pardus"
 var user_id := ""
@@ -69,6 +80,9 @@ var _pending_recovery_setup_code := ""
 
 func _ready() -> void:
 	_load_or_create_identity()
+	if FileAccess.file_exists(MY_AVATAR_PATH):
+		_my_avatar = FileAccess.get_file_as_string(MY_AVATAR_PATH).strip_edges()
+		_my_avatar_known = true
 
 
 func _process(delta: float) -> void:
@@ -176,6 +190,12 @@ static func is_automatic_url(url: String) -> bool:
 	return clean.is_empty() or LEGACY_SERVER_URLS.has(clean)
 
 
+## True while automatic mode found no published address (the host PC's
+## server panel is closed), so the UI can say "Sunucu kapalı".
+func is_host_closed() -> bool:
+	return server_url.is_empty() and _host_closed_reported and not is_online()
+
+
 func get_active_server_url() -> String:
 	return _resolved_url if server_url.is_empty() else server_url
 
@@ -213,9 +233,11 @@ func _on_address_resolved(result: int, code: int, _headers: PackedStringArray, b
 	if _resolved_url.is_empty():
 		# The host PC is closed (or the board is unreachable): stay offline and
 		# let the normal reconnect loop ask again.
+		var first_report := not _host_closed_reported
+		_host_closed_reported = true
 		_set_connection_state("offline")
-		if not _host_closed_reported:
-			_host_closed_reported = true
+		presence_changed.emit("offline")
+		if first_report:
 			online_error.emit("PARDEX sunucusu şu anda kapalı.")
 		return
 	_host_closed_reported = false
@@ -578,7 +600,10 @@ func _handle_packet(packet: String) -> void:
 				var self_data = social_state.get("self", {})
 				if typeof(self_data) == TYPE_DICTIONARY:
 					_set_effective_presence(str((self_data as Dictionary).get("presence", presence_status)))
+					_sync_my_avatar(str((self_data as Dictionary).get("avatar_id", "")))
 				social_state_changed.emit(social_state.duplicate(true))
+		"avatar_data":
+			_store_avatar(str(message.get("account_id", "")), str(message.get("avatar_id", "")), str(message.get("data", "")))
 		"user_search_results":
 			var results_data = message.get("results", [])
 			if typeof(results_data) == TYPE_ARRAY:
@@ -662,3 +687,128 @@ func _set_connection_state(new_state: String) -> void:
 		return
 	connection_state = new_state
 	connection_state_changed.emit(connection_state)
+
+
+# ------------------------------------------------------------------ avatars
+# Profile pictures are 96 px JPEGs. The server keeps one per account; social
+# profiles only carry its avatar_id and each picture is fetched once and
+# cached under user://avatars.
+
+static func _avatar_id_for(data: String) -> String:
+	return data.sha256_text().left(16) if not data.is_empty() else ""
+
+
+static func _texture_from_base64(data: String) -> Texture2D:
+	if data.is_empty():
+		return null
+	var bytes := Marshalls.base64_to_raw(data)
+	var image := Image.new()
+	var error := image.load_jpg_from_buffer(bytes)
+	if error != OK:
+		error = image.load_png_from_buffer(bytes)
+	if error != OK or image.is_empty():
+		return null
+	image.generate_mipmaps()
+	return ImageTexture.create_from_image(image)
+
+
+## Picks, crops and shrinks a local image file into this account's picture.
+## Returns an empty string on success or a message to show the user.
+func set_avatar_from_file(path: String) -> String:
+	var image := Image.load_from_file(path)
+	if image == null or image.is_empty():
+		return "Resim açılamadı. JPG, PNG ya da WEBP dosyası seç."
+	var side := mini(image.get_width(), image.get_height())
+	image = image.get_region(Rect2i((image.get_width() - side) / 2, (image.get_height() - side) / 2, side, side))
+	image.convert(Image.FORMAT_RGB8)
+	image.resize(AVATAR_PIXELS, AVATAR_PIXELS, Image.INTERPOLATE_LANCZOS)
+	var data := ""
+	for quality in [0.85, 0.7, 0.55, 0.4]:
+		data = Marshalls.raw_to_base64(image.save_jpg_to_buffer(quality))
+		if data.length() <= AVATAR_MAX_BASE64:
+			break
+	if data.length() > AVATAR_MAX_BASE64:
+		return "Resim çok büyük; başka bir resim dene."
+	_apply_my_avatar(data)
+	return ""
+
+
+func clear_avatar() -> void:
+	_apply_my_avatar("")
+
+
+func _apply_my_avatar(data: String) -> void:
+	_my_avatar = data
+	_my_avatar_known = true
+	var file := FileAccess.open(MY_AVATAR_PATH, FileAccess.WRITE)
+	if file != null:
+		file.store_string(data)
+		file.close()
+	if is_online():
+		_send({"type": "set_avatar", "data": data})
+	avatar_ready.emit(account_id)
+
+
+func has_my_avatar() -> bool:
+	return not _my_avatar.is_empty()
+
+
+func my_avatar_texture() -> Texture2D:
+	var avatar_id := _avatar_id_for(_my_avatar)
+	if avatar_id.is_empty():
+		return null
+	if not _avatar_textures.has(avatar_id):
+		_avatar_textures[avatar_id] = _texture_from_base64(_my_avatar)
+	return _avatar_textures[avatar_id]
+
+
+## Texture for a profile from social state (friend, request, search result).
+## Returns null until the picture has been downloaded; avatar_ready follows.
+func avatar_texture(profile_account_id: String, avatar_id: String) -> Texture2D:
+	if profile_account_id == account_id and not account_id.is_empty():
+		return my_avatar_texture()
+	if avatar_id.is_empty() or not avatar_id.is_valid_hex_number():
+		return null
+	if _avatar_textures.has(avatar_id):
+		return _avatar_textures[avatar_id]
+	var cache_path := AVATAR_CACHE_DIR.path_join(avatar_id + ".b64")
+	if FileAccess.file_exists(cache_path):
+		var texture := _texture_from_base64(FileAccess.get_file_as_string(cache_path).strip_edges())
+		_avatar_textures[avatar_id] = texture
+		return texture
+	if is_online() and not _avatar_requested.has(avatar_id):
+		_avatar_requested[avatar_id] = true
+		_send({"type": "get_avatar", "account_id": profile_account_id})
+	return null
+
+
+func _store_avatar(profile_account_id: String, avatar_id: String, data: String) -> void:
+	if avatar_id.is_empty() or data.is_empty() or _avatar_id_for(data) != avatar_id:
+		return
+	DirAccess.make_dir_recursive_absolute(AVATAR_CACHE_DIR)
+	var file := FileAccess.open(AVATAR_CACHE_DIR.path_join(avatar_id + ".b64"), FileAccess.WRITE)
+	if file != null:
+		file.store_string(data)
+		file.close()
+	_avatar_textures[avatar_id] = _texture_from_base64(data)
+	if profile_account_id == account_id and not _my_avatar_known:
+		_my_avatar = data
+		_my_avatar_known = true
+		var own := FileAccess.open(MY_AVATAR_PATH, FileAccess.WRITE)
+		if own != null:
+			own.store_string(data)
+			own.close()
+	avatar_ready.emit(profile_account_id)
+
+
+# The local picture is the source of truth: upload it whenever the server's
+# copy differs (first login, picked while offline, removed).
+func _sync_my_avatar(server_avatar_id: String) -> void:
+	if server_avatar_id == _avatar_id_for(_my_avatar):
+		return
+	if not _my_avatar_known:
+		if not server_avatar_id.is_empty() and not _avatar_requested.has(server_avatar_id):
+			_avatar_requested[server_avatar_id] = true
+			_send({"type": "get_avatar", "account_id": account_id})
+		return
+	_send({"type": "set_avatar", "data": _my_avatar})

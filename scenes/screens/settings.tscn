@@ -181,7 +181,7 @@ theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("Button")
 theme_override_styles/hover = SubResource("ButtonHover")
 theme_override_styles/pressed = SubResource("ButtonHover")
-text = "KAYDET"
+text = "Kaydet"
 
 [node name="AccountPanel" type="PanelContainer" parent="."]
 layout_mode = 2
@@ -247,7 +247,7 @@ theme_override_font_sizes/font_size = 13
 theme_override_styles/normal = SubResource("Button")
 theme_override_styles/hover = SubResource("ButtonHover")
 theme_override_styles/pressed = SubResource("ButtonHover")
-text = "KURTARMA KODU OLUŞTUR"
+text = "Kurtarma Kodu Oluştur"
 
 [node name="CodeBox" type="VBoxContainer" parent="AccountPanel/VBox"]
 visible = false
@@ -276,7 +276,7 @@ theme_override_font_sizes/font_size = 13
 theme_override_styles/normal = SubResource("Button")
 theme_override_styles/hover = SubResource("ButtonHover")
 theme_override_styles/pressed = SubResource("ButtonHover")
-text = "KOPYALA"
+text = "Kopyala"
 
 [node name="CodeHint" type="Label" parent="AccountPanel/VBox/CodeBox"]
 layout_mode = 2
@@ -316,7 +316,7 @@ theme_override_font_sizes/font_size = 13
 theme_override_styles/normal = SubResource("Button")
 theme_override_styles/hover = SubResource("ButtonHover")
 theme_override_styles/pressed = SubResource("ButtonHover")
-text = "HESABI KURTAR"
+text = "Hesabı Kurtar"
 
 [node name="Status" type="Label" parent="AccountPanel/VBox"]
 layout_mode = 2
@@ -370,7 +370,7 @@ theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("Button")
 theme_override_styles/hover = SubResource("ButtonHover")
 theme_override_styles/pressed = SubResource("ButtonHover")
-text = "BAĞLAN"
+text = "Bağlan"
 
 [node name="State" type="Label" parent="OnlinePanel/VBox"]
 layout_mode = 2
