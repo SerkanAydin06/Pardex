@@ -1,19 +1,8 @@
 name: PARDEX Online Production Smoke
 
+# Railway servisi kullanılmıyor (PARDEX artık host/ paneliyle ev bilgisayarından
+# açılıyor). Eski canlı servisi denemek gerekirse yalnızca elle çalıştırılır.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "server/server.js"
-      - "server/server_core.js"
-      - "server/social_store.js"
-      - "server/production_smoke_test.js"
-      - "server/package.json"
-      - "server/package-lock.json"
-      - "server/Dockerfile"
-  schedule:
-    - cron: "23 */6 * * *"
   workflow_dispatch:
 
 concurrency:

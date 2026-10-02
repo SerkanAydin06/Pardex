@@ -162,7 +162,10 @@ function track(label, child, critical) {
   children.push(child);
   const forward = (chunk) => {
     for (const line of String(chunk).split(/\r?\n/)) {
-      if (line.trim()) log(line.trim(), label);
+      const text = line.trim();
+      // cloudflared prints a lot of INF chatter; keep only warnings/errors.
+      if (!text || / INF /.test(text)) continue;
+      log(text, label);
     }
   };
   child.stdout?.on("data", forward);
@@ -412,6 +415,11 @@ function sendJson(response, data, status = 200) {
 
 async function handle(request, response) {
   const url = new URL(request.url, "http://127.0.0.1");
+  // Refuse other host names (DNS rebinding) – the panel is for this PC only.
+  const host = String(request.headers.host || "");
+  if (host !== `127.0.0.1:${PANEL_PORT}` && host !== `localhost:${PANEL_PORT}`) {
+    return sendJson(response, { error: "forbidden" }, 403);
+  }
   // Only this computer's browser may drive the panel.
   const origin = request.headers.origin;
   if (request.method === "POST" && origin && origin !== `http://127.0.0.1:${PANEL_PORT}` && origin !== `http://localhost:${PANEL_PORT}`) {
