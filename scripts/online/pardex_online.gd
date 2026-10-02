@@ -185,7 +185,7 @@ func connect_server() -> void:
 	_set_connection_state("connecting")
 
 
-static func is_automatic_url(url: String) -> bool:
+func is_automatic_url(url: String) -> bool:
 	var clean := url.strip_edges()
 	return clean.is_empty() or LEGACY_SERVER_URLS.has(clean)
 
@@ -719,7 +719,7 @@ func set_avatar_from_file(path: String) -> String:
 	if image == null or image.is_empty():
 		return "Resim açılamadı. JPG, PNG ya da WEBP dosyası seç."
 	var side := mini(image.get_width(), image.get_height())
-	image = image.get_region(Rect2i((image.get_width() - side) / 2, (image.get_height() - side) / 2, side, side))
+	image = image.get_region(Rect2i(floori((image.get_width() - side) / 2.0), floori((image.get_height() - side) / 2.0), side, side))
 	image.convert(Image.FORMAT_RGB8)
 	image.resize(AVATAR_PIXELS, AVATAR_PIXELS, Image.INTERPOLATE_LANCZOS)
 	var data := ""
