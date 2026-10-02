@@ -248,7 +248,7 @@ func _nav_style(selected: bool, hovered: bool) -> StyleBoxFlat:
 
 
 # The top bar search belongs to the open page: Mağaza and Kütüphane each keep
-# their own query; pages without searchable content hide the field.
+# their own query; pages without searchable content hide the entire slot.
 const SEARCH_PLACEHOLDERS := {
 	"store": "Mağazada oyun, tür ara...",
 	"library": "Kütüphanende ara...",
@@ -258,6 +258,7 @@ var _search_queries := {"store": "", "library": ""}
 
 func _update_search_for_page() -> void:
 	var searchable := SEARCH_PLACEHOLDERS.has(_current_page)
+	(%SearchSlot as Control).visible = searchable
 	search_field.visible = searchable
 	if not searchable:
 		search_field.release_focus()
