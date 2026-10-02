@@ -522,11 +522,32 @@ static func shade(strength := 0.85, from_left := false, color := BG) -> TextureR
 	return rect
 
 
-static func avatar(name: String, size := 40.0, presence := "", ring := Color.TRANSPARENT) -> Control:
+# Round profile picture: the uploaded photo when there is one, otherwise the
+# coloured initial. The circle mask clips the photo (clip_children).
+static func avatar(name: String, size := 40.0, presence := "", ring := Color.TRANSPARENT, picture: Texture2D = null) -> Control:
 	var holder := Control.new()
 	holder.custom_minimum_size = Vector2(size, size)
 	holder.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if picture != null:
+		var photo := TextureRect.new()
+		photo.name = "Picture"
+		photo.set_anchors_preset(Control.PRESET_FULL_RECT)
+		photo.texture = picture
+		photo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		photo.stretch_mode = TextureRect.STRETCH_SCALE
+		photo.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		photo.material = _circle_material()
+		photo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		holder.add_child(photo)
+		if ring.a > 0:
+			var outline := Panel.new()
+			outline.set_anchors_preset(Control.PRESET_FULL_RECT)
+			outline.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			outline.add_theme_stylebox_override("panel", box(Color.TRANSPARENT, int(size / 2.0), ring, maxi(2, int(size / 22.0))))
+			holder.add_child(outline)
+		_avatar_presence_dot(holder, size, presence)
+		return holder
 	var circle := Label.new()
 	circle.set_anchors_preset(Control.PRESET_FULL_RECT)
 	var clean := name.strip_edges()
@@ -540,16 +561,64 @@ static func avatar(name: String, size := 40.0, presence := "", ring := Color.TRA
 	var style := box(fill, int(size / 2.0), ring, maxi(2, int(size / 22.0)) if ring.a > 0 else 0)
 	circle.add_theme_stylebox_override("normal", style)
 	holder.add_child(circle)
-	if not presence.is_empty():
-		var dot_size := maxf(10.0, size * 0.27)
-		var dot := Panel.new()
-		dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		dot.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-		dot.offset_left = -dot_size
-		dot.offset_top = -dot_size
-		dot.add_theme_stylebox_override("panel", box(presence_color(presence), int(dot_size / 2.0), BG, 2))
-		holder.add_child(dot)
+	_avatar_presence_dot(holder, size, presence)
 	return holder
+
+
+# Round mask as a shader: clip_children cannot nest inside rounded image
+# frames (profile banner), a material works everywhere. Pictures are square.
+static var _circle_mask: ShaderMaterial
+
+
+static func _circle_material() -> ShaderMaterial:
+	if _circle_mask == null:
+		var shader := Shader.new()
+		shader.code = """shader_type canvas_item;
+void fragment() {
+	float edge = length(UV - vec2(0.5));
+	COLOR = texture(TEXTURE, UV);
+	COLOR.a *= 1.0 - smoothstep(0.485, 0.5, edge);
+}
+"""
+		_circle_mask = ShaderMaterial.new()
+		_circle_mask.shader = shader
+	return _circle_mask
+
+
+static func _avatar_presence_dot(holder: Control, size: float, presence: String) -> void:
+	if presence.is_empty():
+		return
+	var dot_size := maxf(10.0, size * 0.27)
+	var dot := Panel.new()
+	dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dot.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	dot.offset_left = -dot_size
+	dot.offset_top = -dot_size
+	dot.add_theme_stylebox_override("panel", box(presence_color(presence), int(dot_size / 2.0), BG, 2))
+	holder.add_child(dot)
+
+
+# Glass card of [icon, title, detail] rows for the right side of page heroes.
+static func feature_card(items: Array, width := 320.0) -> PanelContainer:
+	var card := panel(0, box(Color(BG, 0.74), 12, BORDER_HI, 1, 18))
+	card.custom_minimum_size.x = width
+	card.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var list := vbox(14)
+	list.alignment = BoxContainer.ALIGNMENT_CENTER
+	card.add_child(list)
+	for item in items:
+		var line := hbox(14)
+		var glyph := icon(str(item[0]), 26, ACCENT)
+		line.add_child(glyph)
+		var copy := vbox(1)
+		copy.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		copy.add_child(label(str(item[1]), 15, TEXT, true))
+		var detail := label(str(item[2]), 13, TEXT_2)
+		detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		copy.add_child(detail)
+		line.add_child(copy)
+		list.add_child(line)
+	return card
 
 
 static func progress(value: float, color := ACCENT, height := 5.0) -> ProgressBar:

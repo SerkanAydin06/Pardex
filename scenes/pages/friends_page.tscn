@@ -165,7 +165,7 @@ content_margin_left = 18.0
 content_margin_top = 18.0
 content_margin_right = 18.0
 content_margin_bottom = 18.0
-bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.72)
+bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.74)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
@@ -842,29 +842,29 @@ corner_radius_top_right = 9
 corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 
-[node name="FriendsPage" type="VBoxContainer" unique_id=385043644]
+[node name="FriendsPage" type="VBoxContainer" unique_id=307603703]
 size_flags_vertical = 3
 theme_override_constants/separation = 0
 script = ExtResource("1_r7pak")
 
-[node name="ScrollContainer1" type="ScrollContainer" parent="." unique_id=754411047]
+[node name="ScrollContainer1" type="ScrollContainer" parent="." unique_id=6380902]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1" unique_id=418761474]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1" unique_id=1827940103]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 16
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=916167430]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=1014189850]
 clip_children = 2
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_wasp7")
 
-[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1" unique_id=1967005193]
+[node name="Art" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1" unique_id=1822627646]
 texture_filter = 4
 layout_mode = 2
 mouse_filter = 2
@@ -872,34 +872,34 @@ texture = ExtResource("2_xvygj")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1" unique_id=1141422336]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1" unique_id=461264675]
 layout_mode = 2
 mouse_filter = 2
 texture = SubResource("GradientTexture2D_aad3i")
 expand_mode = 1
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1" unique_id=1639201710]
+[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1" unique_id=618358565]
 layout_mode = 2
 theme_override_constants/margin_left = 30
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 20
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1" unique_id=1347189415]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1" unique_id=1616927503]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1" unique_id=454616724]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1" unique_id=507816053]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=1332701704]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=991566487]
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_hoxt0")
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/PanelContainer1" unique_id=1281496114]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/PanelContainer1" unique_id=1436722760]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_colors/font_outline_color = Color(0.15294118, 0.6627451, 1, 1)
@@ -907,7 +907,7 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 13
 text = "ARKADAŞLAR"
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=1040146945]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=423342918]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -915,22 +915,22 @@ theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 42
 text = "Arkadaşların"
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=203431139]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=1637236283]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 16
 text = "Oyunlar daha eğlenceli, birlikte daha güçlü."
 
-[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=322791455]
+[node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=1594603818]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=1926565413]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=1343426792]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="AddFriendButton" type="Button" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=2137753941]
+[node name="AddFriendButton" type="Button" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=48233191]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(210, 48)
 layout_mode = 2
@@ -947,7 +947,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_ntoh3")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_esq8h")
 metadata/label = "Arkadaş Ekle"
 
-[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/AddFriendButton" unique_id=1891096373]
+[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/AddFriendButton" unique_id=1551849328]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -956,12 +956,12 @@ script = ExtResource("3_tn3dm")
 color = Color(0.011764706, 0.078431375, 0.13725491, 1)
 disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 
-[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/AddFriendButton/Content" unique_id=1198038698]
+[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/AddFriendButton/Content" unique_id=2540923]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 9
 
-[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/AddFriendButton/Content/Group" unique_id=1825060181]
+[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/AddFriendButton/Content/Group" unique_id=1316471638]
 modulate = Color(0.011764706, 0.078431375, 0.13725491, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(18, 18)
@@ -972,13 +972,13 @@ texture = ExtResource("4_vy88p")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/AddFriendButton/Content/Group" unique_id=931586779]
+[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/AddFriendButton/Content/Group" unique_id=345965987]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
 theme_override_font_sizes/font_size = 15
 text = "Arkadaş Ekle"
 
-[node name="HeroPartyButton" type="Button" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=1935918120]
+[node name="HeroPartyButton" type="Button" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=1588775973]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(190, 48)
 layout_mode = 2
@@ -995,7 +995,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_hv52g")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_onrvf")
 metadata/label = "Parti Kur"
 
-[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/HeroPartyButton" unique_id=1062649297]
+[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/HeroPartyButton" unique_id=730726821]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1004,12 +1004,12 @@ script = ExtResource("3_tn3dm")
 color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 
-[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/HeroPartyButton/Content" unique_id=1690246060]
+[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/HeroPartyButton/Content" unique_id=1262083489]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 9
 
-[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/HeroPartyButton/Content/Group" unique_id=477929554]
+[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/HeroPartyButton/Content/Group" unique_id=622308785]
 modulate = Color(0.93333334, 0.9529412, 0.9843137, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(18, 18)
@@ -1020,31 +1020,32 @@ texture = ExtResource("5_cqauw")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/HeroPartyButton/Content/Group" unique_id=922936823]
+[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/HeroPartyButton/Content/Group" unique_id=136420464]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_font_sizes/font_size = 15
 text = "Parti Kur"
 
-[node name="HeroBullets" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1" unique_id=1938389197]
+[node name="HeroBullets" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1" unique_id=1531738737]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(330, 0)
 layout_mode = 2
+size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_v857r")
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets" unique_id=719219760]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets" unique_id=547066167]
 layout_mode = 2
 theme_override_constants/separation = 14
 alignment = 1
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1" unique_id=552688160]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1" unique_id=1357433172]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer1" unique_id=1443368366]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer1" unique_id=1877824726]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -1052,11 +1053,12 @@ texture = ExtResource("5_cqauw")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer1" unique_id=2114733209]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer1" unique_id=132734960]
 layout_mode = 2
-theme_override_constants/separation = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=107229401]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=230530953]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1064,20 +1066,21 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 15
 text = "Birlikte Oyna"
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=1303065562]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer1/VBoxContainer1" unique_id=122693890]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
 text = "Arkadaşlarını davet et, parti kur."
+autowrap_mode = 3
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1" unique_id=850385057]
+[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1" unique_id=1663639941]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer2" unique_id=340437162]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer2" unique_id=2107527227]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -1085,11 +1088,12 @@ texture = ExtResource("6_1fynt")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer2" unique_id=170219645]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer2" unique_id=1988715023]
 layout_mode = 2
-theme_override_constants/separation = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=877862284]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=688103443]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1097,20 +1101,21 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 15
 text = "Sesli Sohbet"
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=138228469]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=559130164]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
 text = "Oyun içi sesli sohbet yakında."
+autowrap_mode = 3
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1" unique_id=1794539968]
+[node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1" unique_id=952824230]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer3" unique_id=1813254273]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer3" unique_id=556605902]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -1118,11 +1123,12 @@ texture = ExtResource("4_vy88p")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer3" unique_id=1267920494]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer3" unique_id=1423637657]
 layout_mode = 2
-theme_override_constants/separation = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 1
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer3/VBoxContainer1" unique_id=1289562870]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer3/VBoxContainer1" unique_id=1416991432]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1130,39 +1136,40 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 15
 text = "Yeni Arkadaşlar Keşfet"
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer3/VBoxContainer1" unique_id=1129737753]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1/HBoxContainer3/VBoxContainer1" unique_id=1515668900]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
 text = "PARDEX kullanıcılarını adıyla bul."
+autowrap_mode = 3
 
-[node name="Columns" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=1810257253]
+[node name="Columns" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=1962255009]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 560)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 16
 
-[node name="LeftColumn" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns" unique_id=1710104715]
+[node name="LeftColumn" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns" unique_id=1630045433]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 16
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn" unique_id=322703257]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn" unique_id=290630267]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_k2mgs")
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1" unique_id=377558725]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1" unique_id=794538908]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1" unique_id=592610926]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1" unique_id=2005136895]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/HBoxContainer1" unique_id=1586054977]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/HBoxContainer1" unique_id=1700229841]
 modulate = Color(0.20784314, 0.8156863, 0.47843137, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(20, 20)
@@ -1173,7 +1180,7 @@ texture = ExtResource("7_cw7y0")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="OnlineTitle" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/HBoxContainer1" unique_id=968720240]
+[node name="OnlineTitle" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/HBoxContainer1" unique_id=516030513]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1182,12 +1189,12 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 18
 text = "Çevrimiçi (0)"
 
-[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/HBoxContainer1" unique_id=1271246583]
+[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/HBoxContainer1" unique_id=2108842099]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="OnlineToggle" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/HBoxContainer1" unique_id=1632263140]
+[node name="OnlineToggle" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/HBoxContainer1" unique_id=1109109665]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
@@ -1210,27 +1217,27 @@ text = "Tümünü Gör  "
 icon = ExtResource("8_1t75n")
 icon_alignment = 2
 
-[node name="ScrollContainer1" type="ScrollContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1" unique_id=687891839]
+[node name="ScrollContainer1" type="ScrollContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1" unique_id=1427628625]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="OnlineList" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/ScrollContainer1" unique_id=1953468794]
+[node name="OnlineList" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/ScrollContainer1" unique_id=821261632]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/ScrollContainer1/OnlineList" unique_id=1841597611]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/ScrollContainer1/OnlineList" unique_id=2079013444]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 4
 alignment = 1
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/ScrollContainer1/OnlineList/VBoxContainer1" unique_id=1057301659]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/ScrollContainer1/OnlineList/VBoxContainer1" unique_id=2005736152]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/ScrollContainer1/OnlineList/VBoxContainer1/CenterContainer1" unique_id=334375840]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/ScrollContainer1/OnlineList/VBoxContainer1/CenterContainer1" unique_id=756793070]
 modulate = Color(0.41960785, 0.4745098, 0.5647059, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(22, 22)
@@ -1241,14 +1248,14 @@ texture = ExtResource("5_cqauw")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/ScrollContainer1/OnlineList/VBoxContainer1" unique_id=5871425]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/ScrollContainer1/OnlineList/VBoxContainer1" unique_id=1515769579]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
 text = "PARDEX Online bağlantısı bekleniyor"
 horizontal_alignment = 1
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/ScrollContainer1/OnlineList/VBoxContainer1" unique_id=1885618599]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer1/VBoxContainer1/ScrollContainer1/OnlineList/VBoxContainer1" unique_id=1274937824]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 12
@@ -1256,19 +1263,19 @@ text = "‘Arkadaş Ekle’ ile PARDEX kullanıcılarını bul."
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn" unique_id=651638559]
+[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn" unique_id=2069102196]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_56oim")
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2" unique_id=1811686511]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2" unique_id=962292882]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1" unique_id=512143836]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1" unique_id=1896653359]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/HBoxContainer1" unique_id=828262185]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/HBoxContainer1" unique_id=1045586084]
 modulate = Color(0.20784314, 0.8156863, 0.47843137, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(20, 20)
@@ -1279,7 +1286,7 @@ texture = ExtResource("9_t7yh0")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="PlayingTitle" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/HBoxContainer1" unique_id=1228230277]
+[node name="PlayingTitle" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/HBoxContainer1" unique_id=768415650]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1288,27 +1295,27 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 18
 text = "Oyun Oynayanlar (0)"
 
-[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/HBoxContainer1" unique_id=2044320714]
+[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/HBoxContainer1" unique_id=2054470252]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="PlayingRow" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1" unique_id=1737865311]
+[node name="PlayingRow" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1" unique_id=1222394472]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/PlayingRow" unique_id=122237247]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/PlayingRow" unique_id=1098976579]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 4
 alignment = 1
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/PlayingRow/VBoxContainer1" unique_id=967625653]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/PlayingRow/VBoxContainer1" unique_id=402568368]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/PlayingRow/VBoxContainer1/CenterContainer1" unique_id=1177782950]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/PlayingRow/VBoxContainer1/CenterContainer1" unique_id=361937737]
 modulate = Color(0.41960785, 0.4745098, 0.5647059, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(22, 22)
@@ -1319,37 +1326,37 @@ texture = ExtResource("9_t7yh0")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/PlayingRow/VBoxContainer1" unique_id=1014316626]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/LeftColumn/PanelContainer2/VBoxContainer1/PlayingRow/VBoxContainer1" unique_id=1165610191]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
 text = "Şu an oyunda arkadaşın yok"
 horizontal_alignment = 1
 
-[node name="ChatPanel" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns" unique_id=919796802]
+[node name="ChatPanel" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns" unique_id=1917561120]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_562bo")
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel" unique_id=708280154]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel" unique_id=1617878769]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1" unique_id=332056567]
+[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1" unique_id=5550183]
 layout_mode = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 14
 
-[node name="ChatHeader" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer1" unique_id=1889809343]
+[node name="ChatHeader" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer1" unique_id=1674910151]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer1/ChatHeader" unique_id=886124246]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer1/ChatHeader" unique_id=854458286]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1357,13 +1364,13 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 16
 text = "Sohbet"
 
-[node name="ColorRect1" type="ColorRect" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1" unique_id=207629984]
+[node name="ColorRect1" type="ColorRect" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1" unique_id=322913917]
 custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
 mouse_filter = 2
 color = Color(0.101960786, 0.16078432, 0.26666668, 1)
 
-[node name="MarginContainer2" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1" unique_id=262255567]
+[node name="MarginContainer2" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1" unique_id=206104534]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/margin_left = 18
@@ -1371,22 +1378,22 @@ theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 18
 theme_override_constants/margin_bottom = 16
 
-[node name="ChatBody" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer2" unique_id=1158798488]
+[node name="ChatBody" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer2" unique_id=767521626]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer2/ChatBody" unique_id=408386316]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer2/ChatBody" unique_id=1836564308]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer2/ChatBody/VBoxContainer1" unique_id=2124869605]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer2/ChatBody/VBoxContainer1" unique_id=262167481]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer2/ChatBody/VBoxContainer1/CenterContainer1" unique_id=303199477]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer2/ChatBody/VBoxContainer1/CenterContainer1" unique_id=697146569]
 modulate = Color(0.41960785, 0.4745098, 0.5647059, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(30, 30)
@@ -1397,14 +1404,14 @@ texture = ExtResource("10_iup68")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer2/ChatBody/VBoxContainer1" unique_id=1207780894]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer2/ChatBody/VBoxContainer1" unique_id=540224598]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 14
 text = "Bir arkadaş seç"
 horizontal_alignment = 1
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer2/ChatBody/VBoxContainer1" unique_id=406178392]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer2/ChatBody/VBoxContainer1" unique_id=132292796]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 12
@@ -1412,18 +1419,18 @@ text = "Arkadaşların soldaki listede görünür."
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="MarginContainer3" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1" unique_id=1165206238]
+[node name="MarginContainer3" type="MarginContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1" unique_id=1852077174]
 layout_mode = 2
 theme_override_constants/margin_left = 14
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 14
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer3" unique_id=278267432]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer3" unique_id=348371930]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer3/HBoxContainer1" unique_id=1572209236]
+[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer3/HBoxContainer1" unique_id=1122979389]
 custom_minimum_size = Vector2(44, 44)
 layout_mode = 2
 tooltip_text = "Ek gönder (yakında)"
@@ -1442,7 +1449,7 @@ disabled = true
 icon = ExtResource("11_bdklm")
 icon_alignment = 1
 
-[node name="LineEdit1" type="LineEdit" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer3/HBoxContainer1" unique_id=1676768039]
+[node name="LineEdit1" type="LineEdit" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer3/HBoxContainer1" unique_id=2113945944]
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1452,7 +1459,7 @@ theme_override_styles/read_only = SubResource("StyleBoxFlat_g7syb")
 placeholder_text = "Bir mesaj yaz...  (mesajlaşma yakında)"
 editable = false
 
-[node name="Button2" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer3/HBoxContainer1" unique_id=1747137503]
+[node name="Button2" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/ChatPanel/VBoxContainer1/MarginContainer3/HBoxContainer1" unique_id=1574700992]
 custom_minimum_size = Vector2(44, 44)
 layout_mode = 2
 tooltip_text = "Gönder (yakında)"
@@ -1471,26 +1478,26 @@ disabled = true
 icon = ExtResource("12_vhulm")
 icon_alignment = 1
 
-[node name="RightColumn" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns" unique_id=872806726]
+[node name="RightColumn" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns" unique_id=1259433734]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 16
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn" unique_id=2054600169]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn" unique_id=1765050280]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_nnv6t")
 
-[node name="PartyCard" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1" unique_id=659395723]
+[node name="PartyCard" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1" unique_id=235806731]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard" unique_id=250937514]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard" unique_id=159725546]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer1" unique_id=525978381]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer1" unique_id=1372108946]
 modulate = Color(0.6901961, 0.41960785, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(22, 22)
@@ -1501,7 +1508,7 @@ texture = ExtResource("7_cw7y0")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer1" unique_id=2034354898]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer1" unique_id=591793939]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1510,7 +1517,7 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 18
 text = "Parti Kur"
 
-[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer1" unique_id=231247028]
+[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer1" unique_id=840615381]
 custom_minimum_size = Vector2(30, 30)
 layout_mode = 2
 tooltip_text = "Parti, arkadaşlarınla aynı oyuna girmek için kurduğun PARDEX Online odasıdır."
@@ -1528,12 +1535,12 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_rellu")
 icon = ExtResource("13_amtjy")
 icon_alignment = 1
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard" unique_id=1002734441]
+[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard" unique_id=966069700]
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer2" unique_id=423240669]
+[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer2" unique_id=165618582]
 custom_minimum_size = Vector2(60, 60)
 layout_mode = 2
 tooltip_text = "Arkadaş davet et"
@@ -1551,7 +1558,7 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_gupap")
 icon = ExtResource("11_bdklm")
 icon_alignment = 1
 
-[node name="Button2" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer2" unique_id=1554406870]
+[node name="Button2" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer2" unique_id=595447278]
 custom_minimum_size = Vector2(60, 60)
 layout_mode = 2
 tooltip_text = "Arkadaş davet et"
@@ -1569,7 +1576,7 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_6a5hj")
 icon = ExtResource("11_bdklm")
 icon_alignment = 1
 
-[node name="Button3" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer2" unique_id=115081208]
+[node name="Button3" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer2" unique_id=126112431]
 custom_minimum_size = Vector2(60, 60)
 layout_mode = 2
 tooltip_text = "Arkadaş davet et"
@@ -1587,7 +1594,7 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_q7b5b")
 icon = ExtResource("11_bdklm")
 icon_alignment = 1
 
-[node name="Button4" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer2" unique_id=974880105]
+[node name="Button4" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer2" unique_id=1972461146]
 custom_minimum_size = Vector2(60, 60)
 layout_mode = 2
 tooltip_text = "Arkadaş davet et"
@@ -1605,16 +1612,16 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_5hhy1")
 icon = ExtResource("11_bdklm")
 icon_alignment = 1
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard" unique_id=1257482915]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard" unique_id=406078150]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 12
-text = "Korsanların Hazinesi  •  Arkadaşlarınla aynı odada oyna."
+text = "Korsanların Hazinesi  •  Birlikte oyna"
 horizontal_alignment = 1
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard" unique_id=346674520]
+[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard" unique_id=1002927366]
 custom_minimum_size = Vector2(125, 46)
 layout_mode = 2
 focus_mode = 0
@@ -1631,7 +1638,7 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_li8kg")
 disabled = true
 metadata/label = "Parti Kur"
 
-[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/Button1" unique_id=852225553]
+[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/Button1" unique_id=1242858799]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1640,12 +1647,12 @@ script = ExtResource("3_tn3dm")
 color = Color(0.011764706, 0.078431375, 0.13725491, 1)
 disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 
-[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/Button1/Content" unique_id=843508138]
+[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/Button1/Content" unique_id=1216576812]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 9
 
-[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/Button1/Content/Group" unique_id=1830014383]
+[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/Button1/Content/Group" unique_id=375262775]
 modulate = Color(0.41960785, 0.4745098, 0.5647059, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(18, 18)
@@ -1656,17 +1663,17 @@ texture = ExtResource("5_cqauw")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/Button1/Content/Group" unique_id=1402291667]
+[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/Button1/Content/Group" unique_id=988598423]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 15
 text = "Parti Kur"
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard" unique_id=2037476078]
+[node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard" unique_id=1395424035]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3" unique_id=40913135]
+[node name="Button1" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3" unique_id=924316254]
 custom_minimum_size = Vector2(127, 42)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1684,7 +1691,7 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_malem")
 disabled = true
 metadata/label = "Kodla Katıl"
 
-[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button1" unique_id=1476705872]
+[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button1" unique_id=72286009]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1693,12 +1700,12 @@ script = ExtResource("3_tn3dm")
 color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 
-[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button1/Content" unique_id=946815624]
+[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button1/Content" unique_id=2122978513]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 9
 
-[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button1/Content/Group" unique_id=593243842]
+[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button1/Content/Group" unique_id=832364218]
 modulate = Color(0.41960785, 0.4745098, 0.5647059, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(16, 16)
@@ -1709,13 +1716,13 @@ texture = ExtResource("14_tecyb")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button1/Content/Group" unique_id=418262631]
+[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button1/Content/Group" unique_id=1884178792]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
 text = "Kodla Katıl"
 
-[node name="Button2" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3" unique_id=192122480]
+[node name="Button2" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3" unique_id=1584723191]
 custom_minimum_size = Vector2(117, 42)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1734,7 +1741,7 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_bp4rc")
 disabled = true
 metadata/label = "Sesli Oda"
 
-[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button2" unique_id=1670397636]
+[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button2" unique_id=186432360]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1743,12 +1750,12 @@ script = ExtResource("3_tn3dm")
 color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 
-[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button2/Content" unique_id=2115094816]
+[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button2/Content" unique_id=1191717141]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 9
 
-[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button2/Content/Group" unique_id=455098557]
+[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button2/Content/Group" unique_id=1979635581]
 modulate = Color(0.41960785, 0.4745098, 0.5647059, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(16, 16)
@@ -1759,25 +1766,25 @@ texture = ExtResource("6_1fynt")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button2/Content/Group" unique_id=125737052]
+[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer1/PartyCard/HBoxContainer3/Button2/Content/Group" unique_id=1430712105]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
 text = "Sesli Oda"
 
-[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn" unique_id=934003799]
+[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn" unique_id=1902666685]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_8akmr")
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2" unique_id=1465241956]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2" unique_id=1551669177]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1" unique_id=697079848]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1" unique_id=1515465484]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="RequestsTitle" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/HBoxContainer1" unique_id=804558266]
+[node name="RequestsTitle" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/HBoxContainer1" unique_id=1762257245]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1786,26 +1793,26 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 18
 text = "Bekleyen Davetler (0)"
 
-[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/HBoxContainer1" unique_id=547932467]
+[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/HBoxContainer1" unique_id=517157355]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="RequestsList" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1" unique_id=419948549]
+[node name="RequestsList" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1" unique_id=976265385]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/RequestsList" unique_id=1820709931]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/RequestsList" unique_id=1746344725]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 4
 alignment = 1
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/RequestsList/VBoxContainer1" unique_id=1841077928]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/RequestsList/VBoxContainer1" unique_id=2039434348]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/RequestsList/VBoxContainer1/CenterContainer1" unique_id=2082185954]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/RequestsList/VBoxContainer1/CenterContainer1" unique_id=1934273442]
 modulate = Color(0.41960785, 0.4745098, 0.5647059, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(22, 22)
@@ -1816,27 +1823,27 @@ texture = ExtResource("15_omhhm")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/RequestsList/VBoxContainer1" unique_id=1641703858]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/RequestsList/VBoxContainer1" unique_id=723448740]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
 text = "Bekleyen arkadaşlık isteği yok"
 horizontal_alignment = 1
 
-[node name="PanelContainer3" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn" unique_id=1685889407]
+[node name="PanelContainer3" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn" unique_id=703395216]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_scfam")
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3" unique_id=986881058]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3" unique_id=905742937]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1" unique_id=1732403255]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1" unique_id=765465554]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer1" unique_id=285557674]
+[node name="Title" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer1" unique_id=1308285717]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1844,25 +1851,25 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 18
 text = "Önerilen Arkadaşlar"
 
-[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer1" unique_id=1303672731]
+[node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer1" unique_id=134947297]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1" unique_id=1240090543]
+[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1" unique_id=1672999098]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2" unique_id=1444792249]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2" unique_id=459546234]
 custom_minimum_size = Vector2(44, 44)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_etdhi")
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/PanelContainer1" unique_id=1039934223]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/PanelContainer1" unique_id=105564957]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/PanelContainer1/CenterContainer1" unique_id=233962941]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/PanelContainer1/CenterContainer1" unique_id=1298134356]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(22, 22)
@@ -1873,12 +1880,12 @@ texture = ExtResource("4_vy88p")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2" unique_id=576498386]
+[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2" unique_id=1534966740]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 2
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=1649484115]
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=302716092]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1886,14 +1893,14 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 14
 text = "Öneriler yakında"
 
-[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=2045125802]
+[node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=1234854359]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 12
 text = "Şimdilik arkadaşlarını adıyla arayabilirsin."
 autowrap_mode = 3
 
-[node name="SuggestionSearchButton" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2" unique_id=2130895531]
+[node name="SuggestionSearchButton" type="Button" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2" unique_id=95371492]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 34)
 layout_mode = 2
@@ -1910,7 +1917,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_64irp")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_623qs")
 metadata/label = "Ara"
 
-[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/SuggestionSearchButton" unique_id=1236539126]
+[node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/SuggestionSearchButton" unique_id=319965119]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -1919,12 +1926,12 @@ script = ExtResource("3_tn3dm")
 color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 
-[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/SuggestionSearchButton/Content" unique_id=636374349]
+[node name="Group" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/SuggestionSearchButton/Content" unique_id=1455669984]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 9
 
-[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/SuggestionSearchButton/Content/Group" unique_id=1434436940]
+[node name="Icon" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/SuggestionSearchButton/Content/Group" unique_id=577411653]
 modulate = Color(0.93333334, 0.9529412, 0.9843137, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(16, 16)
@@ -1935,7 +1942,7 @@ texture = ExtResource("16_uvals")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/SuggestionSearchButton/Content/Group" unique_id=1479076987]
+[node name="Label" type="Label" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer3/VBoxContainer1/HBoxContainer2/SuggestionSearchButton/Content/Group" unique_id=893164807]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_font_sizes/font_size = 12

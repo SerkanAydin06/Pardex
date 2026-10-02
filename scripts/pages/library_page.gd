@@ -66,7 +66,6 @@ func _bind() -> void:
 			_render_filters()
 			_render_grid()
 		)
-	(%LibrarySearchField as LineEdit).text_changed.connect(set_query)
 	(%SortOption as OptionButton).item_selected.connect(func(index: int):
 		_sort = index
 		_render_grid()
@@ -231,9 +230,6 @@ func _build_toolbar() -> Control:
 		var segment := UI.segment(str(entry[1]), str(entry[2]), entry[0] == _filter)
 		segments.add_child(UI.named(segment, "Filter_" + str(entry[0])))
 	bar.add_child(UI.spacer())
-	var search := UI.search_field("Kütüphanede ara...", 42)
-	search.custom_minimum_size.x = 200
-	bar.add_child(UI.named(search, "LibrarySearchField"))
 	var sort := OptionButton.new()
 	sort.focus_mode = Control.FOCUS_NONE
 	sort.custom_minimum_size = Vector2(170, 42)

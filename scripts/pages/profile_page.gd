@@ -34,6 +34,7 @@ func _ready() -> void:
 		UI.own(self)
 	_bind()
 	PardexOnline.presence_changed.connect(func(_p): _render_identity())
+	PardexOnline.avatar_ready.connect(func(_id): _render_identity())
 	PardexOnline.connection_state_changed.connect(func(_s): refresh())
 	PardexOnline.social_state_changed.connect(func(_s): refresh())
 	visibility_changed.connect(func(): if is_visible_in_tree(): refresh())
@@ -121,7 +122,16 @@ func _render_identity() -> void:
 	_name_label.text = display_name
 	var presence := PardexOnline.effective_presence if PardexOnline.is_online() else "offline"
 	UI.clear(_avatar_slot)
-	var avatar := UI.avatar(display_name, 176, presence, UI.ACCENT)
+	var avatar := UI.avatar(display_name, 176, presence, UI.ACCENT, PardexOnline.my_avatar_texture())
+	# Click the picture to change it (Ayarlar → Profil resmi).
+	avatar.mouse_filter = Control.MOUSE_FILTER_STOP
+	avatar.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	avatar.tooltip_text = "Profil resmini değiştir"
+	avatar.gui_input.connect(func(event: InputEvent):
+		var mouse := event as InputEventMouseButton
+		if mouse != null and mouse.pressed and mouse.button_index == MOUSE_BUTTON_LEFT:
+			navigate.emit("settings")
+	)
 	_avatar_slot.add_child(avatar)
 	UI.clear(_status_row)
 	var status_color := UI.presence_color(presence) if presence != "offline" else UI.TEXT_2
@@ -255,7 +265,8 @@ func _account_row(icon_name: String, title: String, detail: String, trailing: Co
 func _render_account() -> void:
 	UI.clear(_account_list)
 	var account_id := PardexOnline.account_id
-	_account_list.add_child(_account_row("mail", account_id if not account_id.is_empty() else "PARDEX kimliği bekleniyor", "PARDEX hesap kimliğin"))
+	var tag := ("#" + account_id.right(6).to_upper()) if not account_id.is_empty() else "Sunucuya bağlanınca oluşur"
+	_account_list.add_child(_account_row("mail", "PARDEX Kimliği", tag))
 	_account_list.add_child(UI.divider())
 	_account_list.add_child(_account_row("calendar", Catalog.date_text(Catalog.joined_at()), "PARDEX'e katıldı"))
 	_account_list.add_child(UI.divider())

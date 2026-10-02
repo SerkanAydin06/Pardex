@@ -64,6 +64,7 @@ func _ready() -> void:
 	)
 
 	PardexOnline.social_state_changed.connect(func(_state): _render())
+	PardexOnline.avatar_ready.connect(func(_account_id): _render())
 	PardexOnline.connection_state_changed.connect(_on_connection_state_changed)
 	PardexOnline.room_state_changed.connect(func(_room_state): _render())
 	PardexOnline.room_left.connect(_render)
@@ -202,23 +203,11 @@ func _build_hero() -> Control:
 	party.custom_minimum_size.x = 190
 	actions.add_child(UI.named(party, "HeroPartyButton"))
 
-	var bullets := UI.panel(0, UI.box(Color(UI.BG, 0.72), 12, UI.BORDER_HI, 1, 18))
-	bullets.custom_minimum_size.x = 330
-	var list := UI.vbox(14)
-	list.alignment = BoxContainer.ALIGNMENT_CENTER
-	bullets.add_child(list)
-	for bullet in [
+	var bullets := UI.feature_card([
 		["friends", "Birlikte Oyna", "Arkadaşlarını davet et, parti kur."],
 		["headphones", "Sesli Sohbet", "Oyun içi sesli sohbet yakında."],
 		["user_plus", "Yeni Arkadaşlar Keşfet", "PARDEX kullanıcılarını adıyla bul."],
-	]:
-		var line := UI.hbox(14)
-		line.add_child(UI.icon(str(bullet[0]), 28, UI.ACCENT))
-		var copy := UI.vbox(2)
-		copy.add_child(UI.label(str(bullet[1]), 15, UI.TEXT, true))
-		copy.add_child(UI.label(str(bullet[2]), 13, UI.TEXT_2))
-		line.add_child(copy)
-		list.add_child(line)
+	], 330)
 	row.add_child(UI.named(bullets, "HeroBullets"))
 	return frame
 
@@ -290,6 +279,19 @@ func _render_online() -> void:
 		_online_list.add_child(_friend_row(profile))
 
 
+func _picture(profile: Dictionary) -> Texture2D:
+	return PardexOnline.avatar_texture(str(profile.get("account_id", "")), str(profile.get("avatar_id", "")))
+
+
+# Room members carry no avatar_id; reuse the friend's (or own) picture.
+func _member_picture(member: Dictionary) -> Texture2D:
+	var member_id := str(member.get("account_id", ""))
+	if member_id == PardexOnline.account_id:
+		return PardexOnline.my_avatar_texture()
+	var friend := _find_friend(member_id)
+	return _picture(friend) if not friend.is_empty() else null
+
+
 func _friend_row(profile: Dictionary) -> Control:
 	var account_id := str(profile.get("account_id", ""))
 	var display_name := str(profile.get("display_name", "Pardus"))
@@ -306,7 +308,7 @@ func _friend_row(profile: Dictionary) -> Control:
 	)
 	var row := UI.hbox(10)
 	holder.add_child(row)
-	row.add_child(UI.avatar(display_name, 42, presence))
+	row.add_child(UI.avatar(display_name, 42, presence, Color.TRANSPARENT, _picture(profile)))
 	var text := UI.vbox(1)
 	text.alignment = BoxContainer.ALIGNMENT_CENTER
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -365,7 +367,7 @@ func _render_playing() -> void:
 		var cell := UI.vbox(4)
 		cell.custom_minimum_size.x = 84
 		var center := CenterContainer.new()
-		center.add_child(UI.avatar(str(profile.get("display_name", "P")), 56, "in_game", UI.ACCENT))
+		center.add_child(UI.avatar(str(profile.get("display_name", "P")), 56, "in_game", UI.ACCENT, _picture(profile)))
 		cell.add_child(center)
 		var name_label := UI.fit(UI.label(str(profile.get("display_name", "")), 13, UI.TEXT, true))
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -422,7 +424,7 @@ func _render_chat() -> void:
 		return
 	var display_name := str(profile.get("display_name", "Pardus"))
 	var presence := _presence(profile)
-	_chat_header.add_child(UI.avatar(display_name, 44, presence))
+	_chat_header.add_child(UI.avatar(display_name, 44, presence, Color.TRANSPARENT, _picture(profile)))
 	var titles := UI.vbox(1)
 	UI.expand(titles)
 	titles.add_child(UI.fit(UI.label(display_name, 16, UI.TEXT, true)))
@@ -509,7 +511,7 @@ func _render_party() -> void:
 		ready_count += int(member_ready)
 		if str(member.get("user_id", "")) == PardexOnline.user_id:
 			self_ready = member_ready
-		var avatar := UI.avatar(str(member.get("display_name", "P")), 60, "online" if member_ready else "away", UI.ACCENT)
+		var avatar := UI.avatar(str(member.get("display_name", "P")), 60, "online" if member_ready else "away", UI.ACCENT, _member_picture(member))
 		avatar.tooltip_text = "%s  •  %s" % [str(member.get("display_name", "")), "Hazır" if member_ready else "Bekliyor"]
 		avatar.mouse_filter = Control.MOUSE_FILTER_PASS
 		slots.add_child(avatar)
@@ -526,7 +528,7 @@ func _render_party() -> void:
 	var launching := bool(room.get("launching", false))
 	var is_host := str(room.get("host_id", "")) == PardexOnline.user_id
 	var all_ready := members.size() >= 2 and ready_count == members.size()
-	var status_text := "%s  •  Arkadaşlarınla aynı odada oyna." % str(game.get("title", "PARDEX"))
+	var status_text := "%s  •  Birlikte oyna" % str(game.get("title", "PARDEX"))
 	if in_room:
 		status_text = "%s  •  %d/%d oyuncu hazır" % [str(game.get("title", "")), ready_count, max_players]
 		if launching:
@@ -630,7 +632,7 @@ func _render_requests() -> void:
 			continue
 		var account_id := str(profile.get("account_id", ""))
 		var row := UI.hbox(10)
-		row.add_child(UI.avatar(str(profile.get("display_name", "P")), 44, _presence(profile)))
+		row.add_child(UI.avatar(str(profile.get("display_name", "P")), 44, _presence(profile), Color.TRANSPARENT, _picture(profile)))
 		var text := UI.vbox(1)
 		UI.expand(text)
 		text.add_child(UI.fit(UI.label(str(profile.get("display_name", "Pardus")), 14, UI.TEXT, true)))
@@ -724,7 +726,7 @@ func _on_search_results(results: Array) -> void:
 			continue
 		var account_id := str(profile.get("account_id", ""))
 		var row := UI.hbox(10)
-		row.add_child(UI.avatar(str(profile.get("display_name", "P")), 36, _presence(profile)))
+		row.add_child(UI.avatar(str(profile.get("display_name", "P")), 36, _presence(profile), Color.TRANSPARENT, _picture(profile)))
 		var text := UI.vbox(0)
 		UI.expand(text)
 		text.add_child(UI.label(str(profile.get("display_name", "Pardus")), 13, UI.TEXT, true))

@@ -5,6 +5,23 @@ const crypto = require("crypto");
 const IDENTITY_KEY_PATTERN = /^[a-f0-9]{64}$/;
 const HASH_PATTERN = /^[a-f0-9]{64}$/;
 const RECOVERY_CODE_PATTERN = /^PX1[A-F0-9]{32}$/;
+// Profile pictures: small client-made JPEG/PNG (96 px) as base64, well under
+// the 16 KB WebSocket payload limit.
+const AVATAR_MAX_BASE64 = 12000;
+const AVATAR_BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/;
+
+function normalizeAvatar(value) {
+  const text = String(value || "").trim();
+  if (!text || text.length > AVATAR_MAX_BASE64 || !AVATAR_BASE64_PATTERN.test(text)) return "";
+  const bytes = Buffer.from(text, "base64");
+  const isJpeg = bytes.length > 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  const isPng = bytes.length > 8 && bytes.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+  return isJpeg || isPng ? text : "";
+}
+
+function avatarIdFor(avatar) {
+  return avatar ? crypto.createHash("sha256").update(avatar).digest("hex").slice(0, 16) : "";
+}
 
 function normalizeIdentityKey(value) {
   const identityKey = String(value || "").trim().toLowerCase();
@@ -85,6 +102,7 @@ class SocialStore {
           outgoing_requests: safeArray(raw.outgoing_requests),
           recovery_hash: HASH_PATTERN.test(recoveryHash) ? recoveryHash : "",
           recovery_updated_at: Number(raw.recovery_updated_at || 0),
+          avatar: normalizeAvatar(raw.avatar),
         };
       }
 
@@ -157,6 +175,7 @@ class SocialStore {
         outgoing_requests: [],
         recovery_hash: "",
         recovery_updated_at: 0,
+        avatar: "",
       };
       this.data.accounts[accountId] = account;
       changed = true;
@@ -172,6 +191,25 @@ class SocialStore {
 
   getAccount(accountId) {
     return this.data.accounts[accountId] || null;
+  }
+
+  // Empty data removes the picture. Returns { ok, avatar_id } or { ok:false, code }.
+  setAvatar(accountId, data) {
+    const account = this.getAccount(accountId);
+    if (!account) return { ok: false, code: "ACCOUNT_NOT_FOUND" };
+    const raw = String(data || "").trim();
+    const avatar = normalizeAvatar(raw);
+    if (raw && !avatar) return { ok: false, code: "AVATAR_INVALID" };
+    account.avatar = avatar;
+    account.updated_at = Date.now();
+    this.save();
+    return { ok: true, avatar_id: avatarIdFor(avatar) };
+  }
+
+  getAvatar(accountId) {
+    const account = this.getAccount(accountId);
+    if (!account || !account.avatar) return null;
+    return { avatar_id: avatarIdFor(account.avatar), data: account.avatar };
   }
 
   resolveAccountId(identityKey) {
@@ -306,6 +344,7 @@ class SocialStore {
     return {
       account_id: accountId,
       display_name: account.display_name,
+      avatar_id: avatarIdFor(account.avatar),
       tag: accountId.slice(-6).toUpperCase(),
       online: Boolean(online),
       relationship,

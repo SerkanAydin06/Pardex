@@ -37,6 +37,8 @@ var _profile_page: VBoxContainer
 var _settings_content: VBoxContainer
 var _presence_menu: PopupMenu
 var _current_page := ""
+var _previous_page := "store"
+var _avatar_dialog: FileDialog
 # Page name -> the node shown for it.
 var _pages: Dictionary = {}
 var _display_name := "Pardus"
@@ -134,6 +136,43 @@ func _bind_settings_page() -> void:
 	(_settings_content.get_node("ProfilePanel/VBox/ProfileRow/SaveProfileButton") as Button).pressed.connect(_save_profile_from_settings)
 	(_settings_content.get_node("OnlinePanel/VBox/ServerRow/ConnectButton") as Button).pressed.connect(_save_online_settings_and_connect)
 	(_settings_content.get_node("DisplayPanel/VBox/FullscreenOnStart") as CheckButton).toggled.connect(_on_fullscreen_toggled)
+	var settings_page := _pages["settings"] as Control
+	(settings_page.get_node("%BackButton") as Button).pressed.connect(_navigate_back)
+	(settings_page.get_node("%ChooseAvatarButton") as Button).pressed.connect(_choose_avatar)
+	(settings_page.get_node("%RemoveAvatarButton") as Button).pressed.connect(func():
+		PardexOnline.clear_avatar()
+		_show_toast("Profil resmi kaldırıldı.")
+	)
+	PardexOnline.avatar_ready.connect(func(_account_id): _render_avatar_preview())
+
+
+# Ayarlar is opened from Profil ("Profili Düzenle") or the gear; Geri returns.
+func _navigate_back() -> void:
+	_navigate(_previous_page if _pages.has(_previous_page) else "store")
+
+
+func _render_avatar_preview() -> void:
+	var settings_page := _pages["settings"] as Control
+	var preview := settings_page.get_node("%AvatarPreview") as Control
+	UI.clear(preview)
+	preview.add_child(UI.avatar(_display_name, 64, "", UI.ACCENT, PardexOnline.my_avatar_texture()))
+	(settings_page.get_node("%RemoveAvatarButton") as Button).disabled = not PardexOnline.has_my_avatar()
+
+
+func _choose_avatar() -> void:
+	if _avatar_dialog == null:
+		_avatar_dialog = FileDialog.new()
+		_avatar_dialog.title = "Profil resmi seç"
+		_avatar_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+		_avatar_dialog.access = FileDialog.ACCESS_FILESYSTEM
+		_avatar_dialog.use_native_dialog = true
+		_avatar_dialog.filters = PackedStringArray(["*.png, *.jpg, *.jpeg, *.webp ; Resimler"])
+		_avatar_dialog.file_selected.connect(func(path: String):
+			var error := PardexOnline.set_avatar_from_file(path)
+			_show_toast(error if not error.is_empty() else "Profil resmi güncellendi.")
+		)
+		add_child(_avatar_dialog)
+	_avatar_dialog.popup_centered_ratio(0.6)
 
 
 func _wire_navigation() -> void:
@@ -167,9 +206,10 @@ func _navigate(page_name: String) -> void:
 		_prepare_settings()
 	for key in _pages:
 		(_pages[key] as Control).visible = key == page_name
-	if page_name != "library":
-		search_field.release_focus()
+	if _current_page != page_name and _current_page != "settings" and not _current_page.is_empty():
+		_previous_page = _current_page
 	_current_page = page_name
+	_update_search_for_page()
 	var page := _pages[page_name] as Control
 	page.modulate.a = 0.0
 	create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT).tween_property(page, "modulate:a", 1.0, 0.15)
@@ -207,10 +247,35 @@ func _nav_style(selected: bool, hovered: bool) -> StyleBoxFlat:
 	return style
 
 
+# The top bar search belongs to the open page: Mağaza and Kütüphane each keep
+# their own query; pages without searchable content hide the field.
+const SEARCH_PLACEHOLDERS := {
+	"store": "Mağazada oyun, tür ara...",
+	"library": "Kütüphanende ara...",
+}
+var _search_queries := {"store": "", "library": ""}
+
+
+func _update_search_for_page() -> void:
+	var searchable := SEARCH_PLACEHOLDERS.has(_current_page)
+	search_field.visible = searchable
+	if not searchable:
+		search_field.release_focus()
+		return
+	search_field.placeholder_text = str(SEARCH_PLACEHOLDERS[_current_page])
+	search_field.set_block_signals(true)
+	search_field.text = str(_search_queries[_current_page])
+	search_field.set_block_signals(false)
+
+
 func _on_search_changed(query: String) -> void:
-	if not query.strip_edges().is_empty() and _current_page != "library":
-		_navigate("library")
-	_library_page.set_query(query)
+	if not _search_queries.has(_current_page):
+		return
+	_search_queries[_current_page] = query
+	if _current_page == "store":
+		_store_page.set_query(query)
+	else:
+		_library_page.set_query(query)
 
 
 # Steam-style reflow: sidebar and content always split the window (Body is an
@@ -265,17 +330,21 @@ func _render_presence() -> void:
 	if PardexOnline.connection_state == "connecting":
 		online_state_button.text = "Bağlanıyor"
 		online_state_button.add_theme_color_override("font_color", UI.AMBER)
+	elif PardexOnline.is_host_closed():
+		online_state_button.text = "Sunucu kapalı"
+		online_state_button.add_theme_color_override("font_color", UI.TEXT_2)
 	else:
 		online_state_button.text = UI.presence_label(presence)
 		online_state_button.add_theme_color_override("font_color", UI.presence_color(presence) if presence != "offline" else UI.TEXT_2)
 	online_state_button.add_theme_color_override("font_hover_color", UI.TEXT)
 	UI.clear(%AvatarSlot)
-	%AvatarSlot.add_child(UI.avatar(_display_name, 52, presence, UI.ACCENT))
+	%AvatarSlot.add_child(UI.avatar(_display_name, 52, presence, UI.ACCENT, PardexOnline.my_avatar_texture()))
 
 
 func _wire_online_signals() -> void:
 	PardexOnline.connection_state_changed.connect(_update_connection_ui)
 	PardexOnline.presence_changed.connect(func(_presence): _render_presence())
+	PardexOnline.avatar_ready.connect(func(_account_id): _render_presence())
 	PardexOnline.online_error.connect(_show_toast)
 	PardexOnline.game_start_requested.connect(_on_game_start_requested)
 	PardexOnline.room_state_changed.connect(func(room: Dictionary):
@@ -404,6 +473,7 @@ func _prepare_settings() -> void:
 	(_settings_content.get_node("OnlinePanel/VBox/ServerRow/ServerUrlEdit") as LineEdit).text = _server_url
 	(_settings_content.get_node("DisplayPanel/VBox/FullscreenOnStart") as CheckButton).set_pressed_no_signal(_start_fullscreen)
 	_refresh_display_settings_ui()
+	_render_avatar_preview()
 
 
 func _load_settings() -> void:
@@ -584,7 +654,10 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel") and _current_page != "store":
+	if event.is_action_pressed("ui_cancel") and _current_page == "settings":
+		_navigate_back()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_cancel") and _current_page != "store":
 		_navigate("store")
 		get_viewport().set_input_as_handled()
 

@@ -171,6 +171,26 @@ async function main() {
     }));
     await Promise.all([firstFriendPromise, secondFriendPromise]);
 
+    // Profile picture: friends see an avatar_id and fetch the image once.
+    const avatarData = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(64, 7)]).toString("base64");
+    const invalidAvatarPromise = waitForMessage(first.ws, (message) => message.type === "error" && message.code === "AVATAR_INVALID");
+    first.ws.send(JSON.stringify({ type: "set_avatar", data: Buffer.from("not an image").toString("base64") }));
+    await invalidAvatarPromise;
+    const secondSeesAvatarPromise = waitForMessage(
+      second.ws,
+      (message) => message.type === "social_state"
+        && message.state?.friends?.some((profile) => profile.account_id === first.accountId && profile.avatar_id)
+    );
+    first.ws.send(JSON.stringify({ type: "set_avatar", data: avatarData }));
+    const avatarState = await secondSeesAvatarPromise;
+    const avatarId = avatarState.state.friends.find((profile) => profile.account_id === first.accountId).avatar_id;
+    const avatarReplyPromise = waitForMessage(second.ws, (message) => message.type === "avatar_data");
+    second.ws.send(JSON.stringify({ type: "get_avatar", account_id: first.accountId }));
+    const avatarReply = await avatarReplyPromise;
+    assert.strictEqual(avatarReply.account_id, first.accountId);
+    assert.strictEqual(avatarReply.avatar_id, avatarId);
+    assert.strictEqual(avatarReply.data, avatarData);
+
     const originalFirstAccountId = first.accountId;
     const originalSecondAccountId = second.accountId;
     await closeClient(first);
@@ -194,6 +214,7 @@ async function main() {
     ]);
     assert.ok(firstState.friends.some((profile) => profile.account_id === second.accountId));
     assert.ok(secondState.friends.some((profile) => profile.account_id === first.accountId));
+    assert.ok(firstState.self.avatar_id, "profile picture must survive server restart");
 
     const firstRemovedPromise = waitForMessage(
       first.ws,
@@ -207,7 +228,7 @@ async function main() {
     await Promise.all([firstRemovedPromise, secondRemovedPromise]);
 
     console.log(
-      "PARDEX social smoke test passed: stable identity -> search -> request -> accept -> persistence -> remove"
+      "PARDEX social smoke test passed: stable identity -> search -> request -> accept -> avatar -> persistence -> remove"
     );
   } finally {
     await closeClient(first);
