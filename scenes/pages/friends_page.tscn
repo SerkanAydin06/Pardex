@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/pages/social_page.gd" id="1_tgrpe"]
-[ext_resource type="Texture2D" path="res://assets/ui/home_hero_banner.png" id="2_48u6t"]
+[ext_resource type="Texture2D" path="res://assets/ui/hero_friends.png" id="2_48u6t"]
 [ext_resource type="Script" path="res://scripts/ui/pardex_button_content.gd" id="3_2b25c"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/user_plus.svg" id="4_4icxs"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/friends.svg" id="5_yn3wy"]
@@ -270,7 +270,7 @@ text = "Arkadaşların"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 16
-text = "Oyunlar daha eğlenceli, birlikte daha güçlü."
+text = "Arkadaşlarını bul, mesajlaş ve aynı oyunda buluş."
 
 [node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=1456711206]
 layout_mode = 2
@@ -373,7 +373,7 @@ text = "Birlikte Oyna"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
-text = "Oyunda PARDEX ONLINE'dan masa kur, kodu paylaş."
+text = "Arkadaşının açık masasına doğrudan katıl."
 autowrap_mode = 3
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1" unique_id=308438742]
@@ -408,7 +408,7 @@ text = "Mesajlaşma"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
-text = "Arkadaşlarınla Mesajlar sekmesinden yazış."
+text = "Arkadaşlarınla PARDEX üzerinden doğrudan yazış."
 autowrap_mode = 3
 
 [node name="HBoxContainer3" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/HeroBullets/VBoxContainer1" unique_id=1774405330]
@@ -443,7 +443,7 @@ text = "Yeni Arkadaşlar Keşfet"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
-text = "Üstteki arama kutusuyla PARDEX kullanıcılarını bul."
+text = "Üstteki aramayla PARDEX kullanıcılarını bul ve ekle."
 autowrap_mode = 3
 
 [node name="Columns" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1" unique_id=2105659394]
