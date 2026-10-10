@@ -275,6 +275,15 @@ func disconnect_server() -> void:
 		_manual_disconnect = false
 
 
+# "Oyna": the server opens a match right away (or puts us in a friend's open
+# lobby) and answers with game_start.
+func play_game(game_id := "korsanlar") -> void:
+	if not is_online():
+		online_error.emit("PARDEX Online bağlantısı henüz hazır değil.")
+		return
+	_send({"type": "play_game", "game_id": game_id})
+
+
 func create_room(game_id := "korsanlar", max_players := 4) -> void:
 	if not is_online():
 		online_error.emit("PARDEX Online bağlantısı henüz hazır değil.")
@@ -321,7 +330,9 @@ func request_start_game() -> void:
 
 
 func report_game_launch_failed() -> void:
-	if not is_online() or current_room.is_empty() or not bool(current_room.get("launching", false)):
+	if not is_online() or current_room.is_empty():
+		return
+	if not bool(current_room.get("launching", false)) and not bool(current_room.get("quick_play", false)):
 		return
 	_send({"type": "launch_failed"})
 

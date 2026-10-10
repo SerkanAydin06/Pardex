@@ -1,15 +1,16 @@
 extends VBoxContainer
 
 # Arkadaşlar: hero, online friends, friends in game, conversation panel, the
-# party card (PARDEX Online rooms), pending requests and suggestions.
+# game card, pending requests and suggestions.
 #
-# The party card is the whole room flow — create, join by code, share the
-# code, invite friends, ready up, start the game and leave — so PARDEX needs
-# no separate "Odalar" tab. Friends, presence, requests, invites and rooms are
-# live data; messaging, voice and friend suggestions have no server support
-# yet and say so.
+# There is no party step: "Oyna" opens the game straight into its own lobby.
+# The game card shows who is in that lobby and invites friends into it while
+# it is open; friends in an open lobby show a "Katıl" button. Friends,
+# presence, requests, invites and matches are live data; messaging, voice and
+# friend suggestions have no server support yet and say so.
 
 signal toast(message: String)
+signal play_requested(game_id: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
@@ -93,7 +94,7 @@ func _bind() -> void:
 	_requests_list = %RequestsList
 	_hero_bullets = %HeroBullets
 	(%AddFriendButton as Button).pressed.connect(_open_add_dialog)
-	(%HeroPartyButton as Button).pressed.connect(_create_party)
+	(%HeroPartyButton as Button).pressed.connect(func(): play_requested.emit("korsanlar"))
 	(%SuggestionSearchButton as Button).pressed.connect(_open_add_dialog)
 	var toggle := %OnlineToggle as Button
 	toggle.pressed.connect(func():
@@ -169,6 +170,11 @@ func _room_members() -> Array:
 	return members if typeof(members) == TYPE_ARRAY else []
 
 
+# My match still takes players: its in-game lobby has not started yet.
+func _room_open() -> bool:
+	return bool(_room().get("joinable", false))
+
+
 func _friend_in_my_room(account_id: String) -> bool:
 	for member in _room_members():
 		if typeof(member) == TYPE_DICTIONARY and str(member.get("account_id", "")) == account_id:
@@ -199,12 +205,12 @@ func _build_hero() -> Control:
 	var add := UI.button("Arkadaş Ekle", "primary", 15, 48, "user_plus")
 	add.custom_minimum_size.x = 210
 	actions.add_child(UI.named(add, "AddFriendButton"))
-	var party := UI.button("Parti Kur", "ghost", 15, 48, "friends")
+	var party := UI.button("Birlikte Oyna", "ghost", 15, 48, "play")
 	party.custom_minimum_size.x = 190
 	actions.add_child(UI.named(party, "HeroPartyButton"))
 
 	var bullets := UI.feature_card([
-		["friends", "Birlikte Oyna", "Arkadaşlarını davet et, parti kur."],
+		["friends", "Birlikte Oyna", "Oyna'ya bas, arkadaşlarını lobine davet et."],
 		["headphones", "Sesli Sohbet", "Oyun içi sesli sohbet yakında."],
 		["user_plus", "Yeni Arkadaşlar Keşfet", "PARDEX kullanıcılarını adıyla bul."],
 	], 330)
@@ -341,7 +347,7 @@ func _row_action(profile: Dictionary) -> Button:
 		join.custom_minimum_size.x = ROW_ACTION_WIDTH
 		join.pressed.connect(func(): PardexOnline.join_friend_room(account_id))
 		return join
-	if presence != "offline" and not _room().is_empty() and not _friend_in_my_room(account_id) and not bool(_room().get("launching", false)):
+	if presence != "offline" and _room_open() and not _friend_in_my_room(account_id):
 		var invite := UI.button("Davet Et", "ghost", 12, 34, "user_plus")
 		invite.custom_minimum_size.x = ROW_ACTION_WIDTH
 		invite.pressed.connect(func(): PardexOnline.send_room_invite(account_id))
@@ -444,7 +450,7 @@ func _render_chat() -> void:
 	_chat_header.add_child(more)
 
 	_chat_body.add_child(UI.empty_state("message", "%s ile sohbet yakında" % display_name,
-		"PARDEX mesajlaşması henüz hazır değil. Şimdilik birlikte oynamak için partine davet edebilir ya da onun partisine katılabilirsin."))
+		"PARDEX mesajlaşması henüz hazır değil. Şimdilik birlikte oynamak için onu lobine davet edebilir ya da onun lobisine katılabilirsin."))
 	var action := _row_action(profile)
 	if action != null and str(action.get_meta("label", action.text)) != "Mesaj":
 		var holder := CenterContainer.new()
@@ -494,82 +500,80 @@ func _render_party() -> void:
 	UI.clear(_party)
 	var room := _room()
 	var in_room := not room.is_empty()
+	var game := Catalog.game(str(room.get("game_id", "korsanlar")) if in_room else "korsanlar")
 	var header := UI.hbox(10)
-	header.add_child(UI.icon("users_group", 22, UI.PURPLE))
-	header.add_child(UI.expand(UI.label("Parti" + (" • %s" % str(room.get("code", ""))) if in_room else "Parti Kur", 18, UI.TEXT, true)))
-	var help := UI.icon_button("help", "Parti, arkadaşlarınla aynı oyuna girmek için kurduğun PARDEX Online odasıdır.", 30)
-	header.add_child(help)
+	header.add_child(UI.icon("gamepad", 22, UI.PURPLE))
+	header.add_child(UI.expand(UI.fit(UI.label(str(game.get("title", "Oyun")), 18, UI.TEXT, true))))
+	header.add_child(UI.icon_button("help", "Oyna'ya basınca oyun kendi lobisinde açılır. Lobi açıkken arkadaşlarını davet edebilir, boş yerlere bot ekleyebilirsin.", 30))
 	_party.add_child(header)
 
 	var members := _room_members()
+	var max_players := int(room.get("max_players", 4)) if in_room else 4
+	var open := _room_open()
 	var slots := UI.hbox(12)
 	slots.alignment = BoxContainer.ALIGNMENT_CENTER
-	var ready_count := 0
-	var self_ready := false
 	for member in members:
 		if typeof(member) != TYPE_DICTIONARY:
 			continue
-		var member_ready := bool(member.get("ready", false))
-		ready_count += int(member_ready)
-		if str(member.get("user_id", "")) == PardexOnline.user_id:
-			self_ready = member_ready
-		var avatar := UI.avatar(str(member.get("display_name", "P")), 60, "online" if member_ready else "away", UI.ACCENT, _member_picture(member))
-		avatar.tooltip_text = "%s  •  %s" % [str(member.get("display_name", "")), "Hazır" if member_ready else "Bekliyor"]
+		var connected := str(member.get("game_state", "")) == "in_game"
+		var avatar := UI.avatar(str(member.get("display_name", "P")), 60, "in_game" if connected else "away", UI.ACCENT, _member_picture(member))
+		avatar.tooltip_text = "%s  •  %s" % [str(member.get("display_name", "")), "Oyunda" if connected else "Oyun açılıyor"]
 		avatar.mouse_filter = Control.MOUSE_FILTER_PASS
 		slots.add_child(avatar)
-	var max_players := int(room.get("max_players", 4)) if in_room else 4
-	for _slot in maxi(0, max_players - members.size()):
-		var add := UI.icon_button("plus", "Arkadaş davet et", 60, UI.TEXT_2)
+	# Empty seats invite friends; a started match takes no one new.
+	var free_seats := maxi(0, max_players - members.size()) if open or not in_room else 0
+	for _slot in free_seats:
+		var add := UI.icon_button("plus", "Arkadaş davet et" if open else "Önce Oyna'ya bas", 60, UI.TEXT_2)
 		add.add_theme_stylebox_override("normal", UI.box(Color.TRANSPARENT, 30, UI.BORDER_HI, 1))
 		add.add_theme_stylebox_override("hover", UI.box(Color(1, 1, 1, 0.05), 30, UI.ACCENT, 1))
 		add.pressed.connect(_open_invite_picker.bind(add))
 		slots.add_child(add)
 	_party.add_child(slots)
 
-	var game := Catalog.game(str(room.get("game_id", "korsanlar")) if in_room else "korsanlar")
-	var launching := bool(room.get("launching", false))
-	var is_host := str(room.get("host_id", "")) == PardexOnline.user_id
-	var all_ready := members.size() >= 2 and ready_count == members.size()
-	var status_text := "%s  •  Birlikte oyna" % str(game.get("title", "PARDEX"))
+	var status_text := "Oyna'ya bas, oyunun lobisinde arkadaşlarını bekle."
+	var status_color := UI.TEXT_2
 	if in_room:
-		status_text = "%s  •  %d/%d oyuncu hazır" % [str(game.get("title", "")), ready_count, max_players]
-		if launching:
-			status_text = "Oyun başlatılıyor…"
-	var status := UI.fit(UI.label(status_text, 12, UI.GREEN if launching else UI.TEXT_2))
+		match str(room.get("state", "")):
+			"ended":
+				status_text = "Maç bitti • Yeniden oynamak için Oyna'ya bas."
+			_:
+				if open:
+					status_text = "Lobide %d/%d oyuncu • Arkadaşlarını davet et." % [members.size(), max_players]
+					status_color = UI.GREEN
+				else:
+					status_text = "Maç sürüyor • Oyunu kapattıysan Maça Dön ile koltuğuna geç."
+					status_color = UI.GREEN
+	var status := UI.wrapped(UI.label(status_text, 12, status_color))
 	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_party.add_child(status)
 
-	var main_action: Button
-	if not in_room:
-		main_action = UI.button("Parti Kur", "primary", 15, 46, "friends")
-		main_action.disabled = not PardexOnline.is_online()
-		main_action.pressed.connect(_create_party)
-	elif is_host and all_ready:
-		main_action = UI.button("Oyunu Başlat", "gold", 15, 46, "play")
-		main_action.disabled = launching or not str(room.get("game_server_url", "")).begins_with("ws")
-		if main_action.disabled and not launching:
-			main_action.tooltip_text = "Oyun sunucusu henüz atanmadı."
-		main_action.pressed.connect(PardexOnline.request_start_game)
+	if not in_room or str(room.get("state", "")) == "ended":
+		var play := UI.button("Oyna", "gold", 15, 46, "play")
+		play.disabled = not PardexOnline.is_online()
+		if play.disabled:
+			play.tooltip_text = "Sunucu kapalı."
+		play.pressed.connect(func(): play_requested.emit(str(game.get("id", "korsanlar"))))
+		_party.add_child(play)
+	elif open:
+		var invite := UI.button("Arkadaş Davet Et", "primary", 15, 46, "user_plus")
+		invite.pressed.connect(_open_invite_picker.bind(invite))
+		_party.add_child(invite)
 	else:
-		main_action = UI.button("Hazır Değilim" if self_ready else "Hazırım", "success" if self_ready else "primary", 15, 46, "check")
-		main_action.disabled = launching
-		main_action.pressed.connect(func(): PardexOnline.set_ready(not self_ready))
-		if is_host and not all_ready:
-			main_action.tooltip_text = "En az 2 oyuncu hazır olduğunda oyunu başlatabilirsin."
-	_party.add_child(main_action)
+		var back := UI.button("Maça Dön", "gold", 15, 46, "play")
+		back.tooltip_text = "Oyun penceresi kapandıysa aynı maçı yeniden açar."
+		back.pressed.connect(func(): play_requested.emit(str(game.get("id", "korsanlar"))))
+		_party.add_child(back)
 
 	var row := UI.hbox(10)
-	if in_room:
+	if open:
 		var share := UI.button("Kodu Paylaş", "ghost", 13, 42, "link")
+		share.tooltip_text = "Arkadaşın bu kodla senin lobine katılır."
 		share.pressed.connect(func():
 			DisplayServer.clipboard_set(str(room.get("code", "")))
-			toast.emit("Parti kodu kopyalandı: %s" % str(room.get("code", "")))
+			toast.emit("Lobi kodu kopyalandı: %s" % str(room.get("code", "")))
 		)
 		row.add_child(UI.expand(share))
-		var invite := UI.button("Davet Gönder", "ghost", 13, 42, "user_plus")
-		invite.pressed.connect(_open_invite_picker.bind(invite))
-		row.add_child(UI.expand(invite))
-	else:
+	elif not in_room:
 		var join := UI.button("Kodla Katıl", "ghost", 13, 42, "link")
 		join.disabled = not PardexOnline.is_online()
 		join.pressed.connect(func():
@@ -578,13 +582,11 @@ func _render_party() -> void:
 			_code_edit.grab_focus()
 		)
 		row.add_child(UI.expand(join))
-		var voice := UI.button("Sesli Oda", "ghost", 13, 42, "headphones")
-		voice.disabled = true
-		voice.tooltip_text = "Sesli sohbet yakında."
-		row.add_child(UI.expand(voice))
-	_party.add_child(row)
+	if row.get_child_count() > 0:
+		_party.add_child(row)
 	if in_room:
-		var leave := UI.button("Partiden Ayrıl", "link", 12, 26, "log_out")
+		var leave := UI.button("Maçtan Ayrıl", "link", 12, 26, "log_out")
+		leave.tooltip_text = "Oyun penceresini kapatınca da maçtan ayrılırsın."
 		leave.add_theme_color_override("font_color", UI.RED)
 		leave.add_theme_color_override("font_hover_color", UI.RED.lightened(0.2))
 		leave.add_theme_color_override("icon_normal_color", UI.RED)
@@ -592,19 +594,9 @@ func _render_party() -> void:
 		_party.add_child(leave)
 
 
-func _create_party() -> void:
-	if not PardexOnline.is_online():
-		toast.emit("Parti kurmak için PARDEX Online bağlantısı gerekli.")
-		return
-	if not _room().is_empty():
-		toast.emit("Zaten bir partidesin.")
-		return
-	PardexOnline.create_room("korsanlar", 4)
-
-
 func _open_invite_picker(anchor: Control) -> void:
-	if _room().is_empty():
-		_create_party()
+	if not _room_open():
+		toast.emit("Arkadaş davet etmek için önce Oyna'ya bas; oyunun lobisi açılsın.")
 		return
 	_invite_picker.clear()
 	for profile in _friends():
@@ -665,9 +657,9 @@ func _build_friend_menu() -> void:
 func _open_friend_menu(profile: Dictionary, anchor: Control) -> void:
 	_menu_account_id = str(profile.get("account_id", ""))
 	_friend_menu.clear()
-	_friend_menu.add_item("Partime davet et", 0)
-	_friend_menu.set_item_disabled(0, _room().is_empty() or _presence(profile) == "offline" or _friend_in_my_room(_menu_account_id))
-	_friend_menu.add_item("Partisine katıl", 1)
+	_friend_menu.add_item("Lobime davet et", 0)
+	_friend_menu.set_item_disabled(0, not _room_open() or _presence(profile) == "offline" or _friend_in_my_room(_menu_account_id))
+	_friend_menu.add_item("Lobisine katıl", 1)
 	_friend_menu.set_item_disabled(1, not bool(profile.get("room_joinable", false)))
 	_friend_menu.add_separator()
 	_friend_menu.add_item("Arkadaşlıktan çıkar", 2)
@@ -754,14 +746,14 @@ func _on_search_results(results: Array) -> void:
 
 func _build_code_dialog() -> void:
 	_code_dialog = ConfirmationDialog.new()
-	_code_dialog.title = "Kodla Partiye Katıl"
+	_code_dialog.title = "Kodla Lobiye Katıl"
 	_code_dialog.ok_button_text = "Katıl"
 	_code_dialog.cancel_button_text = "Vazgeç"
 	_code_dialog.min_size = Vector2i(380, 150)
 	add_child(_code_dialog)
 	var column := UI.vbox(8)
 	_code_dialog.add_child(column)
-	column.add_child(UI.label("Arkadaşının paylaştığı 5 karakterlik parti kodunu gir.", 13, UI.TEXT_2))
+	column.add_child(UI.label("Arkadaşının paylaştığı 5 karakterlik lobi kodunu gir.", 13, UI.TEXT_2))
 	_code_edit = LineEdit.new()
 	_code_edit.placeholder_text = "Örn. K7P2Q"
 	_code_edit.max_length = 5
@@ -773,7 +765,7 @@ func _build_code_dialog() -> void:
 			PardexOnline.join_room(code)
 			_code_dialog.hide()
 		else:
-			toast.emit("Parti kodu 5 karakter olmalı.")
+			toast.emit("Lobi kodu 5 karakter olmalı.")
 	_code_dialog.confirmed.connect(submit)
 	_code_edit.text_submitted.connect(func(_text: String): submit.call())
 
@@ -786,7 +778,7 @@ func _on_connection_state_changed(state: String) -> void:
 
 func _build_invite_dialog() -> void:
 	_invite_dialog = ConfirmationDialog.new()
-	_invite_dialog.title = "PARDEX Parti Daveti"
+	_invite_dialog.title = "PARDEX Oyun Daveti"
 	_invite_dialog.ok_button_text = "Katıl"
 	_invite_dialog.cancel_button_text = "Reddet"
 	_invite_dialog.min_size = Vector2i(460, 200)
@@ -811,7 +803,7 @@ func _on_room_invite_received(invite: Dictionary) -> void:
 	if not _active_invite_id.is_empty() and _active_invite_id != invite_id:
 		PardexOnline.decline_room_invite(_active_invite_id)
 	_active_invite_id = invite_id
-	_invite_dialog.dialog_text = "%s seni %s partisine davet ediyor.\n\nParti kodu: %s   •   Oyuncular: %d / %d" % [
+	_invite_dialog.dialog_text = "%s seni %s lobisine davet ediyor.\nKatılırsan oyun açılır ve lobiye girersin.\n\nLobi kodu: %s   •   Oyuncular: %d / %d" % [
 		str(invite.get("from_display_name", "Bir arkadaşın")),
 		str(invite.get("game_name", "PARDEX Oyunu")),
 		str(invite.get("room_code", "")),
@@ -828,6 +820,6 @@ func _on_room_invite_closed(invite_id: String, reason: String) -> void:
 	_active_invite_id = ""
 	_invite_dialog.hide()
 	if was_visible and reason == "expired":
-		toast.emit("Parti davetinin süresi doldu.")
+		toast.emit("Oyun davetinin süresi doldu.")
 	elif was_visible and reason in ["room_closed", "room_full", "room_in_game"]:
-		toast.emit("Davet edilen parti artık katılıma uygun değil.")
+		toast.emit("Davet edilen maç başladı ya da doldu.")

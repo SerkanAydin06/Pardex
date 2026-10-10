@@ -229,13 +229,23 @@ async function waitForHealth() {
   throw new Error("PARDEX Online sunucusu başlamadı.");
 }
 
+// Korsan renamed its scenes; use whichever dedicated-server scene the project
+// has (exported builds carry the current name).
+function dedicatedServerScene(fromProject) {
+  const current = "scenes/ekranlar/PardexOzelSunucu.tscn";
+  const legacy = "scenes/pardex_dedicated_server.tscn";
+  if (fromProject && !fs.existsSync(path.join(config.korsan_exe, current))
+    && fs.existsSync(path.join(config.korsan_exe, legacy))) return `res://${legacy}`;
+  return `res://${current}`;
+}
+
 function startGameServer() {
   const fromProject = isProjectFolder(config.korsan_exe);
   const program = fromProject ? config.godot_exe : config.korsan_exe;
   track("Oyun sunucusu", spawn(program, [
     "--headless",
     ...(fromProject ? ["--path", config.korsan_exe] : []),
-    "res://scenes/pardex_dedicated_server.tscn",
+    dedicatedServerScene(fromProject),
     "--",
     "--pardex-dedicated",
     `--pardex-port=${GAME_PORT}`,

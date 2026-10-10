@@ -349,6 +349,8 @@ func _wire_online_signals() -> void:
 	PardexOnline.room_state_changed.connect(func(room: Dictionary):
 		if not bool(room.get("launching", false)):
 			_game_launch_in_progress = false
+		if str(room.get("state", "")) == "ended":
+			_leave_finished_match()
 	)
 	PardexOnline.room_left.connect(func(): _game_launch_in_progress = false)
 	PardexGameLauncher.game_process_started.connect(_track_session)
@@ -376,13 +378,16 @@ func _play_game(game_id: String) -> void:
 	if entry.is_empty() or not bool(entry["playable"]):
 		_show_toast("%s çok yakında PARDEX'te." % str(entry.get("title", "Bu oyun")))
 		return
-	# Korsanların Hazinesi is an online game: it starts from a party so every
-	# player gets a secure PARDEX session ticket.
-	_navigate("friends")
-	if PardexOnline.current_room.is_empty():
-		_show_toast("Korsanların Hazinesi için parti kur ya da bir partiye katıl.")
-	else:
-		_show_toast("Herkes hazır olduğunda parti kurucusu oyunu başlatır.")
+	# No party step: PARDEX asks the server for a match and the game opens
+	# straight into its own lobby, where friends join and bots fill seats.
+	if _is_game_running(game_id):
+		_show_toast("%s zaten açık." % str(entry["title"]))
+		return
+	if not PardexOnline.is_online():
+		_show_toast("Sunucu kapalı. %s için PARDEX Online bağlantısı gerekli." % str(entry["title"]))
+		return
+	PardexOnline.play_game(game_id)
+	_show_toast("%s açılıyor…" % str(entry["title"]))
 
 
 func _on_game_start_requested(payload: Dictionary) -> void:
@@ -454,12 +459,31 @@ func _track_session(game_id: String, pid: int) -> void:
 	_sessions[pid] = {"game": game_id, "started": int(Time.get_unix_time_from_system())}
 
 
+func _is_game_running(game_id: String) -> bool:
+	for pid in _sessions.keys():
+		if str(_sessions[pid]["game"]) == game_id and OS.is_process_running(int(pid)):
+			return true
+	return false
+
+
+# Closing the game leaves its match while the in-game lobby is still open or
+# once it has ended. A started match keeps the seat (a bot plays it) so "Oyna"
+# can take it back.
+func _leave_finished_match() -> void:
+	var room := PardexOnline.current_room
+	if not bool(room.get("quick_play", false)) or _is_game_running(str(room.get("game_id", ""))):
+		return
+	if str(room.get("state", "")) == "ended" or not bool(room.get("match_started", false)):
+		PardexOnline.leave_room()
+
+
 func _poll_sessions() -> void:
 	for pid in _sessions.keys():
 		if OS.is_process_running(int(pid)):
 			continue
 		var session: Dictionary = _sessions[pid]
 		_sessions.erase(pid)
+		_leave_finished_match()
 		var seconds := int(Time.get_unix_time_from_system()) - int(session["started"])
 		Catalog.add_playtime(str(session["game"]), seconds)
 		Catalog.add_event("session", "%s oturumu: %s" % [str(Catalog.game(str(session["game"])).get("title", "")), Catalog.hours(seconds)], str(session["game"]))

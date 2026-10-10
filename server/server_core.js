@@ -149,6 +149,17 @@ function roomIsInGame(room) {
   return roomState(room) === "in_game";
 }
 
+// Quick-play rooms (PARDEX "Oyna") start the match at once and keep taking
+// players while the game's own lobby is open, i.e. until the dedicated game
+// server reports that the match has begun.
+function roomAcceptsPlayers(room) {
+  if (!room) return false;
+  if (roomIsLobby(room)) return true;
+  return Boolean(room.quickPlay)
+    && !room.matchStarted
+    && (roomIsLaunching(room) || roomIsInGame(room));
+}
+
 function resetMemberForLobby(member) {
   member.ready = false;
   member.gameState = "lobby";
@@ -159,6 +170,7 @@ function resetRoomToLobby(room) {
   clearGameLaunchTicketsForMatch(room.matchId);
   room.state = "lobby";
   room.matchId = "";
+  room.matchStarted = false;
   room.launchStartedAt = 0;
   room.startedAt = 0;
   room.endedAt = 0;
@@ -239,7 +251,7 @@ function presenceForAccount(accountId) {
     room_state: state,
     game_id: chosenRoom.gameId,
     game_name: gameDisplayName(chosenRoom.gameId),
-    room_joinable: state === "lobby" && chosenRoom.members.length < chosenRoom.maxPlayers,
+    room_joinable: roomAcceptsPlayers(chosenRoom) && chosenRoom.members.length < chosenRoom.maxPlayers,
     room_member_count: chosenRoom.members.length,
     room_max_players: chosenRoom.maxPlayers,
   };
@@ -316,6 +328,9 @@ function roomPayload(room) {
     max_players: room.maxPlayers,
     state,
     match_id: room.matchId || "",
+    quick_play: Boolean(room.quickPlay),
+    match_started: Boolean(room.matchStarted),
+    joinable: roomAcceptsPlayers(room),
     launch_started_at: room.launchStartedAt || 0,
     started_at: room.startedAt || 0,
     ended_at: room.endedAt || 0,
@@ -402,8 +417,8 @@ function sendRoomInvite(client, targetAccountId) {
     sendError(client.ws, "ROOM_NOT_FOUND", "Aktif odan bulunamadı.");
     return;
   }
-  if (!roomIsLobby(room)) {
-    sendError(client.ws, "ROOM_IN_GAME", "Oda yalnız lobi durumundayken davet kabul eder.");
+  if (!roomAcceptsPlayers(room)) {
+    sendError(client.ws, "ROOM_IN_GAME", "Maç başladı; artık davet gönderilemez.");
     return;
   }
   if (room.members.length >= room.maxPlayers) {
@@ -484,7 +499,7 @@ function respondToRoomInvite(client, inviteId, accept) {
     sendError(client.ws, "ROOM_NOT_FOUND", "Davet edilen oda artık açık değil.");
     return;
   }
-  if (!roomIsLobby(room)) {
+  if (!roomAcceptsPlayers(room)) {
     closeRoomInvite(invite, "room_in_game");
     sendError(client.ws, "ROOM_IN_GAME", "Bu oda artık lobi durumunda değil.");
     return;
@@ -531,8 +546,8 @@ function joinFriendRoom(client, targetAccountId) {
     sendError(client.ws, "FRIEND_NOT_IN_ROOM", "Arkadaşın şu anda katılabileceğin bir odada değil.");
     return;
   }
-  if (!roomIsLobby(room)) {
-    sendError(client.ws, "ROOM_IN_GAME", "Arkadaşının odası artık lobi durumunda değil.");
+  if (!roomAcceptsPlayers(room)) {
+    sendError(client.ws, "ROOM_IN_GAME", "Arkadaşının maçı başladı; bitince katılabilirsin.");
     return;
   }
   if (room.members.length >= room.maxPlayers) {
@@ -579,7 +594,7 @@ function leaveCurrentRoom(userId, notifySelf = true) {
     cancelInvitesForRoom(room.code, "room_closed");
   } else {
     if (room.hostId === userId) room.hostId = room.members[0].userId;
-    if (previousState === "launching") {
+    if (previousState === "launching" && !room.quickPlay) {
       resetRoomToLobby(room);
       sendRoomLifecycleEvent(room, "game_launch_aborted", {
         failed_user_id: userId,
@@ -696,7 +711,7 @@ function joinRoom(client, code) {
   const normalized = String(code || "").trim().toUpperCase();
   const room = rooms.get(normalized);
   if (!room) return sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
-  if (!roomIsLobby(room)) return sendError(client.ws, "ROOM_IN_GAME", "Bu oda artık lobi durumunda değil.");
+  if (!roomAcceptsPlayers(room)) return sendError(client.ws, "ROOM_IN_GAME", "Bu oda artık lobi durumunda değil.");
   if (client.roomCode === normalized) {
     broadcastRoom(room);
     return;
@@ -705,19 +720,24 @@ function joinRoom(client, code) {
 
   const oldAccountId = client.accountId;
   leaveCurrentRoom(client.userId, false);
-  room.members.push({
+  const lateJoin = !roomIsLobby(room);
+  const member = {
     userId: client.userId,
     accountId: client.accountId,
     displayName: client.displayName,
-    ready: false,
+    ready: lateJoin,
     voiceMuted: false,
-    gameState: "lobby",
+    gameState: lateJoin ? "launching" : "lobby",
     gameConnectedAt: 0,
-  });
+  };
+  room.members.push(member);
   client.roomCode = room.code;
   broadcastRoom(room);
   pushRelatedSocialStates(oldAccountId);
   pushRoomPresence(room);
+  // A quick-play match is already running: hand the newcomer a launch ticket
+  // so their game opens straight into the same in-game lobby.
+  if (lateJoin) sendGameStart(room, member, client.userId);
 }
 
 function createRoom(client, message) {
@@ -763,7 +783,10 @@ function startRoomGame(client) {
   if (room.members.length < 2) return sendError(client.ws, "NOT_ENOUGH_PLAYERS", "Oyunu başlatmak için en az 2 oyuncu gerekli.");
   if (!room.members.every((member) => member.ready)) return sendError(client.ws, "PLAYERS_NOT_READY", "Tüm oyuncular hazır olmalı.");
   if (!gameServerUrl(room.gameId)) return sendError(client.ws, "GAME_SERVER_UNAVAILABLE", "Bu oyun için PARDEX oyun sunucusu hazır değil.");
+  launchRoomMatch(room, client);
+}
 
+function launchRoomMatch(room, client) {
   pruneGameLaunchTickets();
   room.state = "launching";
   room.matchId = crypto.randomUUID();
@@ -774,28 +797,78 @@ function startRoomGame(client) {
     member.gameState = "launching";
     member.gameConnectedAt = 0;
   }
-  cancelInvitesForRoom(room.code, "room_in_game");
+  if (!room.quickPlay) cancelInvitesForRoom(room.code, "room_in_game");
   broadcastRoom(room);
   pushRoomPresence(room);
+  for (const member of room.members) sendGameStart(room, member, client.userId);
+}
 
-  const sharedPayload = {
+function sendGameStart(room, member, startedBy) {
+  const memberClient = clients.get(member.userId);
+  if (!memberClient?.ws || memberClient.ws.readyState !== WebSocket.OPEN) return;
+  const launch = createGameLaunchTicket(room, member);
+  send(memberClient.ws, {
     type: "game_start",
     game_id: room.gameId,
     match_id: room.matchId,
     room: roomPayload(room),
-    started_by: client.userId,
+    started_by: startedBy,
     started_at: room.launchStartedAt,
-  };
-  for (const member of room.members) {
-    const memberClient = clients.get(member.userId);
-    if (!memberClient?.ws || memberClient.ws.readyState !== WebSocket.OPEN) continue;
-    const launch = createGameLaunchTicket(room, member);
-    send(memberClient.ws, {
-      ...sharedPayload,
-      launch_ticket: launch.ticket,
-      launch_ticket_expires_at: launch.expiresAt,
-    });
+    launch_ticket: launch.ticket,
+    launch_ticket_expires_at: launch.expiresAt,
+  });
+}
+
+// PARDEX "Oyna": no party step. The player gets a fresh quick-play room whose
+// match starts at once, so the game opens directly in its own lobby. Friends
+// join through invites or "Katıl" while that lobby is open.
+function playGame(client, message) {
+  if (!requireSocialAccount(client)) return;
+  const gameId = String(message.game_id || "korsanlar").slice(0, 32);
+  if (!gameServerUrl(gameId)) {
+    return sendError(client.ws, "GAME_SERVER_UNAVAILABLE", "Bu oyun için PARDEX oyun sunucusu hazır değil.");
   }
+  // Already in a running match of this game (e.g. the game was closed or
+  // crashed): a fresh ticket reopens it in the same lobby, or takes the seat
+  // back from the bot once the match has started.
+  const current = client.roomCode ? rooms.get(client.roomCode) : null;
+  if (
+    current && current.quickPlay && current.gameId === gameId
+    && (roomIsLaunching(current) || roomIsInGame(current))
+  ) {
+    const member = current.members.find((item) => item.userId === client.userId);
+    if (member) {
+      sendGameStart(current, member, client.userId);
+      return;
+    }
+  }
+
+  leaveCurrentRoom(client.userId, false);
+  const room = {
+    code: roomCode(),
+    gameId,
+    hostId: client.userId,
+    maxPlayers: 4,
+    quickPlay: true,
+    matchStarted: false,
+    state: "lobby",
+    matchId: "",
+    launchStartedAt: 0,
+    startedAt: 0,
+    endedAt: 0,
+    members: [{
+      userId: client.userId,
+      accountId: client.accountId,
+      displayName: client.displayName,
+      ready: true,
+      voiceMuted: false,
+      gameState: "lobby",
+      gameConnectedAt: 0,
+    }],
+  };
+  rooms.set(room.code, room);
+  client.roomCode = room.code;
+  launchRoomMatch(room, client);
 }
 
 function validateMatch(room, message) {
@@ -902,10 +975,15 @@ function reportGameConnected(client, _message) {
 function reportGameLaunchFailed(client, message) {
   if (!client.roomCode) return;
   const room = rooms.get(client.roomCode);
-  if (!room || !roomIsLaunching(room)) return;
+  if (!room || (!roomIsLaunching(room) && !(room.quickPlay && roomIsInGame(room)))) return;
   if (message.match_id && !validateMatch(room, message)) return;
   const member = room.members.find((item) => item.userId === client.userId);
   if (!member) return;
+  if (room.quickPlay) {
+    // Only this player's game failed to open; the others keep their lobby.
+    leaveCurrentRoom(client.userId);
+    return;
+  }
   abortRoomLaunch(room, client.userId, message.reason || "launch_failed");
 }
 
@@ -1226,6 +1304,9 @@ function handleMessage(client, raw) {
       broadcastRoom(room);
       break;
     }
+    case "play_game":
+      playGame(client, message);
+      break;
     case "start_game":
       startRoomGame(client);
       break;

@@ -70,6 +70,46 @@ const serverSource = fs.readFileSync(serverPath, "utf8") + `
         }
       }
 
+      if (message?.type === "play_game") {
+        const client = clientForSocket(ws);
+        const gameId = String(message.game_id || "korsanlar").slice(0, 32);
+        if (client?.helloReceived && singleInstanceGameIds.has(gameId)) {
+          const activeRoom = activeRoomForGame(gameId);
+          const isMember = activeRoom?.members.some((member) => member.userId === client.userId);
+          if (activeRoom && !isMember) {
+            // One Korsan server runs one match. While its lobby is open, a
+            // friend of someone inside joins that lobby instead of being
+            // turned away.
+            const friendInside = activeRoom.members.some((member) =>
+              member.accountId
+              && runtime.social.relationshipBetween(client.accountId, member.accountId) === "friend"
+            );
+            if (
+              friendInside
+              && runtime.roomAcceptsPlayers(activeRoom)
+              && activeRoom.members.length < activeRoom.maxPlayers
+            ) {
+              runtime.joinRoom(client, activeRoom.code);
+              return;
+            }
+            runtime.sendError(
+              ws,
+              "GAME_SERVER_BUSY",
+              "Korsan oyun sunucusunda şu an başka bir maç oynanıyor. Bitince tekrar dene."
+            );
+            return;
+          }
+          if (!activeRoom && gameServerIsRecycling(gameId)) {
+            runtime.sendError(
+              ws,
+              "GAME_SERVER_BUSY",
+              "Korsan oyun sunucusu yeni maç için hazırlanıyor. Birkaç saniye sonra tekrar dene."
+            );
+            return;
+          }
+        }
+      }
+
       const endedGameId = message?.type === "game_server_ended"
         ? String(message.game_id || "").trim()
         : "";
