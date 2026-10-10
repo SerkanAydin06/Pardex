@@ -6,6 +6,7 @@ signal room_state_changed(room: Dictionary)
 signal room_left()
 signal online_error(message: String)
 signal game_start_requested(payload: Dictionary)
+signal game_session_ready(game_id: String, token: String)
 signal voice_frame_received(user_id: String, sequence: int, pcm_base64: String)
 signal social_state_changed(state: Dictionary)
 signal user_search_results(results: Array)
@@ -275,13 +276,14 @@ func disconnect_server() -> void:
 		_manual_disconnect = false
 
 
-# "Oyna": the server opens a match right away (or puts us in a friend's open
-# lobby) and answers with game_start.
-func play_game(game_id := "korsanlar") -> void:
+# "Oyna" opens the game at its own menu. The game gets a short-lived session
+# token so it can host a table or join one by code itself; the long-lived
+# PARDEX identity never leaves the launcher.
+func request_game_session(game_id := "korsanlar") -> void:
 	if not is_online():
 		online_error.emit("PARDEX Online bağlantısı henüz hazır değil.")
 		return
-	_send({"type": "play_game", "game_id": game_id})
+	_send({"type": "get_game_session", "game_id": game_id})
 
 
 func create_room(game_id := "korsanlar", max_players := 4) -> void:
@@ -637,6 +639,8 @@ func _handle_packet(packet: String) -> void:
 			if typeof(room_data) == TYPE_DICTIONARY:
 				current_room = (room_data as Dictionary).duplicate(true)
 				room_state_changed.emit(current_room.duplicate(true))
+		"game_session":
+			game_session_ready.emit(str(message.get("game_id", "")), str(message.get("token", "")))
 		"game_start":
 			var game_room_data = message.get("room", {})
 			if typeof(game_room_data) == TYPE_DICTIONARY:

@@ -39,6 +39,12 @@ const rooms = new Map();
 const resumeTokens = new Map();
 const roomInvites = new Map();
 const gameLaunchTickets = new Map();
+// Game session tokens: PARDEX hands one to the game it launches so the game
+// itself can host a table or join one by code (token hash -> owner session).
+const gameSessions = new Map();
+const GAME_SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+// Deployment-specific checks (production_server.js) plug in here.
+const hooks = {};
 const social = new SocialStore(SOCIAL_DATA_PATH);
 let shuttingDown = false;
 
@@ -699,6 +705,7 @@ function tryResumeClient(client, resumeToken, expectedAccountId) {
   client.displayName = existing.displayName;
   client.accountId = expectedAccountId;
   client.presenceStatus = existing.presenceStatus || "online";
+  client.gameWs = existing.gameWs || null;
   client.helloReceived = true;
   clients.set(client.userId, client);
   resumeTokens.set(client.resumeToken, client.userId);
@@ -707,16 +714,16 @@ function tryResumeClient(client, resumeToken, expectedAccountId) {
   return true;
 }
 
-function joinRoom(client, code) {
+function joinRoom(client, code, replyWs = client.ws) {
   const normalized = String(code || "").trim().toUpperCase();
   const room = rooms.get(normalized);
-  if (!room) return sendError(client.ws, "ROOM_NOT_FOUND", "Oda bulunamadı.");
-  if (!roomAcceptsPlayers(room)) return sendError(client.ws, "ROOM_IN_GAME", "Bu oda artık lobi durumunda değil.");
+  if (!room) return sendError(replyWs, "ROOM_NOT_FOUND", "Bu kodla açık bir masa yok.");
+  if (!roomAcceptsPlayers(room)) return sendError(replyWs, "ROOM_IN_GAME", "Bu masada oyun başladı; artık katılınamaz.");
   if (client.roomCode === normalized) {
     broadcastRoom(room);
     return;
   }
-  if (room.members.length >= room.maxPlayers) return sendError(client.ws, "ROOM_FULL", "Oda dolu.");
+  if (room.members.length >= room.maxPlayers) return sendError(replyWs, "ROOM_FULL", "Masa dolu.");
 
   const oldAccountId = client.accountId;
   leaveCurrentRoom(client.userId, false);
@@ -805,10 +812,18 @@ function launchRoomMatch(room, client) {
 
 function sendGameStart(room, member, startedBy) {
   const memberClient = clients.get(member.userId);
-  if (!memberClient?.ws || memberClient.ws.readyState !== WebSocket.OPEN) return;
+  if (!memberClient) return;
+  // The game is already open and linked: hand it the ticket directly.
+  // Otherwise PARDEX receives game_start and launches the game.
+  const gameOpen = memberClient.gameWs?.readyState === WebSocket.OPEN;
+  const target = gameOpen ? memberClient.gameWs : memberClient.ws;
+  if (!target || target.readyState !== WebSocket.OPEN) return;
   const launch = createGameLaunchTicket(room, member);
-  send(memberClient.ws, {
-    type: "game_start",
+  send(target, {
+    type: gameOpen ? "match_ticket" : "game_start",
+    user_id: member.userId,
+    display_name: member.displayName,
+    role: room.hostId === member.userId ? "host" : "client",
     game_id: room.gameId,
     match_id: room.matchId,
     room: roomPayload(room),
@@ -822,12 +837,13 @@ function sendGameStart(room, member, startedBy) {
 // PARDEX "Oyna": no party step. The player gets a fresh quick-play room whose
 // match starts at once, so the game opens directly in its own lobby. Friends
 // join through invites or "Katıl" while that lobby is open.
-function playGame(client, message) {
+function playGame(client, message, replyWs = client.ws) {
   if (!requireSocialAccount(client)) return;
   const gameId = String(message.game_id || "korsanlar").slice(0, 32);
   if (!gameServerUrl(gameId)) {
-    return sendError(client.ws, "GAME_SERVER_UNAVAILABLE", "Bu oyun için PARDEX oyun sunucusu hazır değil.");
+    return sendError(replyWs, "GAME_SERVER_UNAVAILABLE", "Bu oyun için PARDEX oyun sunucusu hazır değil.");
   }
+  if (hooks.beforePlayGame && hooks.beforePlayGame(client, gameId, replyWs)) return;
   // Already in a running match of this game (e.g. the game was closed or
   // crashed): a fresh ticket reopens it in the same lobby, or takes the seat
   // back from the bot once the match has started.
@@ -1099,6 +1115,82 @@ function applySocialAction(client, result, otherAccountId) {
   pushSocialState(otherAccountId);
 }
 
+function issueGameSession(client, message) {
+  if (!requireSocialAccount(client)) return;
+  const gameId = String(message.game_id || "korsanlar").slice(0, 32);
+  const now = Date.now();
+  for (const [hash, record] of gameSessions.entries()) {
+    if (now >= record.expiresAt || record.userId === client.userId) gameSessions.delete(hash);
+  }
+  const token = crypto.randomBytes(32).toString("base64url");
+  gameSessions.set(gameLaunchTicketHash(token), {
+    userId: client.userId,
+    accountId: client.accountId,
+    gameId,
+    expiresAt: now + GAME_SESSION_TTL_MS,
+  });
+  send(client.ws, { type: "game_session", game_id: gameId, token });
+}
+
+function gameLinkOwner(link) {
+  const owner = clients.get(link.gameLinkOf || "");
+  if (!owner || owner.accountId !== link.gameLinkAccount) return null;
+  return owner;
+}
+
+// Messages from a game opened by PARDEX. The connection is not a PARDEX
+// session of its own; it acts for the PARDEX session that issued its token.
+function handleGameLinkMessage(link, message) {
+  if (message.type === "game_link") {
+    const record = gameSessions.get(gameLaunchTicketHash(String(message.token || "").trim()));
+    const owner = record && Date.now() < record.expiresAt ? clients.get(record.userId) : null;
+    if (!owner || owner.accountId !== record.accountId) {
+      sendError(link.ws, "GAME_SESSION_INVALID", "PARDEX oturumu bulunamadı. Oyunu PARDEX'ten yeniden aç.");
+      return;
+    }
+    if (link.helloTimer) {
+      clearTimeout(link.helloTimer);
+      link.helloTimer = null;
+    }
+    clients.delete(link.userId);
+    resumeTokens.delete(link.resumeToken);
+    link.gameLinkOf = owner.userId;
+    link.gameLinkAccount = owner.accountId;
+    link.gameId = record.gameId;
+    owner.gameWs = link.ws;
+    send(link.ws, {
+      type: "game_link_ok",
+      game_id: record.gameId,
+      user_id: owner.userId,
+      display_name: owner.displayName,
+    });
+    return;
+  }
+  const owner = gameLinkOwner(link);
+  if (!owner) {
+    sendError(link.ws, "GAME_SESSION_INVALID", "PARDEX bağlantısı kapandı. PARDEX'i açık tut ve oyunu yeniden başlat.");
+    return;
+  }
+  if (message.type === "host_match") {
+    playGame(owner, { game_id: link.gameId }, link.ws);
+  } else if (message.type === "join_match") {
+    const room = rooms.get(String(message.code || "").trim().toUpperCase());
+    if (room && room.gameId !== link.gameId) {
+      sendError(link.ws, "ROOM_NOT_FOUND", "Bu kod başka bir oyunun masası.");
+      return;
+    }
+    if (room && room.members.some((member) => member.userId === owner.userId)) {
+      playGame(owner, { game_id: link.gameId }, link.ws);
+      return;
+    }
+    joinRoom(owner, message.code, link.ws);
+  } else if (message.type === "leave_match") {
+    leaveCurrentRoom(owner.userId);
+  } else if (message.type !== "ping") {
+    sendError(link.ws, "UNKNOWN_GAME_MESSAGE", "Bilinmeyen oyun isteği.");
+  }
+}
+
 function handleMessage(client, raw) {
   let message;
   try {
@@ -1116,6 +1208,10 @@ function handleMessage(client, raw) {
 
   if (message.type === "game_hello") {
     handleGameHello(client, message);
+    return;
+  }
+  if (message.type === "game_link" || client.gameLinkOf) {
+    handleGameLinkMessage(client, message);
     return;
   }
 
@@ -1307,6 +1403,9 @@ function handleMessage(client, raw) {
     case "play_game":
       playGame(client, message);
       break;
+    case "get_game_session":
+      issueGameSession(client, message);
+      break;
     case "start_game":
       startRoomGame(client);
       break;
@@ -1409,6 +1508,11 @@ wss.on("connection", (ws) => {
     if (client.helloTimer) {
       clearTimeout(client.helloTimer);
       client.helloTimer = null;
+    }
+    if (client.gameLinkOf) {
+      const owner = clients.get(client.gameLinkOf);
+      if (owner && owner.gameWs === ws) owner.gameWs = null;
+      return;
     }
     detachClient(client, ws);
   });

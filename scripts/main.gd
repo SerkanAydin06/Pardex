@@ -346,6 +346,7 @@ func _wire_online_signals() -> void:
 	PardexOnline.avatar_ready.connect(func(_account_id): _render_presence())
 	PardexOnline.online_error.connect(_show_toast)
 	PardexOnline.game_start_requested.connect(_on_game_start_requested)
+	PardexOnline.game_session_ready.connect(_on_game_session_ready)
 	PardexOnline.room_state_changed.connect(func(room: Dictionary):
 		if not bool(room.get("launching", false)):
 			_game_launch_in_progress = false
@@ -378,16 +379,46 @@ func _play_game(game_id: String) -> void:
 	if entry.is_empty() or not bool(entry["playable"]):
 		_show_toast("%s çok yakında PARDEX'te." % str(entry.get("title", "Bu oyun")))
 		return
-	# No party step: PARDEX asks the server for a match and the game opens
-	# straight into its own lobby, where friends join and bots fill seats.
+	# PARDEX only opens the game at its own menu. Tables are hosted and joined
+	# by code inside the game (PARDEX ONLINE); friends join with "Katıl".
 	if _is_game_running(game_id):
 		_show_toast("%s zaten açık." % str(entry["title"]))
 		return
 	if not PardexOnline.is_online():
 		_show_toast("Sunucu kapalı. %s için PARDEX Online bağlantısı gerekli." % str(entry["title"]))
 		return
-	PardexOnline.play_game(game_id)
+	PardexOnline.request_game_session(game_id)
 	_show_toast("%s açılıyor…" % str(entry["title"]))
+
+
+func _on_game_session_ready(game_id: String, token: String) -> void:
+	if game_id != "korsanlar" or token.is_empty() or _is_game_running(game_id):
+		return
+	Catalog.record_launch(game_id)
+	var args := PackedStringArray([
+		"--pardex-session-token=%s" % token,
+		"--pardex-url=%s" % PardexOnline.get_active_server_url(),
+		"--pardex-name=%s" % PardexOnline.display_name,
+	])
+	var pid := 0
+	if OS.has_feature("editor"):
+		var project_path := _find_korsan_project_path()
+		if project_path.is_empty():
+			_show_toast("Korsanların Hazinesi geliştirme projesi PARDEX'in yan klasöründe bulunamadı.")
+			return
+		var launch_args := PackedStringArray(["--path", project_path, "--"])
+		launch_args.append_array(args)
+		pid = OS.create_process(OS.get_executable_path(), launch_args)
+	else:
+		var executable_path := str(PardexGameLauncher.call("_find_korsan_executable"))
+		if executable_path.is_empty():
+			_show_toast("Korsanların Hazinesi paketi bulunamadı. games/korsanlar/KorsanlarinHazinesi.exe yolunu kontrol et.")
+			return
+		pid = OS.create_process(executable_path, args)
+	if pid <= 0:
+		_show_toast("Korsanların Hazinesi başlatılamadı.")
+		return
+	_track_session(game_id, pid)
 
 
 func _on_game_start_requested(payload: Dictionary) -> void:
