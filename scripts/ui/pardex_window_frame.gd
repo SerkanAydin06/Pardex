@@ -1,12 +1,17 @@
 extends Control
 
 # Borderless desktop window frame, Steam style: the page header drags the
-# window, the chrome buttons minimize/maximize/close it and thin invisible
+# window, the chrome buttons minimize / toggle full screen / close it and thin invisible
 # strips along the edges resize it. Lives in main.tscn above all content.
 
 const APP_ICON := "res://assets/ui/brand_pardex_app_icon.png"
 const EDGE := 7.0
 const CORNER := 12.0
+
+# Window state to come back to when leaving full screen (the maximize button
+# and a header double-click toggle full screen, like a game launcher).
+var _restore_mode := DisplayServer.WINDOW_MODE_WINDOWED
+var _restore_rect := Rect2i()
 
 
 func _ready() -> void:
@@ -22,7 +27,7 @@ func _ready() -> void:
 	(chrome.get_node("MinimizeButton") as Button).pressed.connect(
 		func(): DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MINIMIZED)
 	)
-	(chrome.get_node("MaximizeButton") as Button).pressed.connect(_toggle_maximize)
+	(chrome.get_node("MaximizeButton") as Button).pressed.connect(toggle_fullscreen)
 	(chrome.get_node("CloseButton") as Button).pressed.connect(
 		func(): main.call("_quit_application")
 	)
@@ -51,11 +56,45 @@ func _apply_app_icon() -> void:
 		DisplayServer.set_icon(image)
 
 
-func _toggle_maximize() -> void:
-	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_MAXIMIZED:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-	else:
+static func is_fullscreen() -> bool:
+	var mode := DisplayServer.window_get_mode()
+	return mode == DisplayServer.WINDOW_MODE_FULLSCREEN or mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN
+
+
+func toggle_fullscreen() -> void:
+	_refresh_button.call_deferred()
+	if is_fullscreen():
+		_leave_fullscreen()
+		return
+	var mode := DisplayServer.window_get_mode()
+	_restore_mode = DisplayServer.WINDOW_MODE_MAXIMIZED if mode == DisplayServer.WINDOW_MODE_MAXIMIZED else DisplayServer.WINDOW_MODE_WINDOWED
+	_restore_rect = Rect2i(DisplayServer.window_get_position(), DisplayServer.window_get_size())
+	# Also remembered on disk, so quitting while full screen keeps this window.
+	owner.call("_capture_window_state")
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+
+
+func _leave_fullscreen() -> void:
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	if _restore_rect.size == Vector2i.ZERO:
+		# Started full screen (Ayarlar): fall back to the saved window.
+		owner.call("_restore_windowed_state")
+		return
+	if _restore_mode == DisplayServer.WINDOW_MODE_MAXIMIZED:
+		# The OS keeps the pre-maximize size for the next "restore down".
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
+		return
+	# Size/position only stick once the windowed mode has been applied.
+	await get_tree().process_frame
+	DisplayServer.window_set_size(_restore_rect.size)
+	DisplayServer.window_set_position(_restore_rect.position)
+
+
+# Header double-click does not press the button, so update its icon here.
+func _refresh_button() -> void:
+	var button := (owner as Control).get_node("%WindowChrome").get_node_or_null("MaximizeButton")
+	if button != null and button.has_method("_refresh_icon"):
+		button.call("_refresh_icon")
 
 
 func _on_header_input(event: InputEvent) -> void:
@@ -63,8 +102,8 @@ func _on_header_input(event: InputEvent) -> void:
 	if mouse == null or mouse.button_index != MOUSE_BUTTON_LEFT or not mouse.pressed:
 		return
 	if mouse.double_click:
-		_toggle_maximize()
-	else:
+		toggle_fullscreen()
+	elif not is_fullscreen():
 		DisplayServer.window_start_drag()
 
 
