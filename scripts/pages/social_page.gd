@@ -3,9 +3,9 @@ extends VBoxContainer
 # Arkadaşlar: hero, online friends, friends in game, conversation panel, the
 # game card, pending requests and suggestions.
 #
-# There is no party step: "Oyna" opens the game straight into its own lobby.
-# The game card shows who is in that lobby and invites friends into it while
-# it is open; friends in an open lobby show a "Katıl" button. Friends,
+# There is no launcher-side party step: "Oyna" opens the game's normal menu.
+# Tables are hosted/joined inside the game; this page mirrors the active table
+# and lets friends join or receive invites while it is open. Friends,
 # presence, requests, invites and matches are live data; messaging, voice and
 # friend suggestions have no server support yet and say so.
 
@@ -120,11 +120,14 @@ func _build() -> void:
 
 
 func apply_layout(content_width: float) -> void:
-	_right.visible = content_width >= 980.0
-	_chat_panel.visible = content_width >= 700.0
+	# On narrow windows keep the game/invite column instead of the unfinished
+	# chat panel. This preserves the actions people actually need at 1024 px.
+	var wide := content_width >= 980.0
+	_right.visible = true
+	_chat_panel.visible = wide
 	_hero_bullets.visible = content_width >= 960.0
-	_left.size_flags_horizontal = Control.SIZE_FILL if _chat_panel.visible else Control.SIZE_EXPAND_FILL
-	_left.custom_minimum_size.x = clampf(content_width * 0.33, 300.0, 470.0) if _chat_panel.visible else 0.0
+	_left.size_flags_horizontal = Control.SIZE_FILL if wide else Control.SIZE_EXPAND_FILL
+	_left.custom_minimum_size.x = clampf(content_width * 0.33, 300.0, 470.0) if wide else 0.0
 	_right.custom_minimum_size.x = clampf(content_width * 0.3, 320.0, 430.0)
 
 
