@@ -36,7 +36,7 @@ http.createServer = (requestListener) => originalCreateServer((req, res) => {
 // social state while allowing this bootstrap to add the dedicated-game control
 // channel. The source file on disk is never rewritten at runtime.
 const corePath = path.join(__dirname, "server_core.js");
-const coreSource = fs.readFileSync(corePath, "utf8") + `\nmodule.exports.__pardexRuntime = {\n  wss, rooms, clients, gameLaunchTickets, gameLaunchTicketHash,\n  roomIsLaunching, roomIsInGame, roomState, markMemberGameConnected,\n  send, sendError, clearGameLaunchTicketsForMatch, broadcastRoom,\n  pushRoomPresence, sendRoomLifecycleEvent\n};\n`;
+const coreSource = fs.readFileSync(corePath, "utf8") + `\nmodule.exports.__pardexRuntime = {\n  wss, rooms, clients, gameLaunchTickets, gameLaunchTicketHash,\n  roomIsLaunching, roomIsInGame, roomState, markMemberGameConnected,\n  send, sendError, clearGameLaunchTicketsForMatch, broadcastRoom,\n  pushRoomPresence, sendRoomLifecycleEvent, roomAcceptsPlayers, joinRoom, social\n};\n`;
 const coreModule = new Module(corePath, module);
 coreModule.filename = corePath;
 coreModule.paths = Module._nodeModulePaths(path.dirname(corePath));
@@ -248,6 +248,35 @@ function finishRoomFromGameServer(room, result) {
   });
 }
 
+// The dedicated game server tells PARDEX when its lobby starts the match, so
+// quick-play rooms stop taking new players from that moment on.
+function handleGameServerStarted(ws, message) {
+  clearHelloTimer(ws);
+  if (!GAME_SERVER_TOKEN || !secretEquals(GAME_SERVER_TOKEN, message.server_token)) {
+    runtime.sendError(ws, "GAME_SERVER_UNAUTHORIZED", "Oyun sunucusu doğrulanamadı.");
+    return;
+  }
+  const roomCode = String(message.room_code || "").trim().toUpperCase();
+  const matchId = String(message.match_id || "").trim();
+  const gameId = String(message.game_id || "").trim();
+  const room = runtime.rooms.get(roomCode);
+  if (!room || !matchId || room.matchId !== matchId || room.gameId !== gameId) {
+    runtime.sendError(ws, "MATCH_MISMATCH", "Oyun sunucusu bildirimi aktif PARDEX maçıyla eşleşmiyor.");
+    return;
+  }
+  if (!room.matchStarted) {
+    room.matchStarted = true;
+    runtime.broadcastRoom(room);
+    runtime.pushRoomPresence(room);
+  }
+  runtime.send(ws, {
+    type: "game_server_started_ok",
+    game_id: room.gameId,
+    match_id: room.matchId,
+    room_code: room.code,
+  });
+}
+
 function handleGameServerEnded(ws, message) {
   clearHelloTimer(ws);
   if (!GAME_SERVER_TOKEN || !secretEquals(GAME_SERVER_TOKEN, message.server_token)) {
@@ -322,6 +351,10 @@ function installGameControlProtocol(ws) {
     }
     if (message?.type === "game_server_ended") {
       handleGameServerEnded(ws, message);
+      return;
+    }
+    if (message?.type === "game_server_started") {
+      handleGameServerStarted(ws, message);
       return;
     }
 
