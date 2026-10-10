@@ -768,7 +768,7 @@ text = "Seviye sistemi yakında"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_font_sizes/font_size = 16
-text = "“Oyunlar daha güzel, birlikte oynayınca.”"
+text = "Oyunlarını, arkadaşlarını ve ilerlemeni tek yerde takip et."
 
 [node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=1569190351]
 layout_mode = 2
