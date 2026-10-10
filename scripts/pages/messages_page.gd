@@ -19,6 +19,7 @@ var _messages: VBoxContainer
 var _scroll: ScrollContainer
 var _input: LineEdit
 var _send: Button
+var _bubble_max_width := BUBBLE_MAX_WIDTH
 
 
 func _ready() -> void:
@@ -126,7 +127,11 @@ func _build() -> void:
 
 
 func apply_layout(content_width: float) -> void:
-	_left.custom_minimum_size.x = clampf(content_width * 0.3, 280.0, 400.0)
+	var left_width := clampf(content_width * 0.3, 280.0, 400.0)
+	_left.custom_minimum_size.x = left_width
+	# Keep long bubbles inside the chat panel on the 1024 px minimum window.
+	# 16 = column gap; the rest reserves the message margins + bubble padding.
+	_bubble_max_width = clampf(content_width - left_width - 16.0 - 100.0, 180.0, BUBBLE_MAX_WIDTH)
 
 
 # ------------------------------------------------------------------ data
@@ -322,7 +327,7 @@ func _bubble(message: Dictionary) -> Control:
 	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	var font := text.get_theme_font("font")
 	var width := font.get_multiline_string_size(text.text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14).x if font != null else BUBBLE_MAX_WIDTH
-	text.custom_minimum_size.x = clampf(width + 2.0, 40.0, BUBBLE_MAX_WIDTH)
+	text.custom_minimum_size.x = clampf(width + 2.0, 40.0, _bubble_max_width)
 	column.add_child(text)
 	var time := UI.label(_clock(int(message.get("at", 0))), 10, UI.TEXT_3)
 	time.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
