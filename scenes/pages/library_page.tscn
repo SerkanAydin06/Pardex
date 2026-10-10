@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/pages/library_page.gd" id="1_8ucsj"]
-[ext_resource type="Texture2D" path="res://assets/ui/home_hero_banner.png" id="2_08brj"]
+[ext_resource type="Texture2D" path="res://assets/ui/hero_play.png" id="2_08brj"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/crown.svg" id="3_eom10"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/gamepad.svg" id="4_1rylr"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/download.svg" id="5_idi43"]
@@ -1394,7 +1394,7 @@ theme_override_colors/font_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_colors/font_outline_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 12
-text = "OYUN KÜTÜPHANEN"
+text = "KÜTÜPHANE"
 
 [node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/TopRow/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=575936992]
 layout_mode = 2
@@ -1402,14 +1402,14 @@ theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 42
-text = "Oyun Kütüphanen"
+text = "Oyunların, tek bir yerde"
 
 [node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/TopRow/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=1289943440]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 15
-text = "Tüm oyunların, her zaman seninle.
-Keşfet, oyna ve macerana kaldığın yerden devam et."
+text = "Oyunlarını, favorilerini ve son oynadıklarını tek yerden yönet.
+Kaldığın yerden devam et."
 
 [node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/TopRow/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=2033659240]
 layout_mode = 2
