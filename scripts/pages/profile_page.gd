@@ -159,25 +159,9 @@ func _build_badges() -> Control:
 	var header := UI.section_header("Rozetler", "Tüm Rozetleri Gör", 20)
 	(header.get_node("Link") as Button).visible = false
 	column.add_child(header)
-	var row := UI.hbox(10)
-	for _index in 6:
-		var cell := UI.vbox(6)
-		UI.expand(cell)
-		var badge := CenterContainer.new()
-		var hex := UI.icon("hex", 62, Color(UI.TEXT_3, 0.7))
-		badge.add_child(hex)
-		var lock := UI.icon("lock", 22, UI.TEXT_2)
-		hex.add_child(lock)
-		lock.position = Vector2(20, 20)
-		cell.add_child(badge)
-		var name_label := UI.label("Gizli Rozet", 13, UI.TEXT_2, true)
-		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		cell.add_child(name_label)
-		var hint := UI.label("???", 11, UI.TEXT_3)
-		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		cell.add_child(hint)
-		row.add_child(cell)
-	column.add_child(row)
+	var state := UI.empty_state("hex", "Rozet sistemi yakında", "Oyunlarda rozet kazandıkça burada görünecek.")
+	state.custom_minimum_size.y = 108
+	column.add_child(state)
 	return card
 
 
