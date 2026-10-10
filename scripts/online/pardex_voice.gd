@@ -4,6 +4,7 @@ extends Node
 # Keep the public API in place so room/main code remains stable while
 # microphone capture and network voice transport are turned off.
 
+@warning_ignore("unused_signal")
 signal voice_activity_changed(user_id: String, speaking: bool)
 signal voice_settings_changed(microphone_muted: bool, output_muted: bool)
 signal voice_channel_state_changed(active: bool)

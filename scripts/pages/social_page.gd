@@ -8,7 +8,6 @@ extends VBoxContainer
 # Messaging, voice and friend suggestions have no server support yet and say so.
 
 signal toast(message: String)
-signal play_requested(game_id: String)
 # Opens the Mesajlar tab on this friend's conversation ("" = most recent).
 signal message_requested(account_id: String)
 

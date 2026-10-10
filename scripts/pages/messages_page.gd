@@ -4,8 +4,6 @@ extends VBoxContainer
 # recent first, unread badges). Right: the open conversation and a message
 # box. History lives on the server (last 200 messages per friend).
 
-signal toast(message: String)
-signal play_requested(game_id: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const BUBBLE_MAX_WIDTH := 520.0
@@ -180,10 +178,10 @@ static func _clock(at_ms: int) -> String:
 	if at_ms <= 0:
 		return ""
 	var bias := int(Time.get_time_zone_from_system().get("bias", 0)) * 60
-	var local := int(at_ms / 1000) + bias
+	var local := floori(at_ms / 1000.0) + bias
 	var now := int(Time.get_unix_time_from_system()) + bias
 	var stamp := Time.get_datetime_dict_from_unix_time(local)
-	if local / 86400 == now / 86400:
+	if floori(local / 86400.0) == floori(now / 86400.0):
 		return "%02d:%02d" % [stamp["hour"], stamp["minute"]]
 	return "%02d.%02d %02d:%02d" % [stamp["day"], stamp["month"], stamp["hour"], stamp["minute"]]
 
@@ -211,8 +209,8 @@ func _render_list() -> void:
 		return
 	var shown := 0
 	for profile in friends:
-		var name := str(profile.get("display_name", "Pardus"))
-		if not _filter.is_empty() and not name.to_lower().contains(_filter):
+		var friend_name := str(profile.get("display_name", "Pardus"))
+		if not _filter.is_empty() and not friend_name.to_lower().contains(_filter):
 			continue
 		_list.add_child(_conversation_row(profile))
 		shown += 1
@@ -222,7 +220,7 @@ func _render_list() -> void:
 
 func _conversation_row(profile: Dictionary) -> Control:
 	var account_id := str(profile.get("account_id", ""))
-	var name := str(profile.get("display_name", "Pardus"))
+	var friend_name := str(profile.get("display_name", "Pardus"))
 	var presence := _presence(profile)
 	var selected := account_id == _selected_id
 	var unread := int(profile.get("chat_unread", 0))
@@ -236,13 +234,13 @@ func _conversation_row(profile: Dictionary) -> Control:
 	var row := UI.hbox(10)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	holder.add_child(row)
-	row.add_child(UI.avatar(name, 44, presence, Color.TRANSPARENT, _picture(profile)))
+	row.add_child(UI.avatar(friend_name, 44, presence, Color.TRANSPARENT, _picture(profile)))
 	var text := UI.vbox(2)
 	text.alignment = BoxContainer.ALIGNMENT_CENTER
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	UI.expand(text)
 	var top := UI.hbox(6)
-	top.add_child(UI.expand(UI.fit(UI.label(name, 14, UI.TEXT, true))))
+	top.add_child(UI.expand(UI.fit(UI.label(friend_name, 14, UI.TEXT, true))))
 	var when := _clock(int(profile.get("chat_last_at", 0)))
 	if not when.is_empty():
 		top.add_child(UI.label(when, 11, UI.TEXT_3))
@@ -276,12 +274,12 @@ func _render_header() -> void:
 	if profile.is_empty():
 		_header.add_child(UI.label("Sohbet", 18, UI.TEXT, true))
 		return
-	var name := str(profile.get("display_name", "Pardus"))
+	var friend_name := str(profile.get("display_name", "Pardus"))
 	var presence := _presence(profile)
-	_header.add_child(UI.avatar(name, 46, presence, Color.TRANSPARENT, _picture(profile)))
+	_header.add_child(UI.avatar(friend_name, 46, presence, Color.TRANSPARENT, _picture(profile)))
 	var titles := UI.vbox(2)
 	UI.expand(titles)
-	titles.add_child(UI.fit(UI.label(name, 17, UI.TEXT, true)))
+	titles.add_child(UI.fit(UI.label(friend_name, 17, UI.TEXT, true)))
 	var status := UI.presence_label(presence)
 	var game_name := str(profile.get("game_name", ""))
 	if presence == "in_game" and not game_name.is_empty():
