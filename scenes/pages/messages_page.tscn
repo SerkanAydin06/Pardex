@@ -1,0 +1,449 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/pages/messages_page.gd" id="1_eoiyi"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/message.svg" id="2_qjxgb"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/search.svg" id="3_r5h6v"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/friends.svg" id="4_58654"]
+[ext_resource type="Script" path="res://scripts/ui/pardex_button_content.gd" id="5_hwddp"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/send.svg" id="6_pkjs5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h4qhh"]
+content_margin_left = 14.0
+content_margin_top = 14.0
+content_margin_right = 14.0
+content_margin_bottom = 14.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xyg35"]
+content_margin_left = 40.0
+content_margin_top = 0.0
+content_margin_right = 10.0
+content_margin_bottom = 0.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_280u6"]
+content_margin_left = 40.0
+content_margin_top = 0.0
+content_margin_right = 10.0
+content_margin_bottom = 0.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.08627451, 0.5254902, 0.8784314, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p04vt"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jdr22"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g44fv"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.15294118, 0.6627451, 1, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mfbeq"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.15294118, 0.6627451, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.40705884, 0.7639216, 1, 0.8)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_do3xs"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.23764706, 0.6964706, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.40705884, 0.7639216, 1, 0.8)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kljuh"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+
+[node name="MessagesPage" type="VBoxContainer" unique_id=654228157]
+size_flags_vertical = 3
+theme_override_constants/separation = 14
+script = ExtResource("1_eoiyi")
+
+[node name="HBoxContainer1" type="HBoxContainer" parent="." unique_id=1133155067]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TextureRect1" type="TextureRect" parent="HBoxContainer1" unique_id=1876149479]
+modulate = Color(0.15294118, 0.6627451, 1, 1)
+texture_filter = 2
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_qjxgb")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label1" type="Label" parent="HBoxContainer1" unique_id=972673583]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 30
+text = "Mesajlar"
+
+[node name="MessageColumns" type="HBoxContainer" parent="." unique_id=1777274713]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="ConversationColumn" type="PanelContainer" parent="MessageColumns" unique_id=2130066467]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_h4qhh")
+
+[node name="VBoxContainer1" type="VBoxContainer" parent="MessageColumns/ConversationColumn" unique_id=354712195]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ConversationSearch" type="LineEdit" parent="MessageColumns/ConversationColumn/VBoxContainer1" unique_id=1655552180]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_placeholder_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxFlat_xyg35")
+theme_override_styles/read_only = SubResource("StyleBoxFlat_xyg35")
+theme_override_styles/focus = SubResource("StyleBoxFlat_280u6")
+placeholder_text = "Arkadaş ara..."
+clear_button_enabled = true
+
+[node name="TextureRect1" type="TextureRect" parent="MessageColumns/ConversationColumn/VBoxContainer1/ConversationSearch" unique_id=606025283]
+modulate = Color(0.6392157, 0.69411767, 0.78431374, 1)
+texture_filter = 2
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 0
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 14.0
+offset_top = -9.0
+offset_right = 32.0
+offset_bottom = 9.0
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("3_r5h6v")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ScrollContainer1" type="ScrollContainer" parent="MessageColumns/ConversationColumn/VBoxContainer1" unique_id=115455034]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ConversationList" type="VBoxContainer" parent="MessageColumns/ConversationColumn/VBoxContainer1/ScrollContainer1" unique_id=1954995870]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="VBoxContainer1" type="VBoxContainer" parent="MessageColumns/ConversationColumn/VBoxContainer1/ScrollContainer1/ConversationList" unique_id=584995190]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="CenterContainer1" type="CenterContainer" parent="MessageColumns/ConversationColumn/VBoxContainer1/ScrollContainer1/ConversationList/VBoxContainer1" unique_id=1002849531]
+layout_mode = 2
+
+[node name="TextureRect1" type="TextureRect" parent="MessageColumns/ConversationColumn/VBoxContainer1/ScrollContainer1/ConversationList/VBoxContainer1/CenterContainer1" unique_id=1263134019]
+modulate = Color(0.41960785, 0.4745098, 0.5647059, 1)
+texture_filter = 2
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("4_58654")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label1" type="Label" parent="MessageColumns/ConversationColumn/VBoxContainer1/ScrollContainer1/ConversationList/VBoxContainer1" unique_id=1598321893]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
+theme_override_font_sizes/font_size = 13
+text = "PARDEX Online bağlantısı bekleniyor"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="MessageColumns/ConversationColumn/VBoxContainer1/ScrollContainer1/ConversationList/VBoxContainer1" unique_id=260820247]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 12
+text = "Arkadaşlar sekmesinden arkadaş ekleyince burada görünür."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ChatPanel" type="PanelContainer" parent="MessageColumns" unique_id=1638052537]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_p04vt")
+
+[node name="VBoxContainer1" type="VBoxContainer" parent="MessageColumns/ChatPanel" unique_id=1776039706]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="MarginContainer1" type="MarginContainer" parent="MessageColumns/ChatPanel/VBoxContainer1" unique_id=1336099948]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="ChatHeader" type="HBoxContainer" parent="MessageColumns/ChatPanel/VBoxContainer1/MarginContainer1" unique_id=94477488]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label1" type="Label" parent="MessageColumns/ChatPanel/VBoxContainer1/MarginContainer1/ChatHeader" unique_id=609962272]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 18
+text = "Sohbet"
+
+[node name="ColorRect1" type="ColorRect" parent="MessageColumns/ChatPanel/VBoxContainer1" unique_id=1462427387]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+
+[node name="MessageScroll" type="ScrollContainer" parent="MessageColumns/ChatPanel/VBoxContainer1" unique_id=901597136]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="MarginContainer1" type="MarginContainer" parent="MessageColumns/ChatPanel/VBoxContainer1/MessageScroll" unique_id=1571284667]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="MessageList" type="VBoxContainer" parent="MessageColumns/ChatPanel/VBoxContainer1/MessageScroll/MarginContainer1" unique_id=1420316889]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="VBoxContainer1" type="VBoxContainer" parent="MessageColumns/ChatPanel/VBoxContainer1/MessageScroll/MarginContainer1/MessageList" unique_id=655916278]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="CenterContainer1" type="CenterContainer" parent="MessageColumns/ChatPanel/VBoxContainer1/MessageScroll/MarginContainer1/MessageList/VBoxContainer1" unique_id=143775048]
+layout_mode = 2
+
+[node name="TextureRect1" type="TextureRect" parent="MessageColumns/ChatPanel/VBoxContainer1/MessageScroll/MarginContainer1/MessageList/VBoxContainer1/CenterContainer1" unique_id=337083214]
+modulate = Color(0.41960785, 0.4745098, 0.5647059, 1)
+texture_filter = 2
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2_qjxgb")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label1" type="Label" parent="MessageColumns/ChatPanel/VBoxContainer1/MessageScroll/MarginContainer1/MessageList/VBoxContainer1" unique_id=42812345]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
+theme_override_font_sizes/font_size = 14
+text = "Bir arkadaş seç"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="MessageColumns/ChatPanel/VBoxContainer1/MessageScroll/MarginContainer1/MessageList/VBoxContainer1" unique_id=1586154367]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 12
+text = "Arkadaşların soldaki listede görünür."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="ColorRect2" type="ColorRect" parent="MessageColumns/ChatPanel/VBoxContainer1" unique_id=1607337531]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+
+[node name="MarginContainer2" type="MarginContainer" parent="MessageColumns/ChatPanel/VBoxContainer1" unique_id=1581562070]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="HBoxContainer1" type="HBoxContainer" parent="MessageColumns/ChatPanel/VBoxContainer1/MarginContainer2" unique_id=1335174525]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="MessageInput" type="LineEdit" parent="MessageColumns/ChatPanel/VBoxContainer1/MarginContainer2/HBoxContainer1" unique_id=1336724063]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_placeholder_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_jdr22")
+theme_override_styles/focus = SubResource("StyleBoxFlat_g44fv")
+placeholder_text = "Mesajlaşmak için bir arkadaş seç"
+max_length = 500
+editable = false
+
+[node name="SendButton" type="Button" parent="MessageColumns/ChatPanel/VBoxContainer1/MarginContainer2/HBoxContainer1" unique_id=1725279108]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(130, 46)
+layout_mode = 2
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_mfbeq")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_do3xs")
+theme_override_styles/hover = SubResource("StyleBoxFlat_do3xs")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_kljuh")
+disabled = true
+metadata/label = "Gönder"
+
+[node name="Content" type="CenterContainer" parent="MessageColumns/ChatPanel/VBoxContainer1/MarginContainer2/HBoxContainer1/SendButton" unique_id=989191920]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("5_hwddp")
+color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+
+[node name="Group" type="HBoxContainer" parent="MessageColumns/ChatPanel/VBoxContainer1/MarginContainer2/HBoxContainer1/SendButton/Content" unique_id=388423339]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 9
+
+[node name="Icon" type="TextureRect" parent="MessageColumns/ChatPanel/VBoxContainer1/MarginContainer2/HBoxContainer1/SendButton/Content/Group" unique_id=1055623108]
+modulate = Color(0.41960785, 0.4745098, 0.5647059, 1)
+texture_filter = 2
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("6_pkjs5")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="MessageColumns/ChatPanel/VBoxContainer1/MarginContainer2/HBoxContainer1/SendButton/Content/Group" unique_id=464619667]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 14
+text = "Gönder"

@@ -19,6 +19,7 @@ const NAV := {
 	"StoreButton": ["store", "store"],
 	"LibraryButton": ["library", "library"],
 	"FriendsButton": ["friends", "friends"],
+	"MessagesButton": ["messages", "message"],
 	"ProfileButton": ["profile", "profile"],
 }
 
@@ -32,6 +33,7 @@ var _store_page: VBoxContainer
 var _library_page: VBoxContainer
 var _social_page: VBoxContainer
 var _profile_page: VBoxContainer
+var _messages_page: VBoxContainer
 var _settings_content: VBoxContainer
 var _presence_menu: PopupMenu
 var _current_page := ""
@@ -103,10 +105,13 @@ func _create_pages() -> void:
 	_library_page = _bind_page("library", "LibraryPage")
 	_social_page = _bind_page("friends", "FriendsPage")
 	_profile_page = _bind_page("profile", "ProfilePage")
+	_messages_page = _bind_page("messages", "MessagesPage")
 	_bind_page("settings", "SettingsPage")
 	_settings_content = %Pages.get_node("SettingsPage/%SettingsContent") as VBoxContainer
 	_bind_settings_page()
-	for page in [_store_page, _library_page, _social_page, _profile_page]:
+	if _social_page.has_signal("message_requested"):
+		_social_page.message_requested.connect(_open_conversation)
+	for page in [_store_page, _library_page, _social_page, _profile_page, _messages_page]:
 		if page.has_signal("navigate"):
 			page.navigate.connect(_navigate)
 		if page.has_signal("play_requested"):
@@ -299,7 +304,7 @@ func _apply_responsive_layout() -> void:
 	%WindowChrome.get_node("SecondaryAction").visible = true
 	%WindowChrome.get_node("Separator").visible = true
 	var content_width := width - sidebar_width - float(outer * 2)
-	for page in [_store_page, _library_page, _social_page, _profile_page]:
+	for page in [_store_page, _library_page, _social_page, _profile_page, _messages_page]:
 		page.apply_layout(content_width)
 
 # ------------------------------------------------------------------ presence
@@ -347,6 +352,8 @@ func _wire_online_signals() -> void:
 	PardexOnline.online_error.connect(_show_toast)
 	PardexOnline.game_start_requested.connect(_on_game_start_requested)
 	PardexOnline.game_session_ready.connect(_on_game_session_ready)
+	PardexOnline.social_state_changed.connect(func(_state): _render_unread_badge())
+	PardexOnline.chat_message_received.connect(_on_chat_message)
 	PardexOnline.room_state_changed.connect(func(room: Dictionary):
 		if not bool(room.get("launching", false)):
 			_game_launch_in_progress = false
@@ -370,6 +377,36 @@ func _update_connection_ui(state: String) -> void:
 	settings_state_label.text = text
 	settings_state_label.add_theme_color_override("font_color", color)
 	_render_presence()
+
+
+# ------------------------------------------------------------------ messages
+
+func _open_conversation(account_id: String) -> void:
+	_navigate("messages")
+	_messages_page.call("open_conversation", account_id)
+
+
+func _render_unread_badge() -> void:
+	var unread := PardexOnline.unread_chat_total()
+	var badge := %MessagesBadge as PanelContainer
+	badge.visible = unread > 0
+	badge.add_theme_stylebox_override("panel", UI.box(UI.ACCENT, 12))
+	(%MessagesBadgeCount as Label).text = str(mini(unread, 99))
+	(%MessagesBadgeCount as Label).add_theme_color_override("font_color", UI.BG)
+
+
+# A message from a friend while another page is open shows a short toast.
+func _on_chat_message(with_account_id: String, message: Dictionary, _client_id: String) -> void:
+	if _current_page == "messages" or str(message.get("from", "")) == PardexOnline.account_id:
+		return
+	var sender := "Arkadaşın"
+	var friends = PardexOnline.social_state.get("friends", [])
+	if typeof(friends) == TYPE_ARRAY:
+		for profile in friends:
+			if typeof(profile) == TYPE_DICTIONARY and str(profile.get("account_id", "")) == with_account_id:
+				sender = str(profile.get("display_name", sender))
+	var text := str(message.get("text", "")).replace("\n", " ")
+	_show_toast("%s: %s" % [sender, text.left(60) + ("…" if text.length() > 60 else "")])
 
 
 # ------------------------------------------------------------------ games

@@ -7,6 +7,8 @@ signal room_left()
 signal online_error(message: String)
 signal game_start_requested(payload: Dictionary)
 signal game_session_ready(game_id: String, token: String)
+signal chat_message_received(with_account_id: String, message: Dictionary, client_id: String)
+signal chat_history_received(with_account_id: String, messages: Array)
 signal voice_frame_received(user_id: String, sequence: int, pcm_base64: String)
 signal social_state_changed(state: Dictionary)
 signal user_search_results(results: Array)
@@ -38,6 +40,8 @@ const RECONNECT_DELAY := 3.0
 const HEARTBEAT_INTERVAL := 20.0
 const SERVER_TIMEOUT := 60.0
 const WEBSOCKET_OUTBOUND_BUFFER_SIZE := 262144
+# Chat history (up to 200 messages) arrives in one packet.
+const WEBSOCKET_INBOUND_BUFFER_SIZE := 524288
 const VOICE_OUTBOUND_QUEUE_LIMIT := 32768
 const VALID_PRESENCE := ["online", "away", "busy"]
 const RECOVERY_HEX := "0123456789ABCDEF"
@@ -177,6 +181,7 @@ func connect_server() -> void:
 	_server_silence_elapsed = 0.0
 	_socket = WebSocketPeer.new()
 	_socket.outbound_buffer_size = WEBSOCKET_OUTBOUND_BUFFER_SIZE
+	_socket.inbound_buffer_size = WEBSOCKET_INBOUND_BUFFER_SIZE
 	var connection_error := _socket.connect_to_url(target_url)
 	if connection_error != OK:
 		_socket = null
@@ -284,6 +289,41 @@ func request_game_session(game_id := "korsanlar") -> void:
 		online_error.emit("PARDEX Online bağlantısı henüz hazır değil.")
 		return
 	_send({"type": "get_game_session", "game_id": game_id})
+
+
+# ------------------------------------------------------------------ chat
+
+# Returns the client id echoed back with the stored message ("" if not sent).
+func send_chat(target_account_id: String, text: String) -> String:
+	var clean := text.strip_edges()
+	if clean.is_empty() or target_account_id.is_empty():
+		return ""
+	if not is_online():
+		online_error.emit("Mesaj göndermek için PARDEX Online bağlantısı gerekli.")
+		return ""
+	var client_id := "%d_%d" % [Time.get_ticks_msec(), randi()]
+	_send({"type": "send_chat", "account_id": target_account_id, "text": clean.left(500), "client_id": client_id})
+	return client_id
+
+
+func request_chat_history(target_account_id: String) -> void:
+	if is_online() and not target_account_id.is_empty():
+		_send({"type": "get_chat_history", "account_id": target_account_id})
+
+
+func mark_chat_read(target_account_id: String) -> void:
+	if is_online() and not target_account_id.is_empty():
+		_send({"type": "mark_chat_read", "account_id": target_account_id})
+
+
+func unread_chat_total() -> int:
+	var total := 0
+	var friends = social_state.get("friends", [])
+	if typeof(friends) == TYPE_ARRAY:
+		for profile in friends:
+			if typeof(profile) == TYPE_DICTIONARY:
+				total += int((profile as Dictionary).get("chat_unread", 0))
+	return total
 
 
 func create_room(game_id := "korsanlar", max_players := 4) -> void:
@@ -639,6 +679,14 @@ func _handle_packet(packet: String) -> void:
 			if typeof(room_data) == TYPE_DICTIONARY:
 				current_room = (room_data as Dictionary).duplicate(true)
 				room_state_changed.emit(current_room.duplicate(true))
+		"chat_message":
+			var chat_data = message.get("message", {})
+			if typeof(chat_data) == TYPE_DICTIONARY:
+				chat_message_received.emit(str(message.get("with", "")), chat_data, str(message.get("client_id", "")))
+		"chat_history":
+			var history_data = message.get("messages", [])
+			if typeof(history_data) == TYPE_ARRAY:
+				chat_history_received.emit(str(message.get("with", "")), history_data)
 		"game_session":
 			game_session_ready.emit(str(message.get("game_id", "")), str(message.get("token", "")))
 		"game_start":
