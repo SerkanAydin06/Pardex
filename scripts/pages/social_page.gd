@@ -474,7 +474,7 @@ func _build_right() -> Control:
 	var requests := UI.panel(16)
 	var requests_column := UI.vbox(10)
 	requests.add_child(requests_column)
-	var header := UI.section_header("Bekleyen Davetler", "", 18)
+	var header := UI.section_header("Arkadaşlık İstekleri", "", 18)
 	UI.named(header.get_node("Title"), "RequestsTitle")
 	requests_column.add_child(header)
 	requests_column.add_child(UI.named(UI.vbox(10), "RequestsList"))
@@ -620,7 +620,7 @@ func _open_invite_picker(anchor: Control) -> void:
 func _render_requests() -> void:
 	UI.clear(_requests_list)
 	var incoming := _requests("incoming_requests")
-	_requests_title.text = "Bekleyen Davetler (%d)" % incoming.size()
+	_requests_title.text = "Arkadaşlık İstekleri (%d)" % incoming.size()
 	if incoming.is_empty():
 		_requests_list.add_child(UI.empty_state("mail", "Bekleyen arkadaşlık isteği yok", "", true))
 		return
