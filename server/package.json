@@ -6,7 +6,7 @@
   "main": "production_server.js",
   "scripts": {
     "start": "node production_server.js",
-    "test": "node smoke-test.js && node social-smoke-test.js && node invite-smoke-test.js && node presence-smoke-test.js && node lifecycle-smoke-test.js && node hardening-smoke-test.js && node recovery-smoke-test.js && node production-guard-smoke-test.js && node quick-play-smoke-test.js"
+    "test": "node smoke-test.js && node social-smoke-test.js && node invite-smoke-test.js && node presence-smoke-test.js && node lifecycle-smoke-test.js && node hardening-smoke-test.js && node recovery-smoke-test.js && node production-guard-smoke-test.js && node quick-play-smoke-test.js && node game-link-smoke-test.js"
   },
   "dependencies": {
     "ws": "^8.18.0"
