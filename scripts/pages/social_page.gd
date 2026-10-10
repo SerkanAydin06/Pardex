@@ -19,6 +19,10 @@ const HERO_HEIGHT := 300.0
 const ROW_ACTION_WIDTH := 104.0
 
 var _show_all := false
+# Top bar search (main.gd): filters friends and searches PARDEX users.
+var _query := ""
+var _user_results: Array = []
+var _search_timer: Timer
 var _columns: HBoxContainer
 var _left: VBoxContainer
 var _online_title: Label
@@ -49,12 +53,25 @@ func _ready() -> void:
 	_build_friend_menu()
 	_build_add_dialog()
 	_build_invite_dialog()
-	PardexOnline.social_state_changed.connect(func(_state): _render())
+	PardexOnline.social_state_changed.connect(func(_state):
+		# Refresh search results too, so "Ekle" turns into "İsteği İptal Et".
+		if _query.length() >= 2:
+			_search_timer.start()
+		_render()
+	)
 	PardexOnline.avatar_ready.connect(func(_account_id): _render())
 	PardexOnline.connection_state_changed.connect(_on_connection_state_changed)
 	PardexOnline.room_state_changed.connect(func(_room_state): _render())
 	PardexOnline.room_left.connect(_render)
 	PardexOnline.user_search_results.connect(_on_search_results)
+	_search_timer = Timer.new()
+	_search_timer.one_shot = true
+	_search_timer.wait_time = 0.35
+	_search_timer.timeout.connect(func():
+		if _query.length() >= 2 and PardexOnline.is_online():
+			PardexOnline.search_users(_query)
+	)
+	add_child(_search_timer)
 	PardexOnline.social_notice.connect(func(message: String): toast.emit(message))
 	PardexOnline.room_invite_received.connect(_on_room_invite_received)
 	PardexOnline.room_invite_closed.connect(_on_room_invite_closed)
@@ -75,8 +92,6 @@ func _bind() -> void:
 	_requests_list = %RequestsList
 	_hero_bullets = %HeroBullets
 	(%AddFriendButton as Button).pressed.connect(_open_add_dialog)
-	(%HeroPartyButton as Button).pressed.connect(func(): message_requested.emit(""))
-	(%SuggestionSearchButton as Button).pressed.connect(_open_add_dialog)
 	var toggle := %OnlineToggle as Button
 	toggle.pressed.connect(func():
 		_show_all = not _show_all
@@ -179,14 +194,11 @@ func _build_hero() -> Control:
 	var add := UI.button("Arkadaş Ekle", "primary", 15, 48, "user_plus")
 	add.custom_minimum_size.x = 210
 	actions.add_child(UI.named(add, "AddFriendButton"))
-	var party := UI.button("Mesajlar", "ghost", 15, 48, "message")
-	party.custom_minimum_size.x = 190
-	actions.add_child(UI.named(party, "HeroPartyButton"))
 
 	var bullets := UI.feature_card([
 		["friends", "Birlikte Oyna", "Oyunda PARDEX ONLINE'dan masa kur, kodu paylaş."],
 		["message", "Mesajlaşma", "Arkadaşlarınla Mesajlar sekmesinden yazış."],
-		["user_plus", "Yeni Arkadaşlar Keşfet", "PARDEX kullanıcılarını adıyla bul."],
+		["user_plus", "Yeni Arkadaşlar Keşfet", "Üstteki arama kutusuyla PARDEX kullanıcılarını bul."],
 	], 330)
 	row.add_child(UI.named(bullets, "HeroBullets"))
 	return frame
@@ -231,8 +243,43 @@ func _render() -> void:
 	_render_requests()
 
 
+## Called by the top bar search while Arkadaşlar is open.
+func set_query(query: String) -> void:
+	_query = query.strip_edges()
+	_user_results.clear()
+	if _query.length() >= 2:
+		_search_timer.start()
+	_render_online()
+
+
+func _render_search() -> void:
+	var needle := _query.to_lower()
+	(%OnlineToggle as Control).visible = false
+	var friends := _friends().filter(func(p): return typeof(p) == TYPE_DICTIONARY and str(p.get("display_name", "")).to_lower().contains(needle))
+	_online_title.text = "Arama: “%s”" % _query
+	if not friends.is_empty():
+		_online_list.add_child(UI.label("ARKADAŞLARIN", 12, UI.TEXT_3, true))
+		for profile in friends:
+			_online_list.add_child(_friend_row(profile))
+	var others := _user_results.filter(func(p): return typeof(p) == TYPE_DICTIONARY and str(p.get("relationship", "")) != "friend")
+	if not others.is_empty():
+		_online_list.add_child(UI.label("PARDEX KULLANICILARI", 12, UI.TEXT_3, true))
+		for profile in others:
+			var holder := UI.panel(0, UI.box(Color(UI.SURFACE_2, 0.55), 10, UI.BORDER, 1, 8))
+			holder.add_child(_user_result_row(profile))
+			_online_list.add_child(holder)
+	if friends.is_empty() and others.is_empty():
+		var hint := "Aranıyor..." if _query.length() >= 2 and PardexOnline.is_online() else "En az 2 karakter yaz."
+		if not PardexOnline.is_online():
+			hint = "Kullanıcı aramak için PARDEX Online bağlantısı gerekli."
+		_online_list.add_child(UI.empty_state("search", "Sonuç yok", hint, true))
+
+
 func _render_online() -> void:
 	UI.clear(_online_list)
+	if not _query.is_empty():
+		_render_search()
+		return
 	var friends := _friends()
 	var shown := friends.filter(func(p): return typeof(p) == TYPE_DICTIONARY and (_show_all or _presence(p) != "offline"))
 	var online_count := friends.filter(func(p): return typeof(p) == TYPE_DICTIONARY and _presence(p) != "offline").size()
@@ -338,6 +385,7 @@ func _build_right() -> Control:
 	var right := UI.named(UI.vbox(16), "RightColumn") as VBoxContainer
 	right.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var requests := UI.panel(16)
+	requests.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var requests_column := UI.vbox(10)
 	requests.add_child(requests_column)
 	var header := UI.section_header("Arkadaşlık İstekleri", "", 18)
@@ -346,22 +394,6 @@ func _build_right() -> Control:
 	requests_column.add_child(UI.named(UI.vbox(10), "RequestsList"))
 	right.add_child(requests)
 
-	var suggestions := UI.panel(16)
-	suggestions.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var suggestions_column := UI.vbox(10)
-	suggestions.add_child(suggestions_column)
-	suggestions_column.add_child(UI.section_header("Önerilen Arkadaşlar", "", 18))
-	var line := UI.hbox(12)
-	line.add_child(UI.icon_tile("user_plus", 44, UI.ACCENT))
-	var copy := UI.vbox(2)
-	UI.expand(copy)
-	copy.add_child(UI.label("Öneriler yakında", 14, UI.TEXT, true))
-	copy.add_child(UI.wrapped(UI.label("Şimdilik arkadaşlarını adıyla arayabilirsin.", 12, UI.TEXT_2)))
-	line.add_child(copy)
-	var find := UI.button("Ara", "ghost", 12, 34, "search")
-	line.add_child(UI.named(find, "SuggestionSearchButton"))
-	suggestions_column.add_child(line)
-	right.add_child(suggestions)
 	return right
 
 
@@ -463,33 +495,39 @@ func _open_add_dialog() -> void:
 func _on_search_results(results: Array) -> void:
 	UI.clear(_add_results)
 	_add_hint.text = "%d kullanıcı bulundu." % results.size() if not results.is_empty() else "'%s' için kullanıcı bulunamadı." % _last_search
+	if not _query.is_empty():
+		_user_results = results.duplicate(true)
+		_render_online()
 	for profile in results:
-		if typeof(profile) != TYPE_DICTIONARY:
-			continue
-		var account_id := str(profile.get("account_id", ""))
-		var row := UI.hbox(10)
-		row.add_child(UI.avatar(str(profile.get("display_name", "P")), 36, _presence(profile), Color.TRANSPARENT, _picture(profile)))
-		var text := UI.vbox(0)
-		UI.expand(text)
-		text.add_child(UI.label(str(profile.get("display_name", "Pardus")), 13, UI.TEXT, true))
-		text.add_child(UI.label("#" + str(profile.get("tag", account_id.right(6).to_upper())), 11, UI.TEXT_3))
-		row.add_child(text)
-		var action: Button
-		match str(profile.get("relationship", "none")):
-			"friend":
-				action = UI.button("Arkadaşsınız", "ghost", 11, 32)
-				action.disabled = true
-			"incoming":
-				action = UI.button("Kabul Et", "primary", 11, 32)
-				action.pressed.connect(func(): PardexOnline.accept_friend_request(account_id))
-			"outgoing":
-				action = UI.button("İsteği İptal Et", "ghost", 11, 32)
-				action.pressed.connect(func(): PardexOnline.cancel_friend_request(account_id))
-			_:
-				action = UI.button("Ekle", "primary", 11, 32, "user_plus")
-				action.pressed.connect(func(): PardexOnline.send_friend_request(account_id))
-		row.add_child(action)
-		_add_results.add_child(row)
+		if typeof(profile) == TYPE_DICTIONARY:
+			_add_results.add_child(_user_result_row(profile))
+
+
+func _user_result_row(profile: Dictionary) -> Control:
+	var account_id := str(profile.get("account_id", ""))
+	var row := UI.hbox(10)
+	row.add_child(UI.avatar(str(profile.get("display_name", "P")), 36, _presence(profile), Color.TRANSPARENT, _picture(profile)))
+	var text := UI.vbox(0)
+	UI.expand(text)
+	text.add_child(UI.label(str(profile.get("display_name", "Pardus")), 13, UI.TEXT, true))
+	text.add_child(UI.label("#" + str(profile.get("tag", account_id.right(6).to_upper())), 11, UI.TEXT_3))
+	row.add_child(text)
+	var action: Button
+	match str(profile.get("relationship", "none")):
+		"friend":
+			action = UI.button("Arkadaşsınız", "ghost", 11, 32)
+			action.disabled = true
+		"incoming":
+			action = UI.button("Kabul Et", "primary", 11, 32)
+			action.pressed.connect(func(): PardexOnline.accept_friend_request(account_id))
+		"outgoing":
+			action = UI.button("İsteği İptal Et", "ghost", 11, 32)
+			action.pressed.connect(func(): PardexOnline.cancel_friend_request(account_id))
+		_:
+			action = UI.button("Ekle", "primary", 11, 32, "user_plus")
+			action.pressed.connect(func(): PardexOnline.send_friend_request(account_id))
+	row.add_child(action)
+	return row
 
 
 func _on_connection_state_changed(state: String) -> void:
