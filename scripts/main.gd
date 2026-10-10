@@ -581,6 +581,19 @@ func _restore_windowed_state() -> void:
 	DisplayServer.window_set_position(target_position)
 	if _saved_window_maximized:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
+		return
+	_settle_window_rect.call_deferred(target_size, target_position)
+
+
+# Right after start-up Windows can still apply its own size; set the rect
+# again a frame later so Godot's cached window size matches the real one
+# (otherwise dragging the header fights a stale size and flickers).
+func _settle_window_rect(target_size: Vector2i, target_position: Vector2i) -> void:
+	await get_tree().process_frame
+	if DisplayServer.window_get_mode() != DisplayServer.WINDOW_MODE_WINDOWED:
+		return
+	DisplayServer.window_set_size(target_size)
+	DisplayServer.window_set_position(target_position)
 
 
 func _capture_window_state() -> void:
