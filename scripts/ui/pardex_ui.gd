@@ -249,6 +249,19 @@ static func wrapped(item: Label) -> Label:
 	return item
 
 
+# Older baked page scenes stored "bold" as a same-color outline. Convert those
+# labels at runtime so scene-built and dynamically built UI render identically.
+static func refine_typography(root: Node) -> void:
+	if root is Label:
+		var item := root as Label
+		if item.get_theme_constant("outline_size") > 0 and \
+				item.get_theme_color("font_outline_color") == item.get_theme_color("font_color"):
+			item.add_theme_constant_override("outline_size", 0)
+			item.add_theme_font_override("font", _get_bold_font())
+	for child in root.get_children():
+		refine_typography(child)
+
+
 # ------------------------------------------------------------------ icons
 
 static func icon(name: String, size := 20, color := TEXT) -> TextureRect:
