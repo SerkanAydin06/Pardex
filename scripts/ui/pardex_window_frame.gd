@@ -16,6 +16,7 @@ var _edges: Array[Control] = []
 # Manual header drag: cursor offset inside the window while the button is held.
 var _dragging := false
 var _drag_offset := Vector2i.ZERO
+var _drag_size := Vector2i.ZERO
 
 
 func _ready() -> void:
@@ -114,6 +115,10 @@ func _on_header_input(event: InputEvent) -> void:
 			_dragging = false
 		if _dragging:
 			DisplayServer.window_set_position(DisplayServer.mouse_get_position() - _drag_offset)
+			# On Windows a borderless window can lose a few pixels on every
+			# reposition; keep the size it had when the drag started.
+			if DisplayServer.window_get_size() != _drag_size:
+				DisplayServer.window_set_size(_drag_size)
 		return
 	var mouse := event as InputEventMouseButton
 	if mouse == null or mouse.button_index != MOUSE_BUTTON_LEFT:
@@ -130,6 +135,7 @@ func _on_header_input(event: InputEvent) -> void:
 	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_MAXIMIZED:
 		await _unmaximize_under_cursor(mouse.position)
 	_drag_offset = DisplayServer.mouse_get_position() - DisplayServer.window_get_position()
+	_drag_size = DisplayServer.window_get_size()
 	_dragging = true
 
 
