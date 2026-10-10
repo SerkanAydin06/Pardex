@@ -1692,7 +1692,7 @@ theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 18
-text = "Bekleyen Davetler (0)"
+text = "Arkadaşlık İstekleri (0)"
 
 [node name="Fill" type="Control" parent="ScrollContainer1/VBoxContainer1/Columns/RightColumn/PanelContainer2/VBoxContainer1/HBoxContainer1" unique_id=741370553]
 layout_mode = 2
