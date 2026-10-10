@@ -9,6 +9,10 @@ const APP_VERSION := "0.1.0"
 const SETTINGS_PATH := "user://pardex.cfg"
 const DEFAULT_SERVER_URL := ""
 const MIN_WINDOW_SIZE := Vector2i(1024, 640)
+# Below full-screen size the whole UI shrinks uniformly like a picture instead
+# of re-flowing; under this scale it stops shrinking (stays readable) and the
+# responsive layout takes over.
+const MIN_UI_SCALE := 0.6
 const SESSION_POLL_INTERVAL := 5.0
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Icons := preload("res://scripts/ui/pardex_icons.gd")
@@ -53,6 +57,8 @@ func _ready() -> void:
 	_build_search()
 	_style_brand()
 	_load_settings()
+	get_window().size_changed.connect(_apply_window_scale)
+	_apply_window_scale()
 	_apply_start_window()
 	_create_pages()
 	_wire_navigation()
@@ -606,6 +612,28 @@ func _apply_start_window() -> void:
 		get_window().min_size = Vector2i(mini(MIN_WINDOW_SIZE.x, usable.size.x), mini(MIN_WINDOW_SIZE.y, usable.size.y))
 		return
 	_fit_window_to_screen()
+
+
+# The layout is designed for the screen it runs on: full screen shows it 1:1
+# and a smaller window shows the same layout scaled down by the same factor.
+func _apply_window_scale() -> void:
+	var window := get_window()
+	var screen := DisplayServer.screen_get_size(window.current_screen)
+	var window_size := window.size
+	if screen.x <= 0 or screen.y <= 0 or window_size.x <= 0 or window_size.y <= 0:
+		return
+	var ui_scale := clampf(
+		minf(float(window_size.x) / screen.x, float(window_size.y) / screen.y), MIN_UI_SCALE, 1.0
+	)
+	var content_size := Vector2i((Vector2(window_size) / ui_scale).round())
+	if (
+		window.content_scale_mode == Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+		and window.content_scale_size == content_size
+	):
+		return
+	window.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+	window.content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
+	window.content_scale_size = content_size
 
 
 func _fit_window_to_screen() -> void:
