@@ -46,6 +46,7 @@ const VOICE_OUTBOUND_QUEUE_LIMIT := 32768
 const VALID_PRESENCE := ["online", "away", "busy"]
 const RECOVERY_HEX := "0123456789ABCDEF"
 
+var _outdated_server_warned := false
 var server_url := DEFAULT_SERVER_URL
 var _resolved_url := ""
 var _address_age := INF
@@ -615,6 +616,7 @@ func _handle_packet(packet: String) -> void:
 	var message_type := str(message.get("type", ""))
 	match message_type:
 		"welcome":
+			_outdated_server_warned = false
 			var previous_user_id := user_id
 			var had_room := not current_room.is_empty()
 			var recovered := bool(message.get("recovered", false))
@@ -707,6 +709,13 @@ func _handle_packet(packet: String) -> void:
 		"error":
 			var error_message := str(message.get("message", "Bilinmeyen PARDEX Online hatası."))
 			var error_code := str(message.get("code", ""))
+			# The server PC runs an older PARDEX server that does not know a
+			# newer request (e.g. chat). Say so once instead of on every request.
+			if error_code == "UNKNOWN_MESSAGE":
+				if not _outdated_server_warned:
+					_outdated_server_warned = true
+					online_error.emit("Sunucu bilgisayarındaki PARDEX eski sürüm: o bilgisayarda PARDEX'i güncelleyip (git pull) sunucuyu panelden yeniden başlat.")
+				return
 			if not _pending_recovery_code.is_empty() and error_code in ["INVALID_RECOVERY_CODE", "RECOVERY_SAVE_FAILED", "INVALID_IDENTITY"]:
 				_pending_recovery_code = ""
 				account_recovery_failed.emit(error_message)
