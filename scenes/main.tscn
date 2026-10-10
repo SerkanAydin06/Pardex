@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" path="res://scenes/pages/library_page.tscn" id="20_library"]
 [ext_resource type="PackedScene" path="res://scenes/pages/friends_page.tscn" id="20_friends"]
 [ext_resource type="PackedScene" path="res://scenes/pages/profile_page.tscn" id="20_profile"]
+[ext_resource type="PackedScene" path="res://scenes/pages/messages_page.tscn" id="20_messages"]
 [ext_resource type="PackedScene" path="res://scenes/pages/settings_page.tscn" id="20_settings"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
@@ -241,6 +242,36 @@ layout_mode = 2
 text = "Arkadaşlar"
 icon = ExtResource("8_friends")
 
+[node name="MessagesButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=1738450070]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Mesajlar"
+
+[node name="MessagesBadge" type="PanelContainer" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/MessagesButton" unique_id=1738450071]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -46.0
+offset_top = -12.0
+offset_right = -16.0
+offset_bottom = 12.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="MessagesBadgeCount" type="Label" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/MessagesButton/MessagesBadge" unique_id=1738450072]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="ProfileButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=214693986]
 unique_name_in_owner = true
 layout_mode = 2
@@ -324,6 +355,10 @@ layout_mode = 2
 visible = false
 
 [node name="FriendsPage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_friends")]
+layout_mode = 2
+visible = false
+
+[node name="MessagesPage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_messages")]
 layout_mode = 2
 visible = false
 

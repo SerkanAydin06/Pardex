@@ -9,6 +9,8 @@ extends VBoxContainer
 
 signal toast(message: String)
 signal play_requested(game_id: String)
+# Opens the Mesajlar tab on this friend's conversation ("" = most recent).
+signal message_requested(account_id: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
@@ -17,16 +19,12 @@ const HERO_HEIGHT := 300.0
 const ROW_ACTION_WIDTH := 104.0
 
 var _show_all := false
-var _selected_id := ""
 var _columns: HBoxContainer
 var _left: VBoxContainer
 var _online_title: Label
 var _online_list: VBoxContainer
 var _playing_title: Label
 var _playing_row: HBoxContainer
-var _chat_panel: Control
-var _chat_header: HBoxContainer
-var _chat_body: VBoxContainer
 var _right: VBoxContainer
 var _requests_title: Label
 var _requests_list: VBoxContainer
@@ -72,15 +70,12 @@ func _bind() -> void:
 	_online_list = %OnlineList
 	_playing_title = %PlayingTitle
 	_playing_row = %PlayingRow
-	_chat_panel = %ChatPanel
-	_chat_header = %ChatHeader
-	_chat_body = %ChatBody
 	_right = %RightColumn
 	_requests_title = %RequestsTitle
 	_requests_list = %RequestsList
 	_hero_bullets = %HeroBullets
 	(%AddFriendButton as Button).pressed.connect(_open_add_dialog)
-	(%HeroPartyButton as Button).pressed.connect(func(): play_requested.emit("korsanlar"))
+	(%HeroPartyButton as Button).pressed.connect(func(): message_requested.emit(""))
 	(%SuggestionSearchButton as Button).pressed.connect(_open_add_dialog)
 	var toggle := %OnlineToggle as Button
 	toggle.pressed.connect(func():
@@ -101,19 +96,14 @@ func _build() -> void:
 	columns.custom_minimum_size.y = 560
 	body.add_child(columns)
 	columns.add_child(_build_left())
-	columns.add_child(_build_chat())
 	columns.add_child(_build_right())
 
 
 func apply_layout(content_width: float) -> void:
-	# On narrow windows keep the game/invite column instead of the unfinished
-	# chat panel. This preserves the actions people actually need at 1024 px.
-	var wide := content_width >= 980.0
+	# Chat has its own tab (Mesajlar); the friend list takes the free width.
 	_right.visible = true
-	_chat_panel.visible = wide
 	_hero_bullets.visible = content_width >= 960.0
-	_left.size_flags_horizontal = Control.SIZE_FILL if wide else Control.SIZE_EXPAND_FILL
-	_left.custom_minimum_size.x = clampf(content_width * 0.33, 300.0, 470.0) if wide else 0.0
+	_left.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_right.custom_minimum_size.x = clampf(content_width * 0.3, 320.0, 430.0)
 
 
@@ -189,13 +179,13 @@ func _build_hero() -> Control:
 	var add := UI.button("Arkadaş Ekle", "primary", 15, 48, "user_plus")
 	add.custom_minimum_size.x = 210
 	actions.add_child(UI.named(add, "AddFriendButton"))
-	var party := UI.button("Birlikte Oyna", "ghost", 15, 48, "play")
+	var party := UI.button("Mesajlar", "ghost", 15, 48, "message")
 	party.custom_minimum_size.x = 190
 	actions.add_child(UI.named(party, "HeroPartyButton"))
 
 	var bullets := UI.feature_card([
 		["friends", "Birlikte Oyna", "Oyunda PARDEX ONLINE'dan masa kur, kodu paylaş."],
-		["headphones", "Sesli Sohbet", "Oyun içi sesli sohbet yakında."],
+		["message", "Mesajlaşma", "Arkadaşlarınla Mesajlar sekmesinden yazış."],
 		["user_plus", "Yeni Arkadaşlar Keşfet", "PARDEX kullanıcılarını adıyla bul."],
 	], 330)
 	row.add_child(UI.named(bullets, "HeroBullets"))
@@ -236,18 +226,8 @@ func _build_left() -> Control:
 
 
 func _render() -> void:
-	var friends := _friends()
-	if _selected_id.is_empty() or _find_friend(_selected_id).is_empty():
-		_selected_id = ""
-		for profile in friends:
-			if typeof(profile) == TYPE_DICTIONARY and _presence(profile) != "offline":
-				_selected_id = str(profile.get("account_id", ""))
-				break
-		if _selected_id.is_empty() and not friends.is_empty() and typeof(friends[0]) == TYPE_DICTIONARY:
-			_selected_id = str(friends[0].get("account_id", ""))
 	_render_online()
 	_render_playing()
-	_render_chat()
 	_render_requests()
 
 
@@ -278,15 +258,13 @@ func _friend_row(profile: Dictionary) -> Control:
 	var account_id := str(profile.get("account_id", ""))
 	var display_name := str(profile.get("display_name", "Pardus"))
 	var presence := _presence(profile)
-	var selected := account_id == _selected_id
-	var holder := UI.panel(0, UI.box(Color(UI.ACCENT, 0.1) if selected else Color(UI.SURFACE_2, 0.55), 10, Color(UI.ACCENT, 0.5) if selected else UI.BORDER, 1, 8))
+	var holder := UI.panel(0, UI.box(Color(UI.SURFACE_2, 0.55), 10, UI.BORDER, 1, 8))
 	holder.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	holder.tooltip_text = "%s ile mesajlaş" % display_name
 	holder.gui_input.connect(func(event: InputEvent):
 		var mouse := event as InputEventMouseButton
 		if mouse != null and mouse.pressed and mouse.button_index == MOUSE_BUTTON_LEFT:
-			_selected_id = account_id
-			_render_online()
-			_render_chat()
+			message_requested.emit(account_id)
 	)
 	var row := UI.hbox(10)
 	holder.add_child(row)
@@ -300,6 +278,9 @@ func _friend_row(profile: Dictionary) -> Control:
 	var game_name := str(profile.get("game_name", ""))
 	var detail := game_name if not game_name.is_empty() and (presence == "in_game" or bool(profile.get("in_room", false))) else UI.presence_label(presence)
 	var status := UI.fit(UI.label("●  " + detail, 12, UI.presence_color(presence) if presence != "offline" else UI.TEXT_3))
+	var unread := int(profile.get("chat_unread", 0))
+	if unread > 0:
+		status = UI.fit(UI.label("✉  %d yeni mesaj" % unread, 12, UI.ACCENT, true))
 	text.add_child(status)
 	row.add_child(text)
 	var action := _row_action(profile)
@@ -314,23 +295,17 @@ func _friend_row(profile: Dictionary) -> Control:
 # The one room action that fits this friend right now.
 func _row_action(profile: Dictionary) -> Button:
 	var account_id := str(profile.get("account_id", ""))
-	var presence := _presence(profile)
 	if bool(profile.get("room_joinable", false)) and not _friend_in_my_room(account_id):
 		var join := UI.button("Katıl", "ghost", 12, 34, "gamepad")
 		join.add_theme_stylebox_override("normal", UI.box(Color(UI.ACCENT_DARK, 0.55), 9, UI.ACCENT, 1))
 		join.custom_minimum_size.x = ROW_ACTION_WIDTH
 		join.pressed.connect(func(): PardexOnline.join_friend_room(account_id))
 		return join
-	if presence != "offline":
-		var message := UI.button("Mesaj", "ghost", 12, 34, "message")
-		message.custom_minimum_size.x = ROW_ACTION_WIDTH
-		message.pressed.connect(func():
-			_selected_id = account_id
-			_render_online()
-			_render_chat()
-		)
-		return message
-	return null
+	# Offline friends get the message when they come back.
+	var message := UI.button("Mesaj", "ghost", 12, 34, "message")
+	message.custom_minimum_size.x = ROW_ACTION_WIDTH
+	message.pressed.connect(func(): message_requested.emit(account_id))
+	return message
 
 
 func _render_playing() -> void:
@@ -356,77 +331,6 @@ func _render_playing() -> void:
 
 
 # ------------------------------------------------------------------ chat
-
-func _build_chat() -> Control:
-	var chat_panel := UI.named(UI.panel(0), "ChatPanel") as PanelContainer
-	UI.expand(chat_panel)
-	chat_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var column := UI.vbox(0)
-	chat_panel.add_child(column)
-	column.add_child(UI.margin(UI.named(UI.hbox(12), "ChatHeader"), 16, 14, 14, 14))
-	column.add_child(UI.divider())
-	var chat_body := UI.named(UI.vbox(10), "ChatBody") as VBoxContainer
-	chat_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var body_margin := UI.margin(chat_body, 18, 16, 18, 16)
-	body_margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	column.add_child(body_margin)
-	var input_row := UI.hbox(10)
-	column.add_child(UI.margin(input_row, 14, 0, 14, 14))
-	var attach := UI.icon_button("plus", "Ek gönder (yakında)", 44, UI.TEXT_2, true)
-	attach.disabled = true
-	input_row.add_child(attach)
-	var input := LineEdit.new()
-	input.placeholder_text = "Bir mesaj yaz...  (mesajlaşma yakında)"
-	input.editable = false
-	input.custom_minimum_size.y = 44
-	input.add_theme_font_size_override("font_size", 13)
-	input.add_theme_color_override("font_placeholder_color", UI.TEXT_3)
-	input.add_theme_stylebox_override("read_only", UI.box(Color(UI.SURFACE, 0.9), 10, UI.BORDER, 1, 12))
-	UI.expand(input)
-	input_row.add_child(input)
-	var send := UI.icon_button("send", "Gönder (yakında)", 44, UI.TEXT, true)
-	send.add_theme_stylebox_override("disabled", UI.box(Color(UI.ACCENT_DARK, 0.6), 10, UI.ACCENT_DARK, 1))
-	send.disabled = true
-	input_row.add_child(send)
-	return chat_panel
-
-
-func _render_chat() -> void:
-	UI.clear(_chat_header)
-	UI.clear(_chat_body)
-	var profile := _find_friend(_selected_id)
-	if profile.is_empty():
-		_chat_header.add_child(UI.label("Sohbet", 16, UI.TEXT, true))
-		_chat_body.add_child(UI.empty_state("message", "Bir arkadaş seç", "Arkadaşların soldaki listede görünür."))
-		return
-	var display_name := str(profile.get("display_name", "Pardus"))
-	var presence := _presence(profile)
-	_chat_header.add_child(UI.avatar(display_name, 44, presence, Color.TRANSPARENT, _picture(profile)))
-	var titles := UI.vbox(1)
-	UI.expand(titles)
-	titles.add_child(UI.fit(UI.label(display_name, 16, UI.TEXT, true)))
-	var status := UI.hbox(6)
-	status.add_child(UI.label("●", 11, UI.presence_color(presence)))
-	status.add_child(UI.expand(UI.fit(UI.label("%s - %s" % [UI.presence_label(presence), _activity(profile)] if presence == "in_game" else UI.presence_label(presence), 12, UI.TEXT_2))))
-	titles.add_child(status)
-	_chat_header.add_child(titles)
-	for spec in [["phone", "Sesli arama yakında"], ["video", "Görüntülü arama yakında"]]:
-		var item := UI.icon_button(str(spec[0]), str(spec[1]), 40, UI.TEXT_2, true)
-		item.disabled = true
-		_chat_header.add_child(item)
-	var more := UI.icon_button("dots", "Seçenekler", 40, UI.TEXT_2, true)
-	more.pressed.connect(func(): _open_friend_menu(profile, more))
-	_chat_header.add_child(more)
-
-	_chat_body.add_child(UI.empty_state("message", "%s ile sohbet yakında" % display_name,
-		"PARDEX mesajlaşması henüz hazır değil. Arkadaşın oyunda bir masadayken burada Katıl ile o masaya girebilirsin."))
-	var action := _row_action(profile)
-	if action != null and str(action.get_meta("label", action.text)) != "Mesaj":
-		var holder := CenterContainer.new()
-		holder.add_child(action)
-		_chat_body.add_child(holder)
-	_chat_body.add_child(UI.vspacer())
-
 
 # ------------------------------------------------------------------ right column
 

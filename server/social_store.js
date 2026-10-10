@@ -74,10 +74,25 @@ function safeStoredName(value) {
   return (text || "Pardus").slice(0, 24);
 }
 
+const MAX_CONVERSATION_MESSAGES = 200;
+const MAX_CHAT_TEXT = 500;
+
+function conversationKey(a, b) {
+  return [String(a), String(b)].sort().join("|");
+}
+
+function cleanChatText(value) {
+  return String(value || "")
+    .replace(/[\u0000-\u0008\u000B-\u001F\u007F]/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+    .slice(0, MAX_CHAT_TEXT);
+}
+
 class SocialStore {
   constructor(filePath) {
     this.filePath = filePath;
-    this.data = { version: 2, accounts: {}, identity_aliases: {} };
+    this.data = { version: 2, accounts: {}, identity_aliases: {}, conversations: {} };
     this.load();
   }
 
@@ -115,6 +130,30 @@ class SocialStore {
         if (!HASH_PATTERN.test(normalizedFingerprint)) continue;
         if (!this.data.accounts[normalizedAccountId]) continue;
         this.data.identity_aliases[normalizedFingerprint] = normalizedAccountId;
+      }
+
+      const conversations = parsed.conversations && typeof parsed.conversations === "object"
+        ? parsed.conversations
+        : {};
+      for (const [key, raw] of Object.entries(conversations)) {
+        const ids = String(key).split("|");
+        if (ids.length !== 2 || !ids.every((id) => this.data.accounts[id]) || !raw) continue;
+        const messages = Array.isArray(raw.messages) ? raw.messages : [];
+        this.data.conversations[key] = {
+          messages: messages
+            .filter((item) => item && ids.includes(item.from) && typeof item.text === "string")
+            .slice(-MAX_CONVERSATION_MESSAGES)
+            .map((item) => ({
+              id: String(item.id || crypto.randomUUID()),
+              from: item.from,
+              text: cleanChatText(item.text),
+              at: Number(item.at || 0),
+            })),
+          read: raw.read && typeof raw.read === "object" ? {
+            [ids[0]]: Number(raw.read[ids[0]] || 0),
+            [ids[1]]: Number(raw.read[ids[1]] || 0),
+          } : {},
+        };
       }
 
       this.repairRelationships();
@@ -493,6 +532,66 @@ class SocialStore {
     target.updated_at = Date.now();
     this.save();
     return { ok: true, code: "REQUEST_CANCELLED", message: "Arkadaşlık isteği iptal edildi." };
+  }
+
+  // ------------------------------------------------------------ chat
+
+  conversation(accountId, otherId, create = false) {
+    const key = conversationKey(accountId, otherId);
+    if (!this.data.conversations[key] && create) {
+      this.data.conversations[key] = { messages: [], read: {} };
+    }
+    return this.data.conversations[key] || null;
+  }
+
+  sendChatMessage(fromId, toId, text) {
+    if (!this.getAccount(fromId) || !this.getAccount(toId)) {
+      return { ok: false, code: "USER_NOT_FOUND", message: "Kullanıcı bulunamadı." };
+    }
+    if (this.relationshipBetween(fromId, toId) !== "friend") {
+      return { ok: false, code: "NOT_FRIENDS", message: "Yalnız arkadaşlarına mesaj gönderebilirsin." };
+    }
+    const clean = cleanChatText(text);
+    if (!clean) return { ok: false, code: "EMPTY_MESSAGE", message: "Boş mesaj gönderilemez." };
+    const conversation = this.conversation(fromId, toId, true);
+    const message = { id: crypto.randomUUID(), from: fromId, text: clean, at: Date.now() };
+    conversation.messages.push(message);
+    if (conversation.messages.length > MAX_CONVERSATION_MESSAGES) {
+      conversation.messages.splice(0, conversation.messages.length - MAX_CONVERSATION_MESSAGES);
+    }
+    conversation.read[fromId] = message.at;
+    this.save();
+    return { ok: true, message };
+  }
+
+  chatHistory(accountId, otherId) {
+    return (this.conversation(accountId, otherId)?.messages || []).map((item) => ({ ...item }));
+  }
+
+  markChatRead(accountId, otherId) {
+    const conversation = this.conversation(accountId, otherId);
+    if (!conversation || conversation.messages.length === 0) return false;
+    const last = conversation.messages[conversation.messages.length - 1].at;
+    if (Number(conversation.read[accountId] || 0) >= last) return false;
+    conversation.read[accountId] = last;
+    this.save();
+    return true;
+  }
+
+  // Last message and unread count with one friend, for lists and badges.
+  chatSummary(accountId, otherId) {
+    const conversation = this.conversation(accountId, otherId);
+    if (!conversation || conversation.messages.length === 0) {
+      return { chat_unread: 0, chat_last_text: "", chat_last_at: 0, chat_last_mine: false };
+    }
+    const readAt = Number(conversation.read[accountId] || 0);
+    const last = conversation.messages[conversation.messages.length - 1];
+    return {
+      chat_unread: conversation.messages.filter((item) => item.from !== accountId && item.at > readAt).length,
+      chat_last_text: last.text.slice(0, 80),
+      chat_last_at: last.at,
+      chat_last_mine: last.from === accountId,
+    };
   }
 
   removeFriend(accountId, targetId) {

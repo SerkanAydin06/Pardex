@@ -11,6 +11,7 @@ const PAGES := {
 	"library": ["LibraryPage", "res://scripts/pages/library_page.gd", "res://scenes/pages/library_page.tscn"],
 	"friends": ["FriendsPage", "res://scripts/pages/social_page.gd", "res://scenes/pages/friends_page.tscn"],
 	"profile": ["ProfilePage", "res://scripts/pages/profile_page.gd", "res://scenes/pages/profile_page.tscn"],
+	"messages": ["MessagesPage", "res://scripts/pages/messages_page.gd", "res://scenes/pages/messages_page.tscn"],
 	"settings": ["SettingsPage", "", "res://scenes/pages/settings_page.tscn"],
 }
 

@@ -272,7 +272,10 @@ function buildSocialState(accountId) {
   const state = social.socialState(accountId, isAccountOnline);
   if (!state) return null;
   if (state.self) state.self = enrichFriendProfile(state.self);
-  state.friends = (state.friends || []).map(enrichFriendProfile).sort((a, b) => {
+  state.friends = (state.friends || []).map((profile) => ({
+    ...enrichFriendProfile(profile),
+    ...social.chatSummary(accountId, profile.account_id),
+  })).sort((a, b) => {
     const rank = { in_game: 5, online: 4, busy: 3, away: 2, offline: 1 };
     const difference = (rank[b.presence] || 0) - (rank[a.presence] || 0);
     return difference || a.display_name.localeCompare(b.display_name);
@@ -1191,6 +1194,57 @@ function handleGameLinkMessage(link, message) {
   }
 }
 
+// ------------------------------------------------------------------ chat
+
+const CHAT_RATE_WINDOW_MS = 10_000;
+const CHAT_RATE_LIMIT = 12;
+
+function allowChat(client) {
+  const now = Date.now();
+  if (!client.chatWindowStartedAt || now - client.chatWindowStartedAt > CHAT_RATE_WINDOW_MS) {
+    client.chatWindowStartedAt = now;
+    client.chatCount = 0;
+  }
+  client.chatCount += 1;
+  return client.chatCount <= CHAT_RATE_LIMIT;
+}
+
+function sendChat(client, message) {
+  if (!requireSocialAccount(client)) return;
+  const targetId = String(message.account_id || "").trim();
+  if (!allowChat(client)) {
+    sendError(client.ws, "CHAT_RATE_LIMIT", "Çok hızlı mesaj gönderiyorsun; biraz bekle.");
+    return;
+  }
+  const result = social.sendChatMessage(client.accountId, targetId, message.text);
+  if (!result.ok) return sendError(client.ws, result.code, result.message);
+  const clientId = String(message.client_id || "").slice(0, 64);
+  for (const session of clientsForAccount(client.accountId)) {
+    send(session.ws, { type: "chat_message", with: targetId, message: result.message, client_id: clientId });
+  }
+  for (const session of clientsForAccount(targetId)) {
+    send(session.ws, { type: "chat_message", with: client.accountId, message: result.message });
+  }
+  pushSocialState(client.accountId);
+  pushSocialState(targetId);
+}
+
+function sendChatHistory(client, message) {
+  if (!requireSocialAccount(client)) return;
+  const targetId = String(message.account_id || "").trim();
+  if (social.relationshipBetween(client.accountId, targetId) !== "friend") {
+    return sendError(client.ws, "NOT_FRIENDS", "Yalnız arkadaşlarınla mesajlaşabilirsin.");
+  }
+  send(client.ws, { type: "chat_history", with: targetId, messages: social.chatHistory(client.accountId, targetId) });
+}
+
+function markChatRead(client, message) {
+  if (!requireSocialAccount(client)) return;
+  if (social.markChatRead(client.accountId, String(message.account_id || "").trim())) {
+    pushSocialState(client.accountId);
+  }
+}
+
 function handleMessage(client, raw) {
   let message;
   try {
@@ -1402,6 +1456,15 @@ function handleMessage(client, raw) {
     }
     case "play_game":
       playGame(client, message);
+      break;
+    case "send_chat":
+      sendChat(client, message);
+      break;
+    case "get_chat_history":
+      sendChatHistory(client, message);
+      break;
+    case "mark_chat_read":
+      markChatRead(client, message);
       break;
     case "get_game_session":
       issueGameSession(client, message);
