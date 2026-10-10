@@ -12,4 +12,7 @@ func _ready() -> void:
 
 
 func _refresh_icon() -> void:
-	icon = RESTORE if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_MAXIMIZED else MAXIMIZE
+	var mode := DisplayServer.window_get_mode()
+	var full := mode == DisplayServer.WINDOW_MODE_FULLSCREEN or mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN
+	icon = RESTORE if full or mode == DisplayServer.WINDOW_MODE_MAXIMIZED else MAXIMIZE
+	tooltip_text = "Pencereye dön" if full else "Tam ekran"
