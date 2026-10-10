@@ -12,6 +12,7 @@ const CORNER := 12.0
 # and a header double-click toggle full screen, like a game launcher).
 var _restore_mode := DisplayServer.WINDOW_MODE_WINDOWED
 var _restore_rect := Rect2i()
+var _edges: Array[Control] = []
 
 
 func _ready() -> void:
@@ -45,6 +46,8 @@ func _ready() -> void:
 	_add_edge(DisplayServer.WINDOW_EDGE_TOP_RIGHT, CURSOR_BDIAGSIZE, Rect2(-CORNER, 0, 0, CORNER), Vector4(1, 0, 1, 0))
 	_add_edge(DisplayServer.WINDOW_EDGE_BOTTOM_LEFT, CURSOR_BDIAGSIZE, Rect2(0, -CORNER, CORNER, 0), Vector4(0, 1, 0, 1))
 	_add_edge(DisplayServer.WINDOW_EDGE_BOTTOM_RIGHT, CURSOR_FDIAGSIZE, Rect2(-CORNER, -CORNER, 0, 0), Vector4(1, 1, 1, 1))
+	get_tree().root.size_changed.connect(_update_edges)
+	_update_edges.call_deferred()
 
 
 func _apply_app_icon() -> void:
@@ -63,6 +66,7 @@ static func is_fullscreen() -> bool:
 
 func toggle_fullscreen() -> void:
 	_refresh_button.call_deferred()
+	_update_edges.call_deferred()
 	if is_fullscreen():
 		_leave_fullscreen()
 		return
@@ -103,8 +107,37 @@ func _on_header_input(event: InputEvent) -> void:
 		return
 	if mouse.double_click:
 		toggle_fullscreen()
-	elif not is_fullscreen():
-		DisplayServer.window_start_drag()
+		return
+	if is_fullscreen():
+		return
+	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_MAXIMIZED:
+		await _unmaximize_under_cursor(mouse.position)
+	DisplayServer.window_start_drag()
+
+
+# Like a native title bar: dragging a maximized window restores it to its
+# normal size under the cursor and keeps dragging.
+func _unmaximize_under_cursor(local_position: Vector2) -> void:
+	var cursor := DisplayServer.mouse_get_position()
+	var ratio := clampf(local_position.x / maxf(1.0, get_viewport_rect().size.x), 0.05, 0.95)
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+	await get_tree().process_frame
+	var usable := DisplayServer.screen_get_usable_rect(DisplayServer.window_get_current_screen())
+	var window_size := DisplayServer.window_get_size()
+	if window_size.x >= usable.size.x or window_size.y >= usable.size.y:
+		# No remembered normal size (it was saved maximized): use a sensible one.
+		window_size = Vector2i(mini(1440, usable.size.x - 80), mini(900, usable.size.y - 80))
+		DisplayServer.window_set_size(window_size)
+	DisplayServer.window_set_position(cursor - Vector2i(roundi(window_size.x * ratio), roundi(local_position.y)))
+	_update_edges()
+
+
+# Resize strips only make sense for a normal window; in full screen or
+# maximized they would just show resize cursors along the screen edges.
+func _update_edges() -> void:
+	var resizable := DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_WINDOWED
+	for handle in _edges:
+		handle.visible = resizable
 
 
 # offsets: left, top, right, bottom; anchors: left, top, right, bottom.
@@ -128,3 +161,4 @@ func _add_edge(edge: DisplayServer.WindowResizeEdge, cursor: CursorShape, offset
 			DisplayServer.window_start_resize(edge)
 	)
 	add_child(handle)
+	_edges.append(handle)
