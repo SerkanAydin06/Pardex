@@ -20,7 +20,7 @@ const ACCENT_DARK := Color("0d4f8f")
 const GOLD := Color("f5b93c")
 const TEXT := Color("eef3fb")
 const TEXT_2 := Color("a3b1c8")
-const TEXT_3 := Color("6b7990")
+const TEXT_3 := Color("7f8da3")
 const GREEN := Color("35d07a")
 const AMBER := Color("f3b644")
 const RED := Color("ff5d5d")
@@ -694,17 +694,24 @@ static func stat_tile(icon_name: String, value: String, caption: String, color :
 
 
 static func empty_state(icon_name: String, title: String, body := "", compact := false) -> VBoxContainer:
-	var column := vbox(4 if compact else 8)
+	var column := vbox(6 if compact else 10)
 	column.alignment = BoxContainer.ALIGNMENT_CENTER
 	column.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var tile_size := 36.0 if compact else 54.0
+	var tile := panel(0, box(Color(ACCENT, 0.07), 12, Color(ACCENT, 0.22), 1))
+	tile.custom_minimum_size = Vector2(tile_size, tile_size)
+	tile.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	tile.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var glyph := CenterContainer.new()
-	glyph.add_child(icon(icon_name, 22 if compact else 30, TEXT_3))
-	column.add_child(glyph)
-	var heading := label(title, 13 if compact else 14, TEXT_2)
+	glyph.add_child(icon(icon_name, 18 if compact else 26, Color(TEXT_2, 0.95)))
+	tile.add_child(glyph)
+	column.add_child(tile)
+	var heading := label(title, 13 if compact else 16, TEXT if not compact else TEXT_2, not compact)
 	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(heading)
 	if not body.is_empty():
-		var detail := wrapped(label(body, 12, TEXT_3))
+		var detail := wrapped(label(body, 12 if compact else 13, TEXT_2))
 		detail.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		column.add_child(detail)
 	return column
