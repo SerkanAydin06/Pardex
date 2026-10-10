@@ -1104,22 +1104,20 @@ text = "Tüm Rozetleri Gör  "
 icon = ExtResource("9_h3mxa")
 icon_alignment = 2
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1" unique_id=1715769829]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2" unique_id=2100960341]
+[node name="BadgeEmpty" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1" unique_id=1715769829]
+custom_minimum_size = Vector2(0, 108)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 7
+alignment = 1
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=885380985]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/BadgeEmpty" unique_id=885380985]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer1/CenterContainer1" unique_id=878173522]
-modulate = Color(0.41960785, 0.4745098, 0.5647059, 0.7)
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/BadgeEmpty/CenterContainer1" unique_id=878173522]
+modulate = Color(0.49803922, 0.5529412, 0.6392157, 0.9)
 texture_filter = 2
-custom_minimum_size = Vector2(62, 62)
+custom_minimum_size = Vector2(34, 34)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -1127,287 +1125,22 @@ texture = ExtResource("10_eny7x")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer1/CenterContainer1/TextureRect1" unique_id=1185481354]
-modulate = Color(0.6392157, 0.69411767, 0.78431374, 1)
-texture_filter = 2
-custom_minimum_size = Vector2(22, 22)
-layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 20.0
-offset_bottom = 20.0
-size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("11_11xws")
-expand_mode = 1
-stretch_mode = 5
+[node name="Label1" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/BadgeEmpty" unique_id=465190864]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_constants/outline_size = 1
+theme_override_font_sizes/font_size = 15
+text = "Rozet sistemi yakında"
+horizontal_alignment = 1
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=465190864]
+[node name="Label2" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/BadgeEmpty" unique_id=181101139]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_colors/font_outline_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 13
-text = "Gizli Rozet"
+theme_override_font_sizes/font_size = 12
+text = "Oyunlarda rozet kazandıkça burada görünecek."
 horizontal_alignment = 1
-
-[node name="Label2" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer1" unique_id=181101139]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
-theme_override_font_sizes/font_size = 11
-text = "???"
-horizontal_alignment = 1
-
-[node name="VBoxContainer2" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2" unique_id=1385802779]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
-
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer2" unique_id=1429947140]
-layout_mode = 2
-
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer2/CenterContainer1" unique_id=841361555]
-modulate = Color(0.41960785, 0.4745098, 0.5647059, 0.7)
-texture_filter = 2
-custom_minimum_size = Vector2(62, 62)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("10_eny7x")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer2/CenterContainer1/TextureRect1" unique_id=2076485519]
-modulate = Color(0.6392157, 0.69411767, 0.78431374, 1)
-texture_filter = 2
-custom_minimum_size = Vector2(22, 22)
-layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 20.0
-offset_bottom = 20.0
-size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("11_11xws")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer2" unique_id=1987780554]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_colors/font_outline_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 13
-text = "Gizli Rozet"
-horizontal_alignment = 1
-
-[node name="Label2" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer2" unique_id=1422978618]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
-theme_override_font_sizes/font_size = 11
-text = "???"
-horizontal_alignment = 1
-
-[node name="VBoxContainer3" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2" unique_id=685382561]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
-
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer3" unique_id=1534793604]
-layout_mode = 2
-
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer3/CenterContainer1" unique_id=840525495]
-modulate = Color(0.41960785, 0.4745098, 0.5647059, 0.7)
-texture_filter = 2
-custom_minimum_size = Vector2(62, 62)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("10_eny7x")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer3/CenterContainer1/TextureRect1" unique_id=1552779666]
-modulate = Color(0.6392157, 0.69411767, 0.78431374, 1)
-texture_filter = 2
-custom_minimum_size = Vector2(22, 22)
-layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 20.0
-offset_bottom = 20.0
-size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("11_11xws")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer3" unique_id=382267977]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_colors/font_outline_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 13
-text = "Gizli Rozet"
-horizontal_alignment = 1
-
-[node name="Label2" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer3" unique_id=1960737020]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
-theme_override_font_sizes/font_size = 11
-text = "???"
-horizontal_alignment = 1
-
-[node name="VBoxContainer4" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2" unique_id=614507912]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
-
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer4" unique_id=1378347731]
-layout_mode = 2
-
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer4/CenterContainer1" unique_id=716052313]
-modulate = Color(0.41960785, 0.4745098, 0.5647059, 0.7)
-texture_filter = 2
-custom_minimum_size = Vector2(62, 62)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("10_eny7x")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer4/CenterContainer1/TextureRect1" unique_id=1008447756]
-modulate = Color(0.6392157, 0.69411767, 0.78431374, 1)
-texture_filter = 2
-custom_minimum_size = Vector2(22, 22)
-layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 20.0
-offset_bottom = 20.0
-size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("11_11xws")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer4" unique_id=1097138074]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_colors/font_outline_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 13
-text = "Gizli Rozet"
-horizontal_alignment = 1
-
-[node name="Label2" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer4" unique_id=1262254467]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
-theme_override_font_sizes/font_size = 11
-text = "???"
-horizontal_alignment = 1
-
-[node name="VBoxContainer5" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2" unique_id=1758895226]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
-
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer5" unique_id=1240937269]
-layout_mode = 2
-
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer5/CenterContainer1" unique_id=676716611]
-modulate = Color(0.41960785, 0.4745098, 0.5647059, 0.7)
-texture_filter = 2
-custom_minimum_size = Vector2(62, 62)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("10_eny7x")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer5/CenterContainer1/TextureRect1" unique_id=1894806914]
-modulate = Color(0.6392157, 0.69411767, 0.78431374, 1)
-texture_filter = 2
-custom_minimum_size = Vector2(22, 22)
-layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 20.0
-offset_bottom = 20.0
-size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("11_11xws")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer5" unique_id=1473923845]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_colors/font_outline_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 13
-text = "Gizli Rozet"
-horizontal_alignment = 1
-
-[node name="Label2" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer5" unique_id=563505929]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
-theme_override_font_sizes/font_size = 11
-text = "???"
-horizontal_alignment = 1
-
-[node name="VBoxContainer6" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2" unique_id=253898516]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
-
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer6" unique_id=1606749616]
-layout_mode = 2
-
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer6/CenterContainer1" unique_id=611945948]
-modulate = Color(0.41960785, 0.4745098, 0.5647059, 0.7)
-texture_filter = 2
-custom_minimum_size = Vector2(62, 62)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("10_eny7x")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer6/CenterContainer1/TextureRect1" unique_id=1964045657]
-modulate = Color(0.6392157, 0.69411767, 0.78431374, 1)
-texture_filter = 2
-custom_minimum_size = Vector2(22, 22)
-layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 20.0
-offset_bottom = 20.0
-size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("11_11xws")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer6" unique_id=952574534]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_colors/font_outline_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 13
-text = "Gizli Rozet"
-horizontal_alignment = 1
-
-[node name="Label2" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1/HBoxContainer2/VBoxContainer6" unique_id=67358350]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
-theme_override_font_sizes/font_size = 11
-text = "???"
-horizontal_alignment = 1
-
+autowrap_mode = 3
 [node name="PanelContainer3" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1" unique_id=314671600]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_8jdvc")
