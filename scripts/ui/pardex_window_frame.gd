@@ -77,16 +77,14 @@ func toggle_fullscreen() -> void:
 	var mode := DisplayServer.window_get_mode()
 	_restore_mode = DisplayServer.WINDOW_MODE_MAXIMIZED if mode == DisplayServer.WINDOW_MODE_MAXIMIZED else DisplayServer.WINDOW_MODE_WINDOWED
 	_restore_rect = Rect2i(DisplayServer.window_get_position(), DisplayServer.window_get_size())
-	# Also remembered on disk, so quitting while full screen keeps this window.
-	owner.call("_capture_window_state")
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
 
 func _leave_fullscreen() -> void:
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 	if _restore_rect.size == Vector2i.ZERO:
-		# Started full screen (Ayarlar): fall back to the saved window.
-		owner.call("_restore_windowed_state")
+		# No window to return to yet: open the normal screen-fitted window.
+		owner.call("_fit_window_to_screen")
 		return
 	if _restore_mode == DisplayServer.WINDOW_MODE_MAXIMIZED:
 		# The OS keeps the pre-maximize size for the next "restore down".

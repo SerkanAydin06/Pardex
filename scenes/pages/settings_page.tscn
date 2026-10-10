@@ -458,31 +458,15 @@ corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kngm5"]
-content_margin_left = 20.0
-content_margin_top = 20.0
-content_margin_right = 20.0
-content_margin_bottom = 20.0
-bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
-
-[node name="SettingsPage" type="VBoxContainer" unique_id=1241016839]
+[node name="SettingsPage" type="VBoxContainer" unique_id=272890082]
 size_flags_vertical = 3
 theme_override_constants/separation = 14
 
-[node name="HeadingRow" type="HBoxContainer" parent="." unique_id=1767859793]
+[node name="HeadingRow" type="HBoxContainer" parent="." unique_id=231523781]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="BackButton" type="Button" parent="HeadingRow" unique_id=1706934930]
+[node name="BackButton" type="Button" parent="HeadingRow" unique_id=1904132523]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(110, 40)
 layout_mode = 2
@@ -500,7 +484,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_j8bw4")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_vjk2a")
 metadata/label = "Geri"
 
-[node name="Content" type="CenterContainer" parent="HeadingRow/BackButton" unique_id=1900847336]
+[node name="Content" type="CenterContainer" parent="HeadingRow/BackButton" unique_id=891365822]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -509,12 +493,12 @@ script = ExtResource("1_iwbum")
 color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 
-[node name="Group" type="HBoxContainer" parent="HeadingRow/BackButton/Content" unique_id=1087646461]
+[node name="Group" type="HBoxContainer" parent="HeadingRow/BackButton/Content" unique_id=1529642779]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 9
 
-[node name="Icon" type="TextureRect" parent="HeadingRow/BackButton/Content/Group" unique_id=226495030]
+[node name="Icon" type="TextureRect" parent="HeadingRow/BackButton/Content/Group" unique_id=1567587585]
 modulate = Color(0.93333334, 0.9529412, 0.9843137, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(16, 16)
@@ -525,17 +509,17 @@ texture = ExtResource("2_8lpjv")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="HeadingRow/BackButton/Content/Group" unique_id=1390046377]
+[node name="Label" type="Label" parent="HeadingRow/BackButton/Content/Group" unique_id=422583025]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_font_sizes/font_size = 14
 text = "Geri"
 
-[node name="Heading" type="VBoxContainer" parent="HeadingRow" unique_id=166639466]
+[node name="Heading" type="VBoxContainer" parent="HeadingRow" unique_id=1260318082]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="Label1" type="Label" parent="HeadingRow/Heading" unique_id=622931618]
+[node name="Label1" type="Label" parent="HeadingRow/Heading" unique_id=613924601]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -543,51 +527,51 @@ theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 30
 text = "Ayarlar"
 
-[node name="Label2" type="Label" parent="HeadingRow/Heading" unique_id=1585794719]
+[node name="Label2" type="Label" parent="HeadingRow/Heading" unique_id=1739863715]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 14
 text = "PARDEX profilini, hesabını ve bağlantı ayarlarını yönet."
 
-[node name="Scroll" type="ScrollContainer" parent="." unique_id=690318355]
+[node name="Scroll" type="ScrollContainer" parent="." unique_id=1287629323]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="SettingsContent" type="VBoxContainer" parent="Scroll" unique_id=1302176117]
+[node name="SettingsContent" type="VBoxContainer" parent="Scroll" unique_id=1818452377]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
 theme_override_constants/separation = 12
 
-[node name="ProfilePanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=812916741]
+[node name="ProfilePanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=357052774]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_3jslg")
 
-[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/ProfilePanel" unique_id=1825665268]
+[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/ProfilePanel" unique_id=2136332239]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Section" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=1483490321]
+[node name="Section" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=356421637]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "●  PROFİL"
 text_overrun_behavior = 3
 
-[node name="Description" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=618159595]
+[node name="Description" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=2135776425]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
 theme_override_font_sizes/font_size = 14
 text = "Arkadaşların ve oyun odalarında görünecek PARDEX adını belirle."
 text_overrun_behavior = 3
 
-[node name="ProfileRow" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=1742800253]
+[node name="ProfileRow" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=1850600431]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="ProfileNameEdit" type="LineEdit" parent="Scroll/SettingsContent/ProfilePanel/VBox/ProfileRow" unique_id=1241594247]
+[node name="ProfileNameEdit" type="LineEdit" parent="Scroll/SettingsContent/ProfilePanel/VBox/ProfileRow" unique_id=765763008]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -597,7 +581,7 @@ theme_override_font_sizes/font_size = 15
 placeholder_text = "Pardus"
 max_length = 24
 
-[node name="SaveProfileButton" type="Button" parent="Scroll/SettingsContent/ProfilePanel/VBox/ProfileRow" unique_id=1882061746]
+[node name="SaveProfileButton" type="Button" parent="Scroll/SettingsContent/ProfilePanel/VBox/ProfileRow" unique_id=1795708061]
 custom_minimum_size = Vector2(156, 44)
 layout_mode = 2
 focus_mode = 0
@@ -613,22 +597,22 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_h8lea")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_e7hop")
 text = "Kaydet"
 
-[node name="AvatarRow" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=1975229488]
+[node name="AvatarRow" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=1574293291]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="AvatarPreview" type="CenterContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow" unique_id=2121094237]
+[node name="AvatarPreview" type="CenterContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow" unique_id=986502522]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(72, 72)
 layout_mode = 2
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow" unique_id=398363968]
+[node name="VBoxContainer1" type="VBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow" unique_id=1973956343]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 theme_override_constants/separation = 2
 
-[node name="Label1" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/VBoxContainer1" unique_id=770718753]
+[node name="Label1" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/VBoxContainer1" unique_id=519813347]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -636,7 +620,7 @@ theme_override_constants/outline_size = 1
 theme_override_font_sizes/font_size = 15
 text = "Profil resmi"
 
-[node name="Label2" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/VBoxContainer1" unique_id=2036621988]
+[node name="Label2" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/VBoxContainer1" unique_id=1117785450]
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
@@ -644,7 +628,7 @@ theme_override_font_sizes/font_size = 13
 text = "JPG, PNG ya da WEBP. Ortadan kare kırpılır; arkadaşların da görür."
 autowrap_mode = 3
 
-[node name="ChooseAvatarButton" type="Button" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow" unique_id=2127675929]
+[node name="ChooseAvatarButton" type="Button" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow" unique_id=1909866048]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(127, 42)
 layout_mode = 2
@@ -662,7 +646,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_keogx")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_qgjds")
 metadata/label = "Resim Seç"
 
-[node name="Content" type="CenterContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton" unique_id=1677686684]
+[node name="Content" type="CenterContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton" unique_id=877184370]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -671,12 +655,12 @@ script = ExtResource("1_iwbum")
 color = Color(0.011764706, 0.078431375, 0.13725491, 1)
 disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 
-[node name="Group" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton/Content" unique_id=1153990851]
+[node name="Group" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton/Content" unique_id=594123317]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 9
 
-[node name="Icon" type="TextureRect" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton/Content/Group" unique_id=481916830]
+[node name="Icon" type="TextureRect" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton/Content/Group" unique_id=1575805202]
 modulate = Color(0.011764706, 0.078431375, 0.13725491, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(16, 16)
@@ -687,13 +671,13 @@ texture = ExtResource("3_welti")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton/Content/Group" unique_id=1607936013]
+[node name="Label" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton/Content/Group" unique_id=937666731]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
 theme_override_font_sizes/font_size = 14
 text = "Resim Seç"
 
-[node name="RemoveAvatarButton" type="Button" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow" unique_id=337726415]
+[node name="RemoveAvatarButton" type="Button" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow" unique_id=1517532615]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(99, 42)
 layout_mode = 2
@@ -711,7 +695,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_qgdg3")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_7fa33")
 metadata/label = "Kaldır"
 
-[node name="Content" type="CenterContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton" unique_id=1830529072]
+[node name="Content" type="CenterContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton" unique_id=1011119449]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -720,12 +704,12 @@ script = ExtResource("1_iwbum")
 color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 
-[node name="Group" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton/Content" unique_id=1738102863]
+[node name="Group" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton/Content" unique_id=819812747]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 9
 
-[node name="Icon" type="TextureRect" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton/Content/Group" unique_id=1039083874]
+[node name="Icon" type="TextureRect" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton/Content/Group" unique_id=15330269]
 modulate = Color(0.93333334, 0.9529412, 0.9843137, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(16, 16)
@@ -736,46 +720,46 @@ texture = ExtResource("4_a8wfp")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton/Content/Group" unique_id=625475085]
+[node name="Label" type="Label" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton/Content/Group" unique_id=557434462]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_font_sizes/font_size = 14
 text = "Kaldır"
 
-[node name="AccountPanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1470893715]
+[node name="AccountPanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=2084778676]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_iecak")
 script = ExtResource("5_x37xv")
 
-[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/AccountPanel" unique_id=1525172620]
+[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/AccountPanel" unique_id=367088793]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Section" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1692975883]
+[node name="Section" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1010369861]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "●  HESAP KURTARMA"
 text_overrun_behavior = 3
 
-[node name="Description" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1946138147]
+[node name="Description" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=263729562]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
 theme_override_font_sizes/font_size = 14
 text = "Tek kullanımlık kurtarma kodu ile PARDEX hesabını başka bir bilgisayara güvenli şekilde taşı."
 autowrap_mode = 2
 
-[node name="AccountRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=811179317]
+[node name="AccountRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=641632911]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="AccountTitle" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/AccountRow" unique_id=242720210]
+[node name="AccountTitle" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/AccountRow" unique_id=1667496788]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.48, 0.56, 0.66, 1)
 theme_override_font_sizes/font_size = 12
 text = "PARDEX KİMLİĞİ"
 
-[node name="AccountValue" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/AccountRow" unique_id=1911833536]
+[node name="AccountValue" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/AccountRow" unique_id=1836016826]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 1
@@ -784,17 +768,17 @@ theme_override_font_sizes/font_size = 12
 text = "Bağlantı bekleniyor"
 text_overrun_behavior = 3
 
-[node name="RecoveryState" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1698997125]
+[node name="RecoveryState" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1869129410]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.72, 0.34, 1)
 theme_override_font_sizes/font_size = 12
 text = "●  PARDEX ONLINE BAĞLANTISI BEKLENİYOR"
 text_overrun_behavior = 3
 
-[node name="GenerateRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1094793437]
+[node name="GenerateRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1095982488]
 layout_mode = 2
 
-[node name="GenerateHint" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/GenerateRow" unique_id=1645085925]
+[node name="GenerateHint" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/GenerateRow" unique_id=1578038026]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.56, 0.63, 0.72, 1)
@@ -802,7 +786,7 @@ theme_override_font_sizes/font_size = 12
 text = "Yeni kod üretildiğinde önceki kod geçersiz olur."
 text_overrun_behavior = 3
 
-[node name="GenerateButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/GenerateRow" unique_id=817569463]
+[node name="GenerateButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/GenerateRow" unique_id=45004816]
 custom_minimum_size = Vector2(196, 42)
 layout_mode = 2
 focus_mode = 0
@@ -819,16 +803,16 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_2acj8")
 disabled = true
 text = "Kurtarma Kodu Oluştur"
 
-[node name="CodeBox" type="VBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1200150291]
+[node name="CodeBox" type="VBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1173832873]
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="CodeRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox" unique_id=812605865]
+[node name="CodeRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox" unique_id=187421847]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="CodeEdit" type="LineEdit" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox/CodeRow" unique_id=1174985563]
+[node name="CodeEdit" type="LineEdit" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox/CodeRow" unique_id=1972163650]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -836,7 +820,7 @@ theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
 theme_override_font_sizes/font_size = 14
 editable = false
 
-[node name="CopyButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox/CodeRow" unique_id=218492162]
+[node name="CopyButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox/CodeRow" unique_id=1758091403]
 custom_minimum_size = Vector2(112, 42)
 layout_mode = 2
 focus_mode = 0
@@ -852,25 +836,25 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_tal3i")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_s78bx")
 text = "Kopyala"
 
-[node name="CodeHint" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox" unique_id=1337535261]
+[node name="CodeHint" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox" unique_id=121078402]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.7, 0.38, 1)
 theme_override_font_sizes/font_size = 12
 text = "Bu kod yalnız burada gösterilir. PARDEX kodun düz metnini sunucuda saklamaz."
 autowrap_mode = 2
 
-[node name="RecoverDescription" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=747791942]
+[node name="RecoverDescription" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1676774172]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.66, 0.72, 0.81, 1)
 theme_override_font_sizes/font_size = 12
 text = "Başka bir cihazdaki hesabı bu bilgisayara bağlamak için kurtarma kodunu gir."
 autowrap_mode = 2
 
-[node name="RecoverRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=127400008]
+[node name="RecoverRow" type="HBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=702120115]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="RecoverCodeEdit" type="LineEdit" parent="Scroll/SettingsContent/AccountPanel/VBox/RecoverRow" unique_id=1887632724]
+[node name="RecoverCodeEdit" type="LineEdit" parent="Scroll/SettingsContent/AccountPanel/VBox/RecoverRow" unique_id=1391433164]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -880,7 +864,7 @@ theme_override_font_sizes/font_size = 14
 placeholder_text = "PX1-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
 max_length = 48
 
-[node name="RecoverButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/RecoverRow" unique_id=303182745]
+[node name="RecoverButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/RecoverRow" unique_id=1661521208]
 custom_minimum_size = Vector2(156, 42)
 layout_mode = 2
 focus_mode = 0
@@ -897,41 +881,41 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_pa4bf")
 disabled = true
 text = "Hesabı Kurtar"
 
-[node name="Status" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1726607859]
+[node name="Status" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=873876173]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.56, 0.63, 0.72, 1)
 theme_override_font_sizes/font_size = 12
 text = "Kurtarma kodunu parola gibi sakla; paylaşma."
 autowrap_mode = 2
 
-[node name="OnlinePanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=716028475]
+[node name="OnlinePanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1577333597]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_hit1x")
 
-[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/OnlinePanel" unique_id=331976979]
+[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/OnlinePanel" unique_id=1197840333]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Section" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=1502123042]
+[node name="Section" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=2067862012]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "●  PARDEX ONLINE"
 text_overrun_behavior = 3
 
-[node name="Description" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=1206613007]
+[node name="Description" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=1320890015]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
 theme_override_font_sizes/font_size = 14
 text = "Boş bırakırsan PARDEX sunucusu otomatik bulunur. Yalnızca test için farklı bir ws:// veya wss:// adresi yazabilirsin."
 autowrap_mode = 2
 
-[node name="ServerRow" type="HBoxContainer" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=2146429920]
+[node name="ServerRow" type="HBoxContainer" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=83917960]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="ServerUrlEdit" type="LineEdit" parent="Scroll/SettingsContent/OnlinePanel/VBox/ServerRow" unique_id=2138599058]
+[node name="ServerUrlEdit" type="LineEdit" parent="Scroll/SettingsContent/OnlinePanel/VBox/ServerRow" unique_id=1528920084]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -940,7 +924,7 @@ theme_override_colors/font_placeholder_color = Color(0.38, 0.44, 0.53, 1)
 theme_override_font_sizes/font_size = 15
 placeholder_text = "Otomatik (boş bırak)"
 
-[node name="ConnectButton" type="Button" parent="Scroll/SettingsContent/OnlinePanel/VBox/ServerRow" unique_id=625898711]
+[node name="ConnectButton" type="Button" parent="Scroll/SettingsContent/OnlinePanel/VBox/ServerRow" unique_id=787938788]
 custom_minimum_size = Vector2(176, 44)
 layout_mode = 2
 focus_mode = 0
@@ -956,54 +940,9 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_nbfqp")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_4yqvt")
 text = "Bağlan"
 
-[node name="State" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=1052493842]
+[node name="State" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=671305103]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.7, 0.32, 1)
 theme_override_font_sizes/font_size = 14
 text = "●  ÇEVRİMDIŞI"
-text_overrun_behavior = 3
-
-[node name="DisplayPanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1495529069]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_kngm5")
-
-[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/DisplayPanel" unique_id=160574905]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="Section" type="Label" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=945138630]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
-theme_override_font_sizes/font_size = 13
-text = "●  GÖRÜNTÜ"
-text_overrun_behavior = 3
-
-[node name="Title" type="Label" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=469951919]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.94, 0.96, 1, 1)
-theme_override_font_sizes/font_size = 20
-text = "Masaüstü Pencere Modu"
-text_overrun_behavior = 3
-
-[node name="Description" type="Label" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=973412488]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
-theme_override_font_sizes/font_size = 14
-text = "PARDEX varsayılan olarak yeniden boyutlandırılabilir 1440 × 900 pencere halinde açılır. Son pencere boyutu ve konumu hatırlanır."
-autowrap_mode = 2
-
-[node name="FullscreenOnStart" type="CheckButton" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=1315584180]
-layout_mode = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(0.86, 0.9, 0.96, 1)
-theme_override_font_sizes/font_size = 14
-text = "Tam ekran kullan ve sonraki açılışlarda tam ekran başlat"
-text_overrun_behavior = 3
-clip_text = true
-
-[node name="State" type="Label" parent="Scroll/SettingsContent/DisplayPanel/VBox" unique_id=209187411]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.38, 0.86, 0.62, 1)
-theme_override_font_sizes/font_size = 14
-text = "●  PENCERE MODU"
 text_overrun_behavior = 3
