@@ -248,8 +248,9 @@ func _nav_style(selected: bool, hovered: bool) -> StyleBoxFlat:
 const SEARCH_PLACEHOLDERS := {
 	"store": "Mağazada oyun, tür ara...",
 	"library": "Kütüphanende ara...",
+	"friends": "Arkadaş ya da PARDEX kullanıcısı ara...",
 }
-var _search_queries := {"store": "", "library": ""}
+var _search_queries := {"store": "", "library": "", "friends": ""}
 
 
 func _update_search_for_page() -> void:
@@ -271,6 +272,8 @@ func _on_search_changed(query: String) -> void:
 	_search_queries[_current_page] = query
 	if _current_page == "store":
 		_store_page.set_query(query)
+	elif _current_page == "friends":
+		_social_page.set_query(query)
 	else:
 		_library_page.set_query(query)
 
