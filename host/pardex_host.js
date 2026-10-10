@@ -13,6 +13,7 @@
 // Kullanım: PARDEX-Sunucu.bat (Windows) veya `node host/pardex_host.js`.
 
 const fs = require("fs");
+const net = require("net");
 const http = require("http");
 const path = require("path");
 const crypto = require("crypto");
@@ -239,10 +240,13 @@ function dedicatedServerScene(fromProject) {
   return `res://${current}`;
 }
 
+// Resolves once Korsan prints PARDEX_GAME_SERVER_READY. Without this check the
+// panel said "Sunucu açık" even when the game server never started, and
+// players' games fell back to the LAN screen.
 function startGameServer() {
   const fromProject = isProjectFolder(config.korsan_exe);
   const program = fromProject ? config.godot_exe : config.korsan_exe;
-  track("Oyun sunucusu", spawn(program, [
+  const child = track("Oyun sunucusu", spawn(program, [
     "--headless",
     ...(fromProject ? ["--path", config.korsan_exe] : []),
     dedicatedServerScene(fromProject),
@@ -256,6 +260,36 @@ function startGameServer() {
     stdio: ["ignore", "pipe", "pipe"],
     windowsHide: true,
   }), false);
+  return new Promise((resolve, reject) => {
+    let done = false;
+    const finish = (error) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      clearInterval(poll);
+      child.stdout?.off("data", onData);
+      if (error) reject(error); else resolve();
+    };
+    const onData = (chunk) => {
+      if (String(chunk).includes("PARDEX_GAME_SERVER_READY")) finish();
+    };
+    // The first headless run of a project folder imports its assets first.
+    const timer = setTimeout(() => finish(new Error(
+      "Oyun sunucusu 3 dakikada hazır olmadı. Kayıtlar bölümüne bak."
+    )), 180_000);
+    // Also accept the game port answering, in case Godot's output does not
+    // reach the panel.
+    const poll = setInterval(() => {
+      const socket = net.connect(GAME_PORT, "127.0.0.1");
+      socket.once("connect", () => { socket.destroy(); finish(); });
+      socket.once("error", () => socket.destroy());
+    }, 1000);
+    child.stdout?.on("data", onData);
+    child.once("exit", () => finish(new Error(
+      "Oyun sunucusu başlamadı. Korsanların Hazinesi klasörünü ve Godot programını kontrol et; ayrıntı Kayıtlar'da."
+    )));
+    child.once("error", () => finish(new Error("Oyun sunucusu programı açılamadı (Godot yolu doğru mu?).")));
+  });
 }
 
 // ------------------------------------------------------------------ address board
@@ -342,7 +376,10 @@ async function startServer(localOnly) {
     }
     startOnlineServer(gameUrl);
     await waitForHealth();
-    if (game.ok) startGameServer();
+    if (game.ok) {
+      setPhase("starting", "Oyun sunucusu hazırlanıyor (ilk açılış birkaç dakika sürebilir)...");
+      await startGameServer();
+    }
     if (!state.localOnly) {
       setPhase("starting", "Adres arkadaşlarına duyuruluyor...");
       await publishAddress(onlineUrl);
