@@ -57,6 +57,7 @@ func _ready() -> void:
 	_load_settings()
 	_apply_start_window()
 	_create_pages()
+	UI.refine_typography(self)
 	_wire_navigation()
 	_wire_online_signals()
 	_apply_profile()
