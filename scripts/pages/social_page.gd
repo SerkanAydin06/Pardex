@@ -173,7 +173,7 @@ func _friend_in_my_room(account_id: String) -> bool:
 # ------------------------------------------------------------------ hero
 
 func _build_hero() -> Control:
-	var frame := UI.image(Catalog.texture("res://assets/ui/home_hero_banner.png"), Vector2(0, HERO_HEIGHT), 16)
+	var frame := UI.image(Catalog.texture("res://assets/ui/hero_friends.png"), Vector2(0, HERO_HEIGHT), 16)
 	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
 	frame.add_child(UI.shade(0.95, true))
 	var row := UI.hbox(20)
@@ -186,7 +186,7 @@ func _build_hero() -> Control:
 	tag.add_child(UI.label("ARKADAŞLAR", 13, UI.ACCENT, true))
 	text.add_child(tag)
 	text.add_child(UI.label("Arkadaşların", 42, UI.TEXT, true))
-	text.add_child(UI.label("Oyunlar daha eğlenceli, birlikte daha güçlü.", 16, UI.TEXT_2))
+	text.add_child(UI.label("Arkadaşlarını bul, mesajlaş ve aynı oyunda buluş.", 16, UI.TEXT_2))
 	text.add_child(UI.vspacer())
 	var actions := UI.hbox(14)
 	text.add_child(actions)
@@ -195,9 +195,9 @@ func _build_hero() -> Control:
 	actions.add_child(UI.named(add, "AddFriendButton"))
 
 	var bullets := UI.feature_card([
-		["friends", "Birlikte Oyna", "Oyunda PARDEX ONLINE'dan masa kur, kodu paylaş."],
-		["message", "Mesajlaşma", "Arkadaşlarınla Mesajlar sekmesinden yazış."],
-		["user_plus", "Yeni Arkadaşlar Keşfet", "Üstteki arama kutusuyla PARDEX kullanıcılarını bul."],
+		["friends", "Birlikte Oyna", "Arkadaşının açık masasına doğrudan katıl."],
+		["message", "Mesajlaşma", "Arkadaşlarınla PARDEX üzerinden doğrudan yazış."],
+		["user_plus", "Yeni Arkadaşlar Keşfet", "Üstteki aramayla PARDEX kullanıcılarını bul ve ekle."],
 	], 330)
 	row.add_child(UI.named(bullets, "HeroBullets"))
 	return frame
