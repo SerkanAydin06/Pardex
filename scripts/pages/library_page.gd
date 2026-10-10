@@ -157,7 +157,7 @@ func _count(kind: String) -> int:
 # ------------------------------------------------------------------ hero
 
 func _build_hero() -> Control:
-	var frame := UI.image(Catalog.texture("res://assets/ui/home_hero_banner.png"), Vector2(0, HERO_HEIGHT), 16)
+	var frame := UI.image(Catalog.texture("res://assets/ui/hero_play.png"), Vector2(0, HERO_HEIGHT), 16)
 	UI.expand(frame, 2.0)
 	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
 	frame.add_child(UI.shade(0.95, true))
@@ -167,11 +167,11 @@ func _build_hero() -> Control:
 	tag.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	var tag_row := UI.hbox(8)
 	tag_row.add_child(UI.icon("crown", 15, UI.ACCENT))
-	tag_row.add_child(UI.label("OYUN KÜTÜPHANEN", 12, UI.ACCENT, true))
+	tag_row.add_child(UI.label("KÜTÜPHANE", 12, UI.ACCENT, true))
 	tag.add_child(tag_row)
 	column.add_child(tag)
-	column.add_child(UI.label("Oyun Kütüphanen", 42, UI.TEXT, true))
-	column.add_child(UI.label("Tüm oyunların, her zaman seninle.\nKeşfet, oyna ve macerana kaldığın yerden devam et.", 15, UI.TEXT_2))
+	column.add_child(UI.label("Oyunların, tek bir yerde", 42, UI.TEXT, true))
+	column.add_child(UI.label("Oyunlarını, favorilerini ve son oynadıklarını tek yerden yönet.\nKaldığın yerden devam et.", 15, UI.TEXT_2))
 	column.add_child(UI.vspacer())
 	column.add_child(UI.named(UI.hbox(10), "StatsRow"))
 	return frame
