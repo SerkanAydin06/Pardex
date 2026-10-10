@@ -213,14 +213,26 @@ static func clear(node: Node) -> void:
 
 # ------------------------------------------------------------------ text
 
+static var _bold_font: FontVariation
+
+
+static func _get_bold_font() -> FontVariation:
+	if _bold_font == null:
+		_bold_font = FontVariation.new()
+		_bold_font.base_font = ThemeDB.fallback_font
+		# Simulated font weight keeps glyph edges clean. The previous same-color
+		# outline made small headings look swollen/soft at 100% Windows scaling.
+		_bold_font.variation_embolden = 0.55
+	return _bold_font
+
+
 static func label(text: String, size := 14, color := TEXT, bold := false) -> Label:
 	var item := Label.new()
 	item.text = text
 	item.add_theme_font_size_override("font_size", size)
 	item.add_theme_color_override("font_color", color)
 	if bold:
-		item.add_theme_constant_override("outline_size", 1 if size < 22 else 2)
-		item.add_theme_color_override("font_outline_color", color)
+		item.add_theme_font_override("font", _get_bold_font())
 	return item
 
 
