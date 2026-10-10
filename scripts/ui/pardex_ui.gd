@@ -258,6 +258,10 @@ static func refine_typography(root: Node) -> void:
 				item.get_theme_color("font_outline_color") == item.get_theme_color("font_color"):
 			item.add_theme_constant_override("outline_size", 0)
 			item.add_theme_font_override("font", _get_bold_font())
+		# Baked page scenes still contain the previous muted tertiary gray.
+		# Lift it slightly so small labels stay readable on dark panels.
+		if item.get_theme_color("font_color").is_equal_approx(Color("6b7990")):
+			item.add_theme_color_override("font_color", TEXT_3)
 	for child in root.get_children():
 		refine_typography(child)
 
