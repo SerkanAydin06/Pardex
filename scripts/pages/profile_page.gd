@@ -107,7 +107,7 @@ func _build_banner() -> Control:
 	row.add_child(text)
 	text.add_child(UI.named(UI.label("", 42, UI.TEXT, true), "NameLabel"))
 	text.add_child(UI.pill("Seviye sistemi yakında", UI.ACCENT, "trophy", 12, true))
-	text.add_child(UI.label("“Oyunlar daha güzel, birlikte oynayınca.”", 16, UI.TEXT))
+	text.add_child(UI.label("Oyunlarını, arkadaşlarını ve ilerlemeni tek yerde takip et.", 16, UI.TEXT))
 	var bottom := UI.hbox(14)
 	bottom.add_child(UI.named(UI.hbox(8), "StatusRow"))
 	bottom.add_child(UI.spacer())
