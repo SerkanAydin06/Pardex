@@ -4,6 +4,7 @@ extends VBoxContainer
 # recent first, unread badges). Right: the open conversation and a message
 # box. History lives on the server (last 200 messages per friend).
 
+signal navigate(page: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const BUBBLE_MAX_WIDTH := 520.0
@@ -67,11 +68,14 @@ func _bind() -> void:
 
 
 func _build() -> void:
-	add_theme_constant_override("separation", 14)
+	add_theme_constant_override("separation", 12)
+	var heading := UI.vbox(3)
 	var title := UI.hbox(12)
 	title.add_child(UI.icon("message", 26, UI.ACCENT))
 	title.add_child(UI.label("Mesajlar", 30, UI.TEXT, true))
-	add_child(title)
+	heading.add_child(title)
+	heading.add_child(UI.label("Arkadaşlarınla doğrudan yazış, oyundaysa tek tıkla katıl.", 13, UI.TEXT_2))
+	add_child(heading)
 	var columns := UI.named(UI.hbox(16), "MessageColumns") as HBoxContainer
 	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	add_child(columns)
@@ -81,7 +85,7 @@ func _build() -> void:
 	left.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var left_column := UI.vbox(10)
 	left.add_child(left_column)
-	left_column.add_child(UI.named(UI.search_field("Arkadaş ara...", 38), "ConversationSearch"))
+	left_column.add_child(UI.named(UI.search_field("Sohbetlerde ara...", 38), "ConversationSearch"))
 	var list_scroll := ScrollContainer.new()
 	list_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	list_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -210,7 +214,12 @@ func _render_list() -> void:
 	var friends := _sorted_friends()
 	if friends.is_empty():
 		var message := "PARDEX Online bağlantısı bekleniyor" if not PardexOnline.is_online() else "Henüz arkadaşın yok"
-		_list.add_child(UI.empty_state("friends", message, "Arkadaşlar sekmesinden arkadaş ekleyince burada görünür.", true))
+		var state := UI.empty_state("friends", message, "Arkadaşlar sekmesinden yeni kişiler ekleyebilirsin.", true)
+		var action := UI.button("Arkadaşlara Git", "ghost", 12, 34, "user_plus")
+		action.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		action.pressed.connect(func(): navigate.emit("friends"))
+		state.add_child(action)
+		_list.add_child(state)
 		return
 	var shown := 0
 	for profile in friends:
@@ -303,7 +312,13 @@ func _render_messages() -> void:
 	UI.clear(_messages)
 	var profile := _find_friend(_selected_id)
 	if profile.is_empty():
-		_messages.add_child(UI.empty_state("message", "Bir arkadaş seç", "Arkadaşların soldaki listede görünür."))
+		var state := UI.empty_state("message", "Konuşmaya başla", "Bir arkadaş seç veya Arkadaşlar sekmesinden yeni birini ekle.")
+		var action := UI.button("Arkadaşlara Git", "ghost", 13, 40, "friends")
+		action.custom_minimum_size.x = 150
+		action.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		action.pressed.connect(func(): navigate.emit("friends"))
+		state.add_child(action)
+		_messages.add_child(state)
 		return
 	if not _histories.has(_selected_id):
 		_messages.add_child(UI.empty_state("message", "Mesajlar yükleniyor…", "", true))
