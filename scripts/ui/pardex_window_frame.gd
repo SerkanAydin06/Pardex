@@ -121,7 +121,10 @@ func _on_header_input(event: InputEvent) -> void:
 # normal size under the cursor and keeps dragging.
 func _unmaximize_under_cursor(local_position: Vector2) -> void:
 	var cursor := DisplayServer.mouse_get_position()
-	var ratio := clampf(local_position.x / maxf(1.0, get_viewport_rect().size.x), 0.05, 0.95)
+	# Ratios, not pixels: the UI may be scaled (main.gd _apply_window_scale).
+	var view := get_viewport_rect().size
+	var ratio := clampf(local_position.x / maxf(1.0, view.x), 0.05, 0.95)
+	var ratio_y := clampf(local_position.y / maxf(1.0, view.y), 0.0, 1.0)
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 	await get_tree().process_frame
 	var usable := DisplayServer.screen_get_usable_rect(DisplayServer.window_get_current_screen())
@@ -130,7 +133,7 @@ func _unmaximize_under_cursor(local_position: Vector2) -> void:
 		# No remembered normal size (it was saved maximized): use a sensible one.
 		window_size = Vector2i(mini(1440, usable.size.x - 80), mini(900, usable.size.y - 80))
 		DisplayServer.window_set_size(window_size)
-	DisplayServer.window_set_position(cursor - Vector2i(roundi(window_size.x * ratio), roundi(local_position.y)))
+	DisplayServer.window_set_position(cursor - Vector2i(roundi(window_size.x * ratio), roundi(window_size.y * ratio_y)))
 	_update_edges()
 
 
