@@ -136,6 +136,9 @@ func _on_header_input(event: InputEvent) -> void:
 		await _unmaximize_under_cursor(mouse.position)
 	_drag_offset = DisplayServer.mouse_get_position() - DisplayServer.window_get_position()
 	_drag_size = DisplayServer.window_get_size()
+	# Re-sync the size Godot keeps for this window with the real one before
+	# moving it; a stale cached size made every reposition shrink/regrow.
+	DisplayServer.window_set_size(_drag_size)
 	_dragging = true
 
 
