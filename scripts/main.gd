@@ -91,7 +91,6 @@ func _style_brand() -> void:
 	brand_font.spacing_glyph = 2
 	var title := %Brand.get_node("BrandTitle") as Label
 	title.add_theme_font_override("font", brand_font)
-	title.add_theme_font_size_override("font_size", 27)
 	title.add_theme_constant_override("outline_size", 0)
 	title.add_theme_color_override("font_shadow_color", Color(UI.ACCENT, 0.45))
 	title.add_theme_constant_override("shadow_outline_size", 6)
@@ -281,6 +280,13 @@ func _apply_responsive_layout() -> void:
 	var sidebar_width := 214.0 if narrow else 258.0
 	%Sidebar.custom_minimum_size.x = sidebar_width
 	%Brand.custom_minimum_size.x = sidebar_width - 22.0
+	# The logo header sits above the sidebar; keep both edges aligned (the
+	# logo and wordmark shrink a little in the narrow layout to fit).
+	%BrandHeader.custom_minimum_size.x = sidebar_width
+	var logo_size := 46.0 if narrow else 58.0
+	(%Brand.get_node("Logo") as Control).custom_minimum_size = Vector2(logo_size, logo_size)
+	(%Brand.get_node("BrandTitle") as Label).add_theme_font_size_override("font_size", 24 if narrow else 31)
+	%Brand.add_theme_constant_override("separation", 8 if narrow else 12)
 	var outer := 12 if narrow else 18
 	var main_margin := %MainMargin as MarginContainer
 	for side in ["margin_left", "margin_right"]:

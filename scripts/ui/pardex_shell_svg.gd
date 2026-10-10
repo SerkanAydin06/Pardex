@@ -72,12 +72,12 @@ func _apply_notification(node: Node) -> void:
 func _apply_brand(main: Control) -> void:
 	var title := main.find_child("BrandTitle", true, false) as Label
 	if title != null:
-		title.add_theme_font_size_override("font_size", 31)
 		title.add_theme_color_override("font_color", Color("3bc8ff"))
 	var logo := main.find_child("Logo", true, false) as TextureRect
 	if logo != null:
 		logo.texture = BRAND
-		logo.custom_minimum_size = Vector2(58, 58)
+	# Logo and wordmark sizes follow the window width (main.gd
+	# _apply_responsive_layout) so the header lines up with the sidebar.
 
 
 func _keep_header_actions_visible(main: Control) -> void:
