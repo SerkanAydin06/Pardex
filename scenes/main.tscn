@@ -111,6 +111,7 @@ theme_override_constants/separation = 0
 unique_name_in_owner = true
 custom_minimum_size = Vector2(258, 76)
 layout_mode = 2
+mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBrandHeader")
 script = ExtResource("11_shell_svg")
 
@@ -148,6 +149,7 @@ vertical_alignment = 1
 
 [node name="ActionHeader" type="PanelContainer" parent="Root/Header" unique_id=132332832]
 layout_mode = 2
+mouse_filter = 1
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleTopBar")
 

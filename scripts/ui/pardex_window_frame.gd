@@ -13,6 +13,9 @@ const CORNER := 12.0
 var _restore_mode := DisplayServer.WINDOW_MODE_WINDOWED
 var _restore_rect := Rect2i()
 var _edges: Array[Control] = []
+# Manual header drag: cursor offset inside the window while the button is held.
+var _dragging := false
+var _drag_offset := Vector2i.ZERO
 
 
 func _ready() -> void:
@@ -101,18 +104,33 @@ func _refresh_button() -> void:
 		button.call("_refresh_icon")
 
 
+# The window is moved by hand (position follows the cursor while the button
+# is held). DisplayServer.window_start_drag() does nothing on some Windows
+# setups and inside the editor's embedded game view, so it is not used.
 func _on_header_input(event: InputEvent) -> void:
+	var motion := event as InputEventMouseMotion
+	if motion != null:
+		if _dragging and not (motion.button_mask & MOUSE_BUTTON_MASK_LEFT):
+			_dragging = false
+		if _dragging:
+			DisplayServer.window_set_position(DisplayServer.mouse_get_position() - _drag_offset)
+		return
 	var mouse := event as InputEventMouseButton
-	if mouse == null or mouse.button_index != MOUSE_BUTTON_LEFT or not mouse.pressed:
+	if mouse == null or mouse.button_index != MOUSE_BUTTON_LEFT:
+		return
+	if not mouse.pressed:
+		_dragging = false
 		return
 	if mouse.double_click:
+		_dragging = false
 		toggle_fullscreen()
 		return
 	if is_fullscreen():
 		return
 	if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_MAXIMIZED:
 		await _unmaximize_under_cursor(mouse.position)
-	DisplayServer.window_start_drag()
+	_drag_offset = DisplayServer.mouse_get_position() - DisplayServer.window_get_position()
+	_dragging = true
 
 
 # Like a native title bar: dragging a maximized window restores it to its
