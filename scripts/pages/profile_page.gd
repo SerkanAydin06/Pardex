@@ -106,7 +106,7 @@ func _build_banner() -> Control:
 	UI.expand(text)
 	row.add_child(text)
 	text.add_child(UI.named(UI.label("", 42, UI.TEXT, true), "NameLabel"))
-	text.add_child(UI.pill("Seviye sistemi yakında", UI.ACCENT, "trophy", 12, true))
+	text.add_child(UI.pill("Seviye sistemi yakında", UI.ACCENT, "trophy", 12, false))
 	text.add_child(UI.label("Oyunlarını, arkadaşlarını ve ilerlemeni tek yerde takip et.", 16, UI.TEXT))
 	var bottom := UI.hbox(14)
 	bottom.add_child(UI.named(UI.hbox(8), "StatusRow"))
@@ -122,7 +122,7 @@ func _render_identity() -> void:
 	_name_label.text = display_name
 	var presence := PardexOnline.effective_presence if PardexOnline.is_online() else "offline"
 	UI.clear(_avatar_slot)
-	var avatar := UI.avatar(display_name, 176, presence, UI.ACCENT, PardexOnline.my_avatar_texture())
+	var avatar := UI.avatar(display_name, 156, presence, UI.ACCENT, PardexOnline.my_avatar_texture())
 	# Click the picture to change it (Ayarlar → Profil resmi).
 	avatar.mouse_filter = Control.MOUSE_FILTER_STOP
 	avatar.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -192,7 +192,6 @@ func _build_achievements() -> Control:
 	UI.expand(copy)
 	copy.add_child(UI.label("Başarım sistemi yakında", 15, UI.TEXT, true))
 	copy.add_child(UI.wrapped(UI.label("PARDEX oyunlarındaki başarımların burada listelenecek.", 12, UI.TEXT_2)))
-	copy.add_child(UI.progress(0.0, UI.GREEN, 5))
 	line.add_child(copy)
 	column.add_child(line)
 	return card
