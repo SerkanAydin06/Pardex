@@ -698,28 +698,27 @@ static func stat_tile(icon_name: String, value: String, caption: String, color :
 
 
 static func empty_state(icon_name: String, title: String, body := "", compact := false) -> VBoxContainer:
-	var column := vbox(6 if compact else 10)
-	column.alignment = BoxContainer.ALIGNMENT_CENTER
-	column.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# The shared empty-state layout is editable in scenes/ui/empty_state.tscn.
+	# Code supplies only the icon and current content.
+	var column := (load("res://scenes/ui/empty_state.tscn") as PackedScene).instantiate() as VBoxContainer
+	column.add_theme_constant_override("separation", 6 if compact else 10)
+	var tile := column.get_node("IconTile") as PanelContainer
 	var tile_size := 36.0 if compact else 54.0
-	var tile := panel(0, box(Color(ACCENT, 0.07), 12, Color(ACCENT, 0.22), 1))
 	tile.custom_minimum_size = Vector2(tile_size, tile_size)
-	tile.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	tile.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	var glyph := CenterContainer.new()
-	glyph.add_child(icon(icon_name, 18 if compact else 26, Color(TEXT_2, 0.95)))
-	tile.add_child(glyph)
-	column.add_child(tile)
-	var heading := label(title, 13 if compact else 16, TEXT if not compact else TEXT_2, not compact)
-	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	column.add_child(heading)
-	if not body.is_empty():
-		var detail := wrapped(label(body, 12 if compact else 13, TEXT_2))
-		detail.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		column.add_child(detail)
+	var glyph := column.get_node("IconTile/IconFrame/Icon") as TextureRect
+	glyph.texture = Icons.texture(icon_name, 18 if compact else 26)
+	glyph.custom_minimum_size = Vector2(18, 18) if compact else Vector2(26, 26)
+	var heading := column.get_node("Title") as Label
+	heading.text = title
+	heading.add_theme_font_size_override("font_size", 13 if compact else 16)
+	heading.add_theme_color_override("font_color", TEXT_2 if compact else TEXT)
+	if not compact:
+		heading.add_theme_font_override("font", _get_bold_font())
+	var detail := column.get_node("Body") as Label
+	detail.text = body
+	detail.visible = not body.is_empty()
+	detail.add_theme_font_size_override("font_size", 12 if compact else 13)
 	return column
-
 
 static func presence_label(presence: String) -> String:
 	match presence:
