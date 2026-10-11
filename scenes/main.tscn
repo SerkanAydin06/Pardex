@@ -1,24 +1,24 @@
 [gd_scene format=3 uid="uid://c4ee5q51bjoxw"]
 
 [ext_resource type="Script" uid="uid://b862qcsk55r27" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Texture2D" uid="uid://ck1d815x5qbje" path="res://assets/ui/Fütüristik Krom Pardex Hub Logosu.png" id="2_0ld40"]
 [ext_resource type="Texture2D" uid="uid://d3i1b1a4uerot" path="res://assets/ui/left_banner.png" id="3_sidebar_art"]
-[ext_resource type="Texture2D" path="res://assets/ui/brand_pardex_hub.webp" id="3_ya4ey"]
 [ext_resource type="PackedScene" path="res://scenes/ui/window_chrome.tscn" id="4_chrome"]
 [ext_resource type="Script" uid="uid://mgpwwfj1217y" path="res://scripts/ui/pardex_window_frame.gd" id="5_frame"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/store.svg" id="6_store"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/library.svg" id="7_library"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/friends.svg" id="8_friends"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/profile.svg" id="9_profile"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/gear.svg" id="10_settings"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/search.svg" id="12_search"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/message.svg" id="13_message"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/bell.svg" id="14_bell"]
-[ext_resource type="PackedScene" path="res://scenes/pages/store_page.tscn" id="20_store"]
-[ext_resource type="PackedScene" path="res://scenes/pages/library_page.tscn" id="20_library"]
+[ext_resource type="Texture2D" uid="uid://b7hq6e521rqkp" path="res://assets/ui/icons/store.svg" id="6_store"]
+[ext_resource type="Texture2D" uid="uid://cod747q6okd3a" path="res://assets/ui/icons/library.svg" id="7_library"]
+[ext_resource type="Texture2D" uid="uid://0hkeo31n7ipe" path="res://assets/ui/icons/friends.svg" id="8_friends"]
+[ext_resource type="Texture2D" uid="uid://d0fagmks35qck" path="res://assets/ui/icons/profile.svg" id="9_profile"]
+[ext_resource type="Texture2D" uid="uid://craiafiggsmtn" path="res://assets/ui/icons/gear.svg" id="10_settings"]
+[ext_resource type="Texture2D" uid="uid://n1jqljryt3tt" path="res://assets/ui/icons/search.svg" id="12_search"]
+[ext_resource type="Texture2D" uid="uid://d1sbaf7us2qgg" path="res://assets/ui/icons/message.svg" id="13_message"]
+[ext_resource type="Texture2D" uid="uid://72dfdm01kh0a" path="res://assets/ui/icons/bell.svg" id="14_bell"]
 [ext_resource type="PackedScene" path="res://scenes/pages/friends_page.tscn" id="20_friends"]
-[ext_resource type="PackedScene" path="res://scenes/pages/profile_page.tscn" id="20_profile"]
+[ext_resource type="PackedScene" path="res://scenes/pages/library_page.tscn" id="20_library"]
 [ext_resource type="PackedScene" path="res://scenes/pages/messages_page.tscn" id="20_messages"]
+[ext_resource type="PackedScene" path="res://scenes/pages/profile_page.tscn" id="20_profile"]
 [ext_resource type="PackedScene" path="res://scenes/pages/settings_page.tscn" id="20_settings"]
+[ext_resource type="PackedScene" path="res://scenes/pages/store_page.tscn" id="20_store"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.024, 0.039, 0.078, 1)
@@ -37,6 +37,48 @@ bg_color = Color(0.025, 0.044, 0.086, 0.98)
 border_width_bottom = 1
 border_color = Color(0.102, 0.161, 0.267, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleSearch"]
+content_margin_left = 40.0
+content_margin_right = 10.0
+bg_color = Color(0.047, 0.078, 0.141, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.102, 0.161, 0.267, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleSearchFocus"]
+content_margin_left = 40.0
+content_margin_right = 10.0
+bg_color = Color(0.047, 0.078, 0.141, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.086, 0.525, 0.878, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleNotificationHover"]
+bg_color = Color(0.055, 0.12, 0.19, 0.9)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleNotificationBadge"]
+bg_color = Color(0.153, 0.663, 1, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [sub_resource type="StyleBoxFlat" id="StyleSidebar"]
 bg_color = Color(0.031, 0.051, 0.102, 1)
 border_width_right = 1
@@ -50,62 +92,6 @@ colors = PackedColorArray(0.031, 0.051, 0.102, 1, 0.031, 0.051, 0.102, 0.85, 0.0
 gradient = SubResource("SidebarFadeGradient")
 fill_from = Vector2(0.5, 0)
 fill_to = Vector2(0.5, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleSearch"]
-bg_color = Color(0.047, 0.078, 0.141, 0.9)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.102, 0.161, 0.267, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-content_margin_left = 40.0
-content_margin_right = 10.0
-
-[sub_resource type="StyleBoxFlat" id="StyleSearchFocus"]
-bg_color = Color(0.047, 0.078, 0.141, 0.9)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.086, 0.525, 0.878, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-content_margin_left = 40.0
-content_margin_right = 10.0
-
-[sub_resource type="StyleBoxFlat" id="StyleNotificationBadge"]
-bg_color = Color(0.153, 0.663, 1, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-
-[sub_resource type="StyleBoxFlat" id="StyleNotificationPanel"]
-bg_color = Color(0.043, 0.071, 0.13, 0.98)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.14, 0.3, 0.5, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-shadow_size = 12
-shadow_color = Color(0, 0, 0, 0.35)
-
-[sub_resource type="StyleBoxFlat" id="StyleNotificationHover"]
-bg_color = Color(0.055, 0.12, 0.19, 0.9)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
 
 [sub_resource type="StyleBoxFlat" id="StyleProfileCard"]
 content_margin_left = 10.0
@@ -132,7 +118,22 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
+[sub_resource type="StyleBoxFlat" id="StyleNotificationPanel"]
+bg_color = Color(0.043, 0.071, 0.13, 0.98)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.14, 0.3, 0.5, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 12
+
 [node name="Pardex" type="Control" unique_id=1736552998]
+texture_filter = 5
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -162,13 +163,14 @@ theme_override_constants/separation = 0
 
 [node name="Header" type="HBoxContainer" parent="Root" unique_id=603264199]
 unique_name_in_owner = true
+texture_filter = 5
 custom_minimum_size = Vector2(0, 76)
 layout_mode = 2
 theme_override_constants/separation = 0
 
 [node name="BrandHeader" type="PanelContainer" parent="Root/Header" unique_id=1279653957]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(258, 76)
+custom_minimum_size = Vector2(260, 76)
 layout_mode = 2
 mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBrandHeader")
@@ -188,19 +190,19 @@ theme_override_constants/separation = 0
 alignment = 1
 
 [node name="Logo" type="TextureRect" parent="Root/Header/BrandHeader/BrandMargin/Brand" unique_id=42183744]
-texture_filter = 3
+texture_filter = 4
 custom_minimum_size = Vector2(202, 70)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-texture = ExtResource("3_ya4ey")
+texture = ExtResource("2_0ld40")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="ActionHeader" type="PanelContainer" parent="Root/Header" unique_id=132332832]
 layout_mode = 2
-mouse_filter = 1
 size_flags_horizontal = 3
+mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleTopBar")
 
 [node name="ActionMargin" type="MarginContainer" parent="Root/Header/ActionHeader" unique_id=735393972]
@@ -222,7 +224,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.15
 
-[node name="LibrarySearch" type="LineEdit" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow/SearchSlot"]
+[node name="LibrarySearch" type="LineEdit" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow/SearchSlot" unique_id=1905547798]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
@@ -231,13 +233,15 @@ theme_override_colors/font_color = Color(0.933, 0.953, 0.984, 1)
 theme_override_colors/font_placeholder_color = Color(0.498, 0.553, 0.639, 1)
 theme_override_font_sizes/font_size = 14
 theme_override_styles/normal = SubResource("StyleSearch")
-theme_override_styles/focus = SubResource("StyleSearchFocus")
 theme_override_styles/read_only = SubResource("StyleSearch")
+theme_override_styles/focus = SubResource("StyleSearchFocus")
 placeholder_text = "Oyun, tür, stüdyo veya içerik ara..."
 clear_button_enabled = true
 
-[node name="SearchIcon" type="TextureRect" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow/SearchSlot/LibrarySearch"]
+[node name="SearchIcon" type="TextureRect" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow/SearchSlot/LibrarySearch" unique_id=1784406618]
+modulate = Color(0.639, 0.694, 0.784, 1)
 layout_mode = 1
+anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
 offset_left = 14.0
@@ -246,7 +250,6 @@ offset_right = 32.0
 offset_bottom = 9.0
 mouse_filter = 2
 texture = ExtResource("12_search")
-modulate = Color(0.639, 0.694, 0.784, 1)
 expand_mode = 1
 stretch_mode = 5
 
@@ -256,25 +259,27 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.9
 mouse_filter = 2
 
-[node name="NotificationButton" type="Button" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow"]
+[node name="NotificationButton" type="Button" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow" unique_id=2144534736]
 unique_name_in_owner = true
+texture_filter = 5
 custom_minimum_size = Vector2(36, 34)
 layout_mode = 2
-focus_mode = 0
 tooltip_text = "Bildirimler"
+focus_mode = 0
 mouse_default_cursor_shape = 2
-icon = ExtResource("14_bell")
-icon_alignment = 1
 theme_override_colors/icon_normal_color = Color(0.86, 0.91, 0.98, 1)
 theme_override_colors/icon_hover_color = Color(1, 1, 1, 1)
 theme_override_constants/icon_max_width = 20
-theme_override_styles/hover = SubResource("StyleNotificationHover")
 theme_override_styles/pressed = SubResource("StyleNotificationHover")
+theme_override_styles/hover = SubResource("StyleNotificationHover")
+icon = ExtResource("14_bell")
+icon_alignment = 1
 
-[node name="NotificationBadge" type="PanelContainer" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow/NotificationButton"]
+[node name="NotificationBadge" type="PanelContainer" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow/NotificationButton" unique_id=32594442]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -12.0
@@ -284,9 +289,9 @@ offset_bottom = 12.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleNotificationBadge")
 
-[node name="Count" type="Label" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow/NotificationButton/NotificationBadge"]
-layout_mode = 2
+[node name="Count" type="Label" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow/NotificationButton/NotificationBadge" unique_id=1586253394]
 custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 1, 1, 1)
 theme_override_font_sizes/font_size = 10
 horizontal_alignment = 1
@@ -294,6 +299,7 @@ vertical_alignment = 1
 
 [node name="WindowChrome" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow" unique_id=1452125407 instance=ExtResource("4_chrome")]
 unique_name_in_owner = true
+texture_filter = 5
 layout_mode = 2
 
 [node name="Body" type="HBoxContainer" parent="Root" unique_id=193809749]
@@ -303,7 +309,7 @@ theme_override_constants/separation = 0
 
 [node name="Sidebar" type="PanelContainer" parent="Root/Body" unique_id=1553084847]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(258, 0)
+custom_minimum_size = Vector2(260, 0)
 clip_contents = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleSidebar")
@@ -339,26 +345,30 @@ theme_override_constants/separation = 10
 
 [node name="StoreButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=8374623]
 unique_name_in_owner = true
+texture_filter = 5
 layout_mode = 2
 text = "Mağaza"
 icon = ExtResource("6_store")
 
 [node name="LibraryButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=1560595283]
 unique_name_in_owner = true
+texture_filter = 5
 layout_mode = 2
 text = "Kütüphane"
 icon = ExtResource("7_library")
 
 [node name="FriendsButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=927633788]
 unique_name_in_owner = true
+texture_filter = 5
 layout_mode = 2
 text = "Arkadaşlar"
 icon = ExtResource("8_friends")
 
-[node name="FriendsNotificationBadge" type="PanelContainer" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/FriendsButton"]
+[node name="FriendsNotificationBadge" type="PanelContainer" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/FriendsButton" unique_id=912253932]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
+anchors_preset = 6
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
@@ -372,9 +382,9 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleNotificationBadge")
 
-[node name="Count" type="Label" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/FriendsButton/FriendsNotificationBadge"]
-layout_mode = 2
+[node name="Count" type="Label" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/FriendsButton/FriendsNotificationBadge" unique_id=1714649833]
 custom_minimum_size = Vector2(24, 22)
+layout_mode = 2
 theme_override_colors/font_color = Color(0.98, 1, 1, 1)
 theme_override_font_sizes/font_size = 11
 horizontal_alignment = 1
@@ -382,6 +392,7 @@ vertical_alignment = 1
 
 [node name="MessagesButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=1738450070]
 unique_name_in_owner = true
+texture_filter = 5
 layout_mode = 2
 text = "Mesajlar"
 icon = ExtResource("13_message")
@@ -413,6 +424,7 @@ vertical_alignment = 1
 
 [node name="ProfileButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=214693986]
 unique_name_in_owner = true
+texture_filter = 5
 layout_mode = 2
 text = "Profil"
 icon = ExtResource("9_profile")
@@ -486,28 +498,28 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="StorePage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_store")]
+[node name="StorePage" parent="Root/Body/MainMargin/Pages" unique_id=161648020 instance=ExtResource("20_store")]
 layout_mode = 2
 
-[node name="LibraryPage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_library")]
-layout_mode = 2
+[node name="LibraryPage" parent="Root/Body/MainMargin/Pages" unique_id=1587212547 instance=ExtResource("20_library")]
 visible = false
+layout_mode = 2
 
-[node name="FriendsPage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_friends")]
-layout_mode = 2
+[node name="FriendsPage" parent="Root/Body/MainMargin/Pages" unique_id=417289675 instance=ExtResource("20_friends")]
 visible = false
+layout_mode = 2
 
-[node name="MessagesPage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_messages")]
-layout_mode = 2
+[node name="MessagesPage" parent="Root/Body/MainMargin/Pages" unique_id=638238803 instance=ExtResource("20_messages")]
 visible = false
+layout_mode = 2
 
-[node name="ProfilePage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_profile")]
-layout_mode = 2
+[node name="ProfilePage" parent="Root/Body/MainMargin/Pages" unique_id=169794569 instance=ExtResource("20_profile")]
 visible = false
+layout_mode = 2
 
-[node name="SettingsPage" parent="Root/Body/MainMargin/Pages" instance=ExtResource("20_settings")]
-layout_mode = 2
+[node name="SettingsPage" parent="Root/Body/MainMargin/Pages" unique_id=365553235 instance=ExtResource("20_settings")]
 visible = false
+layout_mode = 2
 
 [node name="ToastPanel" type="PanelContainer" parent="." unique_id=1518637206]
 unique_name_in_owner = true
@@ -537,6 +549,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="WindowFrame" type="Control" parent="." unique_id=278207126]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -546,21 +559,22 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("5_frame")
 
-[node name="PresenceMenu" type="PopupMenu" parent="."]
+[node name="PresenceMenu" type="PopupMenu" parent="." unique_id=2041898164]
 unique_name_in_owner = true
 
-[node name="AvatarFileDialog" type="FileDialog" parent="."]
+[node name="AvatarFileDialog" type="FileDialog" parent="." unique_id=1799068428]
 unique_name_in_owner = true
-title = "Profil resmi seç"
+title = "Open a File"
 size = Vector2i(800, 550)
 file_mode = 0
 access = 2
 filters = PackedStringArray("*.png, *.jpg, *.jpeg, *.webp ; Resimler")
 use_native_dialog = true
 
-[node name="NotificationCenter" type="PanelContainer" parent="."]
+[node name="NotificationCenter" type="PanelContainer" parent="." unique_id=1299719955]
 unique_name_in_owner = true
 visible = false
+z_index = 100
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -570,33 +584,31 @@ offset_top = 64.0
 offset_right = -28.0
 offset_bottom = 560.0
 grow_horizontal = 0
-z_index = 100
-mouse_filter = 0
 theme_override_styles/panel = SubResource("StyleNotificationPanel")
 
-[node name="NotificationMargin" type="MarginContainer" parent="NotificationCenter"]
+[node name="NotificationMargin" type="MarginContainer" parent="NotificationCenter" unique_id=732125780]
 layout_mode = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 14
 
-[node name="NotificationColumn" type="VBoxContainer" parent="NotificationCenter/NotificationMargin"]
+[node name="NotificationColumn" type="VBoxContainer" parent="NotificationCenter/NotificationMargin" unique_id=1294185757]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="NotificationHeading" type="HBoxContainer" parent="NotificationCenter/NotificationMargin/NotificationColumn"]
+[node name="NotificationHeading" type="HBoxContainer" parent="NotificationCenter/NotificationMargin/NotificationColumn" unique_id=846514632]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="NotificationTitle" type="Label" parent="NotificationCenter/NotificationMargin/NotificationColumn/NotificationHeading"]
+[node name="NotificationTitle" type="Label" parent="NotificationCenter/NotificationMargin/NotificationColumn/NotificationHeading" unique_id=1007068644]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
 theme_override_font_sizes/font_size = 15
 text = "BİLDİRİMLER"
 
-[node name="ClearReadButton" type="Button" parent="NotificationCenter/NotificationMargin/NotificationColumn/NotificationHeading"]
+[node name="ClearReadButton" type="Button" parent="NotificationCenter/NotificationMargin/NotificationColumn/NotificationHeading" unique_id=1571276256]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
@@ -605,15 +617,15 @@ theme_override_font_sizes/font_size = 10
 text = "OKUNANLARI TEMİZLE"
 flat = true
 
-[node name="NotificationSeparator" type="HSeparator" parent="NotificationCenter/NotificationMargin/NotificationColumn"]
+[node name="NotificationSeparator" type="HSeparator" parent="NotificationCenter/NotificationMargin/NotificationColumn" unique_id=938249075]
 layout_mode = 2
 
-[node name="NotificationScroll" type="ScrollContainer" parent="NotificationCenter/NotificationMargin/NotificationColumn"]
+[node name="NotificationScroll" type="ScrollContainer" parent="NotificationCenter/NotificationMargin/NotificationColumn" unique_id=1062207230]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="NotificationList" type="VBoxContainer" parent="NotificationCenter/NotificationMargin/NotificationColumn/NotificationScroll"]
+[node name="NotificationList" type="VBoxContainer" parent="NotificationCenter/NotificationMargin/NotificationColumn/NotificationScroll" unique_id=2093830259]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
