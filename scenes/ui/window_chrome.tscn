@@ -1,9 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/svg/icon_reward.svg" id="1_reward"]
-[ext_resource type="Texture2D" path="res://assets/ui/svg/window_minimize.svg" id="2_minimize"]
-[ext_resource type="Texture2D" path="res://assets/ui/svg/window_maximize.svg" id="3_maximize"]
-[ext_resource type="Texture2D" path="res://assets/ui/svg/window_close.svg" id="4_close"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/reward.svg" id="1_reward"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/window_minimize.svg" id="2_minimize"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/window_maximize.svg" id="3_maximize"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/window_close.svg" id="4_close"]
 [ext_resource type="Script" path="res://scripts/ui/pardex_window_icon_state.gd" id="5_state"]
 
 [sub_resource type="StyleBoxFlat" id="IconNormal"]
