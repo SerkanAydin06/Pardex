@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://b862qcsk55r27" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://ck1d815x5qbje" path="res://assets/ui/Fütüristik Krom Pardex Hub Logosu.png" id="2_0ld40"]
 [ext_resource type="Texture2D" uid="uid://d3i1b1a4uerot" path="res://assets/ui/left_banner.png" id="3_sidebar_art"]
-[ext_resource type="PackedScene" path="res://scenes/ui/window_chrome.tscn" id="4_chrome"]
+[ext_resource type="PackedScene" uid="uid://bjdjohtjb436c" path="res://scenes/ui/window_chrome.tscn" id="4_chrome"]
 [ext_resource type="Script" uid="uid://mgpwwfj1217y" path="res://scripts/ui/pardex_window_frame.gd" id="5_frame"]
 [ext_resource type="Texture2D" uid="uid://b7hq6e521rqkp" path="res://assets/ui/icons/store.svg" id="6_store"]
 [ext_resource type="Texture2D" uid="uid://cod747q6okd3a" path="res://assets/ui/icons/library.svg" id="7_library"]
@@ -551,6 +551,7 @@ vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="WindowFrame" type="Control" parent="." unique_id=278207126]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
