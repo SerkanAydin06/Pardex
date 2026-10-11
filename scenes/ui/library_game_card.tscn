@@ -62,7 +62,7 @@ theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 8
 mouse_filter = 2
 
-[node name="Overlay" type="VBoxContainer" parent="Column/Artwork/OverlayMargin/OverlayMargin"]
+[node name="Overlay" type="VBoxContainer" parent="Column/Artwork/OverlayMargin"]
 layout_mode = 2
 theme_override_constants/separation = 0
 mouse_filter = 2
