@@ -1,23 +1,22 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bwqgjj8yay3jh"]
 
-[ext_resource type="Script" path="res://scripts/pages/library_page.gd" id="1_8ucsj"]
-[ext_resource type="Texture2D" path="res://assets/ui/hero_play.png" id="2_08brj"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/crown.svg" id="3_eom10"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/gamepad.svg" id="4_1rylr"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/download.svg" id="5_idi43"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/clock.svg" id="6_lj2w6"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/heart.svg" id="7_u3pvn"]
-[ext_resource type="Texture2D" path="res://assets/ui/placeholder_korsan.png" id="8_0b3lu"]
-[ext_resource type="Texture2D" path="res://assets/ui/placeholder_vex.png" id="9_jyi4k"]
-[ext_resource type="Texture2D" path="res://assets/ui/placeholder_firtina.png" id="10_it0hw"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/grid.svg" id="11_1fb5q"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/list.svg" id="12_6rnlw"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/star_fill.svg" id="13_2bp3r"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/check.svg" id="14_esk7v"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/dots_h.svg" id="15_kwqhx"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/star.svg" id="16_v2o5p"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/arrow_right.svg" id="17_w0sn1"]
-
+[ext_resource type="Script" uid="uid://d0c6hm1tn15ru" path="res://scripts/pages/library_page.gd" id="1_8ucsj"]
+[ext_resource type="Texture2D" uid="uid://cl8dg3vv8yf6c" path="res://assets/ui/hero_play.png" id="2_08brj"]
+[ext_resource type="Texture2D" uid="uid://drcgvmr40eubj" path="res://assets/ui/icons/crown.svg" id="3_eom10"]
+[ext_resource type="Texture2D" uid="uid://8leraydps6gt" path="res://assets/ui/icons/gamepad.svg" id="4_1rylr"]
+[ext_resource type="Texture2D" uid="uid://cq4yqnvgdrx3s" path="res://assets/ui/icons/download.svg" id="5_idi43"]
+[ext_resource type="Texture2D" uid="uid://c0cnkwxjmvl28" path="res://assets/ui/icons/clock.svg" id="6_lj2w6"]
+[ext_resource type="Texture2D" uid="uid://deqyuxtcl4rb6" path="res://assets/ui/icons/heart.svg" id="7_u3pvn"]
+[ext_resource type="Texture2D" uid="uid://tqeew4v23sdh" path="res://assets/ui/placeholder_korsan.png" id="8_0b3lu"]
+[ext_resource type="Texture2D" uid="uid://bmdjg7rmg8lac" path="res://assets/ui/placeholder_vex.png" id="9_jyi4k"]
+[ext_resource type="Texture2D" uid="uid://bt5l0v45nba6j" path="res://assets/ui/placeholder_firtina.png" id="10_it0hw"]
+[ext_resource type="Texture2D" uid="uid://bus1dr6a78n2a" path="res://assets/ui/icons/grid.svg" id="11_1fb5q"]
+[ext_resource type="Texture2D" uid="uid://bve4wcbuhnbds" path="res://assets/ui/icons/list.svg" id="12_6rnlw"]
+[ext_resource type="Texture2D" uid="uid://dmi36cdb8xldg" path="res://assets/ui/icons/star_fill.svg" id="13_2bp3r"]
+[ext_resource type="Texture2D" uid="uid://b8tby51dsjw1i" path="res://assets/ui/icons/check.svg" id="14_esk7v"]
+[ext_resource type="Texture2D" uid="uid://bo1i2v51t5qwr" path="res://assets/ui/icons/dots_h.svg" id="15_kwqhx"]
+[ext_resource type="Texture2D" uid="uid://cbi8utou70p2h" path="res://assets/ui/icons/star.svg" id="16_v2o5p"]
+[ext_resource type="Texture2D" uid="uid://cjj1bprg4j75u" path="res://assets/ui/icons/arrow_right.svg" id="17_w0sn1"]
 [ext_resource type="Theme" path="res://themes/pardex_theme.tres" id="40_editor_theme"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6ntpp"]
@@ -1318,11 +1317,10 @@ corner_radius_bottom_left = 9
 shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
 
 [node name="LibraryPage" type="VBoxContainer" unique_id=225961839]
-layout_mode = 0
 offset_right = 1440.0
 offset_bottom = 900.0
-theme = ExtResource("40_editor_theme")
 size_flags_vertical = 3
+theme = ExtResource("40_editor_theme")
 theme_override_constants/separation = 0
 script = ExtResource("1_8ucsj")
 
@@ -1355,7 +1353,7 @@ layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("2_08brj")
 expand_mode = 1
-stretch_mode = 6
+stretch_mode = 5
 
 [node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/TopRow/PanelContainer1" unique_id=238794450]
 layout_mode = 2
@@ -2708,5 +2706,5 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_lgavi")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_qi1v7")
 text = "Oyna"
 
-[node name="GameMenu" type="PopupMenu" parent="."]
+[node name="GameMenu" type="PopupMenu" parent="." unique_id=1810032633]
 unique_name_in_owner = true

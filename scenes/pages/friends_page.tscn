@@ -1,17 +1,17 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://sbb7o472h07c"]
 
-[ext_resource type="Script" path="res://scripts/pages/social_page.gd" id="1_tgrpe"]
-[ext_resource type="Texture2D" path="res://assets/ui/hero_friends.png" id="2_48u6t"]
-[ext_resource type="Script" path="res://scripts/ui/pardex_button_content.gd" id="3_2b25c"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/user_plus.svg" id="4_4icxs"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/friends.svg" id="5_yn3wy"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/message.svg" id="6_227bf"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/users_group.svg" id="7_r7pak"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/arrow_right.svg" id="8_xvygj"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/gamepad.svg" id="9_tn3dm"]
-[ext_resource type="Texture2D" path="res://assets/ui/icons/mail.svg" id="10_vy88p"]
-
-[ext_resource type="Theme" path="res://themes/pardex_theme.tres" id="40_editor_theme"]
+[ext_resource type="Script" uid="uid://cvb5r4e1vqevl" path="res://scripts/pages/social_page.gd" id="1_tgrpe"]
+[ext_resource type="Texture2D" uid="uid://5p65cgdrwxmi" path="res://assets/ui/hero_friends.png" id="2_48u6t"]
+[ext_resource type="Script" uid="uid://dq7tfe6yyxu7a" path="res://scripts/ui/pardex_button_content.gd" id="3_2b25c"]
+[ext_resource type="Texture2D" uid="uid://drcgvmr40eubj" path="res://assets/ui/icons/crown.svg" id="4_2b25c"]
+[ext_resource type="Texture2D" uid="uid://cbwra0v473r8w" path="res://assets/ui/icons/user_plus.svg" id="4_4icxs"]
+[ext_resource type="Texture2D" uid="uid://0hkeo31n7ipe" path="res://assets/ui/icons/friends.svg" id="5_yn3wy"]
+[ext_resource type="Texture2D" uid="uid://d1sbaf7us2qgg" path="res://assets/ui/icons/message.svg" id="6_227bf"]
+[ext_resource type="Texture2D" uid="uid://ccfiw3uwwhlqk" path="res://assets/ui/icons/users_group.svg" id="7_r7pak"]
+[ext_resource type="Texture2D" uid="uid://cjj1bprg4j75u" path="res://assets/ui/icons/arrow_right.svg" id="8_xvygj"]
+[ext_resource type="Texture2D" uid="uid://8leraydps6gt" path="res://assets/ui/icons/gamepad.svg" id="9_tn3dm"]
+[ext_resource type="Texture2D" uid="uid://d4fl5enva7vw5" path="res://assets/ui/icons/mail.svg" id="10_vy88p"]
+[ext_resource type="Theme" uid="uid://bm02hf6u6yjgy" path="res://themes/pardex_theme.tres" id="40_editor_theme"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cqauw"]
 content_margin_left = 0.0
@@ -196,11 +196,10 @@ corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
 [node name="FriendsPage" type="VBoxContainer" unique_id=236273787]
-layout_mode = 0
 offset_right = 1440.0
 offset_bottom = 900.0
-theme = ExtResource("40_editor_theme")
 size_flags_vertical = 3
+theme = ExtResource("40_editor_theme")
 theme_override_constants/separation = 0
 script = ExtResource("1_tgrpe")
 
@@ -227,7 +226,7 @@ layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("2_48u6t")
 expand_mode = 1
-stretch_mode = 6
+stretch_mode = 5
 
 [node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1" unique_id=1118510760]
 layout_mode = 2
@@ -256,7 +255,21 @@ layout_mode = 2
 size_flags_horizontal = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t75n")
 
-[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/PanelContainer1" unique_id=399023325]
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/PanelContainer1" unique_id=1916721719]
+layout_mode = 2
+
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/PanelContainer1/HBoxContainer" unique_id=1050805039]
+modulate = Color(0.15294118, 0.6627451, 1, 1)
+texture_filter = 2
+custom_minimum_size = Vector2(15, 15)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("4_2b25c")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label1" type="Label" parent="ScrollContainer1/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/PanelContainer1/HBoxContainer" unique_id=399023325]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_colors/font_outline_color = Color(0.15294118, 0.6627451, 1, 1)
@@ -708,24 +721,24 @@ theme_override_font_sizes/font_size = 13
 text = "Bekleyen arkadaşlık isteği yok"
 horizontal_alignment = 1
 
-[node name="FriendMenu" type="PopupMenu" parent="."]
+[node name="FriendMenu" type="PopupMenu" parent="." unique_id=600946977]
 unique_name_in_owner = true
 
-[node name="AddFriendDialog" type="AcceptDialog" parent="."]
+[node name="AddFriendDialog" type="AcceptDialog" parent="." unique_id=1852983139]
 unique_name_in_owner = true
 title = "Arkadaş Ekle"
+size = Vector2i(480, 440)
 min_size = Vector2i(480, 440)
 ok_button_text = "Kapat"
 
-[node name="AddFriendColumn" type="VBoxContainer" parent="AddFriendDialog"]
-layout_mode = 2
+[node name="AddFriendColumn" type="VBoxContainer" parent="AddFriendDialog" unique_id=107368244]
 theme_override_constants/separation = 10
 
-[node name="AddFriendSearchRow" type="HBoxContainer" parent="AddFriendDialog/AddFriendColumn"]
+[node name="AddFriendSearchRow" type="HBoxContainer" parent="AddFriendDialog/AddFriendColumn" unique_id=1871005964]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="AddFriendField" type="LineEdit" parent="AddFriendDialog/AddFriendColumn/AddFriendSearchRow"]
+[node name="AddFriendField" type="LineEdit" parent="AddFriendDialog/AddFriendColumn/AddFriendSearchRow" unique_id=1248394407]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
@@ -734,34 +747,34 @@ theme_override_font_sizes/font_size = 13
 placeholder_text = "Kullanıcı adı veya PARDEX kimliği..."
 clear_button_enabled = true
 
-[node name="AddFriendGo" type="Button" parent="AddFriendDialog/AddFriendColumn/AddFriendSearchRow"]
+[node name="AddFriendGo" type="Button" parent="AddFriendDialog/AddFriendColumn/AddFriendSearchRow" unique_id=1667373226]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(84, 40)
 layout_mode = 2
 text = "Ara"
 
-[node name="AddFriendHint" type="Label" parent="AddFriendDialog/AddFriendColumn"]
+[node name="AddFriendHint" type="Label" parent="AddFriendDialog/AddFriendColumn" unique_id=1843110782]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.498, 0.553, 0.639, 1)
 theme_override_font_sizes/font_size = 12
 text = "PARDEX kullanıcılarını adıyla bul."
 
-[node name="AddFriendScroll" type="ScrollContainer" parent="AddFriendDialog/AddFriendColumn"]
+[node name="AddFriendScroll" type="ScrollContainer" parent="AddFriendDialog/AddFriendColumn" unique_id=146831020]
 custom_minimum_size = Vector2(0, 280)
 layout_mode = 2
 horizontal_scroll_mode = 0
 
-[node name="AddFriendResults" type="VBoxContainer" parent="AddFriendDialog/AddFriendColumn/AddFriendScroll"]
+[node name="AddFriendResults" type="VBoxContainer" parent="AddFriendDialog/AddFriendColumn/AddFriendScroll" unique_id=379656349]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="InviteDialog" type="ConfirmationDialog" parent="."]
+[node name="InviteDialog" type="ConfirmationDialog" parent="." unique_id=481023207]
 unique_name_in_owner = true
 title = "PARDEX Oyun Daveti"
+size = Vector2i(460, 200)
 min_size = Vector2i(460, 200)
 ok_button_text = "Katıl"
 cancel_button_text = "Reddet"
-exclusive = true
