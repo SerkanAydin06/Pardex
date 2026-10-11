@@ -11,7 +11,6 @@ signal navigate(page: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
-const HERO_HEIGHT := 300.0
 
 var display_name := "Pardus"
 
@@ -27,11 +26,7 @@ var _right: VBoxContainer
 
 
 func _ready() -> void:
-	# The layout lives in scenes/pages/profile_page.tscn; building from code
-	# only happens when the script runs without its scene.
-	if get_child_count() == 0:
-		_build()
-		UI.own(self)
+	# Layout is owned by scenes/pages; runtime code only binds data and actions.
 	_bind()
 	PardexOnline.presence_changed.connect(func(_p): _render_identity())
 	PardexOnline.avatar_ready.connect(func(_id): _render_identity())
@@ -54,26 +49,7 @@ func _bind() -> void:
 	(%EditProfileButton as Button).pressed.connect(func(): navigate.emit("settings"))
 	(%FavoritesLink as Button).pressed.connect(func(): navigate.emit("library"))
 	(%AccountSettingsButton as Button).pressed.connect(func(): navigate.emit("settings"))
-
-
-func _build() -> void:
-	add_theme_constant_override("separation", 0)
-	var columns := UI.named(BoxContainer.new(), "Columns") as BoxContainer
-	columns.add_theme_constant_override("separation", 16)
-	add_child(UI.scroll_page(columns))
-	var main := UI.vbox(14)
-	UI.expand(main, 2.4)
-	columns.add_child(main)
-	main.add_child(_build_banner())
-	main.add_child(UI.named(UI.hbox(12), "StatsRow"))
-	main.add_child(_build_badges())
-	main.add_child(_build_achievements())
-	main.add_child(_build_favorites())
-	var right := UI.named(UI.vbox(16), "RightColumn") as VBoxContainer
-	UI.expand(right, 1.0)
-	columns.add_child(right)
-	right.add_child(_build_account())
-	right.add_child(_build_events())
+	(_account_list.get_node("RecoveryRow/Row/RecoveryLink") as Button).pressed.connect(func(): navigate.emit("settings"))
 
 
 func refresh() -> void:
@@ -93,30 +69,6 @@ func apply_layout(content_width: float) -> void:
 
 
 # ------------------------------------------------------------------ banner
-
-func _build_banner() -> Control:
-	var frame := UI.image(Catalog.texture("res://assets/ui/top_banner.png"), Vector2(0, HERO_HEIGHT), 16)
-	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
-	frame.add_child(UI.shade(0.92, true))
-	var row := UI.hbox(24)
-	frame.add_child(UI.margin(row, 30, 20, 24, 20))
-	row.add_child(UI.named(CenterContainer.new(), "AvatarSlot"))
-	var text := UI.vbox(10)
-	text.alignment = BoxContainer.ALIGNMENT_CENTER
-	UI.expand(text)
-	row.add_child(text)
-	text.add_child(UI.named(UI.label("", 42, UI.TEXT, true), "NameLabel"))
-	text.add_child(UI.pill("Seviye sistemi yakında", UI.ACCENT, "trophy", 12, false))
-	text.add_child(UI.label("Oyunlarını, arkadaşlarını ve ilerlemeni tek yerde takip et.", 16, UI.TEXT))
-	var bottom := UI.hbox(14)
-	bottom.add_child(UI.named(UI.hbox(8), "StatusRow"))
-	bottom.add_child(UI.spacer())
-	var edit := UI.button("Profili Düzenle", "ghost", 15, 48, "pencil")
-	edit.add_theme_stylebox_override("normal", UI.box(Color(UI.BG, 0.75), 10, UI.BORDER_HI, 1))
-	bottom.add_child(UI.named(edit, "EditProfileButton"))
-	text.add_child(bottom)
-	return frame
-
 
 func _render_identity() -> void:
 	_name_label.text = display_name
@@ -139,58 +91,17 @@ func _render_identity() -> void:
 
 
 func _render_stats() -> void:
-	UI.clear(_stats_row)
 	var friends = PardexOnline.social_state.get("friends", [])
 	for stat in [
-		["gamepad", str(Catalog.GAMES.size()), "Oyun Sayısı", UI.ACCENT],
-		["trophy", "0", "Başarım", UI.GOLD],
-		["clock", Catalog.hours(Catalog.total_playtime()), "Oynama Süresi", UI.ACCENT],
-		["friends", str((friends as Array).size() if typeof(friends) == TYPE_ARRAY else 0), "Arkadaş Sayısı", UI.ACCENT],
+		["GamesStat", str(Catalog.GAMES.size())],
+		["AchievementsStat", "0"],
+		["PlaytimeStat", Catalog.hours(Catalog.total_playtime())],
+		["FriendsStat", str((friends as Array).size() if typeof(friends) == TYPE_ARRAY else 0)],
 	]:
-		_stats_row.add_child(UI.expand(UI.stat_tile(str(stat[0]), str(stat[1]), str(stat[2]), stat[3])))
+		(_stats_row.get_node("%s/Row/Text/Value" % stat[0]) as Label).text = str(stat[1])
 
 
 # ------------------------------------------------------------------ badges + achievements
-
-func _build_badges() -> Control:
-	var card := UI.panel(16)
-	var column := UI.vbox(12)
-	card.add_child(column)
-	var header := UI.section_header("Rozetler", "Tüm Rozetleri Gör", 20)
-	(header.get_node("Link") as Button).visible = false
-	column.add_child(header)
-	var state := UI.empty_state("hex", "Rozet sistemi yakında", "Oyunlarda rozet kazandıkça burada görünecek.")
-	state.custom_minimum_size.y = 108
-	column.add_child(state)
-	return card
-
-
-func _build_achievements() -> Control:
-	var card := UI.panel(16)
-	var column := UI.vbox(12)
-	card.add_child(column)
-	column.add_child(UI.section_header("Son Başarımlar", "", 20))
-	var line := UI.hbox(14)
-	line.add_child(UI.icon_tile("trophy", 52, UI.GOLD))
-	var copy := UI.vbox(4)
-	UI.expand(copy)
-	copy.add_child(UI.label("Başarım sistemi yakında", 15, UI.TEXT, true))
-	copy.add_child(UI.wrapped(UI.label("PARDEX oyunlarındaki başarımların burada listelenecek.", 12, UI.TEXT_2)))
-	line.add_child(copy)
-	column.add_child(line)
-	return card
-
-
-func _build_favorites() -> Control:
-	var card := UI.panel(16)
-	var column := UI.vbox(12)
-	card.add_child(column)
-	var header := UI.section_header("Favori Oyunlar", "Tümünü Gör", 20)
-	UI.named(header.get_node("Link"), "FavoritesLink")
-	column.add_child(header)
-	column.add_child(UI.named(UI.hbox(12), "FavoritesRow"))
-	return card
-
 
 func _render_favorites() -> void:
 	UI.clear(_favorites_row)
@@ -216,59 +127,11 @@ func _render_favorites() -> void:
 
 # ------------------------------------------------------------------ right column
 
-func _build_account() -> Control:
-	var card := UI.panel(18)
-	var column := UI.vbox(10)
-	card.add_child(column)
-	var header := UI.hbox(8)
-	header.add_child(UI.expand(UI.label("Hesap Bilgileri", 22, UI.TEXT, true)))
-	header.add_child(UI.named(UI.icon_button("gear", "Ayarlar", 34, UI.ACCENT), "AccountSettingsButton"))
-	column.add_child(header)
-	column.add_child(UI.named(UI.vbox(0), "AccountList"))
-	return card
-
-
-func _account_row(icon_name: String, title: String, detail: String, trailing: Control = null, title_color := UI.TEXT) -> Control:
-	var row := UI.hbox(14)
-	row.add_child(UI.icon_tile(icon_name, 50, UI.ACCENT if icon_name != "crown" else UI.GOLD))
-	var text := UI.vbox(2)
-	text.alignment = BoxContainer.ALIGNMENT_CENTER
-	UI.expand(text)
-	var title_row := UI.hbox(8)
-	title_row.add_child(UI.expand(UI.fit(UI.label(title, 16, title_color, false))))
-	text.add_child(title_row)
-	if not detail.is_empty():
-		text.add_child(UI.fit(UI.label(detail, 12, UI.TEXT_2)))
-	row.add_child(text)
-	if trailing != null:
-		row.add_child(trailing)
-	return UI.margin(row, 0, 8, 0, 8)
-
-
 func _render_account() -> void:
-	UI.clear(_account_list)
 	var account_id := PardexOnline.account_id
 	var tag := ("#" + account_id.right(6).to_upper()) if not account_id.is_empty() else "Sunucuya bağlanınca oluşur"
-	_account_list.add_child(_account_row("mail", "PARDEX Kimliği", tag))
-	_account_list.add_child(UI.divider())
-	_account_list.add_child(_account_row("calendar", Catalog.date_text(Catalog.joined_at()), "PARDEX'e katıldı"))
-	_account_list.add_child(UI.divider())
-	var recovery := UI.link("Oluştur", 12)
-	recovery.pressed.connect(func(): navigate.emit("settings"))
-	_account_list.add_child(_account_row("shield", "Hesap Kurtarma", "Kurtarma kodu ile taşı", recovery))
-	_account_list.add_child(UI.divider())
-	var plus_row := _account_row("crown", "PARDEX Plus", "Ayrıcalıklar yakında", UI.pill("Yakında", UI.GOLD, "", 11), UI.GOLD)
-	_account_list.add_child(plus_row)
-
-
-func _build_events() -> Control:
-	var card := UI.panel(18)
-	card.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var column := UI.vbox(12)
-	card.add_child(column)
-	column.add_child(UI.section_header("Son Etkinlikler", "", 22))
-	column.add_child(UI.named(UI.vbox(12), "EventsList"))
-	return card
+	(_account_list.get_node("IdentityRow/Row/Text/Detail") as Label).text = tag
+	(_account_list.get_node("JoinedRow/Row/Text/TitleRow/Title") as Label).text = Catalog.date_text(Catalog.joined_at())
 
 
 func _render_events() -> void:

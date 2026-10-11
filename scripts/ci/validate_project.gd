@@ -1,6 +1,10 @@
 extends SceneTree
 
 const RESOURCES := [
+    "res://themes/pardex_theme.tres",
+    "res://scripts/tools/pardex_editor_preview.gd",
+    "res://scripts/ci/editor_preview_smoke.gd",
+    "res://scenes/ui/quick_launch_row.tscn",
     "res://scenes/main.tscn",
     "res://scenes/ui/window_chrome.tscn",
     "res://scenes/screens/settings.tscn",

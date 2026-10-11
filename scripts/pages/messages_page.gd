@@ -26,11 +26,7 @@ var _bubble_max_width := BUBBLE_MAX_WIDTH
 
 
 func _ready() -> void:
-	# The layout lives in scenes/pages/messages_page.tscn; building from code
-	# only happens when the script runs without its scene.
-	if get_child_count() == 0:
-		_build()
-		UI.own(self)
+	# Layout is owned by scenes/pages; runtime code only binds data and actions.
 	_bind()
 	PardexOnline.social_state_changed.connect(func(_state):
 		# Friends arrive after the page is built: pick a conversation then.
@@ -72,69 +68,6 @@ func _bind() -> void:
 	)
 	_send.pressed.connect(_send_current)
 	_input.text_submitted.connect(func(_text: String): _send_current())
-
-
-func _build() -> void:
-	add_theme_constant_override("separation", 12)
-	var heading := UI.vbox(3)
-	var title := UI.hbox(12)
-	title.add_child(UI.icon("message", 26, UI.ACCENT))
-	title.add_child(UI.label("Mesajlar", 30, UI.TEXT, true))
-	heading.add_child(title)
-	heading.add_child(UI.label("Arkadaşlarınla doğrudan yazış, oyundaysa tek tıkla katıl.", 13, UI.TEXT_2))
-	add_child(heading)
-	var columns := UI.named(UI.hbox(16), "MessageColumns") as HBoxContainer
-	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	add_child(columns)
-
-	var left := UI.named(UI.panel(14), "ConversationColumn") as PanelContainer
-	left.custom_minimum_size.x = 340
-	left.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var left_column := UI.vbox(10)
-	left.add_child(left_column)
-	left_column.add_child(UI.named(UI.search_field("Sohbetlerde ara...", 38), "ConversationSearch"))
-	var list_scroll := ScrollContainer.new()
-	list_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	list_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	var list := UI.named(UI.vbox(6), "ConversationList") as VBoxContainer
-	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	list_scroll.add_child(list)
-	left_column.add_child(list_scroll)
-	columns.add_child(left)
-
-	var chat := UI.named(UI.panel(0), "ChatPanel") as PanelContainer
-	UI.expand(chat)
-	chat.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var chat_column := UI.vbox(0)
-	chat.add_child(chat_column)
-	chat_column.add_child(UI.margin(UI.named(UI.hbox(12), "ChatHeader"), 18, 14, 18, 14))
-	chat_column.add_child(UI.divider())
-	var scroll := UI.named(ScrollContainer.new(), "MessageScroll") as ScrollContainer
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	var messages := UI.named(UI.vbox(8), "MessageList") as VBoxContainer
-	messages.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var messages_margin := UI.margin(messages, 20, 16, 20, 16)
-	messages_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(messages_margin)
-	chat_column.add_child(scroll)
-	chat_column.add_child(UI.divider())
-	var input_row := UI.hbox(10)
-	chat_column.add_child(UI.margin(input_row, 16, 12, 16, 14))
-	var input := UI.named(LineEdit.new(), "MessageInput") as LineEdit
-	input.placeholder_text = "Bir mesaj yaz..."
-	input.max_length = 500
-	input.custom_minimum_size.y = 46
-	input.add_theme_font_size_override("font_size", 14)
-	input.add_theme_color_override("font_placeholder_color", UI.TEXT_3)
-	input.add_theme_stylebox_override("normal", UI.box(Color(UI.SURFACE, 0.9), 10, UI.BORDER, 1, 12))
-	input.add_theme_stylebox_override("focus", UI.box(Color(UI.SURFACE, 0.9), 10, UI.ACCENT, 1, 12))
-	UI.expand(input)
-	input_row.add_child(input)
-	var send := UI.button("Gönder", "primary", 14, 46, "send")
-	send.custom_minimum_size.x = 130
-	input_row.add_child(UI.named(send, "SendButton"))
-	columns.add_child(chat)
 
 
 func apply_layout(content_width: float) -> void:

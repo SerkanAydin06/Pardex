@@ -63,6 +63,40 @@ func _verify_activity_and_chat(main_scene: Node, online: Node) -> bool:
 	return true
 
 
+func _verify_scene_owned_ui(main_scene: Node) -> bool:
+	var pages := main_scene.get_node("Root/Body/MainMargin/Pages")
+	var library := pages.get_node("LibraryPage")
+	var profile := pages.get_node("ProfilePage")
+	var library_stats: Node = library.get("_stats_row")
+	var profile_stats: Node = profile.get("_stats_row")
+	var account: Node = profile.get("_account_list")
+	var quick: Node = library.get("_quick_list")
+	var preserved := [library_stats.get_child(0), profile_stats.get_child(0), account.get_child(0), quick.get_child(0)]
+	var caption := library_stats.get_node("CatalogStat/Row/Text/Caption") as Label
+	caption.text = "CI editor caption"
+	for index in 3:
+		library.call("refresh")
+		profile.call("refresh")
+	if library_stats.get_child(0) != preserved[0] or profile_stats.get_child(0) != preserved[1] or account.get_child(0) != preserved[2] or quick.get_child(0) != preserved[3]:
+		_fail("refresh replaced editor-owned UI nodes")
+		return false
+	if caption.text != "CI editor caption":
+		_fail("refresh overwrote an editor-owned caption")
+		return false
+	var play := quick.get_node("Quick_korsanlar/Play") as Button
+	if play.pressed.get_connections().size() != 1:
+		_fail("quick launch has duplicated action connections")
+		return false
+	var preview := main_scene.get_node("EditorPreview")
+	main_scene.call("_navigate", "library")
+	preview.set("preview_page", 4)
+	if not (library as Control).visible or (profile as Control).visible:
+		_fail("editor preview changed runtime navigation")
+		return false
+	main_scene.call("_navigate", "store")
+	return true
+
+
 func _verify_identity_repair(identity_guard: Node) -> bool:
 	var broken := ConfigFile.new()
 	broken.set_value("identity", "key", "z".repeat(64))
@@ -155,6 +189,8 @@ func _run() -> void:
 		_fail("presence label was not found")
 		return
 	if not _verify_activity_and_chat(main_scene, online):
+		return
+	if not _verify_scene_owned_ui(main_scene):
 		return
 
 	online.call("disconnect_server")

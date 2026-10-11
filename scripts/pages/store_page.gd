@@ -14,7 +14,6 @@ const FeaturedCardScene := preload("res://scenes/ui/store_featured_card.tscn")
 const NewCardScene := preload("res://scenes/ui/store_new_card.tscn")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const SLIDE_SECONDS := 8.0
-const HERO_HEIGHT := 300.0
 const HERO_TITLE_HEIGHT := 80.0
 const HERO_BODY_HEIGHT := 46.0
 
@@ -32,11 +31,7 @@ var _content_width := 1200.0
 
 
 func _ready() -> void:
-	# The layout lives in scenes/pages/store_page.tscn; building from code only
-	# happens when the script runs without its scene (tools/bake_page_scenes.gd).
-	if get_child_count() == 0:
-		_build()
-		UI.own(self)
+	# Layout is owned by scenes/pages; runtime code only binds data and actions.
 	_bind()
 	_render_shelves()
 	_show_slide(0)
@@ -67,60 +62,6 @@ func _bind() -> void:
 		(_hero_dots.get_child(index) as Button).pressed.connect(_show_slide.bind(index))
 
 
-func _build() -> void:
-	add_theme_constant_override("separation", 0)
-	var body := UI.vbox(16)
-	add_child(UI.scroll_page(body))
-
-	# Top bar search results replace the shelves while a query is typed.
-	var results := UI.named(UI.vbox(14), "SearchResults") as VBoxContainer
-	results.visible = false
-	results.add_child(UI.named(UI.label("", 22, UI.TEXT, true), "SearchTitle"))
-	results.add_child(UI.named(_grid(), "SearchGrid"))
-	var no_results := UI.panel(14)
-	no_results.custom_minimum_size.y = 120
-	no_results.add_child(UI.empty_state("search", "Sonuç bulunamadı", "Farklı bir oyun adı ya da tür dene.", true))
-	results.add_child(UI.named(no_results, "SearchEmpty"))
-	body.add_child(results)
-
-	var shelves := UI.named(UI.vbox(16), "Shelves") as VBoxContainer
-	body.add_child(shelves)
-	shelves.add_child(_build_hero())
-
-	var featured_header := UI.section_header("Öne Çıkanlar", "Tümünü Gör", 22)
-	featured_header.add_child(UI.pill("Editörün Seçimi", UI.GOLD, "crown", 11))
-	featured_header.move_child(featured_header.get_child(-1), 1)
-	UI.named(featured_header.get_node("Link"), "FeaturedLink")
-	shelves.add_child(featured_header)
-	shelves.add_child(UI.named(_grid(), "FeaturedGrid"))
-
-	var deals_header := UI.section_header("İndirimler", "Tümünü Gör", 20, "percent", UI.RED)
-	deals_header.add_child(UI.label("Kaçırılmayacak fırsatlar, sınırlı süreli indirimler.", 13, UI.TEXT_2))
-	deals_header.move_child(deals_header.get_child(-1), 2)
-	(deals_header.get_node("Link") as Button).visible = false
-	shelves.add_child(deals_header)
-	var deals := UI.panel(14)
-	deals.custom_minimum_size.y = 76
-	deals.add_child(UI.empty_state("percent", "Şu an aktif indirim yok", "Kampanyalar başladığında burada görünecek.", true))
-	shelves.add_child(deals)
-
-	var new_header := UI.section_header("Yeni Gelenler", "Tümünü Gör", 20, "sparkles", UI.ACCENT)
-	new_header.add_child(UI.label("En yeni oyunlar şimdi PARDEX'te.", 13, UI.TEXT_2))
-	new_header.move_child(new_header.get_child(-1), 2)
-	UI.named(new_header.get_node("Link"), "NewLink")
-	shelves.add_child(new_header)
-	shelves.add_child(UI.named(_grid(), "NewGrid"))
-
-
-func _grid() -> GridContainer:
-	var grid := GridContainer.new()
-	grid.columns = 3
-	grid.add_theme_constant_override("h_separation", 14)
-	grid.add_theme_constant_override("v_separation", 14)
-	return grid
-
-
-## Called by the top bar search while Mağaza is open.
 func set_query(query: String) -> void:
 	_query = query.strip_edges().to_lower()
 	if is_node_ready():
@@ -174,91 +115,6 @@ func _slides() -> Array:
 			"game": str(entry["id"]),
 		})
 	return result
-
-
-func _build_hero() -> Control:
-	# Fixed outer height plus fixed two-line text slots keeps every carousel slide
-	# on exactly the same geometry, regardless of title/body length.
-	var frame := UI.image(null, Vector2(0, HERO_HEIGHT), 16)
-	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
-	UI.named(frame.get_node("Art"), "HeroArt")
-	frame.add_child(UI.shade(0.95, true))
-	frame.add_child(UI.shade(0.55))
-
-	var row := UI.hbox(20)
-	frame.add_child(UI.margin(row, 30, 20, 24, 16))
-	var text := UI.vbox(4)
-	UI.expand(text)
-	row.add_child(text)
-	var tag_row := UI.hbox(8)
-	tag_row.add_child(UI.icon("crown", 15, UI.ACCENT))
-	tag_row.add_child(UI.named(UI.label("", 12, UI.ACCENT, true), "HeroTag"))
-	var tag_holder := UI.panel(0, UI.box(Color(UI.BG, 0.6), 8, UI.BORDER_HI, 1, 8))
-	tag_holder.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	tag_holder.add_child(tag_row)
-	text.add_child(tag_holder)
-
-	var title_slot := Control.new()
-	title_slot.custom_minimum_size.y = HERO_TITLE_HEIGHT
-	title_slot.clip_contents = true
-	text.add_child(title_slot)
-	var title := UI.named(UI.label("", 34, UI.TEXT, true), "HeroTitle") as Label
-	title.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title.max_lines_visible = 2
-	title.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-	title_slot.add_child(title)
-
-	var body_slot := Control.new()
-	body_slot.custom_minimum_size.y = HERO_BODY_HEIGHT
-	body_slot.clip_contents = true
-	text.add_child(body_slot)
-	var hero_body := UI.named(UI.label("", 14, UI.TEXT_2), "HeroBody") as Label
-	hero_body.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	hero_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	hero_body.max_lines_visible = 2
-	hero_body.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	body_slot.add_child(hero_body)
-
-	var gap := Control.new()
-	gap.custom_minimum_size.y = 10
-	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	text.add_child(gap)
-	var actions := UI.hbox(12)
-	text.add_child(actions)
-	var explore := UI.button("Şimdi İncele", "primary", 14, 44, "arrow_right")
-	explore.icon_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	explore.custom_minimum_size.x = 190
-	actions.add_child(UI.named(explore, "ExploreButton"))
-	var wish := UI.button("İstek Listesi", "ghost", 14, 44, "heart")
-	wish.custom_minimum_size.x = 170
-	actions.add_child(UI.named(wish, "WishButton"))
-	text.add_child(UI.vspacer())
-
-	var pager := UI.hbox(8)
-	pager.alignment = BoxContainer.ALIGNMENT_CENTER
-	pager.add_child(UI.named(UI.icon_button("chevron_left", "Önceki", 24), "PrevButton"))
-	var dots := UI.named(UI.hbox(7), "HeroDots")
-	pager.add_child(dots)
-	for index in _slides().size():
-		var dot := Button.new()
-		dot.custom_minimum_size = Vector2(9, 9)
-		dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		dot.focus_mode = Control.FOCUS_NONE
-		dot.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-		dot.name = "Dot%d" % index
-		dots.add_child(dot)
-	pager.add_child(UI.named(UI.icon_button("chevron_right", "Sonraki", 24), "NextButton"))
-	text.add_child(pager)
-
-	var features := UI.feature_card([
-		["star", "PARDEX Orijinalleri", "PARDEX için geliştirilen oyunlar."],
-		["check_circle", "Güvenli Oyun Oturumu", "Biletli, korumalı bağlantı."],
-		["gamepad", "Online Odalar", "Kodla katıl, birlikte oyna."],
-		["friends", "Aktif Topluluk", "Arkadaşların seni bekliyor."],
-	], 300)
-	row.add_child(UI.named(features, "HeroFeatures"))
-	return frame
 
 
 func _show_slide(index: int) -> void:

@@ -1,0 +1,111 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/placeholder_korsan.png" id="1_iodcs"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_apmut"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.06666667, 0.105882354, 0.1882353, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bgocs"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.15294118, 0.6627451, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.40705884, 0.7639216, 1, 0.8)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ym6sg"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(0.23764706, 0.6964706, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.40705884, 0.7639216, 1, 0.8)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wpp2c"]
+content_margin_left = 16.0
+content_margin_top = 0.0
+content_margin_right = 16.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0.05)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
+
+[node name="QuickLaunchRow" type="HBoxContainer" unique_id=433924022]
+theme_override_constants/separation = 12
+
+[node name="Artwork" type="PanelContainer" parent="." unique_id=672396362]
+clip_children = 2
+custom_minimum_size = Vector2(72, 46)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_apmut")
+
+[node name="Art" type="TextureRect" parent="Artwork" unique_id=1527952204]
+texture_filter = 4
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("1_iodcs")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Title" type="Label" parent="." unique_id=715287123]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
+theme_override_constants/outline_size = 1
+text = "Korsanların Hazinesi"
+clip_text = true
+text_overrun_behavior = 3
+
+[node name="Play" type="Button" parent="." unique_id=1484750802]
+custom_minimum_size = Vector2(92, 38)
+layout_mode = 2
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_bgocs")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ym6sg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ym6sg")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_wpp2c")
+theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 13
+text = "Oyna"

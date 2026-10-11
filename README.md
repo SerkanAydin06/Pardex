@@ -118,3 +118,7 @@ Sıradaki öncelikler:
 2. Korsanların Hazinesi Windows exportu hazır olduğunda launcher manifesti, kurulum/güncelleme ve gerçek `OYNA` akışı.
 3. Kullanıcı sayısı büyümeden önce dosya tabanlı sosyal depodan SQLite/PostgreSQL gibi daha ölçeklenebilir bir veri katmanına geçiş planı.
 4. İleride istenirse e-posta/parola veya harici kimlik sağlayıcısıyla ikinci seviye hesap kurtarma katmanı.
+
+## Godot editöründe sayfa düzenleme
+
+Ana sahnedeki `EditorPreview` düğümünün `Preview Page` alanından sayfa seçilebilir. Sabit düzenler `scenes/pages/`, tekrar eden kart/satır düzenleri `scenes/ui/`, ortak tema `themes/pardex_theme.tres` içindedir. Ayrıntılar: [Editör rehberi](docs/EDITOR_UI.md).

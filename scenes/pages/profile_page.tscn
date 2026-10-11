@@ -18,6 +18,8 @@
 [ext_resource type="Texture2D" path="res://assets/ui/icons/shield.svg" id="16_45txg"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/crown.svg" id="17_5nvc4"]
 
+[ext_resource type="Theme" path="res://themes/pardex_theme.tres" id="40_editor_theme"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mema7"]
 content_margin_left = 0.0
 content_margin_top = 0.0
@@ -628,6 +630,10 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [node name="ProfilePage" type="VBoxContainer" unique_id=503043312]
+layout_mode = 0
+offset_right = 1440.0
+offset_bottom = 900.0
+theme = ExtResource("40_editor_theme")
 size_flags_vertical = 3
 theme_override_constants/separation = 0
 script = ExtResource("1_ob3hx")
@@ -852,25 +858,25 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow" unique_id=1415807259]
+[node name="GamesStat" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow" unique_id=1415807259]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_vh85q")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer1" unique_id=802061554]
+[node name="Row" type="HBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/GamesStat" unique_id=802061554]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer1/HBoxContainer1" unique_id=1122134507]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/GamesStat/Row" unique_id=1122134507]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_r5xxb")
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer1/HBoxContainer1/PanelContainer1" unique_id=1796497283]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/GamesStat/Row/PanelContainer1" unique_id=1796497283]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer1/HBoxContainer1/PanelContainer1/CenterContainer1" unique_id=160145667]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/GamesStat/Row/PanelContainer1/CenterContainer1" unique_id=160145667]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(20, 20)
@@ -881,13 +887,13 @@ texture = ExtResource("6_wp8ct")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer1/HBoxContainer1" unique_id=222152819]
+[node name="Text" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/GamesStat/Row" unique_id=222152819]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
 alignment = 1
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer1/HBoxContainer1/VBoxContainer1" unique_id=1053978151]
+[node name="Value" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/GamesStat/Row/Text" unique_id=1053978151]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -895,7 +901,7 @@ theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 22
 text = "3"
 
-[node name="Label2" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer1/HBoxContainer1/VBoxContainer1" unique_id=1714018444]
+[node name="Caption" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/GamesStat/Row/Text" unique_id=1714018444]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 12
@@ -903,25 +909,25 @@ text = "Oyun Sayısı"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow" unique_id=359040694]
+[node name="AchievementsStat" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow" unique_id=359040694]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_y1afj")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer2" unique_id=1387373862]
+[node name="Row" type="HBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/AchievementsStat" unique_id=1387373862]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer2/HBoxContainer1" unique_id=111167421]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/AchievementsStat/Row" unique_id=111167421]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_enacb")
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer2/HBoxContainer1/PanelContainer1" unique_id=1585271562]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/AchievementsStat/Row/PanelContainer1" unique_id=1585271562]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer2/HBoxContainer1/PanelContainer1/CenterContainer1" unique_id=1912101971]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/AchievementsStat/Row/PanelContainer1/CenterContainer1" unique_id=1912101971]
 modulate = Color(0.9607843, 0.7254902, 0.23529412, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(20, 20)
@@ -932,13 +938,13 @@ texture = ExtResource("3_ewf6h")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer2/HBoxContainer1" unique_id=1575115434]
+[node name="Text" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/AchievementsStat/Row" unique_id=1575115434]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
 alignment = 1
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer2/HBoxContainer1/VBoxContainer1" unique_id=1152866021]
+[node name="Value" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/AchievementsStat/Row/Text" unique_id=1152866021]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -946,7 +952,7 @@ theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 22
 text = "0"
 
-[node name="Label2" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer2/HBoxContainer1/VBoxContainer1" unique_id=1337515855]
+[node name="Caption" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/AchievementsStat/Row/Text" unique_id=1337515855]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 12
@@ -954,25 +960,25 @@ text = "Başarım"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="PanelContainer3" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow" unique_id=1191994654]
+[node name="PlaytimeStat" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow" unique_id=1191994654]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_a0ikn")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer3" unique_id=1176506432]
+[node name="Row" type="HBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PlaytimeStat" unique_id=1176506432]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer3/HBoxContainer1" unique_id=951152684]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PlaytimeStat/Row" unique_id=951152684]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_4paxy")
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer3/HBoxContainer1/PanelContainer1" unique_id=464352314]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PlaytimeStat/Row/PanelContainer1" unique_id=464352314]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer3/HBoxContainer1/PanelContainer1/CenterContainer1" unique_id=1639421323]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PlaytimeStat/Row/PanelContainer1/CenterContainer1" unique_id=1639421323]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(20, 20)
@@ -983,13 +989,13 @@ texture = ExtResource("7_1u38v")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer3/HBoxContainer1" unique_id=1031876694]
+[node name="Text" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PlaytimeStat/Row" unique_id=1031876694]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
 alignment = 1
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer3/HBoxContainer1/VBoxContainer1" unique_id=594842718]
+[node name="Value" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PlaytimeStat/Row/Text" unique_id=594842718]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -997,7 +1003,7 @@ theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 22
 text = "5 saat"
 
-[node name="Label2" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer3/HBoxContainer1/VBoxContainer1" unique_id=540586172]
+[node name="Caption" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PlaytimeStat/Row/Text" unique_id=540586172]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 12
@@ -1005,25 +1011,25 @@ text = "Oynama Süresi"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="PanelContainer4" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow" unique_id=178615625]
+[node name="FriendsStat" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow" unique_id=178615625]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_wtv5l")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer4" unique_id=1830614741]
+[node name="Row" type="HBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/FriendsStat" unique_id=1830614741]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer4/HBoxContainer1" unique_id=866686319]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/FriendsStat/Row" unique_id=866686319]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_jsfpi")
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer4/HBoxContainer1/PanelContainer1" unique_id=1918392935]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/FriendsStat/Row/PanelContainer1" unique_id=1918392935]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer4/HBoxContainer1/PanelContainer1/CenterContainer1" unique_id=759504379]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/FriendsStat/Row/PanelContainer1/CenterContainer1" unique_id=759504379]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(20, 20)
@@ -1034,13 +1040,13 @@ texture = ExtResource("8_bd81e")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer4/HBoxContainer1" unique_id=952597470]
+[node name="Text" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/FriendsStat/Row" unique_id=952597470]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 0
 alignment = 1
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer4/HBoxContainer1/VBoxContainer1" unique_id=990063800]
+[node name="Value" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/FriendsStat/Row/Text" unique_id=990063800]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1048,7 +1054,7 @@ theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 22
 text = "0"
 
-[node name="Label2" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/PanelContainer4/HBoxContainer1/VBoxContainer1" unique_id=562366456]
+[node name="Caption" type="Label" parent="ScrollContainer1/Columns/VBoxContainer1/StatsRow/FriendsStat/Row/Text" unique_id=562366456]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 12
@@ -1393,27 +1399,27 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="MarginContainer1" type="MarginContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList" unique_id=946893404]
+[node name="IdentityRow" type="MarginContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList" unique_id=946893404]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 8
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer1" unique_id=549464256]
+[node name="Row" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/IdentityRow" unique_id=549464256]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer1/HBoxContainer1" unique_id=1705633278]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/IdentityRow/Row" unique_id=1705633278]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_4qlwe")
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer1/HBoxContainer1/PanelContainer1" unique_id=1680968078]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/IdentityRow/Row/PanelContainer1" unique_id=1680968078]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer1/HBoxContainer1/PanelContainer1/CenterContainer1" unique_id=1885772447]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/IdentityRow/Row/PanelContainer1/CenterContainer1" unique_id=1885772447]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(25, 25)
@@ -1424,17 +1430,17 @@ texture = ExtResource("14_yoxsl")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer1/HBoxContainer1" unique_id=1464131351]
+[node name="Text" type="VBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/IdentityRow/Row" unique_id=1464131351]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=531112093]
+[node name="TitleRow" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/IdentityRow/Row/Text" unique_id=531112093]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=482081137]
+[node name="Title" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/IdentityRow/Row/Text/TitleRow" unique_id=482081137]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1443,7 +1449,7 @@ text = "PARDEX Kimliği"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer1/HBoxContainer1/VBoxContainer1" unique_id=970932528]
+[node name="Detail" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/IdentityRow/Row/Text" unique_id=970932528]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 12
@@ -1457,27 +1463,27 @@ layout_mode = 2
 mouse_filter = 2
 color = Color(0.101960786, 0.16078432, 0.26666668, 1)
 
-[node name="MarginContainer2" type="MarginContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList" unique_id=224880851]
+[node name="JoinedRow" type="MarginContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList" unique_id=224880851]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 8
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer2" unique_id=1224496784]
+[node name="Row" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/JoinedRow" unique_id=1224496784]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer2/HBoxContainer1" unique_id=864640213]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/JoinedRow/Row" unique_id=864640213]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_sam36")
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer2/HBoxContainer1/PanelContainer1" unique_id=899250842]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/JoinedRow/Row/PanelContainer1" unique_id=899250842]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer2/HBoxContainer1/PanelContainer1/CenterContainer1" unique_id=1334286088]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/JoinedRow/Row/PanelContainer1/CenterContainer1" unique_id=1334286088]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(25, 25)
@@ -1488,17 +1494,17 @@ texture = ExtResource("15_q03oi")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer2/HBoxContainer1" unique_id=731092635]
+[node name="Text" type="VBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/JoinedRow/Row" unique_id=731092635]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer2/HBoxContainer1/VBoxContainer1" unique_id=1014081732]
+[node name="TitleRow" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/JoinedRow/Row/Text" unique_id=1014081732]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer2/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=2071564045]
+[node name="Title" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/JoinedRow/Row/Text/TitleRow" unique_id=2071564045]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1507,7 +1513,7 @@ text = "1 Ekim 2026"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer2/HBoxContainer1/VBoxContainer1" unique_id=402908972]
+[node name="Detail" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/JoinedRow/Row/Text" unique_id=402908972]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 12
@@ -1521,27 +1527,27 @@ layout_mode = 2
 mouse_filter = 2
 color = Color(0.101960786, 0.16078432, 0.26666668, 1)
 
-[node name="MarginContainer3" type="MarginContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList" unique_id=81443966]
+[node name="RecoveryRow" type="MarginContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList" unique_id=81443966]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 8
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer3" unique_id=388333123]
+[node name="Row" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/RecoveryRow" unique_id=388333123]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer3/HBoxContainer1" unique_id=1436655762]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/RecoveryRow/Row" unique_id=1436655762]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_bw6dh")
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer3/HBoxContainer1/PanelContainer1" unique_id=38761569]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/RecoveryRow/Row/PanelContainer1" unique_id=38761569]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer3/HBoxContainer1/PanelContainer1/CenterContainer1" unique_id=529134850]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/RecoveryRow/Row/PanelContainer1/CenterContainer1" unique_id=529134850]
 modulate = Color(0.15294118, 0.6627451, 1, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(25, 25)
@@ -1552,17 +1558,17 @@ texture = ExtResource("16_45txg")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer3/HBoxContainer1" unique_id=863443203]
+[node name="Text" type="VBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/RecoveryRow/Row" unique_id=863443203]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer3/HBoxContainer1/VBoxContainer1" unique_id=1263299386]
+[node name="TitleRow" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/RecoveryRow/Row/Text" unique_id=1263299386]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer3/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=1946002779]
+[node name="Title" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/RecoveryRow/Row/Text/TitleRow" unique_id=1946002779]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
@@ -1571,7 +1577,7 @@ text = "Hesap Kurtarma"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer3/HBoxContainer1/VBoxContainer1" unique_id=343243479]
+[node name="Detail" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/RecoveryRow/Row/Text" unique_id=343243479]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 12
@@ -1579,7 +1585,7 @@ text = "Kurtarma kodu ile taşı"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Button1" type="Button" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer3/HBoxContainer1" unique_id=284844041]
+[node name="RecoveryLink" type="Button" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/RecoveryRow/Row" unique_id=284844041]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 focus_mode = 0
@@ -1607,27 +1613,27 @@ layout_mode = 2
 mouse_filter = 2
 color = Color(0.101960786, 0.16078432, 0.26666668, 1)
 
-[node name="MarginContainer4" type="MarginContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList" unique_id=555147725]
+[node name="PlusRow" type="MarginContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList" unique_id=555147725]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 8
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer4" unique_id=516978916]
+[node name="Row" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/PlusRow" unique_id=516978916]
 layout_mode = 2
 theme_override_constants/separation = 14
 
-[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer4/HBoxContainer1" unique_id=1298378778]
+[node name="PanelContainer1" type="PanelContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/PlusRow/Row" unique_id=1298378778]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxFlat_delus")
 
-[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer4/HBoxContainer1/PanelContainer1" unique_id=104269147]
+[node name="CenterContainer1" type="CenterContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/PlusRow/Row/PanelContainer1" unique_id=104269147]
 layout_mode = 2
 
-[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer4/HBoxContainer1/PanelContainer1/CenterContainer1" unique_id=1142905275]
+[node name="TextureRect1" type="TextureRect" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/PlusRow/Row/PanelContainer1/CenterContainer1" unique_id=1142905275]
 modulate = Color(0.9607843, 0.7254902, 0.23529412, 1)
 texture_filter = 2
 custom_minimum_size = Vector2(25, 25)
@@ -1638,17 +1644,17 @@ texture = ExtResource("17_5nvc4")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="VBoxContainer1" type="VBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer4/HBoxContainer1" unique_id=1409480780]
+[node name="Text" type="VBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/PlusRow/Row" unique_id=1409480780]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer4/HBoxContainer1/VBoxContainer1" unique_id=2126350730]
+[node name="TitleRow" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/PlusRow/Row/Text" unique_id=2126350730]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer4/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=196221130]
+[node name="Title" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/PlusRow/Row/Text/TitleRow" unique_id=196221130]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.9607843, 0.7254902, 0.23529412, 1)
@@ -1657,7 +1663,7 @@ text = "PARDEX Plus"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer4/HBoxContainer1/VBoxContainer1" unique_id=499910408]
+[node name="Detail" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/PlusRow/Row/Text" unique_id=499910408]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 12
@@ -1665,18 +1671,18 @@ text = "Ayrıcalıklar yakında"
 clip_text = true
 text_overrun_behavior = 3
 
-[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer4/HBoxContainer1" unique_id=75476992]
+[node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/PlusRow/Row" unique_id=75476992]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_21wte")
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer4/HBoxContainer1/PanelContainer2" unique_id=641226246]
+[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/PlusRow/Row/PanelContainer2" unique_id=641226246]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="Label1" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/MarginContainer4/HBoxContainer1/PanelContainer2/HBoxContainer1" unique_id=1744724191]
+[node name="Label1" type="Label" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/PlusRow/Row/PanelContainer2/HBoxContainer1" unique_id=1744724191]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.97450984, 0.8215686, 0.5029412, 1)
 theme_override_font_sizes/font_size = 11

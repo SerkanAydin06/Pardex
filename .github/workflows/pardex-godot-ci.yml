@@ -7,6 +7,7 @@ on:
       - "scenes/**"
       - "scripts/**"
       - "assets/**"
+      - "themes/**"
       - ".github/workflows/pardex-godot-ci.yml"
   pull_request:
     paths:
@@ -14,6 +15,7 @@ on:
       - "scenes/**"
       - "scripts/**"
       - "assets/**"
+      - "themes/**"
       - ".github/workflows/pardex-godot-ci.yml"
 
 jobs:
@@ -54,5 +56,14 @@ jobs:
           godot --headless --path . --script res://scripts/ci/boot_smoke.gd 2>&1 | tee godot-boot.log
           if grep -E 'SCRIPT ERROR:|ERROR:|Parse Error:' godot-boot.log; then
             echo "::error::Godot boot produced a script or runtime error"
+            exit 1
+          fi
+
+      - name: Verify editor page preview layouts
+        run: |
+          set -o pipefail
+          godot --headless --path . --script res://scripts/ci/editor_preview_smoke.gd 2>&1 | tee godot-preview.log
+          if grep -E 'SCRIPT ERROR:|ERROR:|Parse Error:' godot-preview.log; then
+            echo "::error::Godot page preview validation produced an error"
             exit 1
           fi

@@ -14,7 +14,6 @@ signal message_requested(account_id: String)
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const FriendRowScene := preload("res://scenes/ui/friend_row.tscn")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
-const HERO_HEIGHT := 300.0
 
 const ROW_ACTION_WIDTH := 104.0
 
@@ -44,11 +43,7 @@ var _active_invite_id := ""
 
 
 func _ready() -> void:
-	# The layout lives in scenes/pages/friends_page.tscn; building from code
-	# only happens when the script runs without its scene.
-	if get_child_count() == 0:
-		_build()
-		UI.own(self)
+	# Layout is owned by scenes/pages; runtime code only binds data and actions.
 	_bind()
 	_bind_friend_menu()
 	_bind_add_dialog()
@@ -98,20 +93,6 @@ func _bind() -> void:
 		toggle.text = ("Çevrimiçileri Göster" if _show_all else "Tümünü Gör") + "  "
 		_render_online()
 	)
-
-
-func _build() -> void:
-	add_theme_constant_override("separation", 0)
-	var body := UI.vbox(16)
-	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	add_child(UI.scroll_page(body))
-	body.add_child(_build_hero())
-	var columns := UI.named(UI.hbox(16), "Columns") as HBoxContainer
-	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	columns.custom_minimum_size.y = 560
-	body.add_child(columns)
-	columns.add_child(_build_left())
-	columns.add_child(_build_right())
 
 
 func apply_layout(content_width: float) -> void:
@@ -172,70 +153,6 @@ func _friend_in_my_room(account_id: String) -> bool:
 
 
 # ------------------------------------------------------------------ hero
-
-func _build_hero() -> Control:
-	var frame := UI.image(Catalog.texture("res://assets/ui/hero_friends.png"), Vector2(0, HERO_HEIGHT), 16)
-	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
-	frame.add_child(UI.shade(0.95, true))
-	var row := UI.hbox(20)
-	frame.add_child(UI.margin(row, 30, 20, 24, 20))
-	var text := UI.vbox(10)
-	UI.expand(text)
-	row.add_child(text)
-	var tag := UI.panel(0, UI.box(Color(UI.BG, 0.6), 8, UI.BORDER_HI, 1, 8))
-	tag.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	tag.add_child(UI.label("ARKADAŞLAR", 13, UI.ACCENT, true))
-	text.add_child(tag)
-	text.add_child(UI.label("Arkadaşların", 42, UI.TEXT, true))
-	text.add_child(UI.label("Arkadaşlarını bul, mesajlaş ve aynı oyunda buluş.", 16, UI.TEXT_2))
-	text.add_child(UI.vspacer())
-	var actions := UI.hbox(14)
-	text.add_child(actions)
-	var add := UI.button("Arkadaş Ekle", "primary", 15, 48, "user_plus")
-	add.custom_minimum_size.x = 210
-	actions.add_child(UI.named(add, "AddFriendButton"))
-
-	var bullets := UI.feature_card([
-		["friends", "Birlikte Oyna", "Arkadaşının açık masasına doğrudan katıl."],
-		["message", "Mesajlaşma", "Arkadaşlarınla PARDEX üzerinden doğrudan yazış."],
-		["user_plus", "Yeni Arkadaşlar Keşfet", "Üstteki aramayla PARDEX kullanıcılarını bul ve ekle."],
-	], 330)
-	row.add_child(UI.named(bullets, "HeroBullets"))
-	return frame
-
-
-# ------------------------------------------------------------------ left column
-
-func _build_left() -> Control:
-	var left := UI.named(UI.vbox(16), "LeftColumn") as VBoxContainer
-	left.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var online := UI.panel(14)
-	online.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var column := UI.vbox(10)
-	online.add_child(column)
-	var header := UI.section_header("Çevrimiçi", "Tümünü Gör", 18, "users_group", UI.GREEN)
-	UI.named(header.get_node("Title"), "OnlineTitle")
-	UI.named(header.get_node("Link"), "OnlineToggle")
-	column.add_child(header)
-	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	var online_list := UI.named(UI.vbox(6), "OnlineList") as VBoxContainer
-	online_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(online_list)
-	column.add_child(scroll)
-	left.add_child(online)
-
-	var playing := UI.panel(14)
-	var playing_column := UI.vbox(10)
-	playing.add_child(playing_column)
-	var playing_header := UI.section_header("Oyun Oynayanlar", "", 18, "gamepad", UI.GREEN)
-	UI.named(playing_header.get_node("Title"), "PlayingTitle")
-	playing_column.add_child(playing_header)
-	playing_column.add_child(UI.named(UI.hbox(14), "PlayingRow"))
-	left.add_child(playing)
-	return left
-
 
 func _render() -> void:
 	_render_online()
@@ -373,22 +290,6 @@ func _render_playing() -> void:
 # ------------------------------------------------------------------ chat
 
 # ------------------------------------------------------------------ right column
-
-func _build_right() -> Control:
-	var right := UI.named(UI.vbox(16), "RightColumn") as VBoxContainer
-	right.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var requests := UI.panel(16)
-	requests.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var requests_column := UI.vbox(10)
-	requests.add_child(requests_column)
-	var header := UI.section_header("Arkadaşlık İstekleri", "", 18)
-	UI.named(header.get_node("Title"), "RequestsTitle")
-	requests_column.add_child(header)
-	requests_column.add_child(UI.named(UI.vbox(10), "RequestsList"))
-	right.add_child(requests)
-
-	return right
-
 
 func _render_requests() -> void:
 	UI.clear(_requests_list)

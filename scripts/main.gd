@@ -50,7 +50,8 @@ var _session_poll_elapsed := 0.0
 
 
 func _ready() -> void:
-	theme = UI.app_theme()
+	if theme == null:
+		theme = UI.app_theme()
 	_bind_search()
 	_load_settings()
 	_apply_start_window()

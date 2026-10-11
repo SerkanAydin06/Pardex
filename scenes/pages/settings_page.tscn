@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" path="res://assets/ui/icons/trash.svg" id="4_a8wfp"]
 [ext_resource type="Script" path="res://scripts/screens/account_recovery.gd" id="5_x37xv"]
 
+[ext_resource type="Theme" path="res://themes/pardex_theme.tres" id="40_editor_theme"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wfbdm"]
 content_margin_left = 16.0
 content_margin_top = 0.0
@@ -459,6 +461,10 @@ corner_radius_bottom_left = 9
 shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
 
 [node name="SettingsPage" type="VBoxContainer" unique_id=272890082]
+layout_mode = 0
+offset_right = 1440.0
+offset_bottom = 900.0
+theme = ExtResource("40_editor_theme")
 size_flags_vertical = 3
 theme_override_constants/separation = 14
 

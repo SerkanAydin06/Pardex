@@ -7,6 +7,8 @@
 [ext_resource type="Script" path="res://scripts/ui/pardex_button_content.gd" id="5_hwddp"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/send.svg" id="6_pkjs5"]
 
+[ext_resource type="Theme" path="res://themes/pardex_theme.tres" id="40_editor_theme"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h4qhh"]
 content_margin_left = 14.0
 content_margin_top = 14.0
@@ -157,6 +159,10 @@ corner_radius_bottom_left = 9
 shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
 
 [node name="MessagesPage" type="VBoxContainer" unique_id=654228157]
+layout_mode = 0
+offset_right = 1440.0
+offset_bottom = 900.0
+theme = ExtResource("40_editor_theme")
 size_flags_vertical = 3
 theme_override_constants/separation = 12
 script = ExtResource("1_eoiyi")

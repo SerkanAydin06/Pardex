@@ -12,8 +12,6 @@ const LibraryGameCardScene := preload("res://scenes/ui/library_game_card.tscn")
 const LibraryListRowScene := preload("res://scenes/ui/library_list_row.tscn")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const FILTERS := [["all", "Tümü", ""], ["installed", "Yüklü", "download"], ["recent", "Son Oynanan", "clock"], ["favorites", "Favoriler", "heart"]]
-const SORTS := ["En Son Eklenen", "A → Z", "Son Oynanan"]
-const HERO_HEIGHT := 300.0
 
 var _filter := "all"
 var _query := ""
@@ -36,11 +34,7 @@ var _content_width := 1200.0
 
 
 func _ready() -> void:
-	# The layout lives in scenes/pages/library_page.tscn; building from code
-	# only happens when the script runs without its scene.
-	if get_child_count() == 0:
-		_build()
-		UI.own(self)
+	# Layout is owned by scenes/pages; runtime code only binds data and actions.
 	_bind()
 	_game_menu = %GameMenu
 	_game_menu.id_pressed.connect(_on_menu)
@@ -79,28 +73,6 @@ func _bind() -> void:
 		_render_grid()
 	)
 	_set_view(false)
-
-
-func _build() -> void:
-	add_theme_constant_override("separation", 0)
-	var body := UI.vbox(16)
-	add_child(UI.scroll_page(body))
-	var top := UI.named(BoxContainer.new(), "TopRow") as BoxContainer
-	top.add_theme_constant_override("separation", 16)
-	body.add_child(top)
-	top.add_child(_build_hero())
-	top.add_child(_build_quick_start())
-	body.add_child(_build_toolbar())
-	var grid := UI.named(GridContainer.new(), "GameGrid") as GridContainer
-	grid.columns = 5
-	grid.add_theme_constant_override("h_separation", 14)
-	grid.add_theme_constant_override("v_separation", 14)
-	body.add_child(grid)
-	var bottom := UI.named(BoxContainer.new(), "BottomRow") as BoxContainer
-	bottom.add_theme_constant_override("separation", 16)
-	body.add_child(bottom)
-	bottom.add_child(_build_recent())
-	bottom.add_child(_build_continue())
 
 
 func set_query(query: String) -> void:
@@ -157,50 +129,12 @@ func _count(kind: String) -> int:
 
 # ------------------------------------------------------------------ hero
 
-func _build_hero() -> Control:
-	var frame := UI.image(Catalog.texture("res://assets/ui/hero_play.png"), Vector2(0, HERO_HEIGHT), 16)
-	UI.expand(frame, 2.0)
-	frame.add_theme_stylebox_override("panel", UI.glow_style(0, 16))
-	frame.add_child(UI.shade(0.95, true))
-	var column := UI.vbox(10)
-	frame.add_child(UI.margin(column, 30, 20, 24, 20))
-	var tag := UI.panel(0, UI.box(Color(UI.BG, 0.6), 8, UI.BORDER_HI, 1, 8))
-	tag.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	var tag_row := UI.hbox(8)
-	tag_row.add_child(UI.icon("crown", 15, UI.ACCENT))
-	tag_row.add_child(UI.label("KÜTÜPHANE", 12, UI.ACCENT, true))
-	tag.add_child(tag_row)
-	column.add_child(tag)
-	column.add_child(UI.label("Oyunların, tek bir yerde", 42, UI.TEXT, true))
-	column.add_child(UI.label("Oyunlarını, favorilerini ve son oynadıklarını tek yerden yönet.\nKaldığın yerden devam et.", 15, UI.TEXT_2))
-	column.add_child(UI.vspacer())
-	column.add_child(UI.named(UI.hbox(10), "StatsRow"))
-	return frame
-
-
 func _render_stats() -> void:
-	UI.clear(_stats_row)
-	for stat in [
-		["gamepad", str(_count("all")), "Katalogdaki Oyunlar", UI.ACCENT],
-		["download", str(_count("installed")), "Yüklü", UI.ACCENT],
-		["clock", str(_count("recent")), "Son Oynanan", UI.ACCENT],
-		["heart", str(_count("favorites")), "Favoriler", UI.RED],
-	]:
-		var tile := UI.stat_tile(str(stat[0]), str(stat[1]), str(stat[2]), stat[3])
-		tile.add_theme_stylebox_override("panel", UI.box(Color(UI.BG, 0.72), 12, UI.BORDER_HI, 1, 10))
-		_stats_row.add_child(UI.expand(tile))
+	# Keep the editor-owned tiles, captions, icons and styles; update only data.
+	for stat in [["CatalogStat", "all"], ["InstalledStat", "installed"], ["RecentStat", "recent"], ["FavoritesStat", "favorites"]]:
+		(_stats_row.get_node("%s/Row/Text/Value" % stat[0]) as Label).text = str(_count(str(stat[1])))
 
 
-func _build_quick_start() -> Control:
-	var card := UI.panel(16)
-	var column := UI.vbox(10)
-	card.add_child(column)
-	column.add_child(UI.section_header("Hızlı Başlat", "", 20))
-	column.add_child(UI.named(UI.vbox(8), "QuickList"))
-	return card
-
-
-# Narrow side columns: a game title may take two lines instead of "…".
 func _wrapped_title(title: String, font_size: int) -> Label:
 	var label := UI.label(title, font_size, UI.TEXT, true)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -212,52 +146,28 @@ func _wrapped_title(title: String, font_size: int) -> Label:
 
 
 func _render_quick_start() -> void:
-	UI.clear(_quick_list)
 	for entry in Catalog.games_with_stats():
-		var row := UI.hbox(12)
-		row.add_child(UI.image(Catalog.texture(str(entry["cover"])), Vector2(72, 46), 8))
-		row.add_child(UI.expand(_wrapped_title(str(entry["title"]), 15)))
+		var row := _quick_list.get_node_or_null("Quick_" + str(entry["id"])) as HBoxContainer
+		if row == null:
+			row = (load("res://scenes/ui/quick_launch_row.tscn") as PackedScene).instantiate() as HBoxContainer
+			row.name = "Quick_" + str(entry["id"])
+			_quick_list.add_child(row)
+		(row.get_node("Artwork/Art") as TextureRect).texture = Catalog.texture(str(entry["cover"]))
+		(row.get_node("Title") as Label).text = str(entry["title"])
 		var playable := bool(entry["playable"])
-		var play := UI.button("Oyna" if playable else "Yakında", "primary" if playable else "ghost", 13, 38)
-		play.custom_minimum_size.x = 84
-		play.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		var play := row.get_node("Play") as Button
+		play.text = "Oyna" if playable else "Yakında"
 		play.disabled = not playable
-		play.pressed.connect(func(): play_requested.emit(str(entry["id"])))
-		row.add_child(play)
-		_quick_list.add_child(row)
-		_quick_list.add_child(UI.divider())
-	if _quick_list.get_child_count() > 0:
-		_quick_list.get_child(-1).queue_free()
+		var callback := _play_quick_game.bind(str(entry["id"]))
+		if not play.pressed.is_connected(callback):
+			play.pressed.connect(callback)
+
+
+func _play_quick_game(game_id: String) -> void:
+	play_requested.emit(game_id)
 
 
 # ------------------------------------------------------------------ toolbar + grid
-
-func _build_toolbar() -> Control:
-	var toolbar := UI.named(BoxContainer.new(), "Toolbar") as BoxContainer
-	toolbar.add_theme_constant_override("separation", 10)
-	var segments := UI.hbox(0)
-	toolbar.add_child(segments)
-	var bar := UI.hbox(10)
-	toolbar.add_child(UI.expand(bar))
-	for entry in FILTERS:
-		var segment := UI.segment(str(entry[1]), str(entry[2]), entry[0] == _filter)
-		segments.add_child(UI.named(segment, "Filter_" + str(entry[0])))
-	bar.add_child(UI.spacer())
-	var sort := OptionButton.new()
-	sort.focus_mode = Control.FOCUS_NONE
-	sort.custom_minimum_size = Vector2(170, 42)
-	sort.add_theme_font_size_override("font_size", 13)
-	for label_text in SORTS:
-		sort.add_item(label_text)
-	var sort_style := UI.box(Color(UI.SURFACE, 0.9), 10, UI.BORDER, 1)
-	sort_style.content_margin_left = 14
-	for state in ["normal", "hover", "pressed"]:
-		sort.add_theme_stylebox_override(state, sort_style)
-	bar.add_child(UI.named(sort, "SortOption"))
-	bar.add_child(UI.named(UI.icon_button("grid", "Izgara görünümü", 42, UI.ACCENT, true), "GridViewButton"))
-	bar.add_child(UI.named(UI.icon_button("list", "Liste görünümü", 42, UI.TEXT_2, true), "ListViewButton"))
-	return toolbar
-
 
 func _set_view(list_view: bool) -> void:
 	_list_view = list_view
@@ -374,18 +284,6 @@ func _list_row(entry: Dictionary) -> Control:
 
 # ------------------------------------------------------------------ bottom
 
-func _build_recent() -> Control:
-	var card := UI.panel(16)
-	UI.expand(card, 1.6)
-	var column := UI.vbox(12)
-	card.add_child(column)
-	var header := UI.section_header("Son Oynananlar", "Tümünü Gör", 20)
-	UI.named(header.get_node("Link"), "RecentLink")
-	column.add_child(header)
-	column.add_child(UI.named(UI.hbox(12), "RecentRow"))
-	return card
-
-
 func _render_recent() -> void:
 	UI.clear(_recent_row)
 	var recent := Catalog.recent_games()
@@ -403,15 +301,6 @@ func _render_recent() -> void:
 		text.add_child(UI.label(Catalog.ago(int(entry["last_played"])), 12, UI.TEXT_2))
 		art.add_child(UI.margin(text, 10, 8, 10, 8))
 		_recent_row.add_child(art)
-
-
-func _build_continue() -> Control:
-	var card := UI.panel(16)
-	var column := UI.vbox(12)
-	card.add_child(column)
-	column.add_child(UI.section_header("Devam Et", "", 20))
-	column.add_child(UI.named(UI.vbox(10), "ContinueList"))
-	return card
 
 
 func _render_continue() -> void:
