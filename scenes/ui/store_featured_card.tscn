@@ -1,0 +1,99 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/placeholder_vex.png" id="1_cover"]
+
+[sub_resource type="StyleBoxFlat" id="CardStyle"]
+bg_color = Color(0.067, 0.106, 0.188, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_left = 12
+corner_radius_bottom_right = 12
+
+[sub_resource type="Gradient" id="ShadeGradient"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.0235, 0.0392, 0.0784, 0.95, 0.0235, 0.0392, 0.0784, 0.0)
+
+[sub_resource type="GradientTexture2D" id="ShadeTexture"]
+gradient = SubResource("ShadeGradient")
+fill_from = Vector2(0.5, 1.0)
+fill_to = Vector2(0.5, 0.3)
+
+[node name="FeaturedGameCard" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 190)
+clip_children = 1
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("CardStyle")
+
+[node name="Art" type="TextureRect" parent="."]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("1_cover")
+expand_mode = 1
+stretch_mode = 6
+texture_filter = 4
+
+[node name="Shade" type="TextureRect" parent="."]
+layout_mode = 2
+mouse_filter = 2
+texture = SubResource("ShadeTexture")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="Content" type="MarginContainer" parent="."]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Column" type="VBoxContainer" parent="Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="BadgeSlot" type="HBoxContainer" parent="Content/Column"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Fill" type="Control" parent="Content/Column"]
+layout_mode = 2
+mouse_filter = 2
+size_flags_vertical = 3
+
+[node name="Bottom" type="HBoxContainer" parent="Content/Column"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="Info" type="VBoxContainer" parent="Content/Column/Bottom"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 3
+
+[node name="Title" type="Label" parent="Content/Column/Bottom/Info"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.933, 0.953, 0.984, 1)
+theme_override_font_sizes/font_size = 18
+text = "Oyun adı"
+text_overrun_behavior = 3
+mouse_filter = 2
+
+[node name="Genres" type="Label" parent="Content/Column/Bottom/Info"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.639, 0.694, 0.784, 1)
+theme_override_font_sizes/font_size = 13
+text = "Tür · Kategori"
+text_overrun_behavior = 3
+mouse_filter = 2
+
+[node name="AvailabilitySlot" type="HBoxContainer" parent="Content/Column/Bottom/Info"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="HeartSlot" type="HBoxContainer" parent="Content/Column/Bottom"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/separation = 0

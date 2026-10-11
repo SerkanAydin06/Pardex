@@ -10,6 +10,8 @@ signal play_requested(game_id: String)
 signal toast(message: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
+const FeaturedCardScene := preload("res://scenes/ui/store_featured_card.tscn")
+const NewCardScene := preload("res://scenes/ui/store_new_card.tscn")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const SLIDE_SECONDS := 8.0
 const HERO_HEIGHT := 300.0
@@ -336,61 +338,35 @@ func _badge_icon(badge: String) -> String:
 		_: return "sparkles"
 
 
+# Both store card layouts are editable templates in scenes/ui.
 func _featured_card(entry: Dictionary) -> Control:
 	var game_id := str(entry["id"])
-	var frame := UI.image(Catalog.texture(str(entry["cover"])), Vector2(0, 190), 12)
-	UI.expand(frame)
-	frame.add_theme_stylebox_override("panel", UI.card_style(0))
-	frame.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	frame.gui_input.connect(_on_card_input.bind(game_id))
-	frame.add_child(UI.shade(0.95))
-	var column := UI.vbox(2)
-	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	frame.add_child(UI.margin(column, 12, 12, 12, 12))
+	var card := FeaturedCardScene.instantiate() as PanelContainer
+	card.gui_input.connect(_on_card_input.bind(game_id))
+	(card.get_node("Art") as TextureRect).texture = Catalog.texture(str(entry["cover"]))
 	var badge := str(entry["badge"])
-	column.add_child(UI.pill(badge, _badge_color(badge), _badge_icon(badge), 12))
-	column.add_child(UI.vspacer())
-	var bottom := UI.hbox(10)
-	column.add_child(bottom)
-	var info := UI.vbox(3)
-	UI.expand(info)
-	info.add_child(UI.fit(UI.label(str(entry["title"]), 18, UI.TEXT, true)))
-	info.add_child(UI.fit(UI.label("   ".join(entry["genres"]), 13, UI.TEXT_2)))
-	info.add_child(_availability(entry))
-	bottom.add_child(info)
+	(card.get_node("Content/Column/BadgeSlot") as HBoxContainer).add_child(UI.pill(badge, _badge_color(badge), _badge_icon(badge), 12))
+	(card.get_node("Content/Column/Bottom/Info/Title") as Label).text = str(entry["title"])
+	(card.get_node("Content/Column/Bottom/Info/Genres") as Label).text = "   ".join(entry["genres"])
+	(card.get_node("Content/Column/Bottom/Info/AvailabilitySlot") as HBoxContainer).add_child(_availability(entry))
 	var heart := _heart(game_id, 38)
 	heart.size_flags_vertical = Control.SIZE_SHRINK_END
-	bottom.add_child(heart)
-	return frame
+	(card.get_node("Content/Column/Bottom/HeartSlot") as HBoxContainer).add_child(heart)
+	return card
 
 
 func _new_card(entry: Dictionary) -> Control:
 	var game_id := str(entry["id"])
-	var card := UI.panel(0, UI.card_style(0))
-	UI.expand(card)
-	card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var card := NewCardScene.instantiate() as PanelContainer
 	card.gui_input.connect(_on_card_input.bind(game_id))
-	var row := UI.hbox(12)
-	card.add_child(row)
-	var art := UI.image(Catalog.texture(str(entry["cover"])), Vector2(130, 80), 12)
-	var art_column := UI.vbox(0)
-	art_column.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var badge_row := UI.hbox(0)
-	badge_row.add_child(UI.spacer())
-	badge_row.add_child(UI.pill("Yeni", UI.ACCENT, "", 11, true))
-	art_column.add_child(badge_row)
-	art.add_child(UI.margin(art_column, 6, 6, 6, 6))
-	row.add_child(art)
-	var text := UI.vbox(3)
-	text.alignment = BoxContainer.ALIGNMENT_CENTER
-	UI.expand(text)
-	text.add_child(UI.fit(UI.label(str(entry["title"]), 14, UI.TEXT, true)))
-	text.add_child(UI.fit(UI.label("  ".join(entry["genres"]), 12, UI.TEXT_3)))
-	text.add_child(_availability(entry))
-	row.add_child(text)
+	(card.get_node("Row/Artwork/Art") as TextureRect).texture = Catalog.texture(str(entry["cover"]))
+	(card.get_node("Row/Artwork/BadgeSlot") as HBoxContainer).add_child(UI.pill("Yeni", UI.ACCENT, "", 11, true))
+	(card.get_node("Row/Info/Title") as Label).text = str(entry["title"])
+	(card.get_node("Row/Info/Genres") as Label).text = "  ".join(entry["genres"])
+	(card.get_node("Row/Info/AvailabilitySlot") as HBoxContainer).add_child(_availability(entry))
 	var heart := _heart(game_id, 32)
 	heart.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	row.add_child(UI.margin(heart, 0, 8, 10, 8))
+	(card.get_node("Row/HeartSlot") as MarginContainer).add_child(heart)
 	return card
 
 

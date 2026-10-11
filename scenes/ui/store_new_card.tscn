@@ -1,0 +1,80 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/placeholder_vex.png" id="1_cover"]
+
+[sub_resource type="StyleBoxFlat" id="CardStyle"]
+bg_color = Color(0.067, 0.106, 0.188, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_left = 12
+corner_radius_bottom_right = 12
+
+[sub_resource type="StyleBoxFlat" id="ArtworkStyle"]
+bg_color = Color(0.047, 0.078, 0.141, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_left = 12
+corner_radius_bottom_right = 12
+
+[node name="NewGameCard" type="PanelContainer"]
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_override_styles/panel = SubResource("CardStyle")
+
+[node name="Row" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Artwork" type="PanelContainer" parent="Row"]
+custom_minimum_size = Vector2(130, 80)
+layout_mode = 2
+clip_children = 1
+mouse_filter = 2
+theme_override_styles/panel = SubResource("ArtworkStyle")
+
+[node name="Art" type="TextureRect" parent="Row/Artwork"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("1_cover")
+expand_mode = 1
+stretch_mode = 6
+texture_filter = 4
+
+[node name="BadgeSlot" type="HBoxContainer" parent="Row/Artwork"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 2
+
+[node name="Info" type="VBoxContainer" parent="Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+theme_override_constants/separation = 3
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Row/Info"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.933, 0.953, 0.984, 1)
+theme_override_font_sizes/font_size = 14
+text = "Oyun adı"
+text_overrun_behavior = 3
+mouse_filter = 2
+
+[node name="Genres" type="Label" parent="Row/Info"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.498, 0.553, 0.639, 1)
+theme_override_font_sizes/font_size = 12
+text = "Tür · Kategori"
+text_overrun_behavior = 3
+mouse_filter = 2
+
+[node name="AvailabilitySlot" type="HBoxContainer" parent="Row/Info"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="HeartSlot" type="MarginContainer" parent="Row"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
