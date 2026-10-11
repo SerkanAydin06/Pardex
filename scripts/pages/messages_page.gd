@@ -7,6 +7,7 @@ extends VBoxContainer
 signal navigate(page: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
+const ConversationRowScene := preload("res://scenes/ui/conversation_row.tscn")
 const BUBBLE_MAX_WIDTH := 520.0
 const ChatBubbleScene := preload("res://scenes/ui/chat_bubble.tscn")
 
@@ -233,49 +234,39 @@ func _render_list() -> void:
 		_list.add_child(UI.empty_state("search", "Eşleşen arkadaş yok", "", true))
 
 
+# Editable conversation-row layout (scenes/ui/conversation_row.tscn).
 func _conversation_row(profile: Dictionary) -> Control:
 	var account_id := str(profile.get("account_id", ""))
 	var friend_name := str(profile.get("display_name", "Pardus"))
 	var presence := _presence(profile)
 	var selected := account_id == _selected_id
 	var unread := int(profile.get("chat_unread", 0))
-	var holder := UI.panel(0, UI.box(Color(UI.ACCENT, 0.12) if selected else Color(UI.SURFACE_2, 0.5), 10, Color(UI.ACCENT, 0.55) if selected else UI.BORDER, 1, 10))
-	holder.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var holder := ConversationRowScene.instantiate() as PanelContainer
+	holder.add_theme_stylebox_override("panel", UI.box(Color(UI.ACCENT, 0.12) if selected else Color(UI.SURFACE_2, 0.5), 10, Color(UI.ACCENT, 0.55) if selected else UI.BORDER, 1, 10))
 	holder.gui_input.connect(func(event: InputEvent):
 		var mouse := event as InputEventMouseButton
 		if mouse != null and mouse.pressed and mouse.button_index == MOUSE_BUTTON_LEFT:
 			open_conversation(account_id)
 	)
-	var row := UI.hbox(10)
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	holder.add_child(row)
-	row.add_child(UI.avatar(friend_name, 44, presence, Color.TRANSPARENT, _picture(profile)))
-	var text := UI.vbox(2)
-	text.alignment = BoxContainer.ALIGNMENT_CENTER
-	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	UI.expand(text)
-	var top := UI.hbox(6)
-	top.add_child(UI.expand(UI.fit(UI.label(friend_name, 14, UI.TEXT, true))))
+	(holder.get_node("Row/AvatarSlot") as HBoxContainer).add_child(UI.avatar(friend_name, 44, presence, Color.TRANSPARENT, _picture(profile)))
+	(holder.get_node("Row/Info/Top/Name") as Label).text = friend_name
 	var when := _clock(int(profile.get("chat_last_at", 0)))
-	if not when.is_empty():
-		top.add_child(UI.label(when, 11, UI.TEXT_3))
-	text.add_child(top)
+	var time := holder.get_node("Row/Info/Top/When") as Label
+	time.text = when
+	time.visible = not when.is_empty()
 	var preview := str(profile.get("chat_last_text", ""))
 	if preview.is_empty():
 		preview = UI.presence_label(presence)
 	elif bool(profile.get("chat_last_mine", false)):
 		preview = "Sen: " + preview
-	var bottom := UI.hbox(6)
-	bottom.add_child(UI.expand(UI.fit(UI.label(preview.replace("\n", " "), 12, UI.TEXT if unread > 0 else UI.TEXT_2, unread > 0))))
+	var preview_label := holder.get_node("Row/Info/Bottom/Preview") as Label
+	preview_label.text = preview.replace("\n", " ")
+	preview_label.add_theme_color_override("font_color", UI.TEXT if unread > 0 else UI.TEXT_2)
 	if unread > 0:
-		var badge := UI.panel(0, UI.box(UI.ACCENT, 9, Color.TRANSPARENT, 0, 0))
-		badge.custom_minimum_size = Vector2(22, 18)
-		var count := UI.label(str(mini(unread, 99)), 11, UI.BG, true)
-		count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		badge.add_child(count)
-		bottom.add_child(badge)
-	text.add_child(bottom)
-	row.add_child(text)
+		preview_label.add_theme_font_override("font", UI._get_bold_font())
+	var badge := holder.get_node("Row/Info/Bottom/UnreadBadge") as PanelContainer
+	badge.visible = unread > 0
+	(badge.get_node("Count") as Label).text = str(mini(unread, 99))
 	return holder
 
 

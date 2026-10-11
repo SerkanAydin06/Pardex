@@ -12,6 +12,7 @@ signal toast(message: String)
 signal message_requested(account_id: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
+const FriendRowScene := preload("res://scenes/ui/friend_row.tscn")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const HERO_HEIGHT := 300.0
 
@@ -300,41 +301,34 @@ func _picture(profile: Dictionary) -> Texture2D:
 	return PardexOnline.avatar_texture(str(profile.get("account_id", "")), str(profile.get("avatar_id", "")))
 
 
+# Editable friends-row layout (scenes/ui/friend_row.tscn).
 func _friend_row(profile: Dictionary) -> Control:
 	var account_id := str(profile.get("account_id", ""))
 	var display_name := str(profile.get("display_name", "Pardus"))
 	var presence := _presence(profile)
-	var holder := UI.panel(0, UI.box(Color(UI.SURFACE_2, 0.55), 10, UI.BORDER, 1, 8))
-	holder.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var holder := FriendRowScene.instantiate() as PanelContainer
 	holder.tooltip_text = "%s ile mesajlaş" % display_name
 	holder.gui_input.connect(func(event: InputEvent):
 		var mouse := event as InputEventMouseButton
 		if mouse != null and mouse.pressed and mouse.button_index == MOUSE_BUTTON_LEFT:
 			message_requested.emit(account_id)
 	)
-	var row := UI.hbox(10)
-	holder.add_child(row)
-	row.add_child(UI.avatar(display_name, 42, presence, Color.TRANSPARENT, _picture(profile)))
-	var text := UI.vbox(1)
-	text.alignment = BoxContainer.ALIGNMENT_CENTER
-	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	UI.expand(text)
-	text.add_child(UI.fit(UI.label(display_name, 14, UI.TEXT, true)))
-	# Second line: the game for friends playing or in a party, else presence.
+	(holder.get_node("Row/AvatarSlot") as HBoxContainer).add_child(UI.avatar(display_name, 42, presence, Color.TRANSPARENT, _picture(profile)))
+	(holder.get_node("Row/Info/Name") as Label).text = display_name
 	var game_name := str(profile.get("game_name", ""))
 	var detail := game_name if not game_name.is_empty() and (presence == "in_game" or bool(profile.get("in_room", false))) else UI.presence_label(presence)
-	var status := UI.fit(UI.label("●  " + detail, 12, UI.presence_color(presence) if presence != "offline" else UI.TEXT_3))
+	var status := holder.get_node("Row/Info/Status") as Label
 	var unread := int(profile.get("chat_unread", 0))
+	status.text = "✉  %d yeni mesaj" % unread if unread > 0 else "●  " + detail
+	status.add_theme_color_override("font_color", UI.ACCENT if unread > 0 else UI.presence_color(presence) if presence != "offline" else UI.TEXT_3)
 	if unread > 0:
-		status = UI.fit(UI.label("✉  %d yeni mesaj" % unread, 12, UI.ACCENT, true))
-	text.add_child(status)
-	row.add_child(text)
+		status.add_theme_font_override("font", UI._get_bold_font())
 	var action := _row_action(profile)
 	if action != null:
-		row.add_child(action)
+		(holder.get_node("Row/ActionSlot") as HBoxContainer).add_child(action)
 	var more := UI.icon_button("dots", "Seçenekler", 32)
 	more.pressed.connect(func(): _open_friend_menu(profile, more))
-	row.add_child(more)
+	(holder.get_node("Row/MoreSlot") as HBoxContainer).add_child(more)
 	return holder
 
 
