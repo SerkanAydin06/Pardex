@@ -402,7 +402,6 @@ func _play_game(game_id: String) -> void:
 func _on_game_session_ready(game_id: String, token: String) -> void:
 	if game_id != "korsanlar" or token.is_empty() or _is_game_running(game_id):
 		return
-	Catalog.record_launch(game_id)
 	var args := PackedStringArray([
 		"--pardex-session-token=%s" % token,
 		"--pardex-url=%s" % PardexOnline.get_active_server_url(),
@@ -431,8 +430,6 @@ func _on_game_session_ready(game_id: String, token: String) -> void:
 
 func _on_game_start_requested(payload: Dictionary) -> void:
 	var game_id := str(payload.get("game_id", ""))
-	if game_id == "korsanlar":
-		Catalog.record_launch(game_id)
 	if _game_launch_in_progress:
 		return
 	if game_id != "korsanlar":
@@ -495,7 +492,25 @@ func _find_korsan_project_path() -> String:
 # Playtime: PARDEX remembers when a launched game process ends and adds the
 # session length to that game's playtime.
 func _track_session(game_id: String, pid: int) -> void:
-	_sessions[pid] = {"game": game_id, "started": int(Time.get_unix_time_from_system())}
+	if pid <= 0 or _sessions.has(pid):
+		return
+	var now := int(Time.get_unix_time_from_system())
+	_sessions[pid] = {"game": game_id, "started": now, "saved_at": now}
+	Catalog.record_launch(game_id)
+
+
+func _save_session_playtime(session: Dictionary, now: int) -> void:
+	var saved_at := int(session["saved_at"])
+	if now <= saved_at:
+		return
+	Catalog.add_playtime(str(session["game"]), now - saved_at)
+	session["saved_at"] = now
+
+
+func _exit_tree() -> void:
+	var now := int(Time.get_unix_time_from_system())
+	for session in _sessions.values():
+		_save_session_playtime(session, now)
 
 
 func _is_game_running(game_id: String) -> bool:
@@ -517,14 +532,17 @@ func _leave_finished_match() -> void:
 
 
 func _poll_sessions() -> void:
+	var now := int(Time.get_unix_time_from_system())
 	for pid in _sessions.keys():
-		if OS.is_process_running(int(pid)):
-			continue
 		var session: Dictionary = _sessions[pid]
+		if OS.is_process_running(int(pid)):
+			if now - int(session["saved_at"]) >= 60:
+				_save_session_playtime(session, now)
+			continue
+		_save_session_playtime(session, now)
 		_sessions.erase(pid)
 		_leave_finished_match()
-		var seconds := int(Time.get_unix_time_from_system()) - int(session["started"])
-		Catalog.add_playtime(str(session["game"]), seconds)
+		var seconds := maxi(0, now - int(session["started"]))
 		Catalog.add_event("session", "%s oturumu: %s" % [str(Catalog.game(str(session["game"])).get("title", "")), Catalog.hours(seconds)], str(session["game"]))
 
 

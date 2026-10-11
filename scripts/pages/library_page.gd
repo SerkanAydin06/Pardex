@@ -181,7 +181,7 @@ func _build_hero() -> Control:
 func _render_stats() -> void:
 	UI.clear(_stats_row)
 	for stat in [
-		["gamepad", str(_count("all")), "Sahip Olunan", UI.ACCENT],
+		["gamepad", str(_count("all")), "Katalogdaki Oyunlar", UI.ACCENT],
 		["download", str(_count("installed")), "Yüklü", UI.ACCENT],
 		["clock", str(_count("recent")), "Son Oynanan", UI.ACCENT],
 		["heart", str(_count("favorites")), "Favoriler", UI.RED],

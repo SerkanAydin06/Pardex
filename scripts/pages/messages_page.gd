@@ -43,6 +43,11 @@ func _ready() -> void:
 	)
 	PardexOnline.avatar_ready.connect(func(_account_id): _render_list(); _render_header())
 	PardexOnline.connection_state_changed.connect(func(_state): _render())
+	PardexOnline.welcome_received.connect(func(_user_id, _display_name):
+		# Messages delivered while disconnected must be fetched from the server.
+		_histories.clear()
+		_render()
+	)
 	PardexOnline.chat_history_received.connect(_on_history)
 	PardexOnline.chat_message_received.connect(_on_message)
 	visibility_changed.connect(func():

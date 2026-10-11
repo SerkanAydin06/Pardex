@@ -3,6 +3,7 @@ extends SceneTree
 const MAIN_SCENE := "res://scenes/main.tscn"
 const CI_SERVER_URL := "ws://127.0.0.1:65535"
 const IDENTITY_PATH := "user://pardex_identity.cfg"
+const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 
 
 func _initialize() -> void:
@@ -26,6 +27,40 @@ func _is_valid_identity_key(value: String) -> bool:
 
 func _autoload(name: String) -> Node:
 	return root.get_node_or_null(name)
+
+
+func _verify_activity_and_chat(main_scene: Node, online: Node) -> bool:
+	var before := Catalog.games_with_stats()[0] as Dictionary
+	main_scene.call("_track_session", "korsanlar", -1)
+	if int(Catalog.games_with_stats()[0]["launches"]) != int(before["launches"]):
+		_fail("failed process launch changed activity")
+		return false
+	var test_pid := 2147483647
+	main_scene.call("_track_session", "korsanlar", test_pid)
+	main_scene.call("_track_session", "korsanlar", test_pid)
+	if int(Catalog.games_with_stats()[0]["launches"]) != int(before["launches"]) + 1:
+		_fail("successful process must be recorded exactly once")
+		return false
+	var sessions: Dictionary = main_scene.get("_sessions")
+	var now := int(Time.get_unix_time_from_system())
+	sessions[test_pid]["started"] = now - 120
+	sessions[test_pid]["saved_at"] = now - 120
+	# A checkpoint followed by shutdown must preserve time without doubling it.
+	main_scene.call("_save_session_playtime", sessions[test_pid], now)
+	main_scene.call("_exit_tree")
+	var added := int(Catalog.games_with_stats()[0]["playtime"]) - int(before["playtime"])
+	if added < 120 or added > 121:
+		_fail("checkpoint/shutdown lost or duplicated playtime")
+		return false
+	sessions.clear()
+	var messages := main_scene.find_child("MessagesPage", true, false)
+	var histories: Dictionary = messages.get("_histories")
+	histories["stale_conversation"] = [{"text": "cached before disconnect"}]
+	online.emit_signal("welcome_received", "ci-user", "CI-Pardus")
+	if not histories.is_empty():
+		_fail("reconnect retained stale chat history")
+		return false
+	return true
 
 
 func _verify_identity_repair(identity_guard: Node) -> bool:
@@ -119,7 +154,9 @@ func _run() -> void:
 	if main_scene.find_child("OnlineState", true, false) == null:
 		_fail("presence label was not found")
 		return
+	if not _verify_activity_and_chat(main_scene, online):
+		return
 
 	online.call("disconnect_server")
-	print("PARDEX boot smoke passed: identity repair -> main scene -> secure launcher autoloads -> dynamic social UI")
+	print("PARDEX boot smoke passed: identity repair -> pages -> activity checkpoints -> chat reconnect")
 	quit(0)
