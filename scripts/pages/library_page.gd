@@ -342,8 +342,8 @@ func _genre_chips(entry: Dictionary) -> HBoxContainer:
 func _card(entry: Dictionary) -> Control:
 	var card := LibraryGameCardScene.instantiate() as PanelContainer
 	(card.get_node("Column/Artwork/Art") as TextureRect).texture = Catalog.texture(str(entry["cover"]))
-	(card.get_node("Column/Artwork/Overlay/Top/StarSlot") as HBoxContainer).add_child(_star(entry))
-	(card.get_node("Column/Artwork/Overlay/Title") as Label).text = str(entry["title"])
+	(card.get_node("Column/Artwork/OverlayMargin/Overlay/Top/StarSlot") as HBoxContainer).add_child(_star(entry))
+	(card.get_node("Column/Artwork/OverlayMargin/Overlay/Title") as Label).text = str(entry["title"])
 	(card.get_node("Column/InfoMargin/Info/GenreSlot") as HBoxContainer).add_child(_genre_chips(entry))
 	(card.get_node("Column/InfoMargin/Info/Bottom/StatusSlot") as HBoxContainer).add_child(_status_pill(entry))
 	(card.get_node("Column/InfoMargin/Info/Bottom/MoreSlot") as HBoxContainer).add_child(_more(entry))
