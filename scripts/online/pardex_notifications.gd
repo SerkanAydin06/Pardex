@@ -50,9 +50,9 @@ func _bind_ui() -> void:
 	_friends_button = friends as Button
 	_rooms_button = rooms as Button if rooms is Button else null
 	_header_row = header as HBoxContainer
-	_create_badges()
-	_create_notification_button()
-	_create_notification_panel()
+	if not _bind_scene_widgets(_main_scene):
+		push_error("PARDEX notifications: missing scene nodes")
+		return
 	_ui_ready = true
 
 	_on_social_state_changed(PardexOnline.social_state)
@@ -69,129 +69,22 @@ func _schedule_bind_retry() -> void:
 	get_tree().create_timer(0.15).timeout.connect(_bind_ui)
 
 
-func _create_badges() -> void:
-	_friends_badge = _make_badge(_friends_button)
-	if _rooms_button != null:
-		_rooms_badge = _make_badge(_rooms_button)
-
-
-func _make_badge(parent_button: Button) -> PanelContainer:
-	var badge := PanelContainer.new()
-	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	badge.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
-	badge.offset_left = -38.0
-	badge.offset_top = -12.0
-	badge.offset_right = -10.0
-	badge.offset_bottom = 12.0
-	badge.add_theme_stylebox_override("panel", _badge_style())
-
-	var count_label := Label.new()
-	count_label.name = "Count"
-	count_label.custom_minimum_size = Vector2(24, 22)
-	count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	count_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	count_label.add_theme_font_size_override("font_size", 11)
-	count_label.add_theme_color_override("font_color", Color(0.98, 1.0, 1.0, 1.0))
-	badge.add_child(count_label)
-	parent_button.add_child(badge)
-	badge.hide()
-	return badge
-
-
-func _create_notification_button() -> void:
-	_notification_button = Button.new()
-	_notification_button.name = "NotificationButton"
-	_notification_button.custom_minimum_size = Vector2(36, 34)
-	_notification_button.focus_mode = Control.FOCUS_NONE
-	_notification_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	_notification_button.tooltip_text = "Bildirimler"
-	_notification_button.icon = PardexIcons.texture("bell", 52)
-	_notification_button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_notification_button.add_theme_constant_override("icon_max_width", 20)
-	_notification_button.add_theme_color_override("icon_normal_color", Color(0.86, 0.91, 0.98, 1.0))
-	_notification_button.add_theme_color_override("icon_hover_color", Color(1, 1, 1, 1))
-	_notification_button.add_theme_stylebox_override("normal", _notification_button_style(false))
-	_notification_button.add_theme_stylebox_override("hover", _notification_button_style(true))
-	_notification_button.add_theme_stylebox_override("pressed", _notification_button_style(true))
-	_notification_button.pressed.connect(_toggle_notification_panel)
-	_header_row.add_child(_notification_button)
-
-	# The bell sits between the connection pill and the window buttons.
-	var window_chrome := _header_row.get_node_or_null("WindowChrome")
-	if window_chrome != null:
-		_header_row.move_child(_notification_button, window_chrome.get_index())
-
-	_notification_button_badge = _make_badge(_notification_button)
-	_notification_button_badge.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_notification_button_badge.offset_left = -12.0
-	_notification_button_badge.offset_top = -4.0
-	_notification_button_badge.offset_right = 6.0
-	_notification_button_badge.offset_bottom = 12.0
-	var bell_count := _notification_button_badge.get_node("Count") as Label
-	bell_count.custom_minimum_size = Vector2(16, 16)
-	bell_count.add_theme_font_size_override("font_size", 10)
-
-
-func _create_notification_panel() -> void:
-	_notification_panel = PanelContainer.new()
-	_notification_panel.name = "NotificationCenter"
-	_notification_panel.z_index = 100
-	_notification_panel.mouse_filter = Control.MOUSE_FILTER_STOP
-	_notification_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_notification_panel.offset_left = -430.0
-	_notification_panel.offset_top = 64.0
-	_notification_panel.offset_right = -28.0
-	_notification_panel.offset_bottom = 560.0
-	_notification_panel.add_theme_stylebox_override("panel", _notification_panel_style())
-	_main_scene.add_child(_notification_panel)
-
-	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 16)
-	margin.add_theme_constant_override("margin_top", 14)
-	margin.add_theme_constant_override("margin_right", 16)
-	margin.add_theme_constant_override("margin_bottom", 14)
-	_notification_panel.add_child(margin)
-
-	var root := VBoxContainer.new()
-	root.add_theme_constant_override("separation", 10)
-	margin.add_child(root)
-
-	var header := HBoxContainer.new()
-	header.add_theme_constant_override("separation", 8)
-	root.add_child(header)
-
-	var title := Label.new()
-	title.text = "BİLDİRİMLER"
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	title.add_theme_font_size_override("font_size", 15)
-	title.add_theme_color_override("font_color", Color(0.9, 0.95, 1.0, 1.0))
-	header.add_child(title)
-
-	var clear_button := Button.new()
-	clear_button.text = "OKUNANLARI TEMİZLE"
-	clear_button.focus_mode = Control.FOCUS_NONE
-	clear_button.add_theme_font_size_override("font_size", 10)
-	clear_button.add_theme_color_override("font_color", Color(0.56, 0.7, 0.82, 1.0))
-	clear_button.add_theme_stylebox_override("normal", _flat_button_style(false))
-	clear_button.add_theme_stylebox_override("hover", _flat_button_style(true))
-	clear_button.pressed.connect(_clear_read_notifications)
-	header.add_child(clear_button)
-
-	var divider := HSeparator.new()
-	divider.add_theme_constant_override("separation", 2)
-	root.add_child(divider)
-
-	var scroll := ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	root.add_child(scroll)
-
-	_notification_list = VBoxContainer.new()
-	_notification_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_notification_list.add_theme_constant_override("separation", 8)
-	scroll.add_child(_notification_list)
-
-	_notification_panel.hide()
+# The notification button, badges and panel live in scenes/main.tscn.
+# Only live counts and rows are updated here; editor-owned layout is never rebuilt.
+func _bind_scene_widgets(scene: Control) -> bool:
+	_friends_badge = scene.find_child("FriendsNotificationBadge", true, false) as PanelContainer
+	_notification_button = scene.find_child("NotificationButton", true, false) as Button
+	_notification_button_badge = scene.find_child("NotificationBadge", true, false) as PanelContainer
+	_notification_panel = scene.find_child("NotificationCenter", true, false) as PanelContainer
+	_notification_list = scene.find_child("NotificationList", true, false) as VBoxContainer
+	var clear_button := scene.find_child("ClearReadButton", true, false) as Button
+	if _friends_badge == null or _notification_button == null or _notification_button_badge == null or _notification_panel == null or _notification_list == null or clear_button == null:
+		return false
+	if not _notification_button.pressed.is_connected(_toggle_notification_panel):
+		_notification_button.pressed.connect(_toggle_notification_panel)
+	if not clear_button.pressed.is_connected(_clear_read_notifications):
+		clear_button.pressed.connect(_clear_read_notifications)
+	return true
 
 
 func _toggle_notification_panel() -> void:

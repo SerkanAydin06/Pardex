@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/icons/gear.svg" id="10_settings"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/search.svg" id="12_search"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/message.svg" id="13_message"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/bell.svg" id="14_bell"]
 [ext_resource type="PackedScene" path="res://scenes/pages/store_page.tscn" id="20_store"]
 [ext_resource type="PackedScene" path="res://scenes/pages/library_page.tscn" id="20_library"]
 [ext_resource type="PackedScene" path="res://scenes/pages/friends_page.tscn" id="20_friends"]
@@ -77,6 +78,34 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 content_margin_left = 40.0
 content_margin_right = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleNotificationBadge"]
+bg_color = Color(0.153, 0.663, 1, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleNotificationPanel"]
+bg_color = Color(0.043, 0.071, 0.13, 0.98)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.14, 0.3, 0.5, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_size = 12
+shadow_color = Color(0, 0, 0, 0.35)
+
+[sub_resource type="StyleBoxFlat" id="StyleNotificationHover"]
+bg_color = Color(0.055, 0.12, 0.19, 0.9)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
 
 [sub_resource type="StyleBoxFlat" id="StyleProfileCard"]
 content_margin_left = 10.0
@@ -227,6 +256,42 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.9
 mouse_filter = 2
 
+[node name="NotificationButton" type="Button" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+focus_mode = 0
+tooltip_text = "Bildirimler"
+mouse_default_cursor_shape = 2
+icon = ExtResource("14_bell")
+icon_alignment = 1
+theme_override_colors/icon_normal_color = Color(0.86, 0.91, 0.98, 1)
+theme_override_colors/icon_hover_color = Color(1, 1, 1, 1)
+theme_override_constants/icon_max_width = 20
+theme_override_styles/hover = SubResource("StyleNotificationHover")
+theme_override_styles/pressed = SubResource("StyleNotificationHover")
+
+[node name="NotificationBadge" type="PanelContainer" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow/NotificationButton"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -12.0
+offset_top = -4.0
+offset_right = 6.0
+offset_bottom = 12.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleNotificationBadge")
+
+[node name="Count" type="Label" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow/NotificationButton/NotificationBadge"]
+layout_mode = 2
+custom_minimum_size = Vector2(16, 16)
+theme_override_colors/font_color = Color(0.98, 1, 1, 1)
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="WindowChrome" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow" unique_id=1452125407 instance=ExtResource("4_chrome")]
 unique_name_in_owner = true
 layout_mode = 2
@@ -289,6 +354,31 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Arkadaşlar"
 icon = ExtResource("8_friends")
+
+[node name="FriendsNotificationBadge" type="PanelContainer" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/FriendsButton"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -38.0
+offset_top = -12.0
+offset_right = -10.0
+offset_bottom = 12.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleNotificationBadge")
+
+[node name="Count" type="Label" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/FriendsButton/FriendsNotificationBadge"]
+layout_mode = 2
+custom_minimum_size = Vector2(24, 22)
+theme_override_colors/font_color = Color(0.98, 1, 1, 1)
+theme_override_font_sizes/font_size = 11
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="MessagesButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=1738450070]
 unique_name_in_owner = true
@@ -467,3 +557,64 @@ file_mode = 0
 access = 2
 filters = PackedStringArray("*.png, *.jpg, *.jpeg, *.webp ; Resimler")
 use_native_dialog = true
+
+[node name="NotificationCenter" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -430.0
+offset_top = 64.0
+offset_right = -28.0
+offset_bottom = 560.0
+grow_horizontal = 0
+z_index = 100
+mouse_filter = 0
+theme_override_styles/panel = SubResource("StyleNotificationPanel")
+
+[node name="NotificationMargin" type="MarginContainer" parent="NotificationCenter"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="NotificationColumn" type="VBoxContainer" parent="NotificationCenter/NotificationMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="NotificationHeading" type="HBoxContainer" parent="NotificationCenter/NotificationMargin/NotificationColumn"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="NotificationTitle" type="Label" parent="NotificationCenter/NotificationMargin/NotificationColumn/NotificationHeading"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "BİLDİRİMLER"
+
+[node name="ClearReadButton" type="Button" parent="NotificationCenter/NotificationMargin/NotificationColumn/NotificationHeading"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.56, 0.7, 0.82, 1)
+theme_override_font_sizes/font_size = 10
+text = "OKUNANLARI TEMİZLE"
+flat = true
+
+[node name="NotificationSeparator" type="HSeparator" parent="NotificationCenter/NotificationMargin/NotificationColumn"]
+layout_mode = 2
+
+[node name="NotificationScroll" type="ScrollContainer" parent="NotificationCenter/NotificationMargin/NotificationColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="NotificationList" type="VBoxContainer" parent="NotificationCenter/NotificationMargin/NotificationColumn/NotificationScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
