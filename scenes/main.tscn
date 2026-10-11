@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b862qcsk55r27" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://d3i1b1a4uerot" path="res://assets/ui/left_banner.png" id="3_sidebar_art"]
-[ext_resource type="Texture2D" path="res://assets/ui/brand_pardex_symbol.png" id="3_ya4ey"]
+[ext_resource type="Texture2D" path="res://assets/ui/brand_pardex_mark.svg" id="3_ya4ey"]
 [ext_resource type="PackedScene" path="res://scenes/ui/window_chrome.tscn" id="4_chrome"]
 [ext_resource type="Script" uid="uid://mgpwwfj1217y" path="res://scripts/ui/pardex_window_frame.gd" id="5_frame"]
 [ext_resource type="Texture2D" uid="uid://qoqb5ojeu5vi" path="res://assets/ui/svg/icon_store.svg" id="6_store"]
@@ -127,11 +127,12 @@ theme_override_constants/margin_bottom = 8
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
+alignment = 1
 
 [node name="Logo" type="TextureRect" parent="Root/Header/BrandHeader/BrandMargin/Brand" unique_id=42183744]
 texture_filter = 3
-custom_minimum_size = Vector2(58, 58)
+custom_minimum_size = Vector2(52, 52)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
@@ -139,14 +140,25 @@ texture = ExtResource("3_ya4ey")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="BrandTitle" type="Label" parent="Root/Header/BrandHeader/BrandMargin/Brand" unique_id=537160389]
+[node name="BrandText" type="VBoxContainer" parent="Root/Header/BrandHeader/BrandMargin/Brand" unique_id=1882973395]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.153, 0.78, 1, 1)
-theme_override_colors/font_outline_color = Color(0.03, 0.16, 0.3, 1)
-theme_override_constants/outline_size = 1
-theme_override_font_sizes/font_size = 31
+size_flags_vertical = 4
+theme_override_constants/separation = -2
+alignment = 1
+
+[node name="BrandTitle" type="Label" parent="Root/Header/BrandHeader/BrandMargin/Brand/BrandText" unique_id=537160389]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.97, 1, 1)
+theme_override_font_sizes/font_size = 25
 text = "PARDEX"
-vertical_alignment = 1
+
+[node name="BrandSubtitle" type="Label" parent="Root/Header/BrandHeader/BrandMargin/Brand/BrandText" unique_id=537160390]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.153, 0.78, 1, 0.88)
+theme_override_font_sizes/font_size = 9
+text = "OYUN PLATFORMU"
 
 [node name="ActionHeader" type="PanelContainer" parent="Root/Header" unique_id=132332832]
 layout_mode = 2
