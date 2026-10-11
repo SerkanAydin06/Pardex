@@ -105,6 +105,17 @@ func _run() -> void:
 	if main_scene.find_child("NotificationCenter", true, false) == null:
 		_fail("notification center was not created")
 		return
+	# Exercise dynamic store/library cards and scene-backed pages, not just the shell.
+	for page_name in ["store", "library", "friends", "messages", "profile"]:
+		main_scene.call("_navigate", page_name)
+		await process_frame
+		var page_node := main_scene.find_child("%sPage" % page_name.capitalize(), true, false)
+		if page_node == null and page_name != "friends":
+			_fail("missing page after navigation: %s" % page_name)
+			return
+	main_scene.call("_navigate", "store")
+	await process_frame
+
 	if main_scene.find_child("OnlineState", true, false) == null:
 		_fail("presence label was not found")
 		return

@@ -4,7 +4,7 @@ extends Control
 # window, the chrome buttons minimize / toggle full screen / close it and thin invisible
 # strips along the edges resize it. Lives in main.tscn above all content.
 
-const APP_ICON := "res://assets/ui/brand_pardex_app_icon.png"
+const APP_ICON := "res://assets/ui/pardex_hub_app_icon.png"
 const EDGE := 7.0
 const CORNER := 12.0
 
