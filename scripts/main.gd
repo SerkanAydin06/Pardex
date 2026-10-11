@@ -53,7 +53,6 @@ var _session_poll_elapsed := 0.0
 func _ready() -> void:
 	theme = UI.app_theme()
 	_build_search()
-	_style_brand()
 	_load_settings()
 	_apply_start_window()
 	_create_pages()
@@ -81,33 +80,6 @@ func _build_search() -> void:
 	search_field.add_theme_font_size_override("font_size", 14)
 	search_field.text_changed.connect(_on_search_changed)
 	%SearchSlot.add_child(search_field)
-
-
-# PARDEX wordmark in Orbitron (SIL Open Font License, assets/fonts).
-# The mark is artwork; brand text stays native so it remains crisp at any DPI.
-func _style_brand() -> void:
-	var font_file := load("res://assets/fonts/Orbitron.ttf") as FontFile
-	if font_file == null:
-		return
-	var brand_font := FontVariation.new()
-	brand_font.base_font = font_file
-	brand_font.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): 800}
-	brand_font.spacing_glyph = 2
-	%BrandTitle.add_theme_font_override("font", brand_font)
-	%BrandTitle.add_theme_color_override("font_shadow_color", Color(UI.ACCENT, 0.25))
-	%BrandTitle.add_theme_constant_override("shadow_outline_size", 3)
-	var hub_font := FontVariation.new()
-	hub_font.base_font = font_file
-	hub_font.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): 800}
-	hub_font.spacing_glyph = 4
-	%BrandHub.add_theme_font_override("font", hub_font)
-	%BrandHub.add_theme_color_override("font_shadow_color", Color(UI.ACCENT, 0.3))
-	%BrandHub.add_theme_constant_override("shadow_outline_size", 3)
-	var subtitle_font := FontVariation.new()
-	subtitle_font.base_font = font_file
-	subtitle_font.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): 600}
-	subtitle_font.spacing_glyph = 3
-	%BrandSubtitle.add_theme_font_override("font", subtitle_font)
 
 
 func _create_pages() -> void:
@@ -297,15 +269,12 @@ func _apply_responsive_layout() -> void:
 	var narrow := width <= WINDOW_NARROW
 	var sidebar_width := 214.0 if narrow else 258.0
 	%Sidebar.custom_minimum_size.x = sidebar_width
-	%Brand.custom_minimum_size.x = sidebar_width - 22.0
-	# The logo header sits above the sidebar; keep both edges aligned (the
-	# logo and wordmark shrink a little in the narrow layout to fit).
+	%Brand.custom_minimum_size.x = sidebar_width - 12.0
+	# The approved PARDEX HUB artwork includes the shield, wordmark and HUB.
+	# Scale the single transparent image as a unit; never rebuild the mark in UI text.
 	%BrandHeader.custom_minimum_size.x = sidebar_width
-	(%Brand.get_node("Logo") as Control).custom_minimum_size = Vector2(46 if narrow else 52, 46 if narrow else 52)
-	%BrandTitle.add_theme_font_size_override("font_size", 19 if narrow else 23)
-	%BrandHub.add_theme_font_size_override("font_size", 13 if narrow else 15)
-	%BrandSubtitle.add_theme_font_size_override("font_size", 6 if narrow else 7)
-	%Brand.add_theme_constant_override("separation", 8 if narrow else 10)
+	(%Brand.get_node("Logo") as Control).custom_minimum_size = Vector2(202 if narrow else 220, 70)
+	%Brand.add_theme_constant_override("separation", 0)
 	var outer := 12 if narrow else 18
 	var main_margin := %MainMargin as MarginContainer
 	for side in ["margin_left", "margin_right"]:

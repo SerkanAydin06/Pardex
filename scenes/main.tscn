@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b862qcsk55r27" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://d3i1b1a4uerot" path="res://assets/ui/left_banner.png" id="3_sidebar_art"]
-[ext_resource type="Texture2D" path="res://assets/ui/brand_pardex_mark.svg" id="3_ya4ey"]
+[ext_resource type="Texture2D" path="res://assets/ui/brand_pardex_hub.webp" id="3_ya4ey"]
 [ext_resource type="PackedScene" path="res://scenes/ui/window_chrome.tscn" id="4_chrome"]
 [ext_resource type="Script" uid="uid://mgpwwfj1217y" path="res://scripts/ui/pardex_window_frame.gd" id="5_frame"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/store.svg" id="6_store"]
@@ -118,54 +118,27 @@ script = ExtResource("11_shell_svg")
 
 [node name="BrandMargin" type="MarginContainer" parent="Root/Header/BrandHeader" unique_id=1683864142]
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 3
 
 [node name="Brand" type="HBoxContainer" parent="Root/Header/BrandHeader/BrandMargin" unique_id=1882973394]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 0
 alignment = 1
 
 [node name="Logo" type="TextureRect" parent="Root/Header/BrandHeader/BrandMargin/Brand" unique_id=42183744]
 texture_filter = 3
-custom_minimum_size = Vector2(52, 52)
+custom_minimum_size = Vector2(202, 70)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 texture = ExtResource("3_ya4ey")
 expand_mode = 1
 stretch_mode = 5
-
-[node name="BrandText" type="VBoxContainer" parent="Root/Header/BrandHeader/BrandMargin/Brand" unique_id=1882973395]
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_constants/separation = -3
-alignment = 1
-
-[node name="BrandTitle" type="Label" parent="Root/Header/BrandHeader/BrandMargin/Brand/BrandText" unique_id=537160389]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.91, 0.97, 1, 1)
-theme_override_font_sizes/font_size = 23
-text = "PARDEX"
-
-[node name="BrandHub" type="Label" parent="Root/Header/BrandHeader/BrandMargin/Brand/BrandText" unique_id=537160391]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.08, 0.79, 1, 1)
-theme_override_font_sizes/font_size = 15
-text = "HUB"
-
-[node name="BrandSubtitle" type="Label" parent="Root/Header/BrandHeader/BrandMargin/Brand/BrandText" unique_id=537160390]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.153, 0.78, 1, 0.88)
-theme_override_font_sizes/font_size = 7
-text = "OYUN PLATFORMU"
 
 [node name="ActionHeader" type="PanelContainer" parent="Root/Header" unique_id=132332832]
 layout_mode = 2
