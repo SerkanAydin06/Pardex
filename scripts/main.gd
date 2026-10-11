@@ -84,6 +84,7 @@ func _build_search() -> void:
 
 
 # PARDEX wordmark in Orbitron (SIL Open Font License, assets/fonts).
+# The mark is artwork; brand text stays native so it remains crisp at any DPI.
 func _style_brand() -> void:
 	var font_file := load("res://assets/fonts/Orbitron.ttf") as FontFile
 	if font_file == null:
@@ -92,13 +93,14 @@ func _style_brand() -> void:
 	brand_font.base_font = font_file
 	brand_font.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): 800}
 	brand_font.spacing_glyph = 2
-	var title := %Brand.get_node("BrandTitle") as Label
-	title.add_theme_font_override("font", brand_font)
-	title.add_theme_constant_override("outline_size", 0)
-	title.add_theme_color_override("font_shadow_color", Color(UI.ACCENT, 0.45))
-	title.add_theme_constant_override("shadow_outline_size", 6)
-	title.add_theme_constant_override("shadow_offset_x", 0)
-	title.add_theme_constant_override("shadow_offset_y", 0)
+	%BrandTitle.add_theme_font_override("font", brand_font)
+	%BrandTitle.add_theme_color_override("font_shadow_color", Color(UI.ACCENT, 0.25))
+	%BrandTitle.add_theme_constant_override("shadow_outline_size", 4)
+	var subtitle_font := FontVariation.new()
+	subtitle_font.base_font = font_file
+	subtitle_font.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): 600}
+	subtitle_font.spacing_glyph = 3
+	%BrandSubtitle.add_theme_font_override("font", subtitle_font)
 
 
 func _create_pages() -> void:
@@ -293,9 +295,9 @@ func _apply_responsive_layout() -> void:
 	# logo and wordmark shrink a little in the narrow layout to fit).
 	%BrandHeader.custom_minimum_size.x = sidebar_width
 	var logo_size := 46.0 if narrow else 58.0
-	(%Brand.get_node("Logo") as Control).custom_minimum_size = Vector2(logo_size, logo_size)
-	(%Brand.get_node("BrandTitle") as Label).add_theme_font_size_override("font_size", 24 if narrow else 31)
-	%Brand.add_theme_constant_override("separation", 8 if narrow else 12)
+	(%Brand.get_node("Logo") as Control).custom_minimum_size = Vector2(46 if narrow else 52, 46 if narrow else 52)
+	%BrandTitle.add_theme_font_size_override("font_size", 21 if narrow else 25)\n\t%BrandSubtitle.add_theme_font_size_override("font_size", 8 if narrow else 9)
+	%Brand.add_theme_constant_override("separation", 8 if narrow else 10)
 	var outer := 12 if narrow else 18
 	var main_margin := %MainMargin as MarginContainer
 	for side in ["margin_left", "margin_right"]:
