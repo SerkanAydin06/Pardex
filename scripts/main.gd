@@ -294,9 +294,9 @@ func _apply_responsive_layout() -> void:
 	# The logo header sits above the sidebar; keep both edges aligned (the
 	# logo and wordmark shrink a little in the narrow layout to fit).
 	%BrandHeader.custom_minimum_size.x = sidebar_width
-	var logo_size := 46.0 if narrow else 58.0
 	(%Brand.get_node("Logo") as Control).custom_minimum_size = Vector2(46 if narrow else 52, 46 if narrow else 52)
-	%BrandTitle.add_theme_font_size_override("font_size", 21 if narrow else 25)\n\t%BrandSubtitle.add_theme_font_size_override("font_size", 8 if narrow else 9)
+	%BrandTitle.add_theme_font_size_override("font_size", 21 if narrow else 25)
+	%BrandSubtitle.add_theme_font_size_override("font_size", 8 if narrow else 9)
 	%Brand.add_theme_constant_override("separation", 8 if narrow else 10)
 	var outer := 12 if narrow else 18
 	var main_margin := %MainMargin as MarginContainer
