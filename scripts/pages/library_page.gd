@@ -8,6 +8,8 @@ signal play_requested(game_id: String)
 signal toast(message: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
+const LibraryGameCardScene := preload("res://scenes/ui/library_game_card.tscn")
+const LibraryListRowScene := preload("res://scenes/ui/library_list_row.tscn")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const FILTERS := [["all", "Tümü", ""], ["installed", "Yüklü", "download"], ["recent", "Son Oynanan", "clock"], ["favorites", "Favoriler", "heart"]]
 const SORTS := ["En Son Eklenen", "A → Z", "Son Oynanan"]
@@ -336,54 +338,34 @@ func _genre_chips(entry: Dictionary) -> HBoxContainer:
 	for genre in entry["genres"]:
 		var chip := UI.panel(0, UI.box(Color(1, 1, 1, 0.06), 6, UI.BORDER, 1, 4))
 		(chip.get_theme_stylebox("panel") as StyleBoxFlat).content_margin_left = 8
-		(chip.get_theme_stylebox("panel") as StyleBoxFlat).content_margin_right = 8
-		chip.add_child(UI.label(str(genre), 11, UI.TEXT_2))
-		row.add_child(chip)
-	return row
-
-
+		(chip.ge# Editor-owned card layouts, populated with live catalog data.
 func _card(entry: Dictionary) -> Control:
-	var card := UI.panel(0, UI.card_style(0))
-	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var column := UI.vbox(0)
-	card.add_child(column)
-	var art := UI.image(Catalog.texture(str(entry["cover"])), Vector2(0, 160), 12)
-	art.add_child(UI.shade(0.9))
-	var art_layer := UI.vbox(0)
-	art_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var top := UI.hbox(0)
-	top.add_child(_star(entry))
-	art_layer.add_child(top)
-	art_layer.add_child(UI.vspacer())
-	art_layer.add_child(UI.fit(UI.label(str(entry["title"]), 17, UI.TEXT, true)))
-	art.add_child(UI.margin(art_layer, 10, 10, 10, 8))
-	column.add_child(art)
-	var info := UI.vbox(10)
-	column.add_child(UI.margin(info, 12, 8, 12, 12))
-	info.add_child(_genre_chips(entry))
-	var bottom := UI.hbox(8)
-	bottom.add_child(_status_pill(entry))
-	bottom.add_child(UI.spacer())
-	bottom.add_child(_more(entry))
-	info.add_child(bottom)
+	var card := LibraryGameCardScene.instantiate() as PanelContainer
+	(card.get_node("Column/Artwork/Art") as TextureRect).texture = Catalog.texture(str(entry["cover"]))
+	(card.get_node("Column/Artwork/Overlay/Top/StarSlot") as HBoxContainer).add_child(_star(entry))
+	(card.get_node("Column/Artwork/Overlay/Title") as Label).text = str(entry["title"])
+	(card.get_node("Column/InfoMargin/Info/GenreSlot") as HBoxContainer).add_child(_genre_chips(entry))
+	(card.get_node("Column/InfoMargin/Info/Bottom/StatusSlot") as HBoxContainer).add_child(_status_pill(entry))
+	(card.get_node("Column/InfoMargin/Info/Bottom/MoreSlot") as HBoxContainer).add_child(_more(entry))
 	return card
 
 
 func _list_row(entry: Dictionary) -> Control:
-	var card := UI.panel(10)
-	var row := UI.hbox(14)
-	card.add_child(row)
-	row.add_child(UI.image(Catalog.texture(str(entry["cover"])), Vector2(110, 62), 8))
-	var text := UI.vbox(6)
-	UI.expand(text)
-	text.add_child(UI.fit(UI.label(str(entry["title"]), 16, UI.TEXT, true)))
-	text.add_child(_genre_chips(entry))
-	row.add_child(text)
-	row.add_child(UI.label(Catalog.ago(int(entry["last_played"])), 12, UI.TEXT_3))
-	row.add_child(_status_pill(entry))
-	row.add_child(_star(entry))
-	var play := UI.button("Oyna", "primary", 13, 36)
+	var card := LibraryListRowScene.instantiate() as PanelContainer
+	(card.get_node("Row/Art") as TextureRect).texture = Catalog.texture(str(entry["cover"]))
+	(card.get_node("Row/Info/Title") as Label).text = str(entry["title"])
+	(card.get_node("Row/Info/GenreSlot") as HBoxContainer).add_child(_genre_chips(entry))
+	(card.get_node("Row/LastPlayed") as Label).text = Catalog.ago(int(entry["last_played"]))
+	(card.get_node("Row/StatusSlot") as HBoxContainer).add_child(_status_pill(entry))
+	(card.get_node("Row/FavoriteSlot") as HBoxContainer).add_child(_star(entry))
+	var play := card.get_node("Row/PlayButton") as Button
 	play.disabled = not bool(entry["playable"])
+	play.pressed.connect(func(): play_requested.emit(str(entry["id"])))
+	(card.get_node("Row/MoreSlot") as HBoxContainer).add_child(_more(entry))
+	return card
+
+
+bool(entry["playable"])
 	play.pressed.connect(func(): play_requested.emit(str(entry["id"])))
 	row.add_child(play)
 	row.add_child(_more(entry))

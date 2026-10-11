@@ -1,0 +1,117 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/placeholder_vex.png" id="1_cover"]
+
+[sub_resource type="StyleBoxFlat" id="PanelCard"]
+bg_color = Color(0.067, 0.106, 0.188, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_left = 12
+corner_radius_bottom_right = 12
+
+[sub_resource type="StyleBoxFlat" id="ArtworkFrame"]
+bg_color = Color(0.047, 0.078, 0.141, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_left = 12
+corner_radius_bottom_right = 12
+
+[sub_resource type="Gradient" id="ShadeGradient"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.0235, 0.0392, 0.0784, 0.95, 0.0235, 0.0392, 0.0784, 0)
+
+[sub_resource type="GradientTexture2D" id="ShadeTexture"]
+gradient = SubResource("ShadeGradient")
+fill_from = Vector2(0.5, 1)
+fill_to = Vector2(0.5, 0.3)
+
+[node name="LibraryGameCard" type="PanelContainer"]
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("PanelCard")
+
+[node name="Column" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Artwork" type="PanelContainer" parent="Column"]
+custom_minimum_size = Vector2(0, 160)
+clip_children = 1
+layout_mode = 2
+theme_override_styles/panel = SubResource("ArtworkFrame")
+
+[node name="Art" type="TextureRect" parent="Column/Artwork"]
+layout_mode = 2
+texture = ExtResource("1_cover")
+expand_mode = 1
+stretch_mode = 6
+texture_filter = 4
+mouse_filter = 2
+
+[node name="Shade" type="TextureRect" parent="Column/Artwork"]
+layout_mode = 2
+texture = SubResource("ShadeTexture")
+expand_mode = 1
+stretch_mode = 0
+mouse_filter = 2
+
+[node name="OverlayMargin" type="MarginContainer" parent="Column/Artwork"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+mouse_filter = 2
+
+[node name="Overlay" type="VBoxContainer" parent="Column/Artwork"]
+layout_mode = 2
+theme_override_constants/separation = 0
+mouse_filter = 2
+
+[node name="Top" type="HBoxContainer" parent="Column/Artwork/Overlay"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="StarSlot" type="HBoxContainer" parent="Column/Artwork/Overlay/Top"]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="Column/Artwork/Overlay"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Column/Artwork/Overlay"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.933, 0.953, 0.984, 1)
+theme_override_font_sizes/font_size = 17
+text = "Oyun adı"
+text_overrun_behavior = 3
+mouse_filter = 2
+
+[node name="InfoMargin" type="MarginContainer" parent="Column"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Info" type="VBoxContainer" parent="Column/InfoMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="GenreSlot" type="HBoxContainer" parent="Column/InfoMargin/Info"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Bottom" type="HBoxContainer" parent="Column/InfoMargin/Info"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StatusSlot" type="HBoxContainer" parent="Column/InfoMargin/Info/Bottom"]
+layout_mode = 2
+
+[node name="Flex" type="Control" parent="Column/InfoMargin/Info/Bottom"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MoreSlot" type="HBoxContainer" parent="Column/InfoMargin/Info/Bottom"]
+layout_mode = 2

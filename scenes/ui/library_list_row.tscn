@@ -1,0 +1,74 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/placeholder_vex.png" id="1_cover"]
+
+[sub_resource type="StyleBoxFlat" id="Card"]
+bg_color = Color(0.067, 0.106, 0.188, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_left = 12
+corner_radius_bottom_right = 12
+content_margin_left = 10
+content_margin_top = 10
+content_margin_right = 10
+content_margin_bottom = 10
+
+[sub_resource type="StyleBoxFlat" id="PlayStyle"]
+bg_color = Color(0.153, 0.663, 1, 1)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[node name="LibraryListRow" type="PanelContainer"]
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("Card")
+
+[node name="Row" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Art" type="TextureRect" parent="Row"]
+custom_minimum_size = Vector2(110, 62)
+layout_mode = 2
+texture = ExtResource("1_cover")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Info" type="VBoxContainer" parent="Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Row/Info"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.933, 0.953, 0.984, 1)
+theme_override_font_sizes/font_size = 16
+text = "Oyun adı"
+text_overrun_behavior = 3
+
+[node name="GenreSlot" type="HBoxContainer" parent="Row/Info"]
+layout_mode = 2
+
+[node name="LastPlayed" type="Label" parent="Row"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.498, 0.553, 0.639, 1)
+theme_override_font_sizes/font_size = 12
+text = "Bugün"
+
+[node name="StatusSlot" type="HBoxContainer" parent="Row"]
+layout_mode = 2
+
+[node name="FavoriteSlot" type="HBoxContainer" parent="Row"]
+layout_mode = 2
+
+[node name="PlayButton" type="Button" parent="Row"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.012, 0.078, 0.137, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("PlayStyle")
+text = "Oyna"
+
+[node name="MoreSlot" type="HBoxContainer" parent="Row"]
+layout_mode = 2
