@@ -143,21 +143,28 @@ stretch_mode = 5
 [node name="BrandText" type="VBoxContainer" parent="Root/Header/BrandHeader/BrandMargin/Brand" unique_id=1882973395]
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_constants/separation = -2
+theme_override_constants/separation = -3
 alignment = 1
 
 [node name="BrandTitle" type="Label" parent="Root/Header/BrandHeader/BrandMargin/Brand/BrandText" unique_id=537160389]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.91, 0.97, 1, 1)
-theme_override_font_sizes/font_size = 25
+theme_override_font_sizes/font_size = 23
 text = "PARDEX"
+
+[node name="BrandHub" type="Label" parent="Root/Header/BrandHeader/BrandMargin/Brand/BrandText" unique_id=537160391]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08, 0.79, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "HUB"
 
 [node name="BrandSubtitle" type="Label" parent="Root/Header/BrandHeader/BrandMargin/Brand/BrandText" unique_id=537160390]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.153, 0.78, 1, 0.88)
-theme_override_font_sizes/font_size = 9
+theme_override_font_sizes/font_size = 7
 text = "OYUN PLATFORMU"
 
 [node name="ActionHeader" type="PanelContainer" parent="Root/Header" unique_id=132332832]
