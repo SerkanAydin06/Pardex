@@ -95,7 +95,14 @@ func _style_brand() -> void:
 	brand_font.spacing_glyph = 2
 	%BrandTitle.add_theme_font_override("font", brand_font)
 	%BrandTitle.add_theme_color_override("font_shadow_color", Color(UI.ACCENT, 0.25))
-	%BrandTitle.add_theme_constant_override("shadow_outline_size", 4)
+	%BrandTitle.add_theme_constant_override("shadow_outline_size", 3)
+	var hub_font := FontVariation.new()
+	hub_font.base_font = font_file
+	hub_font.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): 800}
+	hub_font.spacing_glyph = 4
+	%BrandHub.add_theme_font_override("font", hub_font)
+	%BrandHub.add_theme_color_override("font_shadow_color", Color(UI.ACCENT, 0.3))
+	%BrandHub.add_theme_constant_override("shadow_outline_size", 3)
 	var subtitle_font := FontVariation.new()
 	subtitle_font.base_font = font_file
 	subtitle_font.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): 600}
@@ -295,8 +302,9 @@ func _apply_responsive_layout() -> void:
 	# logo and wordmark shrink a little in the narrow layout to fit).
 	%BrandHeader.custom_minimum_size.x = sidebar_width
 	(%Brand.get_node("Logo") as Control).custom_minimum_size = Vector2(46 if narrow else 52, 46 if narrow else 52)
-	%BrandTitle.add_theme_font_size_override("font_size", 21 if narrow else 25)
-	%BrandSubtitle.add_theme_font_size_override("font_size", 8 if narrow else 9)
+	%BrandTitle.add_theme_font_size_override("font_size", 19 if narrow else 23)
+	%BrandHub.add_theme_font_size_override("font_size", 13 if narrow else 15)
+	%BrandSubtitle.add_theme_font_size_override("font_size", 6 if narrow else 7)
 	%Brand.add_theme_constant_override("separation", 8 if narrow else 10)
 	var outer := 12 if narrow else 18
 	var main_margin := %MainMargin as MarginContainer
