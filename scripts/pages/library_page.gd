@@ -338,7 +338,13 @@ func _genre_chips(entry: Dictionary) -> HBoxContainer:
 	for genre in entry["genres"]:
 		var chip := UI.panel(0, UI.box(Color(1, 1, 1, 0.06), 6, UI.BORDER, 1, 4))
 		(chip.get_theme_stylebox("panel") as StyleBoxFlat).content_margin_left = 8
-		(chip.ge# Editor-owned card layouts, populated with live catalog data.
+		(chip.get_theme_stylebox("panel") as StyleBoxFlat).content_margin_right = 8
+		chip.add_child(UI.label(str(genre), 11, UI.TEXT_2))
+		row.add_child(chip)
+	return row
+
+
+# Editor-owned card layouts, populated with live catalog data.
 func _card(entry: Dictionary) -> Control:
 	var card := LibraryGameCardScene.instantiate() as PanelContainer
 	(card.get_node("Column/Artwork/Art") as TextureRect).texture = Catalog.texture(str(entry["cover"]))
