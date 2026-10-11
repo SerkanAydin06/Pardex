@@ -1,6 +1,6 @@
 extends Node
 
-const PardexIcons := preload("res://scripts/ui/pardex_icons.gd")
+const NotificationRowScene := preload("res://scenes/ui/notification_row.tscn")
 
 const MAX_NOTIFICATIONS := 20
 
@@ -243,74 +243,41 @@ func _render_notifications() -> void:
 		_notification_list.add_child(_make_notification_row(item))
 
 
+# Every notification has the same editor-authored visual template.
 func _make_notification_row(item: Dictionary) -> Control:
+	var panel := NotificationRowScene.instantiate() as PanelContainer
 	var resolved := bool(item.get("resolved", false))
 	var read := bool(item.get("read", false))
-	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", _notification_row_style(resolved, read))
-
-	var margin := MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 12)
-	margin.add_theme_constant_override("margin_top", 10)
-	margin.add_theme_constant_override("margin_right", 12)
-	margin.add_theme_constant_override("margin_bottom", 10)
-	panel.add_child(margin)
-
-	var root := VBoxContainer.new()
-	root.add_theme_constant_override("separation", 6)
-	margin.add_child(root)
-
-	var title := Label.new()
-	title.text = str(item.get("title", "Bildirim"))
-	title.add_theme_font_size_override("font_size", 13)
-	title.add_theme_color_override("font_color", Color(0.86, 0.93, 1.0, 1.0) if not resolved else Color(0.54, 0.62, 0.7, 1.0))
-	root.add_child(title)
-
-	var body := Label.new()
-	body.text = str(item.get("body", ""))
-	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	body.add_theme_font_size_override("font_size", 12)
-	body.add_theme_color_override("font_color", Color(0.6, 0.7, 0.8, 1.0) if not resolved else Color(0.42, 0.49, 0.56, 1.0))
-	root.add_child(body)
-
-	if not resolved:
-		var actions := _make_notification_actions(item)
-		if actions.get_child_count() > 0:
-			root.add_child(actions)
-	return panel
-
-
-func _make_notification_actions(item: Dictionary) -> HBoxContainer:
-	var actions := HBoxContainer.new()
-	actions.add_theme_constant_override("separation", 6)
-	var kind := str(item.get("kind", ""))
+	(panel.get_node("Margin/Column/Title") as Label).text = str(item.get("title", "Bildirim"))
+	(panel.get_node("Margin/Column/Body") as Label).text = str(item.get("body", ""))
+	if resolved:
+		panel.modulate.a = 0.58
+	elif read:
+		panel.modulate.a = 0.82
+	var actions := panel.get_node("Margin/Column/Actions") as HBoxContainer
+	actions.visible = false
+	if resolved:
+		return panel
 	var data_value = item.get("data", {})
 	var data: Dictionary = data_value as Dictionary if typeof(data_value) == TYPE_DICTIONARY else {}
-
-	if kind == "friend_request":
-		var account_id := str(data.get("account_id", ""))
-		if not account_id.is_empty():
-			actions.add_child(_action_button("KABUL ET", func(): PardexOnline.accept_friend_request(account_id), true))
-			actions.add_child(_action_button("REDDET", func(): PardexOnline.decline_friend_request(account_id), false))
-	elif kind == "room_invite":
-		var invite_id := str(data.get("invite_id", ""))
-		if not invite_id.is_empty():
-			actions.add_child(_action_button("KATIL", func(): PardexOnline.accept_room_invite(invite_id), true))
-			actions.add_child(_action_button("REDDET", func(): PardexOnline.decline_room_invite(invite_id), false))
-	return actions
-
-
-func _action_button(text_value: String, action: Callable, primary: bool) -> Button:
-	var button := Button.new()
-	button.text = text_value
-	button.focus_mode = Control.FOCUS_NONE
-	button.custom_minimum_size = Vector2(88, 30)
-	button.add_theme_font_size_override("font_size", 10)
-	button.add_theme_color_override("font_color", Color(0.86, 0.94, 1.0, 1.0))
-	button.add_theme_stylebox_override("normal", _action_button_style(primary, false))
-	button.add_theme_stylebox_override("hover", _action_button_style(primary, true))
-	button.pressed.connect(action)
-	return button
+	var primary := actions.get_node("PrimaryButton") as Button
+	var secondary := actions.get_node("SecondaryButton") as Button
+	match str(item.get("kind", "")):
+		"friend_request":
+			var account_id := str(data.get("account_id", ""))
+			if not account_id.is_empty():
+				actions.visible = true
+				primary.text = "KABUL ET"
+				primary.pressed.connect(func(): PardexOnline.accept_friend_request(account_id))
+				secondary.pressed.connect(func(): PardexOnline.decline_friend_request(account_id))
+		"room_invite":
+			var invite_id := str(data.get("invite_id", ""))
+			if not invite_id.is_empty():
+				actions.visible = true
+				primary.text = "KATIL"
+				primary.pressed.connect(func(): PardexOnline.accept_room_invite(invite_id))
+				secondary.pressed.connect(func(): PardexOnline.decline_room_invite(invite_id))
+	return panel
 
 
 func _set_badge_count(badge: PanelContainer, count: int) -> void:
