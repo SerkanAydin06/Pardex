@@ -1,7 +1,7 @@
 extends Button
 
-const MAXIMIZE := preload("res://assets/ui/svg/window_maximize.svg")
-const RESTORE := preload("res://assets/ui/svg/window_restore.svg")
+const MAXIMIZE := preload("res://assets/ui/icons/window_maximize.svg")
+const RESTORE := preload("res://assets/ui/icons/window_restore.svg")
 
 func _ready() -> void:
 	pressed.connect(func(): call_deferred("_refresh_icon"))
