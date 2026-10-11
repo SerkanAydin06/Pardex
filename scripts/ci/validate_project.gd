@@ -25,7 +25,7 @@ const RESOURCES := [
     "res://scenes/pages/library_page.tscn",
     "res://scenes/pages/friends_page.tscn",
     "res://scenes/pages/messages_page.tscn",
-    "res://assets/ui/brand_pardex_hub.webp",
+    "res://assets/ui/Fütüristik Krom Pardex Hub Logosu.png",
     "res://assets/ui/pardex_hub_app_icon.png",
     "res://scenes/ui/empty_state.tscn",
     "res://scenes/ui/chat_bubble.tscn",
