@@ -49,9 +49,9 @@ func _ready() -> void:
 		_build()
 		UI.own(self)
 	_bind()
-	_build_friend_menu()
-	_build_add_dialog()
-	_build_invite_dialog()
+	_bind_friend_menu()
+	_bind_add_dialog()
+	_bind_invite_dialog()
 	PardexOnline.social_state_changed.connect(func(_state):
 		# Refresh search results too, so "Ekle" turns into "İsteği İptal Et".
 		if _query.length() >= 2:
@@ -425,9 +425,8 @@ func _render_requests() -> void:
 
 # ------------------------------------------------------------------ menus + dialogs
 
-func _build_friend_menu() -> void:
-	_friend_menu = PopupMenu.new()
-	add_child(_friend_menu)
+func _bind_friend_menu() -> void:
+	_friend_menu = %FriendMenu
 	_friend_menu.id_pressed.connect(func(id: int):
 		match id:
 			1: PardexOnline.join_friend_room(_menu_account_id)
@@ -446,32 +445,13 @@ func _open_friend_menu(profile: Dictionary, anchor: Control) -> void:
 	_friend_menu.popup(Rect2i(Vector2i(rect.position + Vector2(0, rect.size.y)), Vector2i.ZERO))
 
 
-func _build_add_dialog() -> void:
-	_add_dialog = AcceptDialog.new()
-	_add_dialog.title = "Arkadaş Ekle"
-	_add_dialog.ok_button_text = "Kapat"
-	_add_dialog.min_size = Vector2i(480, 440)
-	add_child(_add_dialog)
-	var column := UI.vbox(10)
-	_add_dialog.add_child(column)
-	var search_row := UI.hbox(8)
-	column.add_child(search_row)
-	var field := UI.search_field("Kullanıcı adı veya PARDEX kimliği...", 40)
-	UI.expand(field)
-	search_row.add_child(field)
-	var go := UI.button("Ara", "primary", 13, 40)
-	search_row.add_child(go)
-	go.pressed.connect(func(): _search_users(field.text))
+func _bind_add_dialog() -> void:
+	_add_dialog = %AddFriendDialog
+	_add_hint = %AddFriendHint
+	_add_results = %AddFriendResults
+	var field := %AddFriendField as LineEdit
+	(%AddFriendGo as Button).pressed.connect(func(): _search_users(field.text))
 	field.text_submitted.connect(_search_users)
-	_add_hint = UI.label("PARDEX kullanıcılarını adıyla bul.", 12, UI.TEXT_3)
-	column.add_child(_add_hint)
-	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size.y = 280
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	column.add_child(scroll)
-	_add_results = UI.vbox(8)
-	_add_results.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(_add_results)
 
 
 func _search_users(text: String) -> void:
@@ -535,14 +515,8 @@ func _on_connection_state_changed(state: String) -> void:
 	_render()
 
 
-func _build_invite_dialog() -> void:
-	_invite_dialog = ConfirmationDialog.new()
-	_invite_dialog.title = "PARDEX Oyun Daveti"
-	_invite_dialog.ok_button_text = "Katıl"
-	_invite_dialog.cancel_button_text = "Reddet"
-	_invite_dialog.min_size = Vector2i(460, 200)
-	_invite_dialog.exclusive = true
-	add_child(_invite_dialog)
+func _bind_invite_dialog() -> void:
+	_invite_dialog = %InviteDialog
 	_invite_dialog.confirmed.connect(func():
 		if not _active_invite_id.is_empty():
 			PardexOnline.accept_room_invite(_active_invite_id)

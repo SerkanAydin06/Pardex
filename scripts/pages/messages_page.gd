@@ -8,6 +8,7 @@ signal navigate(page: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const BUBBLE_MAX_WIDTH := 520.0
+const ChatBubbleScene := preload("res://scenes/ui/chat_bubble.tscn")
 
 var _selected_id := ""
 var _filter := ""
@@ -334,25 +335,18 @@ func _render_messages() -> void:
 
 func _bubble(message: Dictionary) -> Control:
 	var mine := str(message.get("from", "")) == PardexOnline.account_id
-	var row := UI.hbox(0)
-	var bubble := UI.panel(0, UI.box(Color(UI.ACCENT_DARK, 0.85) if mine else Color(UI.SURFACE_2, 0.9), 12, Color(UI.ACCENT, 0.45) if mine else UI.BORDER, 1, 12))
-	var column := UI.vbox(4)
-	bubble.add_child(column)
-	var text := UI.label(str(message.get("text", "")), 14, UI.TEXT)
-	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	var font := text.get_theme_font("font")
-	var width := font.get_multiline_string_size(text.text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14).x if font != null else BUBBLE_MAX_WIDTH
-	text.custom_minimum_size.x = clampf(width + 2.0, 40.0, _bubble_max_width)
-	column.add_child(text)
-	var time := UI.label(_clock(int(message.get("at", 0))), 10, UI.TEXT_3)
-	time.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	column.add_child(time)
+	var row := ChatBubbleScene.instantiate() as HBoxContainer
+	(row.get_node("LeftSpacer") as Control).visible = mine
+	(row.get_node("RightSpacer") as Control).visible = not mine
+	var bubble := row.get_node("Bubble") as PanelContainer
 	if mine:
-		row.add_child(UI.expand(Control.new()))
-		row.add_child(bubble)
-	else:
-		row.add_child(bubble)
-		row.add_child(UI.expand(Control.new()))
+		bubble.add_theme_stylebox_override("panel", UI.box(Color(UI.ACCENT_DARK, 0.85), 12, Color(UI.ACCENT, 0.45), 1, 12))
+	var content := row.get_node("Bubble/Column/MessageText") as Label
+	content.text = str(message.get("text", ""))
+	var font := content.get_theme_font("font")
+	var width := font.get_multiline_string_size(content.text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14).x if font != null else BUBBLE_MAX_WIDTH
+	content.custom_minimum_size.x = clampf(width + 2.0, 40.0, _bubble_max_width)
+	(row.get_node("Bubble/Column/MessageTime") as Label).text = _clock(int(message.get("at", 0)))
 	return row
 
 

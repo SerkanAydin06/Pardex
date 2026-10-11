@@ -701,3 +701,61 @@ theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 13
 text = "Bekleyen arkadaşlık isteği yok"
 horizontal_alignment = 1
+
+[node name="FriendMenu" type="PopupMenu" parent="."]
+unique_name_in_owner = true
+
+[node name="AddFriendDialog" type="AcceptDialog" parent="."]
+unique_name_in_owner = true
+title = "Arkadaş Ekle"
+min_size = Vector2i(480, 440)
+ok_button_text = "Kapat"
+
+[node name="AddFriendColumn" type="VBoxContainer" parent="AddFriendDialog"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="AddFriendSearchRow" type="HBoxContainer" parent="AddFriendDialog/AddFriendColumn"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AddFriendField" type="LineEdit" parent="AddFriendDialog/AddFriendColumn/AddFriendSearchRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 13
+placeholder_text = "Kullanıcı adı veya PARDEX kimliği..."
+clear_button_enabled = true
+
+[node name="AddFriendGo" type="Button" parent="AddFriendDialog/AddFriendColumn/AddFriendSearchRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(84, 40)
+layout_mode = 2
+text = "Ara"
+
+[node name="AddFriendHint" type="Label" parent="AddFriendDialog/AddFriendColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.498, 0.553, 0.639, 1)
+theme_override_font_sizes/font_size = 12
+text = "PARDEX kullanıcılarını adıyla bul."
+
+[node name="AddFriendScroll" type="ScrollContainer" parent="AddFriendDialog/AddFriendColumn"]
+custom_minimum_size = Vector2(0, 280)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="AddFriendResults" type="VBoxContainer" parent="AddFriendDialog/AddFriendColumn/AddFriendScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="InviteDialog" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+title = "PARDEX Oyun Daveti"
+min_size = Vector2i(460, 200)
+ok_button_text = "Katıl"
+cancel_button_text = "Reddet"
+exclusive = true

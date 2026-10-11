@@ -40,8 +40,7 @@ func _ready() -> void:
 		_build()
 		UI.own(self)
 	_bind()
-	_game_menu = PopupMenu.new()
-	add_child(_game_menu)
+	_game_menu = %GameMenu
 	_game_menu.id_pressed.connect(_on_menu)
 	visibility_changed.connect(func(): if is_visible_in_tree(): refresh())
 	refresh()
