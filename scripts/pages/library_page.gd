@@ -371,12 +371,6 @@ func _list_row(entry: Dictionary) -> Control:
 	return card
 
 
-bool(entry["playable"])
-	play.pressed.connect(func(): play_requested.emit(str(entry["id"])))
-	row.add_child(play)
-	row.add_child(_more(entry))
-	return card
-
 
 # ------------------------------------------------------------------ bottom
 
