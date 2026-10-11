@@ -11,7 +11,6 @@ const DEFAULT_SERVER_URL := ""
 const MIN_WINDOW_SIZE := Vector2i(1024, 640)
 const SESSION_POLL_INTERVAL := 5.0
 const UI := preload("res://scripts/ui/pardex_ui.gd")
-const Icons := preload("res://scripts/ui/pardex_icons.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 
 const WINDOW_NARROW := 1280
@@ -38,7 +37,7 @@ var _settings_content: VBoxContainer
 var _presence_menu: PopupMenu
 var _current_page := ""
 var _previous_page := "store"
-var _avatar_dialog: FileDialog
+@onready var _avatar_dialog: FileDialog = %AvatarFileDialog
 # Page name -> the node shown for it.
 var _pages: Dictionary = {}
 var _display_name := "Pardus"
@@ -52,7 +51,7 @@ var _session_poll_elapsed := 0.0
 
 func _ready() -> void:
 	theme = UI.app_theme()
-	_build_search()
+	_bind_search()
 	_load_settings()
 	_apply_start_window()
 	_create_pages()
@@ -73,13 +72,10 @@ func _ready() -> void:
 
 # ------------------------------------------------------------------ shell
 
-func _build_search() -> void:
-	search_field = UI.search_field("Oyun, tür, stüdyo veya içerik ara...", 38)
-	search_field.name = "LibrarySearch"
-	search_field.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	search_field.add_theme_font_size_override("font_size", 14)
+func _bind_search() -> void:
+	# Editable in scenes/main.tscn; runtime only connects its behavior.
+	search_field = %LibrarySearch
 	search_field.text_changed.connect(_on_search_changed)
-	%SearchSlot.add_child(search_field)
 
 
 func _create_pages() -> void:
@@ -138,27 +134,20 @@ func _render_avatar_preview() -> void:
 
 
 func _choose_avatar() -> void:
-	if _avatar_dialog == null:
-		_avatar_dialog = FileDialog.new()
-		_avatar_dialog.title = "Profil resmi seç"
-		_avatar_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
-		_avatar_dialog.access = FileDialog.ACCESS_FILESYSTEM
-		_avatar_dialog.use_native_dialog = true
-		_avatar_dialog.filters = PackedStringArray(["*.png, *.jpg, *.jpeg, *.webp ; Resimler"])
-		_avatar_dialog.file_selected.connect(func(path: String):
-			var error := PardexOnline.set_avatar_from_file(path)
-			_show_toast(error if not error.is_empty() else "Profil resmi güncellendi.")
-		)
-		add_child(_avatar_dialog)
+	if not _avatar_dialog.file_selected.is_connected(_on_avatar_selected):
+		_avatar_dialog.file_selected.connect(_on_avatar_selected)
 	_avatar_dialog.popup_centered_ratio(0.6)
 
+
+func _on_avatar_selected(path: String) -> void:
+	var error := PardexOnline.set_avatar_from_file(path)
+	_show_toast(error if not error.is_empty() else "Profil resmi güncellendi.")
 
 func _wire_navigation() -> void:
 	for button_name in NAV:
 		var button := get_node("%" + button_name) as Button
 		var spec: Array = NAV[button_name]
 		button.pressed.connect(_navigate.bind(str(spec[0])))
-		button.icon = Icons.texture(str(spec[1]), 52)
 		button.expand_icon = false
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.focus_mode = Control.FOCUS_NONE
@@ -168,7 +157,6 @@ func _wire_navigation() -> void:
 		button.add_theme_constant_override("icon_max_width", 26)
 		button.add_theme_constant_override("h_separation", 20)
 	var settings := %SettingsButton as Button
-	settings.icon = Icons.texture("gear", 44)
 	settings.add_theme_constant_override("icon_max_width", 22)
 	settings.add_theme_color_override("icon_normal_color", UI.TEXT_2)
 	settings.add_theme_color_override("icon_hover_color", UI.TEXT)
@@ -293,8 +281,8 @@ func _apply_responsive_layout() -> void:
 # ------------------------------------------------------------------ presence
 
 func _build_presence_menu() -> void:
-	_presence_menu = PopupMenu.new()
-	add_child(_presence_menu)
+	_presence_menu = %PresenceMenu
+	_presence_menu.clear()
 	for entry in [["online", "●  Çevrimiçi"], ["away", "◐  Boşta"], ["busy", "●  Meşgul"]]:
 		_presence_menu.add_item(str(entry[1]))
 		_presence_menu.set_item_metadata(_presence_menu.item_count - 1, entry[0])

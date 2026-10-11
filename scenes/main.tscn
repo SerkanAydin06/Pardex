@@ -10,7 +10,8 @@
 [ext_resource type="Texture2D" path="res://assets/ui/icons/friends.svg" id="8_friends"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/profile.svg" id="9_profile"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/gear.svg" id="10_settings"]
-[ext_resource type="Script" uid="uid://bfa65onpxc8q4" path="res://scripts/ui/pardex_shell_svg.gd" id="11_shell_svg"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/search.svg" id="12_search"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/message.svg" id="13_message"]
 [ext_resource type="PackedScene" path="res://scenes/pages/store_page.tscn" id="20_store"]
 [ext_resource type="PackedScene" path="res://scenes/pages/library_page.tscn" id="20_library"]
 [ext_resource type="PackedScene" path="res://scenes/pages/friends_page.tscn" id="20_friends"]
@@ -48,6 +49,34 @@ colors = PackedColorArray(0.031, 0.051, 0.102, 1, 0.031, 0.051, 0.102, 0.85, 0.0
 gradient = SubResource("SidebarFadeGradient")
 fill_from = Vector2(0.5, 0)
 fill_to = Vector2(0.5, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleSearch"]
+bg_color = Color(0.047, 0.078, 0.141, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.102, 0.161, 0.267, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 40.0
+content_margin_right = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleSearchFocus"]
+bg_color = Color(0.047, 0.078, 0.141, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.086, 0.525, 0.878, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 40.0
+content_margin_right = 10.0
 
 [sub_resource type="StyleBoxFlat" id="StyleProfileCard"]
 content_margin_left = 10.0
@@ -114,7 +143,6 @@ custom_minimum_size = Vector2(258, 76)
 layout_mode = 2
 mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBrandHeader")
-script = ExtResource("11_shell_svg")
 
 [node name="BrandMargin" type="MarginContainer" parent="Root/Header/BrandHeader" unique_id=1683864142]
 layout_mode = 2
@@ -164,6 +192,34 @@ custom_minimum_size = Vector2(340, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.15
+
+[node name="LibrarySearch" type="LineEdit" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow/SearchSlot"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.933, 0.953, 0.984, 1)
+theme_override_colors/font_placeholder_color = Color(0.498, 0.553, 0.639, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleSearch")
+theme_override_styles/focus = SubResource("StyleSearchFocus")
+theme_override_styles/read_only = SubResource("StyleSearch")
+placeholder_text = "Oyun, tür, stüdyo veya içerik ara..."
+clear_button_enabled = true
+
+[node name="SearchIcon" type="TextureRect" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow/SearchSlot/LibrarySearch"]
+layout_mode = 1
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 14.0
+offset_top = -9.0
+offset_right = 32.0
+offset_bottom = 9.0
+mouse_filter = 2
+texture = ExtResource("12_search")
+modulate = Color(0.639, 0.694, 0.784, 1)
+expand_mode = 1
+stretch_mode = 5
 
 [node name="HeaderSpacer" type="Control" parent="Root/Header/ActionHeader/ActionMargin/HeaderRow" unique_id=1231245376]
 layout_mode = 2
@@ -238,6 +294,7 @@ icon = ExtResource("8_friends")
 unique_name_in_owner = true
 layout_mode = 2
 text = "Mesajlar"
+icon = ExtResource("13_message")
 
 [node name="MessagesBadge" type="PanelContainer" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/MessagesButton" unique_id=1738450071]
 unique_name_in_owner = true
@@ -398,3 +455,15 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("5_frame")
+
+[node name="PresenceMenu" type="PopupMenu" parent="."]
+unique_name_in_owner = true
+
+[node name="AvatarFileDialog" type="FileDialog" parent="."]
+unique_name_in_owner = true
+title = "Profil resmi seç"
+size = Vector2i(800, 550)
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.png, *.jpg, *.jpeg, *.webp ; Resimler")
+use_native_dialog = true
