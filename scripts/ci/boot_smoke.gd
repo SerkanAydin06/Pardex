@@ -229,6 +229,19 @@ func _run() -> void:
 		return
 	if not _verify_identity_repair(identity_guard):
 		return
+	# Exercise a real child process: engine args must not swallow game credentials.
+	var child_args := PackedStringArray([
+		"--headless", "--path", ProjectSettings.globalize_path("res://"),
+		"--script", "res://scripts/ci/launch_args_probe.gd",
+	])
+	child_args.append_array(game_launcher.exported_process_args(PackedStringArray([
+		"--private-game", "--pardex-session-token=ci-only", "--pardex-name=İsim Boşluk",
+		"--pardex", "--pardex-ticket=ci-ticket",
+	])))
+	var child_output: Array = []
+	if OS.execute(OS.get_executable_path(), child_args, child_output, true) != 0:
+		_fail("child game did not receive official/private launch arguments")
+		return
 
 	var config := ConfigFile.new()
 	config.set_value("profile", "display_name", "CI-Pardus")
