@@ -1,6 +1,10 @@
 extends SceneTree
 
 const RESOURCES := [
+    "res://assets/shaders/pardex_logo.gdshader",
+    "res://themes/pardex_logo_material.tres",
+    "res://scripts/ui/pardex_logo_effect.gd",
+    "res://scripts/ci/logo_render_smoke.gd",
     "res://themes/pardex_theme.tres",
     "res://scripts/tools/pardex_editor_preview.gd",
     "res://scripts/ci/editor_preview_smoke.gd",

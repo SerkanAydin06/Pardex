@@ -67,3 +67,25 @@ jobs:
             echo "::error::Godot page preview validation produced an error"
             exit 1
           fi
+
+      - name: Install software-rendering display
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends xvfb xauth libgl1-mesa-dri
+
+      - name: Render PARDEX logo effects
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          PARDEX_LOGO_PREVIEW_PATH: ${{ github.workspace }}/logo-preview.png
+        run: |
+          set -o pipefail
+          xvfb-run -a godot --windowed --display-driver x11 --rendering-method gl_compatibility --audio-driver Dummy --path . --script res://scripts/ci/logo_render_smoke.gd 2>&1 | tee godot-logo.log
+          if grep -E 'SCRIPT ERROR:|ERROR:|Parse Error:' godot-logo.log; then
+            echo "::error::Godot logo rendering produced an error"
+            exit 1
+          fi
+
+      - name: Upload logo preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: pardex-logo-preview
+          path: logo-preview.png
+          if-no-files-found: error

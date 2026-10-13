@@ -23,3 +23,12 @@ Editördeki örnek içerikler canlı kullanıcı verisi değildir.
 
 Eski sayfa üretme aracı kaldırıldı. Sayfalar doğrudan `.tscn` dosyalarından
 düzenlenir; kaynak sahneleri yeniden üretmek gerekmez.
+
+## Logo ışık efektleri
+
+Ana sahnedeki `Root/Header/BrandHeader/BrandMargin/Brand/Logo` düğümünde
+`Effects Enabled` tüm ışık efektlerini, `Animation Enabled` hareketi açıp kapatır.
+Hareket kapatıldığında hafif sabit parıltı korunur.
+`themes/pardex_logo_material.tres` içinden parlama süresi, ışık şiddeti ve renk
+düzenlenebilir. Şeffaf logo dosyası değiştirilmez; ışıklar Compatibility
+renderer ile canvas shader üzerinden çizilir.

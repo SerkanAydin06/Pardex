@@ -24,6 +24,9 @@
 
 [ext_resource type="Theme" path="res://themes/pardex_theme.tres" id="40_editor_theme"]
 
+[ext_resource type="ShaderMaterial" path="res://themes/pardex_logo_material.tres" id="45_logo_material"]
+[ext_resource type="Script" path="res://scripts/ui/pardex_logo_effect.gd" id="46_logo_effect"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.024, 0.039, 0.078, 1)
 
@@ -195,6 +198,8 @@ theme_override_constants/separation = 0
 alignment = 1
 
 [node name="Logo" type="TextureRect" parent="Root/Header/BrandHeader/BrandMargin/Brand" unique_id=42183744]
+material = ExtResource("45_logo_material")
+script = ExtResource("46_logo_effect")
 texture_filter = 4
 custom_minimum_size = Vector2(202, 70)
 layout_mode = 2
