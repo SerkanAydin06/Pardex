@@ -30,9 +30,6 @@ func _show_preview_page() -> void:
 	var pages := get_parent().get_node_or_null("Root/Body/ContentColumn/MainMargin/Pages")
 	if pages == null:
 		return
-	var title := get_parent().get_node_or_null("%PageTitle") as Label
-	if title != null:
-		title.text = ["Mağaza", "Kütüphane", "Arkadaşlar", "Mesajlar", "Profil", "Ayarlar"][preview_page]
 	for index in PAGE_NAMES.size():
 		var page := pages.get_node_or_null(PAGE_NAMES[index]) as Control
 		if page != null:

@@ -27,12 +27,13 @@ func _run() -> void:
 			await process_frame
 			var side_rect := sidebar.get_global_rect()
 			var header_rect := header.get_global_rect()
-			if absf(side_rect.position.y) > 1.0 or absf(side_rect.size.y - scene.size.y) > 1.0 or header_rect.position.x < side_rect.end.x - 1.0 or brand.get_parent() != sidebar.get_node("SidebarColumn"):
-				push_error("Sidebar/header layout overlap or logo outside the sidebar.")
+			var frame := scene.get_node("%AppFrame") as Control
+			if absf(header_rect.size.y - 50.0) > 1.0 or scene.find_child("PageTitle", true, false) != null or frame.mouse_filter != Control.MOUSE_FILTER_IGNORE or frame.size.distance_to(scene.size) > 1.0:
+				push_error("Compact header or non-blocking outer frame is incorrect.")
 				quit(1)
 				return
-			if (scene.get_node("%PageTitle") as Label).text != ["Mağaza", "Kütüphane", "Arkadaşlar", "Mesajlar", "Profil", "Ayarlar"][selected]:
-				push_error("Page header title does not match the selected page.")
+			if absf(side_rect.position.y) > 1.0 or absf(side_rect.size.y - scene.size.y) > 1.0 or header_rect.position.x < side_rect.end.x - 1.0 or brand.get_parent() != sidebar.get_node("SidebarColumn"):
+				push_error("Sidebar/header layout overlap or logo outside the sidebar.")
 				quit(1)
 				return
 			for index in names.size():

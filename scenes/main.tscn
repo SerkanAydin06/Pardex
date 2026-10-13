@@ -27,6 +27,8 @@
 [ext_resource type="ShaderMaterial" path="res://themes/pardex_logo_material.tres" id="45_logo_material"]
 [ext_resource type="Script" path="res://scripts/ui/pardex_logo_effect.gd" id="46_logo_effect"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/logo_divider.svg" id="47_logo_divider"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.024, 0.039, 0.078, 1)
 
@@ -132,6 +134,19 @@ corner_radius_bottom_left = 12
 shadow_color = Color(0, 0, 0, 0.35)
 shadow_size = 12
 
+[sub_resource type="StyleBoxFlat" id="StyleAppFrame"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.13, 0.36, 0.55, 0.95)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+anti_aliasing = true
+
 [node name="Pardex" type="Control" unique_id=1736552998]
 theme = ExtResource("40_editor_theme")
 texture_filter = 5
@@ -223,6 +238,23 @@ layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
 texture = ExtResource("2_0ld40")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LogoDividerMargin" type="MarginContainer" parent="Root/Body/Sidebar/SidebarColumn"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_bottom = 2
+
+[node name="LogoDivider" type="TextureRect" parent="Root/Body/Sidebar/SidebarColumn/LogoDividerMargin"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+mouse_filter = 2
+texture_filter = 2
+texture = ExtResource("47_logo_divider")
 expand_mode = 1
 stretch_mode = 5
 
@@ -387,7 +419,7 @@ theme_override_constants/separation = 0
 [node name="Header" type="HBoxContainer" parent="Root/Body/ContentColumn" unique_id=603264199]
 unique_name_in_owner = true
 texture_filter = 5
-custom_minimum_size = Vector2(0, 76)
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_constants/separation = 0
 
@@ -400,26 +432,15 @@ theme_override_styles/panel = SubResource("StyleTopBar")
 [node name="ActionMargin" type="MarginContainer" parent="Root/Body/ContentColumn/Header/ActionHeader" unique_id=735393972]
 layout_mode = 2
 theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 9
+theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 9
+theme_override_constants/margin_bottom = 5
 
 [node name="HeaderRow" type="HBoxContainer" parent="Root/Body/ContentColumn/Header/ActionHeader/ActionMargin" unique_id=1028471516]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="PageTitle" type="Label" parent="Root/Body/ContentColumn/Header/ActionHeader/ActionMargin/HeaderRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(120, 0)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.933, 0.953, 0.984, 1)
-theme_override_font_sizes/font_size = 21
-text = "Mağaza"
-clip_text = true
-text_overrun_behavior = 3
 
 [node name="SearchSlot" type="MarginContainer" parent="Root/Body/ContentColumn/Header/ActionHeader/ActionMargin/HeaderRow" unique_id=1714028206]
 unique_name_in_owner = true
@@ -659,3 +680,15 @@ theme_override_constants/separation = 8
 
 [node name="EditorPreview" type="Node" parent="."]
 script = ExtResource("30_editor_preview")
+
+[node name="AppFrame" type="Panel" parent="."]
+unique_name_in_owner = true
+z_index = 90
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleAppFrame")
