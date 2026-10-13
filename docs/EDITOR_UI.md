@@ -26,7 +26,7 @@ düzenlenir; kaynak sahneleri yeniden üretmek gerekmez.
 
 ## Logo ışık efektleri
 
-Ana sahnedeki `Root/Header/BrandHeader/BrandMargin/Brand/Logo` düğümünde
+Ana sahnedeki `Root/Body/Sidebar/SidebarColumn/BrandHeader/BrandMargin/Brand/Logo` düğümünde
 `Effects Enabled` tüm ışık efektlerini, `Animation Enabled` hareketi açıp kapatır.
 Hareket kapatıldığında hafif sabit parıltı korunur.
 `themes/pardex_logo_material.tres` içinden parlama süresi, ışık şiddeti ve renk

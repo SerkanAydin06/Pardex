@@ -14,6 +14,7 @@ const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 
 const WINDOW_NARROW := 1280
+const PAGE_TITLES := {"store": "Mağaza", "library": "Kütüphane", "friends": "Arkadaşlar", "messages": "Mesajlar", "profile": "Profil", "settings": "Ayarlar"}
 const NAV := {
 	"StoreButton": ["store", "store"],
 	"LibraryButton": ["library", "library"],
@@ -176,6 +177,7 @@ func _navigate(page_name: String) -> void:
 	if _current_page != page_name and _current_page != "settings" and not _current_page.is_empty():
 		_previous_page = _current_page
 	_current_page = page_name
+	(%PageTitle as Label).text = str(PAGE_TITLES[page_name])
 	_update_search_for_page()
 	var page := _pages[page_name] as Control
 	page.modulate.a = 0.0
@@ -258,6 +260,7 @@ func _apply_responsive_layout() -> void:
 	var narrow := width <= WINDOW_NARROW
 	var sidebar_width := 214.0 if narrow else 258.0
 	%Sidebar.custom_minimum_size.x = sidebar_width
+	(%PageTitle as Label).add_theme_font_size_override("font_size", 18 if narrow else 21)
 	%Brand.custom_minimum_size.x = sidebar_width - 12.0
 	# The approved PARDEX HUB artwork includes the shield, wordmark and HUB.
 	# Scale the single transparent image as a unit; never rebuild the mark in UI text.

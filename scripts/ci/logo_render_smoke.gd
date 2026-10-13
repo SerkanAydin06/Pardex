@@ -21,7 +21,7 @@ func _run() -> void:
 	background.size = Vector2(720, 260)
 	root.add_child(background)
 	var source := (load("res://scenes/main.tscn") as PackedScene).instantiate()
-	var logo := source.get_node("Root/Header/BrandHeader/BrandMargin/Brand/Logo").duplicate() as TextureRect
+	var logo := source.get_node("Root/Body/Sidebar/SidebarColumn/BrandHeader/BrandMargin/Brand/Logo").duplicate() as TextureRect
 	source.free()
 	logo.animation_enabled = false
 	logo.position = Vector2(30, 35)
@@ -53,4 +53,27 @@ func _run() -> void:
 	logo.queue_free()
 	background.queue_free()
 	await process_frame
+	if not preview_path.is_empty():
+		var shell := (load("res://scenes/main.tscn") as PackedScene).instantiate()
+		root.add_child(shell)
+		root.get_node("PardexOnline").call("disconnect_server")
+		await process_frame
+		await process_frame
+		for window_size in [Vector2i(1366, 768), Vector2i(1920, 1080)]:
+			root.mode = Window.MODE_WINDOWED
+			root.size = window_size
+			shell.size = Vector2(window_size)
+			shell.call("_apply_responsive_layout")
+			await process_frame
+			await process_frame
+			await create_timer(0.25).timeout
+			await RenderingServer.frame_post_draw
+			var screenshot := root.get_texture().get_image()
+			var output := preview_path.get_base_dir().path_join("shell-preview-%d.png" % window_size.x)
+			if screenshot.save_png(output) != OK:
+				push_error("PARDEX shell preview could not be saved.")
+				quit(1)
+				return
+		shell.queue_free()
+		await process_frame
 	quit(0)

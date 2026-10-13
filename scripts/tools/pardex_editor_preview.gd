@@ -27,9 +27,12 @@ func _apply_preview() -> void:
 # Kept separate so headless CI can verify the scene layout without booting
 # Godot's full editor. Only _apply_preview invokes it during normal usage.
 func _show_preview_page() -> void:
-	var pages := get_parent().get_node_or_null("Root/Body/MainMargin/Pages")
+	var pages := get_parent().get_node_or_null("Root/Body/ContentColumn/MainMargin/Pages")
 	if pages == null:
 		return
+	var title := get_parent().get_node_or_null("%PageTitle") as Label
+	if title != null:
+		title.text = ["Mağaza", "Kütüphane", "Arkadaşlar", "Mesajlar", "Profil", "Ayarlar"][preview_page]
 	for index in PAGE_NAMES.size():
 		var page := pages.get_node_or_null(PAGE_NAMES[index]) as Control
 		if page != null:

@@ -118,7 +118,7 @@ func _verify_activity_and_chat(main_scene: Node, online: Node) -> bool:
 
 
 func _verify_scene_owned_ui(main_scene: Node) -> bool:
-	var pages := main_scene.get_node("Root/Body/MainMargin/Pages")
+	var pages := main_scene.get_node("Root/Body/ContentColumn/MainMargin/Pages")
 	var library := pages.get_node("LibraryPage")
 	var profile := pages.get_node("ProfilePage")
 	var library_stats: Node = library.get("_stats_row")
@@ -207,15 +207,15 @@ func _run() -> void:
 	await process_frame
 
 	var required_paths := [
-		"Root/Header/BrandHeader/BrandMargin/Brand/Logo",
-		"Root/Header/ActionHeader/ActionMargin/HeaderRow/WindowChrome",
+		"Root/Body/Sidebar/SidebarColumn/BrandHeader/BrandMargin/Brand/Logo",
+		"Root/Body/ContentColumn/Header/ActionHeader/ActionMargin/HeaderRow/WindowChrome",
 		"Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/StoreButton",
 		"Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/LibraryButton",
 		"Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/FriendsButton",
 		"Root/Body/Sidebar/SidebarColumn/NavMargin/NavList/ProfileButton",
 		"Root/Body/Sidebar/SidebarColumn/ProfilePanel/ProfileRow/SettingsButton",
-		"Root/Body/MainMargin/Pages/StorePage",
-		"Root/Body/MainMargin/Pages/FriendsPage",
+		"Root/Body/ContentColumn/MainMargin/Pages/StorePage",
+		"Root/Body/ContentColumn/MainMargin/Pages/FriendsPage",
 	]
 	for node_path in required_paths:
 		if main_scene.get_node_or_null(node_path) == null:

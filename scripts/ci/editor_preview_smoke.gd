@@ -12,15 +12,29 @@ func _run() -> void:
 	root.add_child(scene)
 	root.get_node("PardexOnline").call("disconnect_server")
 	var preview := scene.get_node("EditorPreview")
-	var pages := scene.get_node("Root/Body/MainMargin/Pages")
+	var pages := scene.get_node("Root/Body/ContentColumn/MainMargin/Pages")
 	var names := ["StorePage", "LibraryPage", "FriendsPage", "MessagesPage", "ProfilePage", "SettingsPage"]
+	var sidebar := scene.get_node("%Sidebar") as Control
+	var header := scene.get_node("%Header") as Control
+	var brand := scene.get_node("%BrandHeader") as Control
 	for window_size in [Vector2i(1366, 768), Vector2i(1920, 1080)]:
 		root.size = window_size
+		scene.size = Vector2(window_size)
 		for selected in names.size():
 			preview.set("preview_page", selected)
 			preview.call("_show_preview_page")
 			await process_frame
 			await process_frame
+			var side_rect := sidebar.get_global_rect()
+			var header_rect := header.get_global_rect()
+			if absf(side_rect.position.y) > 1.0 or absf(side_rect.size.y - scene.size.y) > 1.0 or header_rect.position.x < side_rect.end.x - 1.0 or brand.get_parent() != sidebar.get_node("SidebarColumn"):
+				push_error("Sidebar/header layout overlap or logo outside the sidebar.")
+				quit(1)
+				return
+			if (scene.get_node("%PageTitle") as Label).text != ["Mağaza", "Kütüphane", "Arkadaşlar", "Mesajlar", "Profil", "Ayarlar"][selected]:
+				push_error("Page header title does not match the selected page.")
+				quit(1)
+				return
 			for index in names.size():
 				var page := pages.get_node(names[index]) as Control
 				if page.visible != (index == selected):

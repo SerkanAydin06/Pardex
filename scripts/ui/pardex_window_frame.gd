@@ -37,6 +37,7 @@ func _ready() -> void:
 		secondary.tooltip_text = "PARDEX Ödülleri — yakında"
 		secondary.pressed.connect(func(): main.call("_show_toast", "PARDEX Ödülleri yakında."))
 	(main.get_node("%Header") as Control).gui_input.connect(_on_header_input)
+	(main.get_node("%BrandHeader") as Control).gui_input.connect(_on_header_input)
 
 	_add_edge(DisplayServer.WINDOW_EDGE_TOP, CURSOR_VSIZE, Rect2(CORNER, 0, -CORNER, EDGE), Vector4(0, 0, 1, 0))
 	_add_edge(DisplayServer.WINDOW_EDGE_BOTTOM, CURSOR_VSIZE, Rect2(CORNER, -EDGE, -CORNER, 0), Vector4(0, 1, 1, 1))
