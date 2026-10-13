@@ -70,8 +70,12 @@ function safeArray(value) {
 }
 
 function safeStoredName(value) {
-  const text = String(value || "Pardus").trim().replace(/\s+/g, " ");
+  const text = String(value || "Pardus").normalize("NFKC").trim().replace(/\s+/g, " ");
   return (text || "Pardus").slice(0, 24);
+}
+
+function nameKey(value) {
+  return safeStoredName(value).toLocaleLowerCase("tr-TR");
 }
 
 const MAX_CONVERSATION_MESSAGES = 200;
@@ -93,6 +97,7 @@ class SocialStore {
   constructor(filePath) {
     this.filePath = filePath;
     this.data = { version: 2, accounts: {}, identity_aliases: {}, conversations: {} };
+    this.nameOwners = new Map();
     this.load();
   }
 
@@ -159,9 +164,36 @@ class SocialStore {
       this.repairRelationships();
       this.repairIdentityAliases();
       this.data.version = 2;
+      if (this.repairNames()) this.save();
     } catch (error) {
       console.error("PARDEX social data load failed:", error.message);
     }
+  }
+
+  availableName(name) {
+    if (!this.nameOwners.has(nameKey(name))) return name;
+    for (let number = 2; ; number += 1) {
+      const suffix = `_${number}`;
+      const candidate = name.slice(0, 24 - suffix.length) + suffix;
+      if (!this.nameOwners.has(nameKey(candidate))) return candidate;
+    }
+  }
+
+  repairNames() {
+    const ordered = Object.entries(this.data.accounts).sort((a, b) =>
+      a[1].created_at - b[1].created_at || a[0].localeCompare(b[0]));
+    const duplicates = [];
+    for (const [id, account] of ordered) {
+      const key = nameKey(account.display_name);
+      if (this.nameOwners.has(key)) duplicates.push([id, account]);
+      else this.nameOwners.set(key, id);
+    }
+    for (const [id, account] of duplicates) {
+      account.display_name = this.availableName(account.display_name);
+      account.updated_at = Date.now();
+      this.nameOwners.set(nameKey(account.display_name), id);
+    }
+    return duplicates.length > 0;
   }
 
   repairRelationships() {
@@ -199,10 +231,14 @@ class SocialStore {
   }
 
   ensureAccount(accountId, displayName) {
-    const normalizedName = safeStoredName(displayName);
+    let normalizedName = safeStoredName(displayName);
     const now = Date.now();
     let account = this.data.accounts[accountId];
     let changed = false;
+    const owner = this.nameOwners.get(nameKey(normalizedName));
+    const nameTaken = Boolean(owner && owner !== accountId);
+    if (nameTaken && account) return { account, changed: false, nameTaken: true };
+    if (nameTaken) normalizedName = this.availableName(normalizedName);
 
     if (!account) {
       account = {
@@ -219,13 +255,15 @@ class SocialStore {
       this.data.accounts[accountId] = account;
       changed = true;
     } else if (account.display_name !== normalizedName) {
+      this.nameOwners.delete(nameKey(account.display_name));
       account.display_name = normalizedName;
       account.updated_at = now;
       changed = true;
     }
 
+    this.nameOwners.set(nameKey(account.display_name), accountId);
     if (changed) this.save();
-    return { account, changed };
+    return { account, changed, nameTaken: false };
   }
 
   getAccount(accountId) {
@@ -374,6 +412,7 @@ class SocialStore {
     );
     if (hasIdentity || hasRelationships || account.recovery_hash) return false;
     delete this.data.accounts[accountId];
+    this.nameOwners.delete(nameKey(account.display_name));
     return this.save();
   }
 

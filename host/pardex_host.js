@@ -18,6 +18,7 @@ const http = require("http");
 const path = require("path");
 const crypto = require("crypto");
 const { spawn, spawnSync } = require("child_process");
+const { readUsers } = require("./user_admin");
 
 const ROOT = path.resolve(__dirname, "..");
 const SERVER_DIR = path.join(ROOT, "server");
@@ -122,6 +123,10 @@ function gameStatus() {
 
 function ensureDefaults() {
   let changed = false;
+  if (!config.admin_token) {
+    config.admin_token = crypto.randomBytes(32).toString("hex");
+    changed = true;
+  }
   if (!config.game_token) {
     config.game_token = crypto.randomBytes(32).toString("hex");
     changed = true;
@@ -210,6 +215,7 @@ function startOnlineServer(gameServerUrl) {
       PORT: String(ONLINE_PORT),
       PARDEX_SOCIAL_DATA_PATH: DATA_PATH,
       PARDEX_GAME_SERVER_TOKEN: config.game_token,
+      PARDEX_ADMIN_TOKEN: config.admin_token,
       KORSAN_GAME_SERVER_URL: gameServerUrl,
     },
     stdio: ["ignore", "pipe", "pipe"],
@@ -469,7 +475,7 @@ async function handle(request, response) {
   }
   // Only this computer's browser may drive the panel.
   const origin = request.headers.origin;
-  if (request.method === "POST" && origin && origin !== `http://127.0.0.1:${PANEL_PORT}` && origin !== `http://localhost:${PANEL_PORT}`) {
+  if (origin && origin !== `http://127.0.0.1:${PANEL_PORT}` && origin !== `http://localhost:${PANEL_PORT}`) {
     return sendJson(response, { error: "forbidden" }, 403);
   }
   if (request.method === "GET" && url.pathname === "/") {
@@ -479,6 +485,13 @@ async function handle(request, response) {
   if (request.method === "GET" && url.pathname === "/api/state") {
     lastPanelPoll = Date.now();
     return sendJson(response, publicState());
+  }
+  if (request.method === "GET" && url.pathname === "/api/users") {
+    const users = await readUsers({
+      running: state.phase === "running", dataPath: DATA_PATH,
+      token: config.admin_token, port: ONLINE_PORT,
+    });
+    return sendJson(response, users);
   }
   if (request.method !== "POST") return sendJson(response, { error: "not found" }, 404);
 
@@ -576,9 +589,12 @@ function main() {
   });
 }
 
-const shutdown = () => stopServer().finally(() => process.exit(0));
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
-process.on("SIGHUP", shutdown);
+if (require.main === module) {
+  const shutdown = () => stopServer().finally(() => process.exit(0));
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
+  process.on("SIGHUP", shutdown);
+  main();
+}
 
-main();
+module.exports = { handle };

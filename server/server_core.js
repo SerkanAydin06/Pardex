@@ -3,6 +3,7 @@ const path = require("path");
 const { WebSocketServer, WebSocket } = require("ws");
 const crypto = require("crypto");
 const { SocialStore } = require("./social_store");
+const { userSummary } = require("./user_admin");
 
 const PORT = Number(process.env.PORT || 8765);
 const HOST = process.env.HOST || "0.0.0.0";
@@ -1317,7 +1318,11 @@ function handleMessage(client, raw) {
         ? existingAccount.display_name
         : safeName(message.display_name);
       client.presenceStatus = safePresence(message.presence_status || client.presenceStatus);
-      social.ensureAccount(accountId, client.displayName);
+      const accountResult = social.ensureAccount(accountId, client.displayName);
+      client.displayName = accountResult.account.display_name;
+      if (accountResult.nameTaken) {
+        sendError(client.ws, "NAME_TAKEN", "Bu kullanıcı adı alınmış. Mevcut adın korundu.");
+      }
       social.registerIdentity(accountId, message.identity_key);
       send(client.ws, {
         type: "welcome",
@@ -1496,6 +1501,20 @@ function handleMessage(client, raw) {
 }
 
 const httpServer = http.createServer((req, res) => {
+  if (req.url === "/admin/users") {
+    const token = String(process.env.PARDEX_ADMIN_TOKEN || "");
+    const supplied = String(req.headers.authorization || "");
+    const digest = (value) => crypto.createHash("sha256").update(value).digest();
+    const allowed = token && req.method === "GET"
+      && crypto.timingSafeEqual(digest(supplied), digest(`Bearer ${token}`));
+    res.writeHead(allowed ? 200 : 403, {
+      "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store",
+    });
+    res.end(JSON.stringify(allowed
+      ? userSummary(social.data.accounts, presenceForAccount)
+      : { error: "forbidden" }));
+    return;
+  }
   if (req.url === "/health") {
     pruneGameLaunchTickets();
     const status = shuttingDown ? 503 : 200;

@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - "server/**"
+      - "host/**"
       - ".github/workflows/pardex-online-ci.yml"
   pull_request:
     paths:
       - "server/**"
+      - "host/**"
       - ".github/workflows/pardex-online-ci.yml"
 
 jobs:
@@ -40,29 +42,13 @@ jobs:
           node --check hardening-smoke-test.js
           node --check recovery-smoke-test.js
 
-      - name: Secure lifecycle smoke test
-        run: node lifecycle-smoke-test.js
+      - name: Complete server regression suite
+        run: npm test
 
-      - name: Production game guard smoke test
-        run: node production-guard-smoke-test.js
-
-      - name: Core room smoke test
-        run: node smoke-test.js
-
-      - name: Social smoke test
-        run: node social-smoke-test.js
-
-      - name: Invite smoke test
-        run: node invite-smoke-test.js
-
-      - name: Presence smoke test
-        run: node presence-smoke-test.js
-
-      - name: Hardening smoke test
-        run: node hardening-smoke-test.js
-
-      - name: Recovery smoke test
-        run: node recovery-smoke-test.js
+      - name: Host user list smoke test
+        run: |
+          node --check ../host/pardex_host.js
+          node ../host/user-admin-test.js
 
       - name: Build deployable container
         run: docker build -t pardex-online-ci .

@@ -59,6 +59,7 @@ func _ready() -> void:
 	UI.refine_typography(self)
 	_wire_navigation()
 	_wire_online_signals()
+	PardexOnline.welcome_received.connect(_on_profile_name_accepted)
 	_apply_profile()
 	_update_connection_ui(PardexOnline.connection_state)
 	toast_panel.hide()
@@ -610,6 +611,15 @@ func _save_online_settings_and_connect() -> void:
 	PardexOnline.configure(_server_url, _display_name)
 	PardexOnline.reconnect_server()
 	_show_toast("PARDEX Online bağlantısı yenileniyor.")
+
+
+func _on_profile_name_accepted(_user_id: String, accepted_name: String) -> void:
+	if _display_name == accepted_name:
+		return
+	_display_name = accepted_name
+	_save_settings()
+	(_settings_content.get_node("ProfilePanel/VBox/ProfileRow/ProfileNameEdit") as LineEdit).text = _display_name
+	_apply_profile()
 
 
 func _apply_profile() -> void:

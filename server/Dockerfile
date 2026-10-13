@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev
 
-COPY server.js server_core.js production_server.js social_store.js ./
+COPY server.js server_core.js production_server.js social_store.js user_admin.js ./
 COPY smoke-test.js ./
 COPY *-smoke-test.js ./
 

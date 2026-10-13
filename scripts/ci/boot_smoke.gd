@@ -139,7 +139,13 @@ func _verify_activity_and_chat(main_scene: Node, online: Node) -> bool:
 	var messages := main_scene.find_child("MessagesPage", true, false)
 	var histories: Dictionary = messages.get("_histories")
 	histories["stale_conversation"] = [{"text": "cached before disconnect"}]
-	online.emit_signal("welcome_received", "ci-user", "CI-Pardus")
+	online.emit_signal("welcome_received", "ci-user", "CI-Pardus_2")
+	var name_edit := main_scene.find_child("ProfileNameEdit", true, false) as LineEdit
+	var settings := ConfigFile.new()
+	settings.load("user://pardex.cfg")
+	if main_scene.get("_display_name") != "CI-Pardus_2" or name_edit.text != "CI-Pardus_2" or str(settings.get_value("profile", "display_name", "")) != "CI-Pardus_2":
+		_fail("server accepted name did not update profile/settings UI")
+		return false
 	if not histories.is_empty():
 		_fail("reconnect retained stale chat history")
 		return false
