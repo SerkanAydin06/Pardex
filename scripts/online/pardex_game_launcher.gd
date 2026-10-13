@@ -39,7 +39,7 @@ func _on_game_start_requested(payload: Dictionary) -> void:
 		_show_toast(main_scene, "PARDEX güvenli oyun bileti hazırlanamadı; Korsan başlatılmadı.")
 		return
 
-	var pid := OS.create_process(executable_path, launch_args)
+	var pid := OS.create_process(executable_path, exported_process_args(launch_args))
 	_claim_launch(main_scene)
 	if pid <= 0:
 		PardexOnline.report_game_launch_failed()
@@ -48,6 +48,13 @@ func _on_game_start_requested(payload: Dictionary) -> void:
 
 	game_process_started.emit(KORSAN_GAME_ID, pid)
 	_show_toast(main_scene, "Korsanların Hazinesi PARDEX oturumuyla başlatıldı.")
+
+
+func exported_process_args(user_args: PackedStringArray) -> PackedStringArray:
+	# Exported Godot games also read get_cmdline_user_args(), after the separator.
+	var args := PackedStringArray(["--"])
+	args.append_array(user_args)
+	return args
 
 
 func _find_korsan_executable() -> String:

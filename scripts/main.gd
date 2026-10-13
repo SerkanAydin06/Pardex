@@ -443,7 +443,7 @@ func _launch_game_menu(game_id: String, args: PackedStringArray, private_session
 		if executable_path.is_empty():
 			_show_toast("Korsanların Hazinesi paketi bulunamadı. games/korsanlar/KorsanlarinHazinesi.exe yolunu kontrol et.")
 			return
-		pid = OS.create_process(executable_path, args)
+		pid = OS.create_process(executable_path, PardexGameLauncher.exported_process_args(args))
 	if pid <= 0:
 		_show_toast("Korsanların Hazinesi başlatılamadı.")
 		return
