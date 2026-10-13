@@ -1,44 +1,19 @@
 ---
 name: pardex-verify
-description: Use after PARDEX code changes to choose the smallest sufficient validation, or before a PR/release when deciding which checks are necessary.
-version: 1.0.0
-effort: low
+description: Select focused checks for PARDEX edits; distinguish actual results from unavailable checks.
 ---
 
-# PARDEX Verification
+Run only checks justified by the change. Use the existing Godot version and test scripts; do not install a local engine if CI can perform the same required check.
 
-Do not run every test for every edit.
+| Change | Checks |
+|---|---|
+| AI instructions/docs/settings | Parse JSON/YAML; check imports, referenced paths and diffs. No Godot/server suite. |
+| Text/artwork paths | Check paths; load affected resources. |
+| Godot scripts/scenes | Resource import + `scripts/ci/validate_project.gd`; `boot_smoke.gd` for runtime/signal changes. |
+| Navigation/layout | Above + `editor_preview_smoke.gd`; inspect narrow/normal layouts when changed. |
+| Logo shader | Above + OpenGL `logo_render_smoke.gd` using Xvfb; headless loading does not prove rendering. |
+| Client, protocol unchanged | Relevant Godot checks; no full server suite/deploy. |
+| Server/protocol | Focused smoke test during edits; `cd server && npm test` before publishing. |
+| Packaging | Existing package instructions and export presets; no unrelated backend tests. |
 
-## Choose by change type
-
-### Text / artwork path / simple styling only
-- Confirm referenced resources exist.
-- Parse/load changed Godot script/scene if possible.
-- No server tests.
-
-### Godot UI / navigation / scene structure
-- Run project resource validation.
-- Run headless boot smoke if the shell/navigation changed.
-- Check one narrow and one normal desktop size for layout-sensitive changes.
-
-### Online client only, protocol unchanged
-- Validate changed GDScript + boot.
-- No server deploy/test unless packets or server expectations changed.
-
-### Server/protocol/social/room changes
-```bash
-cd server && npm test
-```
-Then run any focused smoke test relevant to the changed feature if full output is ambiguous.
-
-### Packaging / release
-Read `WINDOWS_PACKAGE.md`, `export_presets.cfg`, and only the relevant workflow/deployment docs.
-
-## Output
-
-Report only:
-- `verified:` checks that actually ran and passed
-- `not run:` checks unavailable or intentionally skipped
-- `remaining:` only real unresolved items
-
-Never claim visual/manual verification unless it actually happened.
+Read only the matching workflow when using GitHub Actions. Follow that exact check's run, not an unrelated green run. Distinguish passed, pending and unavailable. Never repeat passed checks without new changes or uncertainty. Keep the final reply short.
