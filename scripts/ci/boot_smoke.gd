@@ -136,6 +136,21 @@ func _verify_activity_and_chat(main_scene: Node, online: Node) -> bool:
 		_fail("checkpoint/shutdown lost or duplicated playtime")
 		return false
 	sessions.clear()
+	# A closed official server still allows choosing private play.
+	main_scene.call("_play_game", "korsanlar")
+	var modes := main_scene.get_node("GameModeDialog") as AcceptDialog
+	if not modes.visible:
+		_fail("offline play did not offer private server mode")
+		return false
+	modes.hide()
+	var private_before := Catalog.games_with_stats()[0] as Dictionary
+	main_scene.call("_track_session", "korsanlar", test_pid + 1, false)
+	main_scene.call("_save_session_playtime", sessions[test_pid + 1], now + 120)
+	var private_after := Catalog.games_with_stats()[0] as Dictionary
+	if int(private_before["launches"]) != int(private_after["launches"]) or int(private_before["playtime"]) != int(private_after["playtime"]):
+		_fail("private game updated PARDEX profile activity")
+		return false
+	sessions.clear()
 	var messages := main_scene.find_child("MessagesPage", true, false)
 	var histories: Dictionary = messages.get("_histories")
 	histories["stale_conversation"] = [{"text": "cached before disconnect"}]

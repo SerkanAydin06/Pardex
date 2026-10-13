@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[node name="GameModeDialog" type="AcceptDialog"]
+title = "Oyun bağlantısı"
+size = Vector2i(440, 250)
+exclusive = true
+ok_button_text = "Vazgeç"
+
+[node name="Options" type="VBoxContainer" parent="."]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 420.0
+offset_bottom = 190.0
+theme_override_constants/separation = 14
+
+[node name="Hint" type="Label" parent="Options"]
+layout_mode = 2
+text = "Nasıl oynamak istiyorsun?"
+
+[node name="Official" type="Button" parent="Options"]
+layout_mode = 2
+text = "Resmî Sunucu • PARDEX ile Oyna"
+
+[node name="Private" type="Button" parent="Options"]
+layout_mode = 2
+text = "Özel Sunucu • Oyun Kur / Kodla Katıl"
+
+[node name="PrivateHint" type="Label" parent="Options"]
+layout_mode = 2
+text = "Özel oyunda PARDEX hesabı veya sunucusu gerekmez."
+autowrap_mode = 2

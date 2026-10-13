@@ -43,6 +43,7 @@ var _pages: Dictionary = {}
 var _display_name := "Pardus"
 var _server_url := DEFAULT_SERVER_URL
 var _game_launch_in_progress := false
+var _selected_launch_game := ""
 var _toast_revision := 0
 # pid -> {"game": id, "started": unix} for games PARDEX launched.
 var _sessions: Dictionary = {}
@@ -59,6 +60,8 @@ func _ready() -> void:
 	UI.refine_typography(self)
 	_wire_navigation()
 	_wire_online_signals()
+	%GameModeDialog.get_node("Options/Official").pressed.connect(_launch_official_game)
+	%GameModeDialog.get_node("Options/Private").pressed.connect(_launch_private_game)
 	PardexOnline.welcome_received.connect(_on_profile_name_accepted)
 	_apply_profile()
 	_update_connection_ui(PardexOnline.connection_state)
@@ -394,11 +397,22 @@ func _play_game(game_id: String) -> void:
 	if _is_game_running(game_id):
 		_show_toast("%s zaten açık." % str(entry["title"]))
 		return
+	_selected_launch_game = game_id
+	(%GameModeDialog as AcceptDialog).popup_centered(Vector2i(440, 250))
+
+
+func _launch_official_game() -> void:
+	%GameModeDialog.hide()
 	if not PardexOnline.is_online():
-		_show_toast("Sunucu kapalı. %s için PARDEX Online bağlantısı gerekli." % str(entry["title"]))
+		_show_toast("Resmî sunucu kapalı. Özel Sunucu seçeneğiyle oynayabilirsin.")
 		return
-	PardexOnline.request_game_session(game_id)
-	_show_toast("%s açılıyor…" % str(entry["title"]))
+	PardexOnline.request_game_session(_selected_launch_game)
+	_show_toast("Oyun resmî sunucu bağlantısıyla açılıyor…")
+
+
+func _launch_private_game() -> void:
+	%GameModeDialog.hide()
+	_launch_game_menu(_selected_launch_game, PackedStringArray(["--private-game"]), true)
 
 
 func _on_game_session_ready(game_id: String, token: String) -> void:
@@ -409,6 +423,12 @@ func _on_game_session_ready(game_id: String, token: String) -> void:
 		"--pardex-url=%s" % PardexOnline.get_active_server_url(),
 		"--pardex-name=%s" % PardexOnline.display_name,
 	])
+	_launch_game_menu(game_id, args)
+
+
+func _launch_game_menu(game_id: String, args: PackedStringArray, private_session := false) -> void:
+	if game_id != "korsanlar" or _is_game_running(game_id):
+		return
 	var pid := 0
 	if OS.has_feature("editor"):
 		var project_path := _find_korsan_project_path()
@@ -427,7 +447,7 @@ func _on_game_session_ready(game_id: String, token: String) -> void:
 	if pid <= 0:
 		_show_toast("Korsanların Hazinesi başlatılamadı.")
 		return
-	_track_session(game_id, pid)
+	_track_session(game_id, pid, not private_session)
 
 
 func _on_game_start_requested(payload: Dictionary) -> void:
@@ -493,15 +513,18 @@ func _find_korsan_project_path() -> String:
 
 # Playtime: PARDEX remembers when a launched game process ends and adds the
 # session length to that game's playtime.
-func _track_session(game_id: String, pid: int) -> void:
+func _track_session(game_id: String, pid: int, record_activity := true) -> void:
 	if pid <= 0 or _sessions.has(pid):
 		return
 	var now := int(Time.get_unix_time_from_system())
-	_sessions[pid] = {"game": game_id, "started": now, "saved_at": now}
-	Catalog.record_launch(game_id)
+	_sessions[pid] = {"game": game_id, "started": now, "saved_at": now, "record_activity": record_activity}
+	if record_activity:
+		Catalog.record_launch(game_id)
 
 
 func _save_session_playtime(session: Dictionary, now: int) -> void:
+	if not bool(session.get("record_activity", true)):
+		return
 	var saved_at := int(session["saved_at"])
 	if now <= saved_at:
 		return
@@ -543,6 +566,8 @@ func _poll_sessions() -> void:
 			continue
 		_save_session_playtime(session, now)
 		_sessions.erase(pid)
+		if not bool(session.get("record_activity", true)):
+			continue
 		_leave_finished_match()
 		var seconds := maxi(0, now - int(session["started"]))
 		Catalog.add_event("session", "%s oturumu: %s" % [str(Catalog.game(str(session["game"])).get("title", "")), Catalog.hours(seconds)], str(session["game"]))

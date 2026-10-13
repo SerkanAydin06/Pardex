@@ -29,6 +29,8 @@
 
 [ext_resource type="Texture2D" path="res://assets/ui/logo_divider.svg" id="47_logo_divider"]
 
+[ext_resource type="PackedScene" path="res://scenes/ui/game_mode_dialog.tscn" id="40_game_mode"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.024, 0.039, 0.078, 1)
 
@@ -693,3 +695,6 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleAppFrame")
+
+[node name="GameModeDialog" parent="." instance=ExtResource("40_game_mode")]
+unique_name_in_owner = true
