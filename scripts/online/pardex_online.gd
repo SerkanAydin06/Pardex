@@ -51,6 +51,7 @@ var server_url := DEFAULT_SERVER_URL
 var _resolved_url := ""
 var _address_age := INF
 var _address_resolving := false
+var _background_retry := false
 var _host_closed_reported := false
 var _my_avatar := ""
 # False until this device has chosen or removed a picture; then the server's
@@ -98,7 +99,7 @@ func _process(delta: float) -> void:
 			_reconnect_elapsed += delta
 			if _reconnect_elapsed >= RECONNECT_DELAY:
 				_reconnect_elapsed = 0.0
-				connect_server()
+				connect_server(true)
 		return
 
 	_socket.poll()
@@ -127,7 +128,8 @@ func _process(delta: float) -> void:
 			_handle_packet(packet)
 	elif socket_state == WebSocketPeer.STATE_CLOSING:
 		_session_ready = false
-		_set_connection_state("connecting")
+		_set_effective_presence("offline")
+		_set_connection_state("offline")
 	elif socket_state == WebSocketPeer.STATE_CLOSED:
 		var was_manual := _manual_disconnect
 		_socket = null
@@ -158,9 +160,10 @@ func update_display_name(player_name: String) -> void:
 		_send_hello()
 
 
-func connect_server() -> void:
+func connect_server(background_retry := false) -> void:
 	if _socket != null and _socket.get_ready_state() in [WebSocketPeer.STATE_CONNECTING, WebSocketPeer.STATE_OPEN]:
 		return
+	_background_retry = background_retry
 	if identity_key.is_empty():
 		_load_or_create_identity()
 
@@ -189,7 +192,8 @@ func connect_server() -> void:
 		_set_connection_state("offline")
 		online_error.emit("PARDEX Online sunucusuna bağlantı başlatılamadı.")
 		return
-	_set_connection_state("connecting")
+	if not _background_retry:
+		_set_connection_state("connecting")
 
 
 func is_automatic_url(url: String) -> bool:
@@ -216,7 +220,8 @@ func _resolve_address() -> void:
 		add_child(_address_request)
 		_address_request.request_completed.connect(_on_address_resolved)
 	_address_resolving = true
-	_set_connection_state("connecting")
+	if not _background_retry:
+		_set_connection_state("connecting")
 	var board_url := OS.get_environment("PARDEX_ADDRESS_BOARD_URL").strip_edges()
 	if board_url.is_empty():
 		board_url = ADDRESS_BOARD_URL
@@ -249,7 +254,7 @@ func _on_address_resolved(result: int, code: int, _headers: PackedStringArray, b
 		return
 	_host_closed_reported = false
 	if not _manual_disconnect:
-		connect_server()
+		connect_server(_background_retry)
 
 
 func reconnect_server() -> void:

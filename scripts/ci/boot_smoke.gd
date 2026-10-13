@@ -6,6 +6,19 @@ const IDENTITY_PATH := "user://pardex_identity.cfg"
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 
 
+class RetryProbe:
+	extends "res://scripts/online/pardex_online_secure_handoff.gd"
+	var address_checks := 0
+
+	func _resolve_address() -> void:
+		# Exercise the real resolver's status changes, then supply a deterministic
+		# closed-host result without contacting GitHub or waiting on HTTP.
+		address_checks += 1
+		super._resolve_address()
+		_address_request.cancel_request()
+		_on_address_resolved(HTTPRequest.RESULT_SUCCESS, 200, PackedStringArray(), '{"online":""}'.to_utf8_buffer())
+
+
 func _initialize() -> void:
 	call_deferred("_run")
 
@@ -27,6 +40,47 @@ func _is_valid_identity_key(value: String) -> bool:
 
 func _autoload(name: String) -> Node:
 	return root.get_node_or_null(name)
+
+
+func _verify_quiet_retries() -> bool:
+	var board_url := OS.get_environment("PARDEX_ADDRESS_BOARD_URL")
+	OS.set_environment("PARDEX_ADDRESS_BOARD_URL", "http://127.0.0.1:65534")
+	var probe := RetryProbe.new()
+	root.add_child(probe)
+	probe.set_process(false)
+	probe.configure("", "CI-Retry")
+	probe._host_closed_reported = true
+	var states: Array[String] = []
+	probe.connection_state_changed.connect(func(state: String): states.append(state))
+	for _cycle in 3:
+		probe._address_age = INF
+		probe._process(probe.RECONNECT_DELAY)
+	var quiet := states.is_empty() and probe.address_checks == 3 and probe.is_host_closed()
+	probe._address_age = INF
+	probe.connect_server()
+	var explicit_connect := states == ["connecting", "offline"]
+	states.clear()
+	probe.configure("ws://127.0.0.1:65533", "CI-Retry")
+	probe.connect_server(true)
+	quiet = quiet and states.is_empty() and probe.connection_state == "offline"
+	probe._socket.close()
+	probe._process(0.0)
+	probe._socket = null
+	probe.connect_server()
+	explicit_connect = explicit_connect and probe.connection_state == "connecting"
+	probe._socket.close()
+	probe._process(0.0)
+	probe._handle_packet('{"type":"welcome","user_id":"ci-user","account_id":"px_ci","display_name":"CI-Retry","social_enabled":false}')
+	var welcomed := probe.connection_state == "online" and probe._session_ready
+	probe.free()
+	if board_url.is_empty():
+		OS.unset_environment("PARDEX_ADDRESS_BOARD_URL")
+	else:
+		OS.set_environment("PARDEX_ADDRESS_BOARD_URL", board_url)
+	if not quiet or not explicit_connect or not welcomed:
+		_fail("offline retries flickered, explicit connection was hidden, or welcome was ignored")
+		return false
+	return true
 
 
 func _verify_activity_and_chat(main_scene: Node, online: Node) -> bool:
@@ -194,5 +248,7 @@ func _run() -> void:
 		return
 
 	online.call("disconnect_server")
-	print("PARDEX boot smoke passed: identity repair -> pages -> activity checkpoints -> chat reconnect")
+	if not _verify_quiet_retries():
+		return
+	print("PARDEX boot smoke passed: identity repair -> pages -> activity checkpoints -> chat reconnect -> quiet offline retries")
 	quit(0)
