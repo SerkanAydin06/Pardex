@@ -42,6 +42,35 @@ func _autoload(name: String) -> Node:
 	return root.get_node_or_null(name)
 
 
+func _effective_texture_filter(item: CanvasItem) -> int:
+	var ancestor: Node = item
+	while ancestor != null:
+		if ancestor is CanvasItem and (ancestor as CanvasItem).texture_filter != CanvasItem.TEXTURE_FILTER_PARENT_NODE:
+			return (ancestor as CanvasItem).texture_filter
+		ancestor = ancestor.get_parent()
+	return CanvasItem.TEXTURE_FILTER_LINEAR
+
+
+func _verify_texture_filters(node: Node) -> bool:
+	if node is CanvasItem:
+		var filter := _effective_texture_filter(node as CanvasItem)
+		if filter not in [CanvasItem.TEXTURE_FILTER_LINEAR, CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS]:
+			_fail("non-smooth UI filtering at %s" % node.get_path())
+			return false
+		if node is TextureRect and (node as TextureRect).texture != null:
+			var path := (node as TextureRect).texture.resource_path
+			if path.ends_with(".svg") and filter != CanvasItem.TEXTURE_FILTER_LINEAR:
+				_fail("small vector icon must use linear filtering: %s" % node.get_path())
+				return false
+			if path.ends_with(".png") and filter != CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS:
+				_fail("scaled artwork must use mipmaps: %s" % node.get_path())
+				return false
+	for child in node.get_children():
+		if not _verify_texture_filters(child):
+			return false
+	return true
+
+
 func _verify_quiet_retries() -> bool:
 	var board_url := OS.get_environment("PARDEX_ADDRESS_BOARD_URL")
 	OS.set_environment("PARDEX_ADDRESS_BOARD_URL", "http://127.0.0.1:65534")
@@ -245,6 +274,16 @@ func _run() -> void:
 	if not _verify_activity_and_chat(main_scene, online):
 		return
 	if not _verify_scene_owned_ui(main_scene):
+		return
+	if int(ProjectSettings.get_setting("rendering/textures/canvas_textures/default_texture_filter")) != 1:
+		_fail("project UI default must be linear")
+		return
+	var library := main_scene.find_child("LibraryPage", true, false)
+	library.call("_set_view", true)
+	if not _verify_texture_filters(main_scene):
+		return
+	library.call("_set_view", false)
+	if not _verify_texture_filters(main_scene):
 		return
 
 	online.call("disconnect_server")

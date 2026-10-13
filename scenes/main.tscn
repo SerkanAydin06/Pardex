@@ -149,7 +149,7 @@ anti_aliasing = true
 
 [node name="Pardex" type="Control" unique_id=1736552998]
 theme = ExtResource("40_editor_theme")
-texture_filter = 5
+texture_filter = 2
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -271,21 +271,21 @@ theme_override_constants/separation = 10
 
 [node name="StoreButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=8374623]
 unique_name_in_owner = true
-texture_filter = 5
+texture_filter = 2
 layout_mode = 2
 text = "Mağaza"
 icon = ExtResource("6_store")
 
 [node name="LibraryButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=1560595283]
 unique_name_in_owner = true
-texture_filter = 5
+texture_filter = 2
 layout_mode = 2
 text = "Kütüphane"
 icon = ExtResource("7_library")
 
 [node name="FriendsButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=927633788]
 unique_name_in_owner = true
-texture_filter = 5
+texture_filter = 2
 layout_mode = 2
 text = "Arkadaşlar"
 icon = ExtResource("8_friends")
@@ -318,7 +318,7 @@ vertical_alignment = 1
 
 [node name="MessagesButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=1738450070]
 unique_name_in_owner = true
-texture_filter = 5
+texture_filter = 2
 layout_mode = 2
 text = "Mesajlar"
 icon = ExtResource("13_message")
@@ -350,7 +350,7 @@ vertical_alignment = 1
 
 [node name="ProfileButton" type="Button" parent="Root/Body/Sidebar/SidebarColumn/NavMargin/NavList" unique_id=214693986]
 unique_name_in_owner = true
-texture_filter = 5
+texture_filter = 2
 layout_mode = 2
 text = "Profil"
 icon = ExtResource("9_profile")
@@ -418,7 +418,7 @@ theme_override_constants/separation = 0
 
 [node name="Header" type="HBoxContainer" parent="Root/Body/ContentColumn" unique_id=603264199]
 unique_name_in_owner = true
-texture_filter = 5
+texture_filter = 2
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_constants/separation = 0
@@ -464,6 +464,7 @@ placeholder_text = "Oyun, tür, stüdyo veya içerik ara..."
 clear_button_enabled = true
 
 [node name="SearchIcon" type="TextureRect" parent="Root/Body/ContentColumn/Header/ActionHeader/ActionMargin/HeaderRow/SearchSlot/LibrarySearch" unique_id=1784406618]
+texture_filter = 2
 modulate = Color(0.639, 0.694, 0.784, 1)
 layout_mode = 1
 anchors_preset = 4
@@ -487,7 +488,7 @@ mouse_filter = 2
 
 [node name="NotificationButton" type="Button" parent="Root/Body/ContentColumn/Header/ActionHeader/ActionMargin/HeaderRow" unique_id=2144534736]
 unique_name_in_owner = true
-texture_filter = 5
+texture_filter = 2
 custom_minimum_size = Vector2(36, 34)
 layout_mode = 2
 tooltip_text = "Bildirimler"
@@ -526,7 +527,7 @@ vertical_alignment = 1
 
 [node name="WindowChrome" parent="Root/Body/ContentColumn/Header/ActionHeader/ActionMargin/HeaderRow" unique_id=1452125407 instance=ExtResource("4_chrome")]
 unique_name_in_owner = true
-texture_filter = 5
+texture_filter = 2
 layout_mode = 2
 
 [node name="MainMargin" type="MarginContainer" parent="Root/Body/ContentColumn" unique_id=986132467]

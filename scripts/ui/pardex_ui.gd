@@ -296,6 +296,7 @@ static func _apply_icon(item: Button, icon_name: String, icon_size: int, color: 
 	if icon_name.is_empty():
 		return
 	item.icon = Icons.texture(icon_name, icon_size * 2)
+	item.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	item.expand_icon = false
 	item.add_theme_constant_override("icon_max_width", icon_size)
 	item.add_theme_constant_override("h_separation", 8)
@@ -310,6 +311,7 @@ static func _apply_icon(item: Button, icon_name: String, icon_size: int, color: 
 # "success" (green)
 static func button(text: String, kind := "primary", font_size := 13, height := 36.0, icon_name := "") -> Button:
 	var item := Button.new()
+	item.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	item.text = text
 	item.focus_mode = Control.FOCUS_NONE
 	item.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -410,6 +412,7 @@ static func link(text: String, font_size := 13) -> Button:
 
 static func icon_button(icon_name: String, tooltip := "", size := 36.0, color := TEXT_2, framed := false) -> Button:
 	var item := Button.new()
+	item.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	item.tooltip_text = tooltip
 	item.focus_mode = Control.FOCUS_NONE
 	item.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND

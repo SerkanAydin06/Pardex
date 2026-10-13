@@ -29,6 +29,7 @@ layout_mode = 2
 theme_override_constants/separation = 14
 
 [node name="Art" type="TextureRect" parent="Row"]
+texture_filter = 4
 custom_minimum_size = Vector2(110, 62)
 layout_mode = 2
 texture = ExtResource("1_cover")
