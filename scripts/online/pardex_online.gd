@@ -40,6 +40,11 @@ const RECONNECT_DELAY := 3.0
 const HEARTBEAT_INTERVAL := 20.0
 const SERVER_TIMEOUT := 60.0
 const WEBSOCKET_OUTBOUND_BUFFER_SIZE := 262144
+# Launcher <-> server protocol (server/server_core.js PROTOCOL_VERSION).
+# REQUIRED_SERVER_PROTOCOL: the oldest server this launcher fully works with.
+const CLIENT_PROTOCOL := 4
+const REQUIRED_SERVER_PROTOCOL := 4
+const OUTDATED_SERVER_MESSAGE := "Sunucu bilgisayarındaki PARDEX eski sürüm: o bilgisayarda PARDEX'i güncelleyip (git pull) sunucuyu panelden yeniden başlat."
 # Chat history (up to 200 messages) arrives in one packet.
 const WEBSOCKET_INBOUND_BUFFER_SIZE := 524288
 const VOICE_OUTBOUND_QUEUE_LIMIT := 32768
@@ -594,6 +599,7 @@ func _send_hello() -> void:
 		"display_name": display_name,
 		"identity_key": identity_key,
 		"presence_status": presence_status,
+		"client_protocol": CLIENT_PROTOCOL,
 	}
 	if not _pending_recovery_code.is_empty():
 		payload["recovery_code"] = _pending_recovery_code
@@ -621,7 +627,9 @@ func _handle_packet(packet: String) -> void:
 	var message_type := str(message.get("type", ""))
 	match message_type:
 		"welcome":
-			_outdated_server_warned = false
+			_outdated_server_warned = int(message.get("protocol_version", 0)) < REQUIRED_SERVER_PROTOCOL
+			if _outdated_server_warned:
+				online_error.emit(OUTDATED_SERVER_MESSAGE)
 			var previous_user_id := user_id
 			var had_room := not current_room.is_empty()
 			var recovered := bool(message.get("recovered", false))
@@ -719,7 +727,7 @@ func _handle_packet(packet: String) -> void:
 			if error_code == "UNKNOWN_MESSAGE":
 				if not _outdated_server_warned:
 					_outdated_server_warned = true
-					online_error.emit("Sunucu bilgisayarındaki PARDEX eski sürüm: o bilgisayarda PARDEX'i güncelleyip (git pull) sunucuyu panelden yeniden başlat.")
+					online_error.emit(OUTDATED_SERVER_MESSAGE)
 				return
 			if not _pending_recovery_code.is_empty() and error_code in ["INVALID_RECOVERY_CODE", "RECOVERY_SAVE_FAILED", "INVALID_IDENTITY"]:
 				_pending_recovery_code = ""

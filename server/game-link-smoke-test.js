@@ -153,6 +153,30 @@ async function main() {
     bogus.send(JSON.stringify({ type: "game_link", token: "not-a-token" }));
     await rejected;
 
+    // Version check: a game whose network protocol differs from the
+    // dedicated server's cannot host or join (clear update message).
+    const welcomeProbe = await connectClient("Link-Probe");
+    sockets.push(welcomeProbe.ws);
+    const serverHello = await connectSocket();
+    sockets.push(serverHello);
+    const helloOk = waitForMessage(serverHello, (message) => message.type === "game_server_hello_ok");
+    serverHello.send(JSON.stringify({ type: "game_server_hello", server_token: GAME_SERVER_TOKEN, game_id: "korsanlar", game_protocol: 2 }));
+    await helloOk;
+    const sessionMessage = waitForMessage(welcomeProbe.ws, (message) => message.type === "game_session");
+    welcomeProbe.ws.send(JSON.stringify({ type: "get_game_session", game_id: "korsanlar" }));
+    const { token: probeToken } = await sessionMessage;
+    const oldGame = await connectSocket();
+    sockets.push(oldGame);
+    const linkedOld = waitForMessage(oldGame, (message) => message.type === "game_link_ok");
+    oldGame.send(JSON.stringify({ type: "game_link", token: probeToken, game_protocol: 1 }));
+    await linkedOld;
+    const mismatch = waitForMessage(oldGame, (message) => message.type === "error" && message.code === "GAME_VERSION_MISMATCH");
+    oldGame.send(JSON.stringify({ type: "host_match" }));
+    assert.ok((await mismatch).message.includes("Senin oyunun eski"));
+    const helloAgain = waitForMessage(serverHello, (message) => message.type === "game_server_hello_ok");
+    serverHello.send(JSON.stringify({ type: "game_server_hello", server_token: GAME_SERVER_TOKEN, game_id: "korsanlar", game_protocol: 1 }));
+    await helloAgain;
+
     // The game PARDEX opened hosts a table itself; the ticket goes to the game.
     const hostGame = await linkGame(host);
     sockets.push(hostGame);
@@ -185,7 +209,7 @@ async function main() {
     assert.strictEqual(friendLaunch.match_id, hosted.match_id);
     assert.strictEqual(pardexGotStart, false, "host's PARDEX must not relaunch an open game");
 
-    console.log("PARDEX game link smoke passed: token link + forged token rejected + host from game + join by code + friend join via PARDEX");
+    console.log("PARDEX game link smoke passed: token link + forged token rejected + version check + host from game + join by code + friend join via PARDEX");
   } finally {
     for (const ws of sockets) await closeSocket(ws);
     server.kill();
