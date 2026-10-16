@@ -229,6 +229,11 @@ func _run() -> void:
 		return
 	if not _verify_identity_repair(identity_guard):
 		return
+	var updater := load("res://scripts/online/pardex_updater.gd")
+	if not updater.is_newer("v0.1.10", "0.1.9") or updater.is_newer("0.1.0", "0.1.0") \
+			or updater.is_newer("0.9", "1.0.0") or not updater.is_newer("1.0.1", "1.0"):
+		_fail("update version comparison is wrong")
+		return
 	# Exercise a real child process: engine args must not swallow game credentials.
 	var child_args := PackedStringArray([
 		"--headless", "--path", ProjectSettings.globalize_path("res://"),

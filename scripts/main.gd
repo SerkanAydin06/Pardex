@@ -7,6 +7,7 @@ extends Control
 
 const BugReport := preload("res://scripts/online/pardex_bug_report.gd")
 const DesktopNotify := preload("res://scripts/ui/pardex_desktop_notify.gd")
+const Updater := preload("res://scripts/online/pardex_updater.gd")
 const APP_VERSION := "0.1.0"
 const SETTINGS_PATH := "user://pardex.cfg"
 const DEFAULT_SERVER_URL := ""
@@ -36,6 +37,7 @@ var _social_page: VBoxContainer
 var _profile_page: VBoxContainer
 var _messages_page: VBoxContainer
 var _desktop: DesktopNotify
+var _updater: Updater
 var _settings_content: VBoxContainer
 var _presence_menu: PopupMenu
 var _current_page := ""
@@ -64,6 +66,7 @@ func _ready() -> void:
 	_wire_navigation()
 	_desktop = DesktopNotify.new()
 	add_child(_desktop)
+	_wire_updater()
 	_wire_online_signals()
 	%GameModeDialog.get_node("Options/Official").pressed.connect(_launch_official_game)
 	%GameModeDialog.get_node("Options/Private").pressed.connect(_launch_private_game)
@@ -380,6 +383,24 @@ func _update_connection_ui(state: String) -> void:
 	settings_state_label.text = text
 	settings_state_label.add_theme_color_override("font_color", color)
 	_render_presence()
+
+
+# ------------------------------------------------------------------ updates
+
+func _wire_updater() -> void:
+	_updater = Updater.new()
+	add_child(_updater)
+	var dialog := %UpdateDialog as ConfirmationDialog
+	_updater.update_available.connect(func(version: String):
+		dialog.dialog_text = "PARDEX %s hazır (şu an %s). Güncelleme indirilip kurulur, PARDEX kendiliğinden yeniden açılır." % [version, APP_VERSION]
+		dialog.popup_centered()
+	)
+	_updater.update_failed.connect(_show_toast)
+	dialog.confirmed.connect(func():
+		_show_toast("Güncelleme indiriliyor…")
+		_updater.install()
+	)
+	_updater.check(APP_VERSION)
 
 
 # ------------------------------------------------------------------ messages

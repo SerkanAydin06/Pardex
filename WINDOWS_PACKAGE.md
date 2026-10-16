@@ -41,3 +41,15 @@ oluşturulur.
 Dağıtılacak paket `PARDEX-Windows.zip` dosyasıdır. Kullanıcı klasör yapısını değiştirmeden ZIP'i açıp `PARDEX.exe` çalıştırmalıdır.
 
 İstenirse Korsan executable yolu `PARDEX_KORSAN_EXECUTABLE` ortam değişkeniyle override edilebilir.
+
+## Kurulum dosyası ve otomatik güncelleme
+
+Bilgisayarda [Inno Setup 6](https://jrsoftware.org/isdl.php) kuruluysa paket betiği ayrıca `dist\PARDEX-Setup.exe` üretir (`tools\pardex_installer.iss`). Kurulum yönetici izni istemez, PARDEX'i `%LOCALAPPDATA%\Programs\PARDEX` altına kurar ve kısayol oluşturur.
+
+Yeni sürüm yayınlamak için:
+
+1. `scripts\main.gd` içindeki `APP_VERSION` değerini artır (ör. `0.1.1`).
+2. Paket betiğini çalıştır.
+3. GitHub'da `v0.1.1` etiketiyle yeni bir **Release** oluştur ve `PARDEX-Setup.exe` dosyasını ekle.
+
+Kurulu PARDEX açılışta en son Release'i kontrol eder; sürüm daha yeniyse "Şimdi güncelle" sorar, kurulumu sessizce çalıştırır ve kendini yeniden açar. Editörden çalıştırılan PARDEX güncelleme aramaz.

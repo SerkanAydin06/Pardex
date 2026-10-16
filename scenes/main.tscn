@@ -698,3 +698,12 @@ theme_override_styles/panel = SubResource("StyleAppFrame")
 
 [node name="GameModeDialog" parent="." instance=ExtResource("40_game_mode")]
 unique_name_in_owner = true
+
+[node name="UpdateDialog" type="ConfirmationDialog" parent="." unique_id=2144534737]
+unique_name_in_owner = true
+title = "PARDEX güncellemesi"
+size = Vector2i(460, 170)
+ok_button_text = "Şimdi güncelle"
+cancel_button_text = "Sonra"
+dialog_text = "Yeni PARDEX sürümü hazır. Güncelleme indirilip kurulur, PARDEX kendiliğinden yeniden açılır."
+dialog_autowrap = true
