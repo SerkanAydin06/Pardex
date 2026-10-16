@@ -101,6 +101,15 @@
   </section>
 
   <section class="card">
+    <h2>Şikâyetler</h2>
+    <div class="hint" id="reportHint" aria-live="polite">Şikâyetler yükleniyor...</div>
+    <div class="user-table"><table>
+      <thead><tr><th>Tarih</th><th>Şikâyet edilen</th><th>Neden / son mesajlar</th></tr></thead>
+      <tbody id="reportRows"></tbody>
+    </table></div>
+  </section>
+
+  <section class="card">
     <h2>Ayarlar</h2>
     <div class="field">
       <label for="korsanPath">Korsanların Hazinesi</label>
@@ -203,6 +212,39 @@ async function refreshUsers() {
   } finally { usersLoading = false; }
 }
 
+async function refreshReports() {
+  try {
+    const result = await api("/api/reports");
+    if (result.error) throw new Error(result.error);
+    const rows = document.createDocumentFragment();
+    for (const report of result.reports) {
+      const row = document.createElement("tr");
+      const date = document.createElement("td");
+      date.textContent = new Date(report.at).toLocaleString("tr-TR");
+      const target = document.createElement("td");
+      target.textContent = report.target_name || report.target;
+      const id = document.createElement("small");
+      id.textContent = report.target;
+      target.append(id);
+      const reason = document.createElement("td");
+      reason.textContent = report.reason;
+      for (const message of (report.messages || []).slice(-5)) {
+        const line = document.createElement("small");
+        line.textContent = (message.from === report.target ? "› " : "‹ ") + message.text;
+        reason.append(line);
+      }
+      row.append(date, target, reason);
+      rows.append(row);
+    }
+    $("reportRows").replaceChildren(rows);
+    $("reportHint").textContent = result.reports.length
+      ? "Oyuncuların şikâyetleri ve şikâyet edilen kişinin son mesajları (› şikâyet edilen)."
+      : "Şikâyet yok.";
+  } catch (error) {
+    $("reportHint").textContent = error.message || "Şikâyetler alınamadı.";
+  }
+}
+
 function toast(text) {
   const el = $("toast");
   el.textContent = text;
@@ -295,6 +337,8 @@ setInterval(refresh, 1000);
 $("userSearch").addEventListener("input", renderUsers);
 refreshUsers();
 setInterval(refreshUsers, 5000);
+refreshReports();
+setInterval(refreshReports, 15000);
 </script>
 </body>
 </html>

@@ -778,3 +778,42 @@ size = Vector2i(460, 200)
 min_size = Vector2i(460, 200)
 ok_button_text = "Katıl"
 cancel_button_text = "Reddet"
+
+[node name="BlockDialog" type="ConfirmationDialog" parent="." unique_id=1738450080]
+unique_name_in_owner = true
+title = "Kullanıcıyı Engelle"
+size = Vector2i(440, 170)
+min_size = Vector2i(440, 170)
+ok_button_text = "Engelle"
+cancel_button_text = "Vazgeç"
+dialog_text = "Engellenen kişi arkadaş listenden çıkar; sana mesaj, istek ya da davet gönderemez."
+dialog_autowrap = true
+
+[node name="ReportDialog" type="ConfirmationDialog" parent="." unique_id=1738450081]
+unique_name_in_owner = true
+title = "Şikâyet Et"
+size = Vector2i(460, 200)
+min_size = Vector2i(460, 200)
+ok_button_text = "Gönder"
+cancel_button_text = "Vazgeç"
+
+[node name="ReportColumn" type="VBoxContainer" parent="ReportDialog" unique_id=1738450082]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 452.0
+offset_bottom = 151.0
+theme_override_constants/separation = 8
+
+[node name="ReportHint" type="Label" parent="ReportDialog/ReportColumn" unique_id=1738450083]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Şikâyet, son mesajlarınızla birlikte sunucu yöneticisine iletilir."
+autowrap_mode = 3
+
+[node name="ReportReason" type="LineEdit" parent="ReportDialog/ReportColumn" unique_id=1738450084]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+placeholder_text = "Neden? (ör. hakaret, spam)"
+max_length = 300
+

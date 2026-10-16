@@ -1519,6 +1519,25 @@ function handleMessage(client, raw) {
     case "play_game":
       playGame(client, message);
       break;
+    case "block_user": {
+      if (!requireSocialAccount(client)) break;
+      const targetId = String(message.account_id || "").trim();
+      applySocialAction(client, social.blockUser(client.accountId, targetId), targetId);
+      break;
+    }
+    case "unblock_user": {
+      if (!requireSocialAccount(client)) break;
+      const targetId = String(message.account_id || "").trim();
+      applySocialAction(client, social.unblockUser(client.accountId, targetId), targetId);
+      break;
+    }
+    case "report_user": {
+      if (!requireSocialAccount(client)) break;
+      const result = social.reportUser(client.accountId, String(message.account_id || "").trim(), message.reason);
+      if (!result.ok) sendError(client.ws, result.code, result.message);
+      else sendNotice(client.ws, result.code, result.message);
+      break;
+    }
     case "send_chat":
       sendChat(client, message);
       break;
@@ -1558,6 +1577,18 @@ function handleMessage(client, raw) {
 }
 
 const httpServer = http.createServer((req, res) => {
+  if (req.url === "/admin/reports") {
+    const token = String(process.env.PARDEX_ADMIN_TOKEN || "");
+    const supplied = String(req.headers.authorization || "");
+    const digest = (value) => crypto.createHash("sha256").update(value).digest();
+    const allowed = token && req.method === "GET"
+      && crypto.timingSafeEqual(digest(supplied), digest(`Bearer ${token}`));
+    res.writeHead(allowed ? 200 : 403, {
+      "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store",
+    });
+    res.end(JSON.stringify(allowed ? { reports: social.data.reports || [] } : { error: "forbidden" }));
+    return;
+  }
   if (req.url === "/admin/users") {
     const token = String(process.env.PARDEX_ADMIN_TOKEN || "");
     const supplied = String(req.headers.authorization || "");

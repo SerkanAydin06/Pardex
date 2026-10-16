@@ -79,6 +79,8 @@ function nameKey(value) {
 }
 
 const MAX_CONVERSATION_MESSAGES = 200;
+const MAX_REPORTS = 500;
+const BACKUP_DAYS = 14;
 const MAX_CHAT_TEXT = 500;
 
 function conversationKey(a, b) {
@@ -120,6 +122,7 @@ class SocialStore {
           friends: safeArray(raw.friends),
           incoming_requests: safeArray(raw.incoming_requests),
           outgoing_requests: safeArray(raw.outgoing_requests),
+          blocked: safeArray(raw.blocked),
           recovery_hash: HASH_PATTERN.test(recoveryHash) ? recoveryHash : "",
           recovery_updated_at: Number(raw.recovery_updated_at || 0),
           avatar: normalizeAvatar(raw.avatar),
@@ -137,6 +140,7 @@ class SocialStore {
         this.data.identity_aliases[normalizedFingerprint] = normalizedAccountId;
       }
 
+      this.data.reports = Array.isArray(parsed.reports) ? parsed.reports.slice(-MAX_REPORTS) : [];
       const conversations = parsed.conversations && typeof parsed.conversations === "object"
         ? parsed.conversations
         : {};
@@ -206,6 +210,7 @@ class SocialStore {
       account.outgoing_requests = account.outgoing_requests.filter(
         (id) => id !== accountId && ids.has(id) && !account.friends.includes(id)
       );
+      account.blocked = (account.blocked || []).filter((id) => id !== accountId && ids.has(id));
     }
   }
 
@@ -223,10 +228,29 @@ class SocialStore {
       const tempPath = `${this.filePath}.tmp`;
       fs.writeFileSync(tempPath, JSON.stringify(this.data, null, 2), "utf8");
       fs.renameSync(tempPath, this.filePath);
+      this.dailyBackup();
       return true;
     } catch (error) {
       console.error("PARDEX social data save failed:", error.message);
       return false;
+    }
+  }
+
+  // One copy per day next to the data file (backups/social-YYYY-MM-DD.json),
+  // the last BACKUP_DAYS kept, so a bad write or mistake can be undone.
+  dailyBackup() {
+    try {
+      const day = new Date().toISOString().slice(0, 10);
+      if (this.lastBackupDay === day) return;
+      const dir = path.join(path.dirname(this.filePath), "backups");
+      const target = path.join(dir, `social-${day}.json`);
+      fs.mkdirSync(dir, { recursive: true });
+      if (!fs.existsSync(target)) fs.copyFileSync(this.filePath, target);
+      this.lastBackupDay = day;
+      const old = fs.readdirSync(dir).filter((name) => /^social-\d{4}-\d{2}-\d{2}\.json$/.test(name)).sort();
+      for (const name of old.slice(0, Math.max(0, old.length - BACKUP_DAYS))) fs.rmSync(path.join(dir, name));
+    } catch (error) {
+      console.error("PARDEX social backup failed:", error.message);
     }
   }
 
@@ -248,6 +272,7 @@ class SocialStore {
         friends: [],
         incoming_requests: [],
         outgoing_requests: [],
+        blocked: [],
         recovery_hash: "",
         recovery_updated_at: 0,
         avatar: "",
@@ -432,6 +457,7 @@ class SocialStore {
   relationshipBetween(fromId, targetId) {
     const from = this.getAccount(fromId);
     if (!from) return "none";
+    if ((from.blocked || []).includes(targetId)) return "blocked";
     if (from.friends.includes(targetId)) return "friend";
     if (from.incoming_requests.includes(targetId)) return "incoming";
     if (from.outgoing_requests.includes(targetId)) return "outgoing";
@@ -471,6 +497,9 @@ class SocialStore {
       outgoing_requests: account.outgoing_requests
         .map((id) => profileFor(id, "outgoing"))
         .filter(Boolean),
+      blocked: (account.blocked || [])
+        .map((id) => profileFor(id, "blocked"))
+        .filter(Boolean),
     };
   }
 
@@ -509,6 +538,9 @@ class SocialStore {
     const target = this.getAccount(targetId);
     if (!from || !target) return { ok: false, code: "USER_NOT_FOUND", message: "Kullanıcı bulunamadı." };
     if (from.friends.includes(targetId)) return { ok: false, code: "ALREADY_FRIENDS", message: "Bu kullanıcı zaten arkadaş listende." };
+    if ((from.blocked || []).includes(targetId)) return { ok: false, code: "USER_BLOCKED", message: "Bu kullanıcıyı engelledin; önce engeli kaldır." };
+    // Do not reveal the block to the blocked user.
+    if ((target.blocked || []).includes(fromId)) return { ok: true, code: "REQUEST_SENT", message: "Arkadaşlık isteği gönderildi." };
     if (from.outgoing_requests.includes(targetId)) return { ok: false, code: "REQUEST_EXISTS", message: "Arkadaşlık isteği zaten gönderildi." };
 
     if (from.incoming_requests.includes(targetId)) {
@@ -631,6 +663,58 @@ class SocialStore {
       chat_last_at: last.at,
       chat_last_mine: last.from === accountId,
     };
+  }
+
+  // Blocking ends friendship and pending requests both ways; the blocked
+  // user can no longer message, request or invite (checks use relationship).
+  blockUser(accountId, targetId) {
+    const account = this.getAccount(accountId);
+    const target = this.getAccount(targetId);
+    if (!account || !target || accountId === targetId) return { ok: false, code: "USER_NOT_FOUND", message: "Kullanıcı bulunamadı." };
+    const drop = (list, id) => list.filter((item) => item !== id);
+    account.friends = drop(account.friends, targetId);
+    target.friends = drop(target.friends, accountId);
+    account.incoming_requests = drop(account.incoming_requests, targetId);
+    account.outgoing_requests = drop(account.outgoing_requests, targetId);
+    target.incoming_requests = drop(target.incoming_requests, accountId);
+    target.outgoing_requests = drop(target.outgoing_requests, accountId);
+    account.blocked = [...new Set([...(account.blocked || []), targetId])];
+    account.updated_at = Date.now();
+    target.updated_at = Date.now();
+    this.save();
+    return { ok: true, code: "USER_BLOCKED", message: `${target.display_name} engellendi.` };
+  }
+
+  unblockUser(accountId, targetId) {
+    const account = this.getAccount(accountId);
+    if (!account || !(account.blocked || []).includes(targetId)) return { ok: false, code: "NOT_BLOCKED", message: "Bu kullanıcı engelli değil." };
+    account.blocked = account.blocked.filter((id) => id !== targetId);
+    account.updated_at = Date.now();
+    this.save();
+    return { ok: true, code: "USER_UNBLOCKED", message: "Engel kaldırıldı." };
+  }
+
+  isBlockedBetween(a, b) {
+    return Boolean((this.getAccount(a)?.blocked || []).includes(b) || (this.getAccount(b)?.blocked || []).includes(a));
+  }
+
+  // Reports keep the last messages of the conversation as evidence for the
+  // host (GET /admin/reports with the admin token).
+  reportUser(accountId, targetId, reason) {
+    const target = this.getAccount(targetId);
+    if (!this.getAccount(accountId) || !target || accountId === targetId) return { ok: false, code: "USER_NOT_FOUND", message: "Kullanıcı bulunamadı." };
+    const recent = this.chatHistory(accountId, targetId).slice(-20);
+    this.data.reports = [...(this.data.reports || []), {
+      id: crypto.randomUUID(),
+      from: accountId,
+      target: targetId,
+      target_name: target.display_name,
+      reason: cleanChatText(reason).slice(0, 300) || "Belirtilmedi",
+      at: Date.now(),
+      messages: recent,
+    }].slice(-MAX_REPORTS);
+    this.save();
+    return { ok: true, code: "USER_REPORTED", message: "Şikâyetin sunucu yöneticisine iletildi." };
   }
 
   removeFriend(accountId, targetId) {
