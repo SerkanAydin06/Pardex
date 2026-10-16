@@ -437,6 +437,19 @@ func remove_friend(target_account_id: String) -> void:
 	_send_social_action("remove_friend", target_account_id)
 
 
+func block_user(target_account_id: String) -> void:
+	_send_social_action("block_user", target_account_id)
+
+
+func unblock_user(target_account_id: String) -> void:
+	_send_social_action("unblock_user", target_account_id)
+
+
+func report_user(target_account_id: String, reason: String) -> void:
+	if is_online() and not target_account_id.is_empty():
+		_send({"type": "report_user", "account_id": target_account_id, "reason": reason.strip_edges().left(300)})
+
+
 func send_room_invite(target_account_id: String) -> void:
 	var normalized_id := target_account_id.strip_edges()
 	if normalized_id.is_empty():

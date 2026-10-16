@@ -18,7 +18,7 @@ const http = require("http");
 const path = require("path");
 const crypto = require("crypto");
 const { spawn, spawnSync } = require("child_process");
-const { readUsers } = require("./user_admin");
+const { readUsers, readReports } = require("./user_admin");
 
 const ROOT = path.resolve(__dirname, "..");
 const SERVER_DIR = path.join(ROOT, "server");
@@ -492,6 +492,12 @@ async function handle(request, response) {
       token: config.admin_token, port: ONLINE_PORT,
     });
     return sendJson(response, users);
+  }
+  if (request.method === "GET" && url.pathname === "/api/reports") {
+    return sendJson(response, await readReports({
+      running: state.phase === "running", dataPath: DATA_PATH,
+      token: config.admin_token, port: ONLINE_PORT,
+    }));
   }
   if (request.method !== "POST") return sendJson(response, { error: "not found" }, 404);
 

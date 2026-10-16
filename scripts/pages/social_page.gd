@@ -39,6 +39,9 @@ var _add_results: VBoxContainer
 var _add_hint: Label
 var _last_search := ""
 var _invite_dialog: ConfirmationDialog
+var _block_dialog: ConfirmationDialog
+var _report_dialog: ConfirmationDialog
+var _report_reason: LineEdit
 var _active_invite_id := ""
 
 
@@ -297,7 +300,6 @@ func _render_requests() -> void:
 	_requests_title.text = "Arkadaşlık İstekleri (%d)" % incoming.size()
 	if incoming.is_empty():
 		_requests_list.add_child(UI.empty_state("mail", "Bekleyen arkadaşlık isteği yok", "", true))
-		return
 	for profile in incoming.slice(0, 3):
 		if typeof(profile) != TYPE_DICTIONARY:
 			continue
@@ -316,6 +318,27 @@ func _render_requests() -> void:
 		decline.pressed.connect(func(): PardexOnline.decline_friend_request(account_id))
 		row.add_child(decline)
 		_requests_list.add_child(row)
+	_render_blocked()
+
+
+# People you blocked, with a way to undo it.
+func _render_blocked() -> void:
+	var blocked := _requests("blocked")
+	if blocked.is_empty():
+		return
+	_requests_list.add_child(UI.divider())
+	_requests_list.add_child(UI.label("ENGELLENENLER (%d)" % blocked.size(), 12, UI.TEXT_3, true))
+	for profile in blocked:
+		if typeof(profile) != TYPE_DICTIONARY:
+			continue
+		var account_id := str(profile.get("account_id", ""))
+		var row := UI.hbox(10)
+		row.add_child(UI.avatar(str(profile.get("display_name", "P")), 36, "offline", Color.TRANSPARENT, _picture(profile)))
+		row.add_child(UI.expand(UI.fit(UI.label(str(profile.get("display_name", "Pardus")), 13, UI.TEXT_2, true))))
+		var unblock := UI.button("Engeli Kaldır", "ghost", 11, 32)
+		unblock.pressed.connect(func(): PardexOnline.unblock_user(account_id))
+		row.add_child(unblock)
+		_requests_list.add_child(row)
 
 
 # ------------------------------------------------------------------ menus + dialogs
@@ -326,7 +349,17 @@ func _bind_friend_menu() -> void:
 		match id:
 			1: PardexOnline.join_friend_room(_menu_account_id)
 			2: PardexOnline.remove_friend(_menu_account_id)
+			3: _block_dialog.popup_centered()
+			4:
+				_report_reason.clear()
+				_report_dialog.popup_centered()
+				_report_reason.grab_focus()
 	)
+	_block_dialog = %BlockDialog
+	_block_dialog.confirmed.connect(func(): PardexOnline.block_user(_menu_account_id))
+	_report_dialog = %ReportDialog
+	_report_reason = %ReportReason
+	_report_dialog.confirmed.connect(func(): PardexOnline.report_user(_menu_account_id, _report_reason.text))
 
 
 func _open_friend_menu(profile: Dictionary, anchor: Control) -> void:
@@ -336,6 +369,8 @@ func _open_friend_menu(profile: Dictionary, anchor: Control) -> void:
 	_friend_menu.set_item_disabled(1, not bool(profile.get("room_joinable", false)))
 	_friend_menu.add_separator()
 	_friend_menu.add_item("Arkadaşlıktan çıkar", 2)
+	_friend_menu.add_item("Şikâyet et", 4)
+	_friend_menu.add_item("Engelle", 3)
 	var rect := anchor.get_global_rect()
 	_friend_menu.popup(Rect2i(Vector2i(rect.position + Vector2(0, rect.size.y)), Vector2i.ZERO))
 
@@ -388,6 +423,9 @@ func _user_result_row(profile: Dictionary) -> Control:
 	row.add_child(text)
 	var action: Button
 	match str(profile.get("relationship", "none")):
+		"blocked":
+			action = UI.button("Engeli Kaldır", "ghost", 11, 32)
+			action.pressed.connect(func(): PardexOnline.unblock_user(account_id))
 		"friend":
 			action = UI.button("Arkadaşsınız", "ghost", 11, 32)
 			action.disabled = true
