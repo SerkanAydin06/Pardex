@@ -6,6 +6,7 @@ extends Control
 # navigate / play_requested / toast signals.
 
 const BugReport := preload("res://scripts/online/pardex_bug_report.gd")
+const DesktopNotify := preload("res://scripts/ui/pardex_desktop_notify.gd")
 const APP_VERSION := "0.1.0"
 const SETTINGS_PATH := "user://pardex.cfg"
 const DEFAULT_SERVER_URL := ""
@@ -34,6 +35,7 @@ var _library_page: VBoxContainer
 var _social_page: VBoxContainer
 var _profile_page: VBoxContainer
 var _messages_page: VBoxContainer
+var _desktop := DesktopNotify.new()
 var _settings_content: VBoxContainer
 var _presence_menu: PopupMenu
 var _current_page := ""
@@ -60,6 +62,7 @@ func _ready() -> void:
 	_create_pages()
 	UI.refine_typography(self)
 	_wire_navigation()
+	add_child(_desktop)
 	_wire_online_signals()
 	%GameModeDialog.get_node("Options/Official").pressed.connect(_launch_official_game)
 	%GameModeDialog.get_node("Options/Private").pressed.connect(_launch_private_game)
@@ -350,6 +353,9 @@ func _wire_online_signals() -> void:
 	PardexOnline.game_session_ready.connect(_on_game_session_ready)
 	PardexOnline.social_state_changed.connect(func(_state): _render_unread_badge())
 	PardexOnline.chat_message_received.connect(_on_chat_message)
+	PardexOnline.room_invite_received.connect(func(invite: Dictionary):
+		_desktop.notify("%s seni masaya davet ediyor" % str(invite.get("from_display_name", "Bir arkadaşın")))
+	)
 	PardexOnline.room_state_changed.connect(func(room: Dictionary):
 		if not bool(room.get("launching", false)):
 			_game_launch_in_progress = false
@@ -389,11 +395,13 @@ func _render_unread_badge() -> void:
 	badge.add_theme_stylebox_override("panel", UI.box(UI.ACCENT, 12))
 	(%MessagesBadgeCount as Label).text = str(mini(unread, 99))
 	(%MessagesBadgeCount as Label).add_theme_color_override("font_color", UI.BG)
+	_desktop.set_unread(unread)
 
 
-# A message from a friend while another page is open shows a short toast.
+# A message from a friend while another page is open shows a short toast;
+# with PARDEX in the background the taskbar entry flashes too.
 func _on_chat_message(with_account_id: String, message: Dictionary, _client_id: String) -> void:
-	if _current_page == "messages" or str(message.get("from", "")) == PardexOnline.account_id:
+	if str(message.get("from", "")) == PardexOnline.account_id:
 		return
 	var sender := "Arkadaşın"
 	var friends = PardexOnline.social_state.get("friends", [])
@@ -402,7 +410,10 @@ func _on_chat_message(with_account_id: String, message: Dictionary, _client_id: 
 			if typeof(profile) == TYPE_DICTIONARY and str(profile.get("account_id", "")) == with_account_id:
 				sender = str(profile.get("display_name", sender))
 	var text := str(message.get("text", "")).replace("\n", " ")
-	_show_toast("%s: %s" % [sender, text.left(60) + ("…" if text.length() > 60 else "")])
+	var line := "%s: %s" % [sender, text.left(60) + ("…" if text.length() > 60 else "")]
+	_desktop.notify(line)
+	if _current_page != "messages":
+		_show_toast(line)
 
 
 # ------------------------------------------------------------------ games
