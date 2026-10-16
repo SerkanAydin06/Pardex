@@ -41,4 +41,17 @@ async function readReports({ running, dataPath, token, port }) {
   }
 }
 
-module.exports = { readUsers, readReports };
+// "Sorun bildir" reports saved by the server (data/bug-reports/*.json).
+function readBugReports(dataPath) {
+  const dir = require("path").join(require("path").dirname(dataPath), "bug-reports");
+  if (!fs.existsSync(dir)) return { reports: [] };
+  const files = fs.readdirSync(dir).filter((name) => name.endsWith(".json")).sort().reverse().slice(0, 50);
+  const reports = [];
+  for (const name of files) {
+    try { reports.push(JSON.parse(fs.readFileSync(require("path").join(dir, name), "utf8"))); }
+    catch { /* skip a damaged file */ }
+  }
+  return { reports };
+}
+
+module.exports = { readUsers, readReports, readBugReports };

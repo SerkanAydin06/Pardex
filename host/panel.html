@@ -110,6 +110,12 @@
   </section>
 
   <section class="card">
+    <h2>Hata Raporları</h2>
+    <div class="hint" id="bugHint" aria-live="polite">Raporlar yükleniyor...</div>
+    <div id="bugRows"></div>
+  </section>
+
+  <section class="card">
     <h2>Ayarlar</h2>
     <div class="field">
       <label for="korsanPath">Korsanların Hazinesi</label>
@@ -210,6 +216,30 @@ async function refreshUsers() {
     $("userRows").replaceChildren();
     $("userHint").textContent = error.message || "Kullanıcı listesi alınamadı.";
   } finally { usersLoading = false; }
+}
+
+async function refreshBugReports() {
+  try {
+    const result = await api("/api/bug-reports");
+    const items = document.createDocumentFragment();
+    for (const report of result.reports || []) {
+      const box = document.createElement("details");
+      const summary = document.createElement("summary");
+      summary.textContent = `${new Date(report.at).toLocaleString("tr-TR")} • ${report.display_name} • ${report.text}`;
+      const meta = document.createElement("small");
+      meta.textContent = `Sürüm ${report.version || "?"} • ${report.os || "?"}`;
+      const log = document.createElement("pre");
+      log.textContent = report.log || "(kayıt yok)";
+      box.append(summary, meta, log);
+      items.append(box);
+    }
+    $("bugRows").replaceChildren(items);
+    $("bugHint").textContent = (result.reports || []).length
+      ? "PARDEX'teki Ayarlar › Sorun Bildir ile gönderilen raporlar (en yeni üstte)."
+      : "Hata raporu yok.";
+  } catch (error) {
+    $("bugHint").textContent = error.message || "Raporlar alınamadı.";
+  }
 }
 
 async function refreshReports() {
@@ -339,6 +369,8 @@ refreshUsers();
 setInterval(refreshUsers, 5000);
 refreshReports();
 setInterval(refreshReports, 15000);
+refreshBugReports();
+setInterval(refreshBugReports, 15000);
 </script>
 </body>
 </html>

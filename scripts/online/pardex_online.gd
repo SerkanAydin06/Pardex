@@ -437,6 +437,13 @@ func remove_friend(target_account_id: String) -> void:
 	_send_social_action("remove_friend", target_account_id)
 
 
+func send_bug_report(report: Dictionary) -> void:
+	if is_online():
+		var payload := report.duplicate()
+		payload["type"] = "submit_bug_report"
+		_send(payload)
+
+
 func block_user(target_account_id: String) -> void:
 	_send_social_action("block_user", target_account_id)
 

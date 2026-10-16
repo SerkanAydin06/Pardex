@@ -1,5 +1,6 @@
 const http = require("http");
 const path = require("path");
+const fs = require("fs");
 const { WebSocketServer, WebSocket } = require("ws");
 const crypto = require("crypto");
 const { SocialStore } = require("./social_store");
@@ -1218,6 +1219,41 @@ function handleGameLinkMessage(link, message) {
   }
 }
 
+// ------------------------------------------------------------------ bug reports
+
+const BUG_REPORT_DIR = path.join(path.dirname(SOCIAL_DATA_PATH), "bug-reports");
+const MAX_BUG_REPORTS = 200;
+
+// "Sorun bildir" from the launcher: one JSON file per report next to the
+// social data (shown in the host panel), at most one per minute per session.
+function saveBugReport(client, message) {
+  if (!requireSocialAccount(client)) return;
+  const now = Date.now();
+  if (client.lastBugReportAt && now - client.lastBugReportAt < 60_000) {
+    return sendError(client.ws, "BUG_REPORT_RATE_LIMIT", "Bir dakika içinde yalnız bir rapor gönderebilirsin.");
+  }
+  client.lastBugReportAt = now;
+  const report = {
+    at: now,
+    account_id: client.accountId,
+    display_name: client.displayName,
+    text: String(message.text || "").slice(0, 500),
+    version: String(message.version || "").slice(0, 64),
+    os: String(message.os || "").slice(0, 128),
+    log: String(message.log || "").slice(-8_000),
+  };
+  try {
+    fs.mkdirSync(BUG_REPORT_DIR, { recursive: true });
+    fs.writeFileSync(path.join(BUG_REPORT_DIR, `${now}-${client.accountId}.json`), JSON.stringify(report, null, 2));
+    const files = fs.readdirSync(BUG_REPORT_DIR).filter((name) => name.endsWith(".json")).sort();
+    for (const name of files.slice(0, Math.max(0, files.length - MAX_BUG_REPORTS))) fs.rmSync(path.join(BUG_REPORT_DIR, name));
+    sendNotice(client.ws, "BUG_REPORT_SAVED", "Sorun raporun sunucu yöneticisine iletildi.");
+  } catch (error) {
+    console.error("PARDEX bug report save failed:", error.message);
+    sendError(client.ws, "BUG_REPORT_FAILED", "Rapor kaydedilemedi.");
+  }
+}
+
 // ------------------------------------------------------------------ chat
 
 const CHAT_RATE_WINDOW_MS = 10_000;
@@ -1538,6 +1574,9 @@ function handleMessage(client, raw) {
       else sendNotice(client.ws, result.code, result.message);
       break;
     }
+    case "submit_bug_report":
+      saveBugReport(client, message);
+      break;
     case "send_chat":
       sendChat(client, message);
       break;

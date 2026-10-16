@@ -5,6 +5,7 @@ extends Control
 # Each page is its own script under scripts/pages/ and talks back through
 # navigate / play_requested / toast signals.
 
+const BugReport := preload("res://scripts/online/pardex_bug_report.gd")
 const APP_VERSION := "0.1.0"
 const SETTINGS_PATH := "user://pardex.cfg"
 const DEFAULT_SERVER_URL := ""
@@ -123,6 +124,25 @@ func _bind_settings_page() -> void:
 		_show_toast("Profil resmi kaldırıldı.")
 	)
 	PardexOnline.avatar_ready.connect(func(_account_id): _render_avatar_preview())
+	(_settings_content.get_node("SupportPanel/VBox/ReportRow/ReportButton") as Button).pressed.connect(_send_bug_report)
+
+
+func _send_bug_report() -> void:
+	var edit := _settings_content.get_node("SupportPanel/VBox/ReportRow/ReportEdit") as LineEdit
+	var state := _settings_content.get_node("SupportPanel/VBox/ReportState") as Label
+	if edit.text.strip_edges().is_empty():
+		state.text = "Önce sorunu kısaca yaz."
+		return
+	var report := BugReport.build(edit.text)
+	if str(report["version"]).is_empty():
+		report["version"] = APP_VERSION
+	if PardexOnline.is_online():
+		PardexOnline.send_bug_report(report)
+		state.text = "Rapor gönderildi. Teşekkürler!"
+	else:
+		var path := BugReport.save_to_desktop(report)
+		state.text = ("Çevrimdışısın; rapor kaydedildi: %s" % path) if not path.is_empty() else "Rapor kaydedilemedi."
+	edit.clear()
 
 
 # Ayarlar is opened from Profil ("Profili Düzenle") or the gear; Geri returns.
