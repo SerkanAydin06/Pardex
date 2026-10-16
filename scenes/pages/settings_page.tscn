@@ -952,3 +952,62 @@ theme_override_colors/font_color = Color(0.9, 0.7, 0.32, 1)
 theme_override_font_sizes/font_size = 14
 text = "●  ÇEVRİMDIŞI"
 text_overrun_behavior = 3
+
+[node name="SupportPanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1738450090]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hit1x")
+
+[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/SupportPanel" unique_id=1738450091]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Section" type="Label" parent="Scroll/SettingsContent/SupportPanel/VBox" unique_id=1738450092]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
+theme_override_font_sizes/font_size = 13
+text = "●  SORUN BİLDİR"
+text_overrun_behavior = 3
+
+[node name="Description" type="Label" parent="Scroll/SettingsContent/SupportPanel/VBox" unique_id=1738450093]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
+theme_override_font_sizes/font_size = 14
+text = "Bir sorun mu var? Ne olduğunu kısaca yaz. PARDEX'in kayıtları da eklenip sunucu yöneticisine gönderilir; çevrimdışıysan rapor masaüstüne kaydedilir."
+autowrap_mode = 2
+
+[node name="ReportRow" type="HBoxContainer" parent="Scroll/SettingsContent/SupportPanel/VBox" unique_id=1738450094]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ReportEdit" type="LineEdit" parent="Scroll/SettingsContent/SupportPanel/VBox/ReportRow" unique_id=1738450095]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.93, 0.98, 1)
+theme_override_colors/font_placeholder_color = Color(0.38, 0.44, 0.53, 1)
+theme_override_font_sizes/font_size = 15
+placeholder_text = "Örn. Mesajlar sekmesi açılınca donuyor"
+max_length = 500
+
+[node name="ReportButton" type="Button" parent="Scroll/SettingsContent/SupportPanel/VBox/ReportRow" unique_id=1738450096]
+custom_minimum_size = Vector2(176, 44)
+layout_mode = 2
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxFlat_4hs0q")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_nbfqp")
+theme_override_styles/hover = SubResource("StyleBoxFlat_nbfqp")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_4yqvt")
+text = "Gönder"
+
+[node name="ReportState" type="Label" parent="Scroll/SettingsContent/SupportPanel/VBox" unique_id=1738450097]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 2
+

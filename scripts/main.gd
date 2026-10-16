@@ -5,6 +5,9 @@ extends Control
 # Each page is its own script under scripts/pages/ and talks back through
 # navigate / play_requested / toast signals.
 
+const BugReport := preload("res://scripts/online/pardex_bug_report.gd")
+const DesktopNotify := preload("res://scripts/ui/pardex_desktop_notify.gd")
+const Updater := preload("res://scripts/online/pardex_updater.gd")
 const APP_VERSION := "0.1.0"
 const SETTINGS_PATH := "user://pardex.cfg"
 const DEFAULT_SERVER_URL := ""
@@ -33,6 +36,8 @@ var _library_page: VBoxContainer
 var _social_page: VBoxContainer
 var _profile_page: VBoxContainer
 var _messages_page: VBoxContainer
+var _desktop: DesktopNotify
+var _updater: Updater
 var _settings_content: VBoxContainer
 var _presence_menu: PopupMenu
 var _current_page := ""
@@ -59,6 +64,9 @@ func _ready() -> void:
 	_create_pages()
 	UI.refine_typography(self)
 	_wire_navigation()
+	_desktop = DesktopNotify.new()
+	add_child(_desktop)
+	_wire_updater()
 	_wire_online_signals()
 	%GameModeDialog.get_node("Options/Official").pressed.connect(_launch_official_game)
 	%GameModeDialog.get_node("Options/Private").pressed.connect(_launch_private_game)
@@ -123,6 +131,25 @@ func _bind_settings_page() -> void:
 		_show_toast("Profil resmi kaldırıldı.")
 	)
 	PardexOnline.avatar_ready.connect(func(_account_id): _render_avatar_preview())
+	(_settings_content.get_node("SupportPanel/VBox/ReportRow/ReportButton") as Button).pressed.connect(_send_bug_report)
+
+
+func _send_bug_report() -> void:
+	var edit := _settings_content.get_node("SupportPanel/VBox/ReportRow/ReportEdit") as LineEdit
+	var state := _settings_content.get_node("SupportPanel/VBox/ReportState") as Label
+	if edit.text.strip_edges().is_empty():
+		state.text = "Önce sorunu kısaca yaz."
+		return
+	var report := BugReport.build(edit.text)
+	if str(report["version"]).is_empty():
+		report["version"] = APP_VERSION
+	if PardexOnline.is_online():
+		PardexOnline.send_bug_report(report)
+		state.text = "Rapor gönderildi. Teşekkürler!"
+	else:
+		var path := BugReport.save_to_desktop(report)
+		state.text = ("Çevrimdışısın; rapor kaydedildi: %s" % path) if not path.is_empty() else "Rapor kaydedilemedi."
+	edit.clear()
 
 
 # Ayarlar is opened from Profil ("Profili Düzenle") or the gear; Geri returns.
@@ -330,6 +357,10 @@ func _wire_online_signals() -> void:
 	PardexOnline.game_session_ready.connect(_on_game_session_ready)
 	PardexOnline.social_state_changed.connect(func(_state): _render_unread_badge())
 	PardexOnline.chat_message_received.connect(_on_chat_message)
+	PardexOnline.room_invite_received.connect(func(invite: Dictionary):
+		(%InviteSound as AudioStreamPlayer).play()
+		_desktop.notify("%s seni masaya davet ediyor" % str(invite.get("from_display_name", "Bir arkadaşın")))
+	)
 	PardexOnline.room_state_changed.connect(func(room: Dictionary):
 		if not bool(room.get("launching", false)):
 			_game_launch_in_progress = false
@@ -355,6 +386,24 @@ func _update_connection_ui(state: String) -> void:
 	_render_presence()
 
 
+# ------------------------------------------------------------------ updates
+
+func _wire_updater() -> void:
+	_updater = Updater.new()
+	add_child(_updater)
+	var dialog := %UpdateDialog as ConfirmationDialog
+	_updater.update_available.connect(func(version: String):
+		dialog.dialog_text = "PARDEX %s hazır (şu an %s). Güncelleme indirilip kurulur, PARDEX kendiliğinden yeniden açılır." % [version, APP_VERSION]
+		dialog.popup_centered()
+	)
+	_updater.update_failed.connect(_show_toast)
+	dialog.confirmed.connect(func():
+		_show_toast("Güncelleme indiriliyor…")
+		_updater.install()
+	)
+	_updater.check(APP_VERSION)
+
+
 # ------------------------------------------------------------------ messages
 
 func _open_conversation(account_id: String) -> void:
@@ -369,11 +418,13 @@ func _render_unread_badge() -> void:
 	badge.add_theme_stylebox_override("panel", UI.box(UI.ACCENT, 12))
 	(%MessagesBadgeCount as Label).text = str(mini(unread, 99))
 	(%MessagesBadgeCount as Label).add_theme_color_override("font_color", UI.BG)
+	_desktop.set_unread(unread)
 
 
-# A message from a friend while another page is open shows a short toast.
+# A message from a friend while another page is open shows a short toast;
+# with PARDEX in the background the taskbar entry flashes too.
 func _on_chat_message(with_account_id: String, message: Dictionary, _client_id: String) -> void:
-	if _current_page == "messages" or str(message.get("from", "")) == PardexOnline.account_id:
+	if str(message.get("from", "")) == PardexOnline.account_id:
 		return
 	var sender := "Arkadaşın"
 	var friends = PardexOnline.social_state.get("friends", [])
@@ -382,7 +433,11 @@ func _on_chat_message(with_account_id: String, message: Dictionary, _client_id: 
 			if typeof(profile) == TYPE_DICTIONARY and str(profile.get("account_id", "")) == with_account_id:
 				sender = str(profile.get("display_name", sender))
 	var text := str(message.get("text", "")).replace("\n", " ")
-	_show_toast("%s: %s" % [sender, text.left(60) + ("…" if text.length() > 60 else "")])
+	var line := "%s: %s" % [sender, text.left(60) + ("…" if text.length() > 60 else "")]
+	(%MessageSound as AudioStreamPlayer).play()
+	_desktop.notify(line)
+	if _current_page != "messages":
+		_show_toast(line)
 
 
 # ------------------------------------------------------------------ games

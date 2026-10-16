@@ -71,9 +71,34 @@ if (Test-Path $zipPath) {
 }
 Compress-Archive -Path (Join-Path $OutputDir "*") -DestinationPath $zipPath -CompressionLevel Optimal
 
+# Installer (PARDEX-Setup.exe) when Inno Setup 6 is installed. The version
+# comes from APP_VERSION in scripts/main.gd; the launcher compares it with the
+# latest GitHub release to offer updates.
+$versionMatch = Select-String -Path (Join-Path $PardexProject "scripts\main.gd") -Pattern 'const APP_VERSION := "([^"]+)"'
+$appVersion = if ($versionMatch) { $versionMatch.Matches[0].Groups[1].Value } else { "0.0.0" }
+$iscc = @(
+    (Get-Command "ISCC.exe" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source),
+    (Join-Path ${env:ProgramFiles(x86)} "Inno Setup 6\ISCC.exe"),
+    (Join-Path $env:ProgramFiles "Inno Setup 6\ISCC.exe"),
+    (Join-Path $env:LOCALAPPDATA "Programs\Inno Setup 6\ISCC.exe")
+) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+$setupPath = ""
+if ($iscc) {
+    & $iscc "/DAppVersion=$appVersion" "/DSourceDir=$OutputDir" "/DOutputDir=$(Split-Path -Parent $OutputDir)" (Join-Path $PSScriptRoot "pardex_installer.iss")
+    if ($LASTEXITCODE -ne 0) {
+        throw "Inno Setup failed with exit code $LASTEXITCODE."
+    }
+    $setupPath = Join-Path (Split-Path -Parent $OutputDir) "PARDEX-Setup.exe"
+}
+
 Write-Host ""
 Write-Host "PARDEX Windows bundle created successfully:"
 Write-Host "  Folder: $OutputDir"
 Write-Host "  ZIP:    $zipPath"
+if ($setupPath) {
+    Write-Host "  Setup:  $setupPath (version $appVersion)"
+} else {
+    Write-Host "  Setup:  skipped (install Inno Setup 6 to build PARDEX-Setup.exe)"
+}
 Write-Host ""
 Write-Host "Expected runtime game path: games\korsanlar\KorsanlarinHazinesi.exe"

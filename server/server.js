@@ -36,7 +36,7 @@ http.createServer = (requestListener) => originalCreateServer((req, res) => {
 // social state while allowing this bootstrap to add the dedicated-game control
 // channel. The source file on disk is never rewritten at runtime.
 const corePath = path.join(__dirname, "server_core.js");
-const coreSource = fs.readFileSync(corePath, "utf8") + `\nmodule.exports.__pardexRuntime = {\n  wss, rooms, clients, gameLaunchTickets, gameLaunchTicketHash,\n  roomIsLaunching, roomIsInGame, roomState, markMemberGameConnected,\n  send, sendError, clearGameLaunchTicketsForMatch, broadcastRoom,\n  pushRoomPresence, sendRoomLifecycleEvent, roomAcceptsPlayers, joinRoom, social, hooks\n};\n`;
+const coreSource = fs.readFileSync(corePath, "utf8") + `\nmodule.exports.__pardexRuntime = {\n  wss, rooms, clients, gameLaunchTickets, gameLaunchTicketHash,\n  roomIsLaunching, roomIsInGame, roomState, markMemberGameConnected,\n  send, sendError, clearGameLaunchTicketsForMatch, broadcastRoom,\n  pushRoomPresence, sendRoomLifecycleEvent, roomAcceptsPlayers, joinRoom, social, hooks,\n  freeGameServerSlot\n};\n`;
 const coreModule = new Module(corePath, module);
 coreModule.filename = corePath;
 coreModule.paths = Module._nodeModulePaths(path.dirname(corePath));

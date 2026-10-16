@@ -8,6 +8,7 @@ on:
       - "scripts/**"
       - "assets/**"
       - "themes/**"
+      - "tests/visual/**"
       - ".github/workflows/pardex-godot-ci.yml"
   pull_request:
     paths:
@@ -16,6 +17,7 @@ on:
       - "scripts/**"
       - "assets/**"
       - "themes/**"
+      - "tests/visual/**"
       - ".github/workflows/pardex-godot-ci.yml"
 
 jobs:
@@ -83,11 +85,27 @@ jobs:
             exit 1
           fi
 
+      - name: Compare pages with visual references
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          XDG_DATA_HOME: ${{ runner.temp }}/pardex-visual-data
+          PARDEX_VISUAL_OUTPUT: ${{ github.workspace }}/visual-current
+        run: |
+          set -o pipefail
+          mkdir -p "$PARDEX_VISUAL_OUTPUT"
+          xvfb-run -a -s "-screen 0 1920x1080x24" godot --windowed --display-driver x11 --rendering-method gl_compatibility --audio-driver Dummy --path . --script res://scripts/ci/visual_regression.gd 2>&1 | tee godot-visual.log
+          if grep -E 'SCRIPT ERROR:|ERROR:|Parse Error:' godot-visual.log; then
+            echo "::error::Pages differ from tests/visual references (see pardex-ui-preview artifact)"
+            exit 1
+          fi
+
       - name: Upload logo preview
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pardex-ui-preview
           path: |
             logo-preview.png
             shell-preview-*.png
-          if-no-files-found: error
+            visual-current/*.png
+          if-no-files-found: warn

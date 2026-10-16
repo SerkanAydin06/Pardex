@@ -723,6 +723,16 @@ static func empty_state(icon_name: String, title: String, body := "", compact :=
 	detail.add_theme_font_size_override("font_size", 12 if compact else 13)
 	return column
 
+# Pulsing placeholder rows (scenes/ui/skeleton_row.tscn) while a list loads.
+static func skeleton_rows(count: int, detail_widths := [140.0, 96.0, 180.0]) -> VBoxContainer:
+	var column := vbox(6)
+	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	for index in count:
+		var row := (load("res://scenes/ui/skeleton_row.tscn") as PackedScene).instantiate() as Control
+		(row.get_node("Lines/Detail") as Control).custom_minimum_size.x = float(detail_widths[index % detail_widths.size()])
+		column.add_child(row)
+	return column
+
 static func presence_label(presence: String) -> String:
 	match presence:
 		"in_game": return "Oyunda"

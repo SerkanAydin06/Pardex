@@ -149,10 +149,25 @@ async function main() {
     veli.ws.send(JSON.stringify({ type: "unblock_user", account_id: ali.accountId }));
     await unblocked;
 
+    // "Sorun bildir": saved as a file for the host panel, one per minute.
+    const saved = waitForMessage(ali.ws, (m) => m.type === "social_notice" && m.code === "BUG_REPORT_SAVED");
+    ali.ws.send(JSON.stringify({ type: "submit_bug_report", text: "Oyun açılmıyor", version: "1.0", os: "Windows", log: "x".repeat(9000) }));
+    await saved;
+    const bugFiles = fs.readdirSync(path.join(tempDir, "bug-reports"));
+    assert.strictEqual(bugFiles.length, 1);
+    const bug = JSON.parse(fs.readFileSync(path.join(tempDir, "bug-reports", bugFiles[0]), "utf8"));
+    assert.strictEqual(bug.text, "Oyun açılmıyor");
+    assert.strictEqual(bug.account_id, ali.accountId);
+    assert.strictEqual(bug.log.length, 8000);
+    const limited = waitForMessage(ali.ws, (m) => m.type === "error" && m.code === "BUG_REPORT_RATE_LIMIT");
+    ali.ws.send(JSON.stringify({ type: "submit_bug_report", text: "tekrar" }));
+    await limited;
+    assert.strictEqual(fs.readdirSync(path.join(tempDir, "bug-reports")).length, 1);
+
     const day = new Date().toISOString().slice(0, 10);
     assert.ok(fs.existsSync(path.join(tempDir, "backups", `social-${day}.json`)), "daily backup is written");
 
-    console.log("PARDEX block smoke passed: report + admin reports + block both ways + silent request + unblock + daily backup");
+    console.log("PARDEX block smoke passed: report + admin reports + block both ways + silent request + unblock + bug report + daily backup");
   } finally {
     for (const ws of sockets) await closeSocket(ws);
     server.kill();

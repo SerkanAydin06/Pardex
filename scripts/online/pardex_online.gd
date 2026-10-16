@@ -437,6 +437,13 @@ func remove_friend(target_account_id: String) -> void:
 	_send_social_action("remove_friend", target_account_id)
 
 
+func send_bug_report(report: Dictionary) -> void:
+	if is_online():
+		var payload := report.duplicate()
+		payload["type"] = "submit_bug_report"
+		_send(payload)
+
+
 func block_user(target_account_id: String) -> void:
 	_send_social_action("block_user", target_account_id)
 
@@ -521,6 +528,12 @@ func send_voice_frame(sequence: int, pcm_base64: String) -> void:
 	if _socket != null and _socket.get_current_outbound_buffered_amount() >= VOICE_OUTBOUND_QUEUE_LIMIT:
 		return
 	_send({"type": "voice_frame", "seq": sequence, "pcm": pcm_base64})
+
+
+# Connecting, or connected while the friend list has not arrived yet: lists
+# show loading placeholders instead of "no friends".
+func is_loading_social() -> bool:
+	return connection_state == "connecting" or (is_online() and social_state.is_empty())
 
 
 func is_online() -> bool:

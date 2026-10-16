@@ -1,5 +1,6 @@
 const http = require("http");
 const path = require("path");
+const fs = require("fs");
 const { WebSocketServer, WebSocket } = require("ws");
 const crypto = require("crypto");
 const { SocialStore } = require("./social_store");
@@ -7,7 +8,10 @@ const { userSummary } = require("./user_admin");
 
 const PORT = Number(process.env.PORT || 8765);
 const HOST = process.env.HOST || "0.0.0.0";
-const KORSAN_GAME_SERVER_URL = String(process.env.KORSAN_GAME_SERVER_URL || "").trim();
+// One address per dedicated Korsan server process; each process runs one
+// table, so several addresses (comma-separated) allow several tables at once.
+const KORSAN_GAME_SERVER_URLS = String(process.env.KORSAN_GAME_SERVER_URLS || process.env.KORSAN_GAME_SERVER_URL || "")
+  .split(",").map((url) => url.trim()).filter(Boolean);
 const GAME_SERVER_TOKEN = String(process.env.PARDEX_GAME_SERVER_TOKEN || "").trim();
 const SESSION_GRACE_MS = Math.max(1000, Number(process.env.SESSION_GRACE_MS || 30_000));
 const ROOM_INVITE_TTL_MS = Math.max(15_000, Number(process.env.ROOM_INVITE_TTL_MS || 60_000));
@@ -127,9 +131,29 @@ function pruneGameLaunchTickets(now = Date.now()) {
   }
 }
 
-function gameServerUrl(gameId) {
-  if (gameId === "korsanlar") return KORSAN_GAME_SERVER_URL;
-  return "";
+function gameServerUrls(gameId) {
+  return gameId === "korsanlar" ? KORSAN_GAME_SERVER_URLS : [];
+}
+
+function gameServerUrl(gameId, room = null) {
+  const urls = gameServerUrls(gameId);
+  return urls[room?.serverSlot || 0] || urls[0] || "";
+}
+
+// Lowest game server slot that no launching or running table uses; -1 when
+// every server is busy.
+function freeGameServerSlot(gameId, excludeCode = "") {
+  const busy = new Set();
+  for (const room of rooms.values()) {
+    if (room.code === excludeCode || room.gameId !== gameId) continue;
+    if (roomIsLaunching(room) || roomIsInGame(room)) busy.add(room.serverSlot || 0);
+  }
+  const count = gameServerUrls(gameId).length;
+  for (let slot = 0; slot < count; slot += 1) {
+    if (busy.has(slot) || hooks.slotUnavailable?.(gameId, slot)) continue;
+    return slot;
+  }
+  return -1;
 }
 
 function gameDisplayName(gameId) {
@@ -342,7 +366,7 @@ function roomPayload(room) {
   return {
     code: room.code,
     game_id: room.gameId,
-    game_server_url: gameServerUrl(room.gameId),
+    game_server_url: gameServerUrl(room.gameId, room),
     host_id: room.hostId,
     max_players: room.maxPlayers,
     state,
@@ -809,6 +833,7 @@ function startRoomGame(client) {
 function launchRoomMatch(room, client) {
   pruneGameLaunchTickets();
   room.state = "launching";
+  room.serverSlot = Math.max(0, freeGameServerSlot(room.gameId, room.code));
   room.matchId = crypto.randomUUID();
   room.launchStartedAt = Date.now();
   room.startedAt = 0;
@@ -1218,6 +1243,41 @@ function handleGameLinkMessage(link, message) {
   }
 }
 
+// ------------------------------------------------------------------ bug reports
+
+const BUG_REPORT_DIR = path.join(path.dirname(SOCIAL_DATA_PATH), "bug-reports");
+const MAX_BUG_REPORTS = 200;
+
+// "Sorun bildir" from the launcher: one JSON file per report next to the
+// social data (shown in the host panel), at most one per minute per session.
+function saveBugReport(client, message) {
+  if (!requireSocialAccount(client)) return;
+  const now = Date.now();
+  if (client.lastBugReportAt && now - client.lastBugReportAt < 60_000) {
+    return sendError(client.ws, "BUG_REPORT_RATE_LIMIT", "Bir dakika içinde yalnız bir rapor gönderebilirsin.");
+  }
+  client.lastBugReportAt = now;
+  const report = {
+    at: now,
+    account_id: client.accountId,
+    display_name: client.displayName,
+    text: String(message.text || "").slice(0, 500),
+    version: String(message.version || "").slice(0, 64),
+    os: String(message.os || "").slice(0, 128),
+    log: String(message.log || "").slice(-8_000),
+  };
+  try {
+    fs.mkdirSync(BUG_REPORT_DIR, { recursive: true });
+    fs.writeFileSync(path.join(BUG_REPORT_DIR, `${now}-${client.accountId}.json`), JSON.stringify(report, null, 2));
+    const files = fs.readdirSync(BUG_REPORT_DIR).filter((name) => name.endsWith(".json")).sort();
+    for (const name of files.slice(0, Math.max(0, files.length - MAX_BUG_REPORTS))) fs.rmSync(path.join(BUG_REPORT_DIR, name));
+    sendNotice(client.ws, "BUG_REPORT_SAVED", "Sorun raporun sunucu yöneticisine iletildi.");
+  } catch (error) {
+    console.error("PARDEX bug report save failed:", error.message);
+    sendError(client.ws, "BUG_REPORT_FAILED", "Rapor kaydedilemedi.");
+  }
+}
+
 // ------------------------------------------------------------------ chat
 
 const CHAT_RATE_WINDOW_MS = 10_000;
@@ -1538,6 +1598,9 @@ function handleMessage(client, raw) {
       else sendNotice(client.ws, result.code, result.message);
       break;
     }
+    case "submit_bug_report":
+      saveBugReport(client, message);
+      break;
     case "send_chat":
       sendChat(client, message);
       break;
@@ -1623,7 +1686,8 @@ const httpServer = http.createServer((req, res) => {
       pendingRoomInvites: roomInvites.size,
       socialAccounts: Object.keys(social.data.accounts).length,
       socialDataPathConfigured: Boolean(SOCIAL_DATA_PATH),
-      korsanGameServerAssigned: Boolean(KORSAN_GAME_SERVER_URL),
+      korsanGameServerAssigned: KORSAN_GAME_SERVER_URLS.length > 0,
+      korsanGameServers: KORSAN_GAME_SERVER_URLS.length,
       voiceRelay: VOICE_RELAY_ENABLED,
       presence: true,
       friendRoomJoin: true,

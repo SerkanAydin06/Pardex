@@ -56,6 +56,8 @@ HELLO_TIMEOUT_MS=10000
 PARDEX_SOCIAL_DATA_PATH=./data/social.json
 PARDEX_VOICE_RELAY_ENABLED=false
 KORSAN_GAME_SERVER_URL=
+# Birden çok masa: her Korsan oyun sunucusu için bir adres, virgülle ayrılmış.
+KORSAN_GAME_SERVER_URLS=
 ```
 
 Production ortamında `PARDEX_SOCIAL_DATA_PATH` mutlaka kalıcı disk/volume üzerinde bir konuma verilmelidir.

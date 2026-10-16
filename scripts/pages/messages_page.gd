@@ -39,6 +39,8 @@ func _ready() -> void:
 	)
 	PardexOnline.avatar_ready.connect(func(_account_id): _render_list(); _render_header())
 	PardexOnline.connection_state_changed.connect(func(_state): _render())
+	PardexOnline.room_state_changed.connect(func(_room): _render_header())
+	PardexOnline.room_left.connect(func(): _render_header())
 	PardexOnline.welcome_received.connect(func(_user_id, _display_name):
 		# Messages delivered while disconnected must be fetched from the server.
 		_histories.clear()
@@ -152,6 +154,9 @@ func _render() -> void:
 func _render_list() -> void:
 	UI.clear(_list)
 	var friends := _sorted_friends()
+	if friends.is_empty() and PardexOnline.is_loading_social():
+		_list.add_child(UI.skeleton_rows(4))
+		return
 	if friends.is_empty():
 		var message := "PARDEX Online bağlantısı bekleniyor" if not PardexOnline.is_online() else "Henüz arkadaşın yok"
 		var state := UI.empty_state("friends", message, "Arkadaşlar sekmesinden yeni kişiler ekleyebilirsin.", true)
@@ -230,12 +235,31 @@ func _render_header() -> void:
 		status += " • " + game_name
 	titles.add_child(UI.fit(UI.label("●  " + status, 12, UI.presence_color(presence) if presence != "offline" else UI.TEXT_3)))
 	_header.add_child(titles)
-	# A friend at an open table can be joined straight from the chat.
+	# A friend at an open table can be joined straight from the chat; from my
+	# own table I can invite the friend.
 	if bool(profile.get("room_joinable", false)):
 		var join := UI.button("Katıl", "primary", 13, 38, "gamepad")
 		join.custom_minimum_size.x = 120
 		join.pressed.connect(func(): PardexOnline.join_friend_room(_selected_id))
 		_header.add_child(join)
+	elif _can_invite(profile):
+		var invite := UI.button("Masaya davet et", "primary", 13, 38, "gamepad")
+		invite.custom_minimum_size.x = 168
+		invite.pressed.connect(func(): PardexOnline.send_room_invite(_selected_id))
+		_header.add_child(invite)
+
+
+func _can_invite(profile: Dictionary) -> bool:
+	var room := PardexOnline.current_room
+	if room.is_empty() or not bool(room.get("joinable", false)) or _presence(profile) == "offline":
+		return false
+	var members = room.get("members", [])
+	if typeof(members) != TYPE_ARRAY:
+		return false
+	for member in members:
+		if typeof(member) == TYPE_DICTIONARY and str(member.get("account_id", "")) == str(profile.get("account_id", "")):
+			return false
+	return true
 
 
 func _render_messages() -> void:
@@ -251,7 +275,7 @@ func _render_messages() -> void:
 		_messages.add_child(state)
 		return
 	if not _histories.has(_selected_id):
-		_messages.add_child(UI.empty_state("message", "Mesajlar yükleniyor…", "", true))
+		_messages.add_child(UI.skeleton_rows(3, [260.0, 180.0, 220.0]))
 		return
 	var history: Array = _histories[_selected_id]
 	if history.is_empty():

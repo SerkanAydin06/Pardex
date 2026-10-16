@@ -1,0 +1,54 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/skeleton_pulse.gd" id="1_pulse"]
+
+[sub_resource type="StyleBoxFlat" id="SkeletonCircle"]
+bg_color = Color(0.36, 0.48, 0.66, 0.16)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="SkeletonBar"]
+bg_color = Color(0.36, 0.48, 0.66, 0.14)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="SkeletonRow" type="HBoxContainer"]
+custom_minimum_size = Vector2(0, 56)
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 12
+alignment = 0
+script = ExtResource("1_pulse")
+
+[node name="Avatar" type="Panel" parent="."]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SkeletonCircle")
+
+[node name="Lines" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Panel" parent="Lines"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.6
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SkeletonBar")
+
+[node name="Detail" type="Panel" parent="Lines"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("SkeletonBar")
