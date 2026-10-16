@@ -8,6 +8,7 @@ const { userSummary } = require("./user_admin");
 const PORT = Number(process.env.PORT || 8765);
 const HOST = process.env.HOST || "0.0.0.0";
 const KORSAN_GAME_SERVER_URL = String(process.env.KORSAN_GAME_SERVER_URL || "").trim();
+const GAME_SERVER_TOKEN = String(process.env.PARDEX_GAME_SERVER_TOKEN || "").trim();
 const SESSION_GRACE_MS = Math.max(1000, Number(process.env.SESSION_GRACE_MS || 30_000));
 const ROOM_INVITE_TTL_MS = Math.max(15_000, Number(process.env.ROOM_INVITE_TTL_MS || 60_000));
 const HELLO_TIMEOUT_MS = Math.max(500, Number(process.env.HELLO_TIMEOUT_MS || 10_000));
@@ -40,6 +41,14 @@ const rooms = new Map();
 const resumeTokens = new Map();
 const roomInvites = new Map();
 const gameLaunchTickets = new Map();
+// PARDEX launcher <-> server protocol. Bump PROTOCOL_VERSION when the server
+// gains requests a client may use; raise MIN_CLIENT_PROTOCOL only when old
+// clients can no longer work at all (they then get a clear "update" error).
+const PROTOCOL_VERSION = 4;
+const MIN_CLIENT_PROTOCOL = 0;
+// Network protocol of each game's dedicated server, reported at start-up
+// (game_server_hello). Games compare theirs before hosting/joining a table.
+const gameServerProtocols = new Map();
 // Game session tokens: PARDEX hands one to the game it launches so the game
 // itself can host a table or join one by code (token hash -> owner session).
 const gameSessions = new Map();
@@ -1161,6 +1170,7 @@ function handleGameLinkMessage(link, message) {
     link.gameLinkOf = owner.userId;
     link.gameLinkAccount = owner.accountId;
     link.gameId = record.gameId;
+    link.gameProtocol = Number(message.game_protocol || 0);
     owner.gameWs = link.ws;
     send(link.ws, {
       type: "game_link_ok",
@@ -1173,6 +1183,19 @@ function handleGameLinkMessage(link, message) {
   const owner = gameLinkOwner(link);
   if (!owner) {
     sendError(link.ws, "GAME_SESSION_INVALID", "PARDEX bağlantısı kapandı. PARDEX'i açık tut ve oyunu yeniden başlat.");
+    return;
+  }
+  const serverProtocol = gameServerProtocols.get(link.gameId);
+  if (
+    (message.type === "host_match" || message.type === "join_match")
+    && serverProtocol !== undefined && link.gameProtocol && serverProtocol !== link.gameProtocol
+  ) {
+    const older = link.gameProtocol < serverProtocol ? "Senin oyunun" : "Sunucudaki oyun";
+    sendError(
+      link.ws,
+      "GAME_VERSION_MISMATCH",
+      `${older} eski sürüm (oyun ${link.gameProtocol}, sunucu ${serverProtocol}). Korsanların Hazinesi'ni güncelleyip yeniden dene.`
+    );
     return;
   }
   if (message.type === "host_match") {
@@ -1246,6 +1269,27 @@ function markChatRead(client, message) {
   }
 }
 
+function secretMatches(expected, supplied) {
+  const digest = (value) => crypto.createHash("sha256").update(String(value || "")).digest();
+  return Boolean(supplied) && crypto.timingSafeEqual(digest(expected), digest(supplied));
+}
+
+// The dedicated game server announces its network protocol at start-up.
+function handleGameServerHello(client, message) {
+  if (!GAME_SERVER_TOKEN || !secretMatches(GAME_SERVER_TOKEN, message.server_token)) {
+    sendError(client.ws, "GAME_SERVER_UNAUTHORIZED", "Oyun sunucusu doğrulanamadı.");
+    return;
+  }
+  const gameId = String(message.game_id || "").trim().slice(0, 32);
+  const protocol = Number(message.game_protocol || 0);
+  if (gameId && protocol > 0) gameServerProtocols.set(gameId, protocol);
+  if (client.helloTimer) {
+    clearTimeout(client.helloTimer);
+    client.helloTimer = null;
+  }
+  send(client.ws, { type: "game_server_hello_ok", game_id: gameId, protocol_version: PROTOCOL_VERSION });
+}
+
 function handleMessage(client, raw) {
   let message;
   try {
@@ -1265,6 +1309,10 @@ function handleMessage(client, raw) {
     handleGameHello(client, message);
     return;
   }
+  if (message.type === "game_server_hello") {
+    handleGameServerHello(client, message);
+    return;
+  }
   if (message.type === "game_link" || client.gameLinkOf) {
     handleGameLinkMessage(client, message);
     return;
@@ -1277,6 +1325,13 @@ function handleMessage(client, raw) {
 
   switch (message.type) {
     case "hello": {
+      const clientProtocol = Number(message.client_protocol || 0);
+      if (clientProtocol < MIN_CLIENT_PROTOCOL) {
+        sendError(client.ws, "CLIENT_OUTDATED", "PARDEX'in eski sürüm. PARDEX'i güncelleyip yeniden aç.");
+        client.ws?.close(1008, "PARDEX client outdated");
+        return;
+      }
+      client.clientProtocol = clientProtocol;
       const recoveryCode = String(message.recovery_code || "").trim();
       let accountId = "";
       let recovered = false;
@@ -1339,6 +1394,8 @@ function handleMessage(client, raw) {
         friend_join_enabled: true,
         room_lifecycle_enabled: true,
         secure_game_handoff_enabled: true,
+        protocol_version: PROTOCOL_VERSION,
+        min_client_protocol: MIN_CLIENT_PROTOCOL,
       });
       syncClientNameToRoom(client);
       pushSocialState(client.accountId);
