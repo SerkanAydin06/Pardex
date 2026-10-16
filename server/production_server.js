@@ -32,41 +32,37 @@ const serverSource = fs.readFileSync(serverPath, "utf8") + `
   }
 
 
-  // One Korsan server runs one match. While its lobby is open, a friend of
-  // someone inside joins that table instead of being turned away.
+  // Each Korsan server process runs one match. A new table takes a free
+  // process; when every process is busy a friend's open table is joined
+  // instead of turning the player away.
+  runtime.hooks.slotUnavailable = (gameId, slot) => gameServerIsRecycling(gameId + ":" + slot);
   runtime.hooks.beforePlayGame = (client, gameId, replyWs) => {
     if (!singleInstanceGameIds.has(gameId)) return false;
-    const activeRoom = activeRoomForGame(gameId);
-    const isMember = activeRoom?.members.some((member) => member.userId === client.userId);
-    if (activeRoom && !isMember) {
-      const friendInside = activeRoom.members.some((member) =>
+    const current = client.roomCode ? runtime.rooms.get(client.roomCode) : null;
+    if (current && current.gameId === gameId && (runtime.roomIsLaunching(current) || runtime.roomIsInGame(current))) {
+      return false;
+    }
+    if (runtime.freeGameServerSlot(gameId) >= 0) return false;
+    for (const room of runtime.rooms.values()) {
+      if (room.gameId !== gameId || !(runtime.roomIsLaunching(room) || runtime.roomIsInGame(room))) continue;
+      const friendInside = room.members.some((member) =>
         member.accountId
         && runtime.social.relationshipBetween(client.accountId, member.accountId) === "friend"
       );
-      if (
-        friendInside
-        && runtime.roomAcceptsPlayers(activeRoom)
-        && activeRoom.members.length < activeRoom.maxPlayers
-      ) {
-        runtime.joinRoom(client, activeRoom.code, replyWs);
+      if (friendInside && runtime.roomAcceptsPlayers(room) && room.members.length < room.maxPlayers) {
+        runtime.joinRoom(client, room.code, replyWs);
         return true;
       }
-      runtime.sendError(
-        replyWs,
-        "GAME_SERVER_BUSY",
-        "Korsan oyun sunucusunda şu an başka bir masa var (kod " + activeRoom.code + "). Bitince tekrar dene ya da o masaya kodla katıl."
-      );
-      return true;
     }
-    if (!activeRoom && gameServerIsRecycling(gameId)) {
-      runtime.sendError(
-        replyWs,
-        "GAME_SERVER_BUSY",
-        "Korsan oyun sunucusu yeni masa için hazırlanıyor. Birkaç saniye sonra tekrar dene."
-      );
-      return true;
-    }
-    return false;
+    const active = activeRoomForGame(gameId);
+    runtime.sendError(
+      replyWs,
+      "GAME_SERVER_BUSY",
+      active
+        ? "Korsan oyun sunucularındaki tüm masalar dolu (ör. kod " + active.code + "). Bitince tekrar dene ya da bir masaya kodla katıl."
+        : "Korsan oyun sunucusu yeni masa için hazırlanıyor. Birkaç saniye sonra tekrar dene."
+    );
+    return true;
   };
 
   runtime.wss.on("connection", (ws) => {
@@ -96,8 +92,7 @@ const serverSource = fs.readFileSync(serverPath, "utf8") + `
         const client = clientForSocket(ws);
         const room = client?.roomCode ? runtime.rooms.get(client.roomCode) : null;
         if (room && singleInstanceGameIds.has(room.gameId)) {
-          const activeRoom = activeRoomForGame(room.gameId, room.code);
-          if (activeRoom || gameServerIsRecycling(room.gameId)) {
+          if (runtime.freeGameServerSlot(room.gameId, room.code) < 0) {
             runtime.sendError(
               ws,
               "GAME_SERVER_BUSY",
@@ -132,7 +127,7 @@ const serverSource = fs.readFileSync(serverPath, "utf8") + `
           && endedRoom.matchId === endedMatchId
           && runtime.roomState(endedRoom) === "ended"
         ) {
-          recycleGuardUntil.set(endedGameId, Date.now() + GAME_SERVER_RECYCLE_GUARD_MS);
+          recycleGuardUntil.set(endedGameId + ":" + (endedRoom.serverSlot || 0), Date.now() + GAME_SERVER_RECYCLE_GUARD_MS);
         }
       }
     });

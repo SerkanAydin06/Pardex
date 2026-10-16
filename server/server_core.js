@@ -8,7 +8,10 @@ const { userSummary } = require("./user_admin");
 
 const PORT = Number(process.env.PORT || 8765);
 const HOST = process.env.HOST || "0.0.0.0";
-const KORSAN_GAME_SERVER_URL = String(process.env.KORSAN_GAME_SERVER_URL || "").trim();
+// One address per dedicated Korsan server process; each process runs one
+// table, so several addresses (comma-separated) allow several tables at once.
+const KORSAN_GAME_SERVER_URLS = String(process.env.KORSAN_GAME_SERVER_URLS || process.env.KORSAN_GAME_SERVER_URL || "")
+  .split(",").map((url) => url.trim()).filter(Boolean);
 const GAME_SERVER_TOKEN = String(process.env.PARDEX_GAME_SERVER_TOKEN || "").trim();
 const SESSION_GRACE_MS = Math.max(1000, Number(process.env.SESSION_GRACE_MS || 30_000));
 const ROOM_INVITE_TTL_MS = Math.max(15_000, Number(process.env.ROOM_INVITE_TTL_MS || 60_000));
@@ -128,9 +131,29 @@ function pruneGameLaunchTickets(now = Date.now()) {
   }
 }
 
-function gameServerUrl(gameId) {
-  if (gameId === "korsanlar") return KORSAN_GAME_SERVER_URL;
-  return "";
+function gameServerUrls(gameId) {
+  return gameId === "korsanlar" ? KORSAN_GAME_SERVER_URLS : [];
+}
+
+function gameServerUrl(gameId, room = null) {
+  const urls = gameServerUrls(gameId);
+  return urls[room?.serverSlot || 0] || urls[0] || "";
+}
+
+// Lowest game server slot that no launching or running table uses; -1 when
+// every server is busy.
+function freeGameServerSlot(gameId, excludeCode = "") {
+  const busy = new Set();
+  for (const room of rooms.values()) {
+    if (room.code === excludeCode || room.gameId !== gameId) continue;
+    if (roomIsLaunching(room) || roomIsInGame(room)) busy.add(room.serverSlot || 0);
+  }
+  const count = gameServerUrls(gameId).length;
+  for (let slot = 0; slot < count; slot += 1) {
+    if (busy.has(slot) || hooks.slotUnavailable?.(gameId, slot)) continue;
+    return slot;
+  }
+  return -1;
 }
 
 function gameDisplayName(gameId) {
@@ -343,7 +366,7 @@ function roomPayload(room) {
   return {
     code: room.code,
     game_id: room.gameId,
-    game_server_url: gameServerUrl(room.gameId),
+    game_server_url: gameServerUrl(room.gameId, room),
     host_id: room.hostId,
     max_players: room.maxPlayers,
     state,
@@ -810,6 +833,7 @@ function startRoomGame(client) {
 function launchRoomMatch(room, client) {
   pruneGameLaunchTickets();
   room.state = "launching";
+  room.serverSlot = Math.max(0, freeGameServerSlot(room.gameId, room.code));
   room.matchId = crypto.randomUUID();
   room.launchStartedAt = Date.now();
   room.startedAt = 0;
@@ -1662,7 +1686,8 @@ const httpServer = http.createServer((req, res) => {
       pendingRoomInvites: roomInvites.size,
       socialAccounts: Object.keys(social.data.accounts).length,
       socialDataPathConfigured: Boolean(SOCIAL_DATA_PATH),
-      korsanGameServerAssigned: Boolean(KORSAN_GAME_SERVER_URL),
+      korsanGameServerAssigned: KORSAN_GAME_SERVER_URLS.length > 0,
+      korsanGameServers: KORSAN_GAME_SERVER_URLS.length,
       voiceRelay: VOICE_RELAY_ENABLED,
       presence: true,
       friendRoomJoin: true,

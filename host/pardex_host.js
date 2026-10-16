@@ -30,7 +30,9 @@ const REPO = "SerkanAydin06/Pardex";
 const ADDRESS_BRANCH = "sunucu-adresi";
 const ADDRESS_FILE = "online.json";
 const ONLINE_PORT = 8765;
+// Table N's game server listens on GAME_PORT + N.
 const GAME_PORT = 8766;
+const MAX_TABLES = 4;
 const PANEL_PORT = Number(process.env.PARDEX_PANEL_PORT || 8790);
 const IS_WINDOWS = process.platform === "win32";
 
@@ -186,6 +188,44 @@ function track(label, child, critical) {
   return child;
 }
 
+function tableCount() {
+  return Math.min(MAX_TABLES, Math.max(1, Math.floor(Number(config.table_count) || 1)));
+}
+
+// A named Cloudflare tunnel keeps the same addresses on every start. Its
+// public hostnames are set in the Cloudflare dashboard: the PARDEX address to
+// http://localhost:8765 and table N's game address to http://localhost:(8766+N).
+function namedTunnelHosts() {
+  const host = (value) => String(value || "").trim().replace(/^[a-z]+:\/\//i, "").replace(/\/.*$/, "");
+  return {
+    online: host(config.tunnel_online_host),
+    games: String(config.tunnel_game_hosts || "").split(",").map(host).filter(Boolean),
+  };
+}
+
+function useNamedTunnel() {
+  return Boolean(String(config.tunnel_token || "").trim() && namedTunnelHosts().online);
+}
+
+function openNamedTunnel(cloudflared) {
+  return new Promise((resolve, reject) => {
+    const child = track("Sabit tünel", spawn(cloudflared, [
+      "tunnel", "--no-autoupdate", "run", "--token", String(config.tunnel_token).trim(),
+    ], { stdio: ["ignore", "pipe", "pipe"], windowsHide: true }), true);
+    const timer = setTimeout(() => reject(new Error("Sabit tünel 60 saniyede bağlanamadı. Tünel anahtarını kontrol et.")), 60_000);
+    const onData = (chunk) => {
+      if (!/Registered tunnel connection/i.test(String(chunk))) return;
+      clearTimeout(timer);
+      child.stdout.off("data", onData);
+      child.stderr.off("data", onData);
+      resolve();
+    };
+    child.stdout.on("data", onData);
+    child.stderr.on("data", onData);
+    child.once("exit", () => reject(new Error("Sabit tünel kapandı. Tünel anahtarını kontrol et.")));
+  });
+}
+
 function openTunnel(cloudflared, port, label) {
   return new Promise((resolve, reject) => {
     const child = track(label, spawn(cloudflared, [
@@ -205,7 +245,7 @@ function openTunnel(cloudflared, port, label) {
   });
 }
 
-function startOnlineServer(gameServerUrl) {
+function startOnlineServer(gameServerUrls) {
   fs.mkdirSync(path.dirname(DATA_PATH), { recursive: true });
   track("PARDEX Online", spawn(process.execPath, ["production_server.js"], {
     cwd: SERVER_DIR,
@@ -216,7 +256,7 @@ function startOnlineServer(gameServerUrl) {
       PARDEX_SOCIAL_DATA_PATH: DATA_PATH,
       PARDEX_GAME_SERVER_TOKEN: config.game_token,
       PARDEX_ADMIN_TOKEN: config.admin_token,
-      KORSAN_GAME_SERVER_URL: gameServerUrl,
+      KORSAN_GAME_SERVER_URLS: gameServerUrls.join(","),
     },
     stdio: ["ignore", "pipe", "pipe"],
     windowsHide: true,
@@ -249,16 +289,18 @@ function dedicatedServerScene(fromProject) {
 // Resolves once Korsan prints PARDEX_GAME_SERVER_READY. Without this check the
 // panel said "Sunucu açık" even when the game server never started, and
 // players' games fell back to the LAN screen.
-function startGameServer() {
+function startGameServer(table) {
+  const port = GAME_PORT + table;
+  const label = table === 0 ? "Oyun sunucusu" : `Oyun sunucusu ${table + 1}`;
   const fromProject = isProjectFolder(config.korsan_exe);
   const program = fromProject ? config.godot_exe : config.korsan_exe;
-  const child = track("Oyun sunucusu", spawn(program, [
+  const child = track(label, spawn(program, [
     "--headless",
     ...(fromProject ? ["--path", config.korsan_exe] : []),
     dedicatedServerScene(fromProject),
     "--",
     "--pardex-dedicated",
-    `--pardex-port=${GAME_PORT}`,
+    `--pardex-port=${port}`,
     `--pardex-online-server=ws://127.0.0.1:${ONLINE_PORT}`,
   ], {
     cwd: fromProject ? config.korsan_exe : path.dirname(config.korsan_exe),
@@ -286,7 +328,7 @@ function startGameServer() {
     // Also accept the game port answering, in case Godot's output does not
     // reach the panel.
     const poll = setInterval(() => {
-      const socket = net.connect(GAME_PORT, "127.0.0.1");
+      const socket = net.connect(port, "127.0.0.1");
       socket.once("connect", () => { socket.destroy(); finish(); });
       socket.once("error", () => socket.destroy());
     }, 1000);
@@ -371,27 +413,40 @@ async function startServer(localOnly) {
     }
     ensureServerDependencies();
     const game = gameStatus();
+    const tables = game.ok ? tableCount() : 0;
+    const tableIndexes = Array.from({ length: tables }, (_, table) => table);
     let onlineUrl = `ws://127.0.0.1:${ONLINE_PORT}`;
-    let gameUrl = game.ok ? `ws://127.0.0.1:${GAME_PORT}` : "";
+    let gameUrls = tableIndexes.map((table) => `ws://127.0.0.1:${GAME_PORT + table}`);
     if (!state.localOnly) {
       const cloudflared = await ensureCloudflared();
       setPhase("starting", "İnternet tünelleri açılıyor...");
-      const tunnels = [openTunnel(cloudflared, ONLINE_PORT, "PARDEX tüneli")];
-      if (game.ok) tunnels.push(openTunnel(cloudflared, GAME_PORT, "Oyun tüneli"));
-      [onlineUrl, gameUrl = ""] = await Promise.all(tunnels);
+      if (useNamedTunnel()) {
+        const hosts = namedTunnelHosts();
+        if (hosts.games.length < tables) {
+          throw new Error(`Sabit tünel için ${tables} oyun adresi gerekli (Ayarlar › Oyun adresleri).`);
+        }
+        await openNamedTunnel(cloudflared);
+        onlineUrl = `wss://${hosts.online}`;
+        gameUrls = hosts.games.slice(0, tables).map((host) => `wss://${host}`);
+      } else {
+        [onlineUrl, ...gameUrls] = await Promise.all([
+          openTunnel(cloudflared, ONLINE_PORT, "PARDEX tüneli"),
+          ...tableIndexes.map((table) => openTunnel(cloudflared, GAME_PORT + table, table === 0 ? "Oyun tüneli" : `Oyun tüneli ${table + 1}`)),
+        ]);
+      }
     }
-    startOnlineServer(gameUrl);
+    startOnlineServer(gameUrls);
     await waitForHealth();
-    if (game.ok) {
+    if (tables > 0) {
       setPhase("starting", "Oyun sunucusu hazırlanıyor (ilk açılış birkaç dakika sürebilir)...");
-      await startGameServer();
+      await Promise.all(tableIndexes.map((table) => startGameServer(table)));
     }
     if (!state.localOnly) {
       setPhase("starting", "Adres arkadaşlarına duyuruluyor...");
       await publishAddress(onlineUrl);
     }
     state.onlineUrl = onlineUrl;
-    state.gameUrl = gameUrl;
+    state.gameUrl = gameUrls.join(", ");
     setPhase("running", state.localOnly
       ? "Sunucu açık (yerel test: yalnızca bu bilgisayar bağlanabilir)."
       : "Sunucu açık. Arkadaşların PARDEX'i açınca otomatik bağlanır.");
@@ -445,6 +500,10 @@ function publicState() {
       korsan_path: config.korsan_exe || "",
       godot_exe: config.godot_exe || "",
       has_token: Boolean(extractToken(config.github_token)),
+      table_count: tableCount(),
+      has_tunnel_token: Boolean(String(config.tunnel_token || "").trim()),
+      tunnel_online_host: config.tunnel_online_host || "",
+      tunnel_game_hosts: config.tunnel_game_hosts || "",
     },
     game,
     canBrowse: IS_WINDOWS,
@@ -509,6 +568,15 @@ async function handle(request, response) {
     case "/api/config": {
       if (typeof body.korsan_path === "string") config.korsan_exe = cleanPath(body.korsan_path);
       if (typeof body.godot_exe === "string") config.godot_exe = cleanPath(body.godot_exe);
+      if (body.table_count !== undefined) config.table_count = Math.min(MAX_TABLES, Math.max(1, Math.floor(Number(body.table_count) || 1)));
+      if (typeof body.tunnel_online_host === "string") config.tunnel_online_host = body.tunnel_online_host.trim();
+      if (typeof body.tunnel_game_hosts === "string") config.tunnel_game_hosts = body.tunnel_game_hosts.trim();
+      if (typeof body.tunnel_token === "string" && body.tunnel_token.trim()) {
+        // "cloudflared ... --token XYZ" may be pasted whole; keep the token only.
+        const parts = body.tunnel_token.trim().split(/\s+/);
+        config.tunnel_token = parts[parts.length - 1];
+      }
+      if (body.clear_tunnel === true) config.tunnel_token = "";
       if (typeof body.github_token === "string" && body.github_token.trim()) {
         const token = extractToken(body.github_token);
         if (!token) {

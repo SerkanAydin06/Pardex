@@ -44,7 +44,7 @@
   .field label { display: block; font-weight: 600; margin-bottom: 4px; }
   .hint { color: var(--text-3); font-size: 13px; margin-top: 4px; }
   .hint.ok { color: var(--green); } .hint.warn { color: var(--amber); }
-  input[type=text], input[type=password] {
+  input[type=text], input[type=password], select {
     flex: 1; min-width: 0; font: inherit; color: var(--text); background: #060b15; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
   }
   input:focus { outline: 2px solid #2fb8ff55; border-color: var(--cyan); }
@@ -132,6 +132,30 @@
         <button class="small browse" data-kind="godot" data-target="godotExe">Dosya Seç</button>
       </div>
       <div class="hint">Oyun proje klasöründen açılırken kullanılır. Godot'u açtığın .exe dosyası.</div>
+    </div>
+    <div class="field">
+      <label for="tableCount">Aynı anda kaç masa</label>
+      <div class="row"><select id="tableCount">
+        <option value="1">1 masa</option><option value="2">2 masa</option>
+        <option value="3">3 masa</option><option value="4">4 masa</option>
+      </select></div>
+      <div class="hint">Her masa ayrı bir oyun sunucusu açar; bilgisayar güçlüyse artır.</div>
+    </div>
+    <div class="field">
+      <label for="tunnelToken">Sabit tünel (isteğe bağlı)</label>
+      <div class="row"><input type="password" id="tunnelToken" placeholder="Cloudflare tünel anahtarı (eyJ...)" autocomplete="off"></div>
+      <div class="row" style="margin-top:8px"><input type="text" id="tunnelOnline" placeholder="PARDEX adresi, ör. pardex.alanadin.com"></div>
+      <div class="row" style="margin-top:8px"><input type="text" id="tunnelGames" placeholder="Oyun adresleri (masa başına bir), ör. masa1.alanadin.com, masa2.alanadin.com"></div>
+      <div class="hint" id="tunnelHint"></div>
+      <details style="margin-top:8px">
+        <summary>Sabit tünel nasıl kurulur?</summary>
+        <ol class="steps">
+          <li>Cloudflare'de alan adın olmalı. <b>Zero Trust › Networks › Tunnels</b>'tan yeni tünel oluştur.</li>
+          <li><i>Public hostname</i> ekle: PARDEX adresi → <b>http://localhost:8765</b>; masa 1 → <b>http://localhost:8766</b>, masa 2 → <b>8767</b>...</li>
+          <li>Kurulum komutundaki anahtarı (eyJ ile başlar) buraya yapıştır, adresleri yaz ve <b>Kaydet</b>'e bas.</li>
+        </ol>
+        <div class="hint">Boş bırakılırsa her açılışta yeni geçici adres alınır ve arkadaşlara otomatik duyurulur.</div>
+      </details>
     </div>
     <div class="field">
       <label for="token">GitHub anahtarı</label>
@@ -307,7 +331,14 @@ function render(s) {
   if (!editing) {
     $("korsanPath").value = s.config.korsan_path;
     $("godotExe").value = s.config.godot_exe;
+    $("tableCount").value = String(s.config.table_count);
+    $("tunnelOnline").value = s.config.tunnel_online_host;
+    $("tunnelGames").value = s.config.tunnel_game_hosts;
   }
+  $("tunnelHint").textContent = s.config.has_tunnel_token && s.config.tunnel_online_host
+    ? "Sabit tünel kayıtlı: adresler her açılışta aynı kalır."
+    : "Kayıtlı değil: geçici adresler kullanılır.";
+  $("tunnelHint").className = "hint " + (s.config.has_tunnel_token && s.config.tunnel_online_host ? "ok" : "");
   $("godotField").style.display = s.game.needsGodot ? "block" : "none";
   $("gameHint").textContent = s.game.text;
   $("gameHint").className = "hint " + (s.game.ok ? "ok" : "warn");
@@ -335,13 +366,19 @@ $("toggleBtn").onclick = async () => {
 };
 
 $("saveBtn").onclick = async () => {
-  const body = { korsan_path: $("korsanPath").value, godot_exe: $("godotExe").value };
+  const body = {
+    korsan_path: $("korsanPath").value, godot_exe: $("godotExe").value,
+    table_count: Number($("tableCount").value),
+    tunnel_online_host: $("tunnelOnline").value, tunnel_game_hosts: $("tunnelGames").value,
+  };
   if ($("token").value.trim()) body.github_token = $("token").value.trim();
+  if ($("tunnelToken").value.trim()) body.tunnel_token = $("tunnelToken").value.trim();
   editing = false;
   const result = await api("/api/config", body);
   render(result);
   if (result.error) { toast(result.error); return; }
   $("token").value = "";
+  $("tunnelToken").value = "";
   toast("Ayarlar kaydedildi.");
 };
 
@@ -354,7 +391,7 @@ document.querySelectorAll(".browse").forEach((b) => {
   };
 });
 
-["korsanPath", "godotExe"].forEach((id) => $(id).addEventListener("input", () => { editing = true; }));
+["korsanPath", "godotExe", "tableCount", "tunnelOnline", "tunnelGames"].forEach((id) => $(id).addEventListener("input", () => { editing = true; }));
 
 $("quitBtn").onclick = async () => {
   if (!confirm("Sunucu kapatılıp panel sonlandırılsın mı?")) return;
