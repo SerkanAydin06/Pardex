@@ -358,6 +358,7 @@ func _wire_online_signals() -> void:
 	PardexOnline.social_state_changed.connect(func(_state): _render_unread_badge())
 	PardexOnline.chat_message_received.connect(_on_chat_message)
 	PardexOnline.room_invite_received.connect(func(invite: Dictionary):
+		(%InviteSound as AudioStreamPlayer).play()
 		_desktop.notify("%s seni masaya davet ediyor" % str(invite.get("from_display_name", "Bir arkadaşın")))
 	)
 	PardexOnline.room_state_changed.connect(func(room: Dictionary):
@@ -433,6 +434,7 @@ func _on_chat_message(with_account_id: String, message: Dictionary, _client_id: 
 				sender = str(profile.get("display_name", sender))
 	var text := str(message.get("text", "")).replace("\n", " ")
 	var line := "%s: %s" % [sender, text.left(60) + ("…" if text.length() > 60 else "")]
+	(%MessageSound as AudioStreamPlayer).play()
 	_desktop.notify(line)
 	if _current_page != "messages":
 		_show_toast(line)

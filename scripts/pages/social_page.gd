@@ -207,6 +207,9 @@ func _render_online() -> void:
 	# "Tümünü Gör" only makes sense once there are friends to list.
 	(%OnlineToggle as Control).visible = not friends.is_empty()
 	if friends.is_empty():
+		if PardexOnline.is_loading_social():
+			_online_list.add_child(UI.skeleton_rows(3))
+			return
 		var message := "PARDEX Online bağlantısı bekleniyor" if not PardexOnline.is_online() else "Henüz arkadaşın yok"
 		_online_list.add_child(UI.empty_state("friends", message, "‘Arkadaş Ekle’ ile PARDEX kullanıcılarını bul.", true))
 		return

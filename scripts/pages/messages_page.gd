@@ -154,6 +154,9 @@ func _render() -> void:
 func _render_list() -> void:
 	UI.clear(_list)
 	var friends := _sorted_friends()
+	if friends.is_empty() and PardexOnline.is_loading_social():
+		_list.add_child(UI.skeleton_rows(4))
+		return
 	if friends.is_empty():
 		var message := "PARDEX Online bağlantısı bekleniyor" if not PardexOnline.is_online() else "Henüz arkadaşın yok"
 		var state := UI.empty_state("friends", message, "Arkadaşlar sekmesinden yeni kişiler ekleyebilirsin.", true)
@@ -272,7 +275,7 @@ func _render_messages() -> void:
 		_messages.add_child(state)
 		return
 	if not _histories.has(_selected_id):
-		_messages.add_child(UI.empty_state("message", "Mesajlar yükleniyor…", "", true))
+		_messages.add_child(UI.skeleton_rows(3, [260.0, 180.0, 220.0]))
 		return
 	var history: Array = _histories[_selected_id]
 	if history.is_empty():

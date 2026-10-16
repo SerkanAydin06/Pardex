@@ -530,6 +530,12 @@ func send_voice_frame(sequence: int, pcm_base64: String) -> void:
 	_send({"type": "voice_frame", "seq": sequence, "pcm": pcm_base64})
 
 
+# Connecting, or connected while the friend list has not arrived yet: lists
+# show loading placeholders instead of "no friends".
+func is_loading_social() -> bool:
+	return connection_state == "connecting" or (is_online() and social_state.is_empty())
+
+
 func is_online() -> bool:
 	return (
 		_session_ready

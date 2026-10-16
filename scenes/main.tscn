@@ -31,6 +31,9 @@
 
 [ext_resource type="PackedScene" path="res://scenes/ui/game_mode_dialog.tscn" id="40_game_mode"]
 
+[ext_resource type="AudioStream" uid="uid://dokqhe8khbham" path="res://assets/sfx/message.wav" id="90_message_sound"]
+[ext_resource type="AudioStream" uid="uid://5xk8gvmacidx" path="res://assets/sfx/invite.wav" id="91_invite_sound"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.024, 0.039, 0.078, 1)
 
@@ -707,3 +710,13 @@ ok_button_text = "Şimdi güncelle"
 cancel_button_text = "Sonra"
 dialog_text = "Yeni PARDEX sürümü hazır. Güncelleme indirilip kurulur, PARDEX kendiliğinden yeniden açılır."
 dialog_autowrap = true
+
+[node name="MessageSound" type="AudioStreamPlayer" parent="." unique_id=2144534738]
+unique_name_in_owner = true
+stream = ExtResource("90_message_sound")
+volume_db = -10.0
+
+[node name="InviteSound" type="AudioStreamPlayer" parent="." unique_id=2144534739]
+unique_name_in_owner = true
+stream = ExtResource("91_invite_sound")
+volume_db = -8.0
