@@ -35,7 +35,7 @@ var _library_page: VBoxContainer
 var _social_page: VBoxContainer
 var _profile_page: VBoxContainer
 var _messages_page: VBoxContainer
-var _desktop := DesktopNotify.new()
+var _desktop: DesktopNotify
 var _settings_content: VBoxContainer
 var _presence_menu: PopupMenu
 var _current_page := ""
@@ -62,6 +62,7 @@ func _ready() -> void:
 	_create_pages()
 	UI.refine_typography(self)
 	_wire_navigation()
+	_desktop = DesktopNotify.new()
 	add_child(_desktop)
 	_wire_online_signals()
 	%GameModeDialog.get_node("Options/Official").pressed.connect(_launch_official_game)
