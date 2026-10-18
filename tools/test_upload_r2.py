@@ -24,23 +24,53 @@ class UploadTest(unittest.TestCase):
                 'cover':{'url':'https://example.workers.dev/packages/'+art, 'sha256':art[:64], 'size':3}}]}
             (root / 'channel.json').write_text(json.dumps(manifest))
             calls = []
-            def run(command, check):
-                self.assertTrue(check)
+            uploaded = set()
+            def run(command, check, capture_output=False):
                 calls.append(command)
+                if 'head-object' in command:
+                    self.assertFalse(check)
+                    key = command[command.index('--key') + 1]
+                    return subprocess.CompletedProcess(command, 0 if key in uploaded else 255)
+                self.assertTrue(check)
+                return subprocess.CompletedProcess(command, 0)
+            copies = lambda: [c for c in calls if 'cp' in c]
             args = (root, 'https://example.workers.dev', 'a'*32)
-            upload(*args, run=run)
-            self.assertEqual(len(calls), 3)
-            self.assertIn('s3://pardex-releases/packages/'+name, calls[0])
-            self.assertIn('s3://pardex-releases/packages/'+art, calls[1])
-            self.assertIn('image/png', calls[1])
-            self.assertIn('s3://pardex-releases/channel.json', calls[2])
+            upload(*args, run=run, sleep=lambda _s: None)
+            self.assertEqual(len(copies()), 3)
+            self.assertIn('s3://pardex-releases/packages/'+name, copies()[0])
+            self.assertIn('s3://pardex-releases/packages/'+art, copies()[1])
+            self.assertIn('image/png', copies()[1])
+            self.assertIn('s3://pardex-releases/channel.json', copies()[2])
+            # Packages already in R2 are not uploaded again; the catalog always is.
             calls.clear()
-            def fail(command, check):
+            uploaded.update({'packages/'+name, 'packages/'+art})
+            upload(*args, run=run, sleep=lambda _s: None)
+            self.assertEqual(len(copies()), 1)
+            self.assertIn('s3://pardex-releases/channel.json', copies()[0])
+            uploaded.clear()
+            # A dropped connection is retried; the catalog is published afterwards.
+            calls.clear()
+            failures = [1]
+            def flaky(command, check, capture_output=False):
+                if 'cp' in command and failures and 'packages/'+name in ' '.join(command):
+                    failures.pop()
+                    calls.append(command)
+                    raise subprocess.CalledProcessError(1, command)
+                return run(command, check, capture_output)
+            upload(*args, run=flaky, sleep=lambda _s: None)
+            self.assertEqual(len([c for c in copies() if 'packages/'+name in ' '.join(c)]), 2)
+            self.assertIn('s3://pardex-releases/channel.json', copies()[-1])
+            # Still failing after all attempts: the catalog is never published.
+            calls.clear()
+            def fail(command, check, capture_output=False):
+                if 'head-object' in command:
+                    return run(command, check, capture_output)
                 calls.append(command)
                 raise subprocess.CalledProcessError(1, command)
             with self.assertRaises(subprocess.CalledProcessError):
-                upload(*args, run=fail)
-            self.assertEqual(len(calls), 1)  # Catalog never published after failure.
+                upload(*args, run=fail, sleep=lambda _s: None)
+            self.assertFalse(any('channel.json' in ' '.join(c) for c in copies()))
+            self.assertEqual(len(copies()), 3)  # three attempts for the first package
             calls.clear()
             package.write_bytes(b'evil')
             with self.assertRaises(ValueError):
