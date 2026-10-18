@@ -40,3 +40,6 @@ __pycache__/
 .wrangler/
 .dev.vars
 .dev.vars.*
+
+# PARDEX yayinla kisisel ayarlari
+tools/yayinla.local.json
