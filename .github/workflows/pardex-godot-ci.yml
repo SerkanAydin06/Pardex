@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - "project.godot"
+      - "export_presets.cfg"
+      - "tools/package_windows.ps1"
+      - "tools/pardex_installer.iss"
       - "scenes/**"
       - "scripts/**"
       - "assets/**"
@@ -13,6 +16,9 @@ on:
   pull_request:
     paths:
       - "project.godot"
+      - "export_presets.cfg"
+      - "tools/package_windows.ps1"
+      - "tools/pardex_installer.iss"
       - "scenes/**"
       - "scripts/**"
       - "assets/**"
@@ -115,3 +121,41 @@ jobs:
             shell-preview-*.png
             visual-current/*.png
           if-no-files-found: warn
+
+  windows-package:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Windows Godot and matching export templates
+        uses: solarlabyrinth/action-setup-godot@v3
+        with:
+          version: 4.7.1-stable
+          csharp: false
+          export-templates: true
+      - name: Import launcher resources
+        shell: pwsh
+        run: |
+          godot --headless --editor --path . --quit
+          if ($LASTEXITCODE -ne 0) { throw "Godot import failed" }
+      - name: Build standalone launcher installer
+        shell: pwsh
+        run: |
+          ./tools/package_windows.ps1 -GodotExe (Get-Command godot).Source -DistributionUrl "https://pardex-distribution.srknydn88.workers.dev"
+          if (!(Test-Path "dist/PARDEX-Setup.exe")) { throw "Installer was not built" }
+          if (Test-Path "dist/PARDEX-Windows/games") { throw "Games must not be bundled" }
+          $config = Get-Content "dist/PARDEX-Windows/pardex-distribution.json" -Raw | ConvertFrom-Json
+          if ($config.url -ne "https://pardex-distribution.srknydn88.workers.dev") { throw "Incorrect distribution URL" }
+      - name: Boot exported Windows launcher
+        shell: pwsh
+        run: |
+          $process = Start-Process -FilePath "$pwd/dist/PARDEX-Windows/PARDEX.exe" -ArgumentList '--headless --quit-after 10 --log-file export-boot.log' -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "Exported launcher failed" }
+          if (!(Test-Path "export-boot.log")) { throw "Boot log missing" }
+          if (Select-String -Path "export-boot.log" -Pattern 'SCRIPT ERROR:|ERROR:|Parse Error:') { throw "Exported launcher logged errors" }
+      - name: Upload Windows package
+        uses: actions/upload-artifact@v4
+        with:
+          name: PARDEX-Windows
+          path: |
+            dist/PARDEX-Setup.exe
+            dist/PARDEX-Windows.zip

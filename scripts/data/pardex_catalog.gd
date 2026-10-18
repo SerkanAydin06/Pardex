@@ -49,6 +49,11 @@ const GAMES := [
 
 static func all_games() -> Array:
 	var result := GAMES.duplicate(true)
+	# Built-in cards are previews until a package is published or installed.
+	# Keep the editor's sibling-project preview workflow intact.
+	if not OS.has_feature("editor"):
+		for item in result:
+			item["playable"] = is_installed(str(item["id"]))
 	for remote in Distribution.manifest.get("games", []):
 		var item: Dictionary = GAMES[0].duplicate(true)
 		item["cover"] = "res://assets/ui/pardex_hub_app_icon.png"
@@ -98,9 +103,8 @@ static func _load() -> ConfigFile:
 
 # ------------------------------------------------------------------ install
 
-# Korsanların Hazinesi ships as a packaged executable next to PARDEX (exported
-# builds) or as the sibling Godot project (editor); other games are not
-# released yet.
+# Managed downloads take priority. Keep legacy installations and sibling
+# development projects discoverable without bundling games into new setups.
 static func is_installed(game_id: String) -> bool:
 	if not Distribution.executable(game_id).is_empty():
 		return true
