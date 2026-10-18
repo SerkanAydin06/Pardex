@@ -368,7 +368,6 @@ func _wire_online_signals() -> void:
 		if not bool(room.get("launching", false)):
 			_game_launch_in_progress = false
 		if str(room.get("state", "")) == "ended":
-			if str(session["game"]) == "korsanlar":
 			_leave_finished_match()
 	)
 	PardexOnline.room_left.connect(func(): _game_launch_in_progress = false)

@@ -1,7 +1,7 @@
 # PARDEX'i kendi bilgisayarından açmak
 
-Sunucu senin bilgisayarında çalışır, arkadaşların internetten bağlanır. Ücret, hesap, port açma yok.
-Arkadaşların hiçbir ayar yapmaz: PARDEX açılışta senin sunucunun güncel adresini GitHub'dan otomatik okur.
+Sunucu senin bilgisayarında çalışır, arkadaşların internetten bağlanır. Oyuncu için port yönlendirme gerekmez. Dağıtım/adres servisi ayrıca yapılandırılır.
+Arkadaşların hiçbir ayar yapmaz: PARDEX açılışta senin sunucunun güncel adresini kendi HTTPS dağıtım adresinden otomatik okur.
 
 ## Kullanım
 
@@ -12,8 +12,9 @@ Arkadaşların hiçbir ayar yapmaz: PARDEX açılışta senin sunucunun güncel 
    - **Korsanların Hazinesi:** oyunun proje klasörü (içinde `project.godot` olan) ya da dışa aktarılmış exe.
      PARDEX klasörüyle yan yana `Korsanlarin-Hazinesi` klasöründeyse kendisi bulur. **Klasör Seç** ile de seçebilirsin.
    - **Godot programı:** proje klasörü kullanılıyorsa Godot'u açtığın .exe (**Dosya Seç**).
-   - **GitHub anahtarı:** https://github.com/settings/tokens/new?scopes=public_repo&description=PARDEX%20Sunucu bağlantısını aç, en alttaki **Generate token**'a bas,
-     çıkan `ghp_...` anahtarını panele yapıştır. Yalnızca bu bilgisayarda saklanır.
+   - **Dağıtım sunucusu yayın adresi:** kendi hizmetindeki `https://ALAN-ADIN/online.json` adresi.
+   - **Yayın anahtarı:** dağıtım sunucusundaki `PARDEX_PUBLISH_TOKEN` değeri (en az 32 karakter). Yalnız yönetici bilgisayarında tutulur; oyunculara gönderilmez.
+   - Dağıtım servisi kurulumu: [distribution/README.md](../distribution/README.md).
 3. **Sunucuyu Başlat**'a bas, yeşil **Sunucu açık** yazısını bekle (~10–20 sn).
 4. Bitince **Sunucuyu Durdur**. Arkadaşlarının PARDEX'i "sunucu kapalı" görür.
 
