@@ -35,3 +35,8 @@ host/data/
 distribution/public/
 release.local.json
 __pycache__/
+
+# Cloudflare local state and secrets
+.wrangler/
+.dev.vars
+.dev.vars.*

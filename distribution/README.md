@@ -50,3 +50,7 @@ Başka bir hizmet kullanılıyorsa aynı PUT sözleşmesini karşılayabilir. Sa
 - İlk sürüm Windows x64 içindir; oyun ZIP'i en fazla 2 GiB, açılmış toplamı 8 GiB ve 4096 dosya olabilir. İndirme kesilirse tekrar denenir; kaldığı bayttan devam etme henüz yoktur.
 - Windows EXE/Setup çalıştırılması ve kurulumun yeniden açılması ayrıca gerçek Windows makinede doğrulanmalıdır. İmzasız Setup için Windows uyarısı çıkabilir.
 - Canlı adres yapılandırılmadan paket dağıtmayın. Eski GitHub güncelleyicili kullanıcılar bu sürümü bir kez elle kurmalıdır.
+
+## Cloudflare R2
+
+Alan adı gerektirmeyen R2 + Worker kurulumu ve yükleme komutu için [Cloudflare yönergesi](cloudflare/README.md).
