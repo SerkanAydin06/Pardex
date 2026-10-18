@@ -16,6 +16,8 @@ const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const SLIDE_SECONDS := 8.0
 const HERO_TITLE_HEIGHT := 80.0
 const HERO_BODY_HEIGHT := 46.0
+const HEART := preload("res://assets/ui/icons/heart.svg")
+const HEART_FILL := preload("res://assets/ui/icons/heart_fill.svg")
 
 var _slide := 0
 var _hero_art: TextureRect
@@ -125,11 +127,40 @@ func _show_slide(index: int) -> void:
 	_hero_tag.text = str(slide["tag"])
 	_hero_title.text = str(slide["title"])
 	_hero_body.text = str(slide["body"])
+	_update_hero_actions(str(slide["game"]))
+	_sync_dots(slides.size())
 	for dot_index in _hero_dots.get_child_count():
 		var dot := _hero_dots.get_child(dot_index) as Button
 		var style := UI.box(UI.ACCENT if dot_index == _slide else Color(1, 1, 1, 0.3), 5)
 		for state in ["normal", "hover", "pressed"]:
 			dot.add_theme_stylebox_override(state, style)
+
+
+# The welcome slide has no game: no play or wish list buttons there. On a game
+# slide the buttons say what they do for that game right now.
+func _update_hero_actions(game_id: String) -> void:
+	var explore := %ExploreButton as Button
+	var wish := %WishButton as Button
+	explore.visible = not game_id.is_empty()
+	wish.visible = not game_id.is_empty()
+	if game_id.is_empty():
+		return
+	var action := Catalog.action_label(game_id)
+	(explore.get_node("Content/Group/Label") as Label).text = "Şimdi İncele" if action == "Yakında" else action
+	var wished := Catalog.is_wishlisted(game_id)
+	(wish.get_node("Content/Group/Label") as Label).text = "İstek Listesinden Çıkar" if wished else "İstek Listesine Ekle"
+	(wish.get_node("Content/Group/Icon") as TextureRect).texture = HEART_FILL if wished else HEART
+
+
+# One dot per slide: published games add slides, so dots follow the catalog.
+func _sync_dots(count: int) -> void:
+	while _hero_dots.get_child_count() < count:
+		# Without DUPLICATE_SIGNALS: the copy must not also jump to slide 0.
+		var dot := _hero_dots.get_child(0).duplicate(Node.DUPLICATE_GROUPS | Node.DUPLICATE_SCRIPTS | Node.DUPLICATE_USE_INSTANTIATION) as Button
+		dot.pressed.connect(_show_slide.bind(_hero_dots.get_child_count()))
+		_hero_dots.add_child(dot)
+	for dot_index in _hero_dots.get_child_count():
+		(_hero_dots.get_child(dot_index) as Button).visible = dot_index < count
 
 
 func _explore_slide() -> void:
@@ -143,7 +174,7 @@ func _explore_slide() -> void:
 func _toggle_slide_wishlist() -> void:
 	var game_id := str(_slides()[_slide]["game"])
 	if game_id.is_empty():
-		game_id = str(Catalog.all_games()[0]["id"])
+		return
 	var added := Catalog.toggle_wishlist(game_id)
 	toast.emit("%s istek listene %s." % [str(Catalog.game(game_id)["title"]), "eklendi" if added else "çıkarıldı"])
 	_render_shelves()
@@ -152,6 +183,8 @@ func _toggle_slide_wishlist() -> void:
 # ------------------------------------------------------------------ shelves
 
 func _render_shelves() -> void:
+	# Hero follows wish list and catalog changes made anywhere (cards, library).
+	_show_slide(_slide)
 	UI.clear(_featured)
 	for entry in Catalog.all_games():
 		_featured.add_child(_featured_card(entry))
