@@ -1,4 +1,4 @@
-# PARDEX yayınlama: sürümü artırır, kurulum dosyasını üretir ve arkadaşların
+﻿# PARDEX yayınlama: sürümü artırır, kurulum dosyasını üretir ve arkadaşların
 # PARDEX'i açınca güncellenecek şekilde Cloudflare R2'ye yükler.
 # Kişisel ayarlar (Godot yolu, hesap kimliği) tools\yayinla.local.json'da
 # saklanır ve Git'e eklenmez. Gizli anahtar istemez: R2 yüklemesi AWS CLI'nin
@@ -107,6 +107,6 @@ Pop-Location
 
 Write-Host ""
 Write-Host "Yayinlandi: PARDEX $version" -ForegroundColor Green
-Write-Host "Arkadaslarin PARDEX'i acinca (ya da 15 dakika icinde) guncelleme sorulacak."
+Write-Host "Arkadaslarin PARDEX'i acinca (ya da 15 dakika icinde) kendiliginden guncellenecek."
 Write-Host "Surum degisikligini (scripts\main.gd) GitHub Desktop'ta commit edip gonder."
 Read-Host "Kapatmak icin Enter'a bas"

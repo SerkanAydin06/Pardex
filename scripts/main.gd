@@ -398,11 +398,9 @@ func _update_connection_ui(state: String) -> void:
 func _wire_updater() -> void:
 	_updater = Updater.new()
 	add_child(_updater)
-	var dialog := %UpdateDialog as ConfirmationDialog
-	_updater.update_available.connect(func(version: String):
-		dialog.dialog_text = "PARDEX %s hazır (şu an %s). Güncelleme indirilip kurulur, PARDEX kendiliğinden yeniden açılır." % [version, APP_VERSION]
-		dialog.popup_centered()
-	)
+	# Updates install without asking, like a store client. A running game or
+	# download is never interrupted: the update waits and is retried.
+	_updater.update_available.connect(func(_version: String): _install_pending_update())
 	_updater.update_failed.connect(_show_toast)
 	_updater.progress.connect(_show_toast)
 	_updater.catalog_changed.connect(func():
@@ -412,7 +410,10 @@ func _wire_updater() -> void:
 			elif page.has_method("_render_shelves"):
 				page.call("_render_shelves")
 	)
-	_updater.game_installed.connect(func(id: String): _show_toast("%s hazır. Oyna düğmesiyle başlatabilirsin." % str(Catalog.game(id).get("title", id))))
+	_updater.game_installed.connect(func(id: String):
+		_show_toast("%s hazır. Oyna düğmesiyle başlatabilirsin." % str(Catalog.game(id).get("title", id)))
+		_install_pending_update()
+	)
 	_updater.game_uninstalled.connect(func(id: String): _show_toast("%s kaldırıldı." % str(Catalog.game(id).get("title", id))))
 	(%UninstallDialog as ConfirmationDialog).confirmed.connect(func():
 		if _is_game_running(_uninstall_game_id):
@@ -435,16 +436,19 @@ func _wire_updater() -> void:
 	var timer := Timer.new()
 	timer.wait_time = 900.0
 	timer.autostart = true
-	timer.timeout.connect(func(): _updater.check(APP_VERSION))
-	add_child(timer)
-	dialog.confirmed.connect(func():
-		if not _sessions.is_empty():
-			_show_toast("PARDEX güncellemesi için açık oyunları kapat.")
-			return
-		_show_toast("Güncelleme indiriliyor…")
-		_updater.install()
+	timer.timeout.connect(func():
+		_install_pending_update()
+		_updater.check(APP_VERSION)
 	)
+	add_child(timer)
 	_updater.check(APP_VERSION)
+
+
+func _install_pending_update() -> void:
+	if _updater.latest_version.is_empty() or not _sessions.is_empty() or _updater.busy():
+		return
+	_show_toast("PARDEX %s yükleniyor; birazdan kendiliğinden yeniden açılacak." % _updater.latest_version)
+	_updater.install()
 
 
 # ------------------------------------------------------------------ messages
@@ -694,6 +698,8 @@ func _poll_sessions() -> void:
 			continue
 		_save_session_playtime(session, now)
 		_sessions.erase(pid)
+		# A PARDEX update that waited for this game installs now.
+		_install_pending_update.call_deferred()
 		if not bool(session.get("record_activity", true)):
 			continue
 		if str(session["game"]) == "korsanlar":

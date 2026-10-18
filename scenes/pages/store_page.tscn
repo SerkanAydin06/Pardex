@@ -1280,7 +1280,7 @@ text = "Şimdi İncele"
 
 [node name="WishButton" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1" unique_id=551321806]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(170, 44)
+custom_minimum_size = Vector2(232, 44)
 layout_mode = 2
 focus_mode = 0
 mouse_default_cursor_shape = 2
