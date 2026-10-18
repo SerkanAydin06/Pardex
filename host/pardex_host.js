@@ -7,7 +7,7 @@
 //   1. PARDEX Online sunucusunu (server/production_server.js, 127.0.0.1:8765)
 //   2. Korsanların Hazinesi oyun sunucusunu (exe ya da Godot proje klasörü, 127.0.0.1:8766)
 //   3. Her ikisi için ücretsiz Cloudflare Quick Tunnel'ı açar
-//   4. Güncel wss:// adresini GitHub'daki sunucu-adresi dalına online.json olarak yazar.
+//   4. Güncel wss:// adresini kendi dağıtım sunucuna online.json olarak yazar.
 // PARDEX istemcileri adresi oradan okur; arkadaşların hiçbir ayar yapmaz.
 //
 // Kullanım: PARDEX-Sunucu.bat (Windows) veya `node host/pardex_host.js`.
@@ -26,9 +26,6 @@ const BIN_DIR = path.join(__dirname, "bin");
 const PANEL_PATH = path.join(__dirname, "panel.html");
 const CONFIG_PATH = path.join(__dirname, "pardex_host.local.json");
 const DATA_PATH = path.join(__dirname, "data", "social.json");
-const REPO = "SerkanAydin06/Pardex";
-const ADDRESS_BRANCH = "sunucu-adresi";
-const ADDRESS_FILE = "online.json";
 const ONLINE_PORT = 8765;
 // Table N's game server listens on GAME_PORT + N.
 const GAME_PORT = 8766;
@@ -82,12 +79,6 @@ function cleanPath(value) {
   // Accept quoted paths and a dragged project.godot file as its folder.
   const clean = String(value || "").trim().replace(/^"|"$/g, "");
   return path.basename(clean).toLowerCase() === "project.godot" ? path.dirname(clean) : clean;
-}
-
-// Pull the real token out of whatever was pasted (labels, quotes, spaces).
-function extractToken(value) {
-  const match = String(value || "").match(/github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{20,}/);
-  return match ? match[0] : "";
 }
 
 function isProjectFolder(target) {
@@ -342,54 +333,15 @@ function startGameServer(table) {
 
 // ------------------------------------------------------------------ address board
 
-async function github(method, endpoint, body) {
-  const response = await fetch(`https://api.github.com/repos/${REPO}${endpoint}`, {
-    method,
-    headers: {
-      Accept: "application/vnd.github+json",
-      Authorization: `Bearer ${extractToken(config.github_token)}`,
-      "User-Agent": "pardex-host",
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const data = await response.json().catch(() => ({}));
-  return { status: response.status, data };
-}
-
-function githubError(what, reply) {
-  const reason = reply.data && reply.data.message ? ` GitHub: "${reply.data.message}".` : "";
-  const fix = reply.status === 401
-    ? " Anahtar geçersiz ya da süresi dolmuş; panelden yeni anahtar oluştur."
-    : " Anahtarın yazma izni yok. Paneldeki 'Anahtar nasıl alınır?' bağlantısıyla yeni (klasik, ghp_) anahtar oluşturup kaydet.";
-  return new Error(`${what} (HTTP ${reply.status}).${reason}${fix}`);
-}
-
 async function publishAddress(onlineUrl) {
-  const filePath = `/contents/${ADDRESS_FILE}`;
-  let current = await github("GET", `${filePath}?ref=${ADDRESS_BRANCH}`);
-  if (current.status === 404) {
-    const branch = await github("GET", `/git/ref/heads/${ADDRESS_BRANCH}`);
-    if (branch.status === 404) {
-      const main = await github("GET", "/git/ref/heads/main");
-      if (main.status !== 200) throw githubError("GitHub anahtarı reddedildi", main);
-      const created = await github("POST", "/git/refs", { ref: `refs/heads/${ADDRESS_BRANCH}`, sha: main.data.object.sha });
-      if (created.status !== 201) throw githubError("Adres dalı oluşturulamadı", created);
-    }
-    current = { status: 404, data: {} };
-  } else if (current.status !== 200) {
-    throw githubError("GitHub anahtarı reddedildi", current);
-  }
-  const content = JSON.stringify({ online: onlineUrl, updated_at: new Date().toISOString() }, null, 2) + "\n";
-  const result = await github("PUT", filePath, {
-    message: onlineUrl ? "PARDEX sunucusu açık" : "PARDEX sunucusu kapalı",
-    content: Buffer.from(content).toString("base64"),
-    branch: ADDRESS_BRANCH,
-    sha: current.data.sha,
+  const target = String(config.publish_url || "").trim();
+  if (!target.startsWith("https://")) throw new Error("Dağıtım adresi HTTPS olmalı.");
+  const response = await fetch(target, {
+    method: "PUT", redirect: "error", signal: AbortSignal.timeout(15000),
+    headers: {"Content-Type":"application/json", Authorization:`Bearer ${config.publish_token || ""}`},
+    body: JSON.stringify({online:onlineUrl}),
   });
-  if (result.status !== 200 && result.status !== 201) {
-    throw githubError("Sunucu adresi yayınlanamadı", result);
-  }
+  if (!response.ok) throw new Error(`Sunucu adresi yayınlanamadı (HTTP ${response.status}).`);
 }
 
 // ------------------------------------------------------------------ start / stop
@@ -408,8 +360,8 @@ async function startServer(localOnly) {
   state.gameUrl = "";
   try {
     setPhase("starting", "Sunucu başlatılıyor...");
-    if (!state.localOnly && !extractToken(config.github_token)) {
-      throw new Error("Önce GitHub anahtarını kaydet (Ayarlar bölümü).");
+    if (!state.localOnly && (!config.publish_url || !config.publish_token)) {
+      throw new Error("Önce dağıtım sunucusunun yayın adresini ve anahtarını kaydet (Ayarlar bölümü).");
     }
     ensureServerDependencies();
     const game = gameStatus();
@@ -499,7 +451,8 @@ function publicState() {
     config: {
       korsan_path: config.korsan_exe || "",
       godot_exe: config.godot_exe || "",
-      has_token: Boolean(extractToken(config.github_token)),
+      has_token: Boolean(config.publish_token),
+      publish_url: config.publish_url || "",
       table_count: tableCount(),
       has_tunnel_token: Boolean(String(config.tunnel_token || "").trim()),
       tunnel_online_host: config.tunnel_online_host || "",
@@ -577,13 +530,14 @@ async function handle(request, response) {
         config.tunnel_token = parts[parts.length - 1];
       }
       if (body.clear_tunnel === true) config.tunnel_token = "";
-      if (typeof body.github_token === "string" && body.github_token.trim()) {
-        const token = extractToken(body.github_token);
-        if (!token) {
-          log("Yapıştırılan metinde GitHub anahtarı bulunamadı; anahtar kaydedilmedi.");
-          return sendJson(response, { ...publicState(), error: "Bu bir GitHub anahtarı değil. Anahtar ghp_ ya da github_pat_ ile başlar; yalnızca onu kopyala." });
-        }
-        config.github_token = token;
+      if (typeof body.publish_url === "string") {
+        const url = body.publish_url.trim();
+        if (url && !/^https:\/\/[^\s@]+\/online\.json$/.test(url)) return sendJson(response, {error:"HTTPS online.json adresi gerekli."}, 400);
+        config.publish_url = url;
+      }
+      if (typeof body.publish_token === "string" && body.publish_token.trim()) {
+        if (body.publish_token.trim().length < 32) return sendJson(response, {error:"Yayın anahtarı en az 32 karakter olmalı."}, 400);
+        config.publish_token = body.publish_token.trim();
       }
       saveConfig();
       log("Ayarlar kaydedildi.");

@@ -93,7 +93,7 @@ func _render_identity() -> void:
 func _render_stats() -> void:
 	var friends = PardexOnline.social_state.get("friends", [])
 	for stat in [
-		["GamesStat", str(Catalog.GAMES.size())],
+		["GamesStat", str(Catalog.all_games().size())],
 		["AchievementsStat", "0"],
 		["PlaytimeStat", Catalog.hours(Catalog.total_playtime())],
 		["FriendsStat", str((friends as Array).size() if typeof(friends) == TYPE_ARRAY else 0)],

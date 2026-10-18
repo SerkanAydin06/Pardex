@@ -17,14 +17,14 @@ Repo içindeki `tools\package_windows.ps1` hem PARDEX'i hem de yan klasördeki `
 PARDEX repo kökünde PowerShell açıp:
 
 ```powershell
-.\tools\package_windows.ps1 -GodotExe "C:\Godot\Godot_v4.7.2-stable_win64.exe"
+.\tools\package_windows.ps1 -DistributionUrl "https://ALAN-ADIN" -GodotExe "C:\Godot\Godot_v4.7.2-stable_win64.exe"
 ```
 
 Korsan repo başka bir yerdeyse:
 
 ```powershell
 .\tools\package_windows.ps1 `
-  -GodotExe "C:\Godot\Godot_v4.7.2-stable_win64.exe" `
+  -DistributionUrl "https://ALAN-ADIN" -GodotExe "C:\Godot\Godot_v4.7.2-stable_win64.exe" `
   -KorsanProject "D:\Projeler\Korsanlarin-Hazinesi"
 ```
 
@@ -46,10 +46,6 @@ Dağıtılacak paket `PARDEX-Windows.zip` dosyasıdır. Kullanıcı klasör yap�
 
 Bilgisayarda [Inno Setup 6](https://jrsoftware.org/isdl.php) kuruluysa paket betiği ayrıca `dist\PARDEX-Setup.exe` üretir (`tools\pardex_installer.iss`). Kurulum yönetici izni istemez, PARDEX'i `%LOCALAPPDATA%\Programs\PARDEX` altına kurar ve kısayol oluşturur.
 
-Yeni sürüm yayınlamak için:
+Yeni sürüm yayınlamak için `APP_VERSION` ve `project.godot` sürümünü artır, kalıcı `-DistributionUrl` ile paketi oluştur ve [bağımsız dağıtım yönergesindeki](distribution/README.md) yayınlama aracını çalıştır. Paketler kendi HTTPS hizmetinde barındırılır; GitHub Release kullanılmaz.
 
-1. `scripts\main.gd` içindeki `APP_VERSION` değerini artır (ör. `0.1.1`).
-2. Paket betiğini çalıştır.
-3. GitHub'da `v0.1.1` etiketiyle yeni bir **Release** oluştur ve `PARDEX-Setup.exe` dosyasını ekle.
-
-Kurulu PARDEX açılışta en son Release'i kontrol eder; sürüm daha yeniyse "Şimdi güncelle" sorar, kurulumu sessizce çalıştırır ve kendini yeniden açar. Editörden çalıştırılan PARDEX güncelleme aramaz.
+Pardex açılışta ve 15 dakikada bir `channel.json` dosyasını kontrol eder. Uygulama güncellemesi Windows export sürümünde çalışır; paket boyutu ve SHA-256 doğrulanır, kurulum mevcut dizine yapılır ve Pardex tekrar açılır. Kurulu oyunlar ayrı sürüm klasörlerinde tutulur; yeni katalog oyunları indirilebilir. Canlı dağıtım adresi ayarlanmadan kullanıcıya paket gönderilmemelidir.

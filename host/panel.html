@@ -158,19 +158,12 @@
       </details>
     </div>
     <div class="field">
-      <label for="token">GitHub anahtarı</label>
-      <div class="row"><input type="password" id="token" placeholder="ghp_..." autocomplete="off"></div>
+      <label for="publishUrl">Dağıtım sunucusu yayın adresi</label>
+      <input type="url" id="publishUrl" placeholder="https://alan-adin/online.json">
+      <label for="token">Yayın anahtarı</label>
+      <input type="password" id="token" autocomplete="off" placeholder="Sunucuda tanımladığın yayın anahtarı">
       <div class="hint" id="tokenHint"></div>
-      <details style="margin-top:8px">
-        <summary>Anahtar nasıl alınır?</summary>
-        <ol class="steps">
-          <li><a href="https://github.com/settings/tokens/new?scopes=public_repo&description=PARDEX%20Sunucu" target="_blank" rel="noopener"><b>Bu bağlantıyı aç</b></a> (GitHub hesabınla). Gerekli izin (<b>public_repo</b>) hazır işaretli gelir.</li>
-          <li><i>Expiration</i> için istediğin süreyi seç (ör. <b>No expiration</b> ya da 1 yıl).</li>
-          <li>Sayfanın en altındaki yeşil <b>Generate token</b>'a bas.</li>
-          <li>Çıkan <b>ghp_</b> ile başlayan anahtarı kopyala, buraya yapıştır ve <b>Kaydet</b>'e bas.</li>
-        </ol>
-        <div class="hint">Anahtar yalnızca bu bilgisayarda saklanır; arkadaşlarının sunucunu otomatik bulması için kullanılır.</div>
-      </details>
+      <div class="hint">Yayın anahtarı yalnız bu yönetici bilgisayarında tutulur; oyunculara gönderilmez.</div>
     </div>
     <button class="small" id="saveBtn">Kaydet</button>
   </section>
@@ -330,6 +323,7 @@ function render(s) {
 
   if (!editing) {
     $("korsanPath").value = s.config.korsan_path;
+    $("publishUrl").value = s.config.publish_url;
     $("godotExe").value = s.config.godot_exe;
     $("tableCount").value = String(s.config.table_count);
     $("tunnelOnline").value = s.config.tunnel_online_host;
@@ -342,7 +336,7 @@ function render(s) {
   $("godotField").style.display = s.game.needsGodot ? "block" : "none";
   $("gameHint").textContent = s.game.text;
   $("gameHint").className = "hint " + (s.game.ok ? "ok" : "warn");
-  $("tokenHint").textContent = s.config.has_token ? "Anahtar kayıtlı. Değiştirmek için yenisini yapıştırıp Kaydet'e bas." : "Henüz anahtar yok. Aşağıdaki adımları izle.";
+  $("tokenHint").textContent = s.config.has_token ? "Anahtar kayıtlı. Değiştirmek için yenisini yapıştırıp Kaydet'e bas." : "Henüz yayın anahtarı kayıtlı değil.";
   $("tokenHint").className = "hint " + (s.config.has_token ? "ok" : "warn");
   document.querySelectorAll(".browse").forEach((b) => { b.style.display = s.canBrowse ? "" : "none"; });
 
@@ -367,11 +361,12 @@ $("toggleBtn").onclick = async () => {
 
 $("saveBtn").onclick = async () => {
   const body = {
+    publish_url: $("publishUrl").value,
     korsan_path: $("korsanPath").value, godot_exe: $("godotExe").value,
     table_count: Number($("tableCount").value),
     tunnel_online_host: $("tunnelOnline").value, tunnel_game_hosts: $("tunnelGames").value,
   };
-  if ($("token").value.trim()) body.github_token = $("token").value.trim();
+  if ($("token").value.trim()) body.publish_token = $("token").value.trim();
   if ($("tunnelToken").value.trim()) body.tunnel_token = $("tunnelToken").value.trim();
   editing = false;
   const result = await api("/api/config", body);

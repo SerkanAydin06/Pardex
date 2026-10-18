@@ -7,8 +7,9 @@ extends Control
 
 const BugReport := preload("res://scripts/online/pardex_bug_report.gd")
 const DesktopNotify := preload("res://scripts/ui/pardex_desktop_notify.gd")
+const Distribution := preload("res://scripts/data/pardex_distribution.gd")
 const Updater := preload("res://scripts/online/pardex_updater.gd")
-const APP_VERSION := "0.1.0"
+const APP_VERSION := "0.2.0"
 const SETTINGS_PATH := "user://pardex.cfg"
 const DEFAULT_SERVER_URL := ""
 const MIN_WINDOW_SIZE := Vector2i(1024, 640)
@@ -37,6 +38,8 @@ var _social_page: VBoxContainer
 var _profile_page: VBoxContainer
 var _messages_page: VBoxContainer
 var _desktop: DesktopNotify
+var _install_game_id := ""
+var _existing_version_button: Button
 var _updater: Updater
 var _settings_content: VBoxContainer
 var _presence_menu: PopupMenu
@@ -397,7 +400,36 @@ func _wire_updater() -> void:
 		dialog.popup_centered()
 	)
 	_updater.update_failed.connect(_show_toast)
+	_updater.progress.connect(_show_toast)
+	_updater.catalog_changed.connect(func():
+		for page in _pages.values():
+			if page.has_method("refresh"):
+				page.refresh()
+			elif page.has_method("_render_shelves"):
+				page.call("_render_shelves")
+	)
+	_updater.game_installed.connect(func(id: String): _show_toast("%s hazır. Oyna düğmesiyle başlatabilirsin." % str(Catalog.game(id).get("title", id))))
+	var install_dialog := %GameInstallDialog as ConfirmationDialog
+	_existing_version_button = install_dialog.add_button("Mevcut Sürümle Oyna", false, "play_existing")
+	_existing_version_button.name = "PlayExisting"
+	install_dialog.custom_action.connect(func(action: StringName):
+		if action == &"play_existing" and Catalog.is_installed(_install_game_id):
+			install_dialog.hide()
+			_play_game(_install_game_id, true)
+	)
+	(%GameInstallDialog as ConfirmationDialog).confirmed.connect(func():
+		if not _is_game_running(_install_game_id):
+			_updater.install_game(_install_game_id)
+	)
+	var timer := Timer.new()
+	timer.wait_time = 900.0
+	timer.autostart = true
+	timer.timeout.connect(func(): _updater.check(APP_VERSION))
+	add_child(timer)
 	dialog.confirmed.connect(func():
+		if not _sessions.is_empty():
+			_show_toast("PARDEX güncellemesi için açık oyunları kapat.")
+			return
 		_show_toast("Güncelleme indiriliyor…")
 		_updater.install()
 	)
@@ -442,7 +474,7 @@ func _on_chat_message(with_account_id: String, message: Dictionary, _client_id: 
 
 # ------------------------------------------------------------------ games
 
-func _play_game(game_id: String) -> void:
+func _play_game(game_id: String, skip_update := false) -> void:
 	var entry := Catalog.game(game_id)
 	if entry.is_empty() or not bool(entry["playable"]):
 		_show_toast("%s çok yakında PARDEX'te." % str(entry.get("title", "Bu oyun")))
@@ -451,6 +483,26 @@ func _play_game(game_id: String) -> void:
 	# by code inside the game (PARDEX ONLINE); friends join with "Katıl".
 	if _is_game_running(game_id):
 		_show_toast("%s zaten açık." % str(entry["title"]))
+		return
+	if _updater.busy():
+		_show_toast("Devam eden kurulumun bitmesini bekle.")
+		return
+	if not skip_update and Distribution.needs_install(game_id):
+		_install_game_id = game_id
+		var remote := Distribution.game(game_id)
+		var dialog := %GameInstallDialog as ConfirmationDialog
+		_existing_version_button.visible = Catalog.is_installed(game_id)
+		dialog.dialog_text = "%s %s (%d MB) indirilsin mi? Kayıtların korunur." % [entry["title"], remote["version"], int(float(remote["package"]["size"]) / 1048576.0)]
+		dialog.popup_centered()
+		return
+	if game_id != "korsanlar":
+		var executable := Distribution.executable(game_id)
+		if not executable.is_empty():
+			var pid := OS.create_process(executable, PackedStringArray())
+			if pid > 0:
+				_track_session(game_id, pid)
+			else:
+				_show_toast("Oyun başlatılamadı.")
 		return
 	_selected_launch_game = game_id
 	(%GameModeDialog as AcceptDialog).popup_centered(Vector2i(440, 250))
@@ -482,10 +534,10 @@ func _on_game_session_ready(game_id: String, token: String) -> void:
 
 
 func _launch_game_menu(game_id: String, args: PackedStringArray, private_session := false) -> void:
-	if game_id != "korsanlar" or _is_game_running(game_id):
+	if game_id != "korsanlar" or _is_game_running(game_id) or _updater.busy():
 		return
 	var pid := 0
-	if OS.has_feature("editor"):
+	if OS.has_feature("editor") and Distribution.executable(game_id).is_empty():
 		var project_path := _find_korsan_project_path()
 		if project_path.is_empty():
 			_show_toast("Korsanların Hazinesi geliştirme projesi PARDEX'in yan klasöründe bulunamadı.")
@@ -623,7 +675,8 @@ func _poll_sessions() -> void:
 		_sessions.erase(pid)
 		if not bool(session.get("record_activity", true)):
 			continue
-		_leave_finished_match()
+		if str(session["game"]) == "korsanlar":
+			_leave_finished_match()
 		var seconds := maxi(0, now - int(session["started"]))
 		Catalog.add_event("session", "%s oturumu: %s" % [str(Catalog.game(str(session["game"])).get("title", "")), Catalog.hours(seconds)], str(session["game"]))
 

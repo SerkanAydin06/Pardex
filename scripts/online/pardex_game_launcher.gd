@@ -22,6 +22,11 @@ func _on_game_start_requested(payload: Dictionary) -> void:
 		return
 
 	var main_scene := get_tree().current_scene
+	if main_scene != null and main_scene.get("_updater") != null and main_scene.get("_updater").busy():
+		_claim_launch(main_scene)
+		PardexOnline.report_game_launch_failed()
+		_show_toast(main_scene, "Devam eden kurulumun bitmesini bekle.")
+		return
 	var executable_path := _find_korsan_executable()
 	if executable_path.is_empty():
 		_claim_launch(main_scene)
@@ -58,6 +63,9 @@ func exported_process_args(user_args: PackedStringArray) -> PackedStringArray:
 
 
 func _find_korsan_executable() -> String:
+	var managed := preload("res://scripts/data/pardex_distribution.gd").executable(KORSAN_GAME_ID)
+	if not managed.is_empty():
+		return managed
 	var override_path := OS.get_environment(KORSAN_EXECUTABLE_ENV).strip_edges()
 	if not override_path.is_empty() and FileAccess.file_exists(override_path):
 		return override_path

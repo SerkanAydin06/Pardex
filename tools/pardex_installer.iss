@@ -32,7 +32,8 @@ UninstallDisplayIcon={app}\PARDEX.exe
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
-CloseApplications=force
+CloseApplications=yes
+CloseApplicationsFilter=PARDEX.exe
 RestartApplications=no
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
@@ -44,7 +45,8 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 Name: "desktopicon"; Description: "Masaüstüne kısayol oluştur"; GroupDescription: "Kısayollar:"
 
 [Files]
-Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourceDir}\*"; DestDir: "{app}"; Excludes: "pardex-distribution.json"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourceDir}\pardex-distribution.json"; DestDir: "{app}"; Flags: onlyifdoesntexist
 
 [Icons]
 Name: "{autoprograms}\PARDEX"; Filename: "{app}\PARDEX.exe"
