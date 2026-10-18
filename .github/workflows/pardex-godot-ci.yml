@@ -154,10 +154,13 @@ jobs:
       - name: Boot exported Windows launcher
         shell: pwsh
         run: |
-          $process = Start-Process -FilePath "$pwd/dist/PARDEX-Windows/PARDEX.exe" -ArgumentList '--headless --quit-after 10 --log-file export-boot.log' -Wait -PassThru
+          $bootLog = Join-Path $env:RUNNER_TEMP "pardex-export-boot.log"
+          $bootArgs = '--headless --quit-after 10 --log-file "{0}"' -f $bootLog
+          $process = Start-Process -FilePath "$pwd/dist/PARDEX-Windows/PARDEX.exe" -ArgumentList $bootArgs -WorkingDirectory "$pwd/dist/PARDEX-Windows" -Wait -PassThru
           if ($process.ExitCode -ne 0) { throw "Exported launcher failed" }
-          if (!(Test-Path "export-boot.log")) { throw "Boot log missing" }
-          if (Select-String -Path "export-boot.log" -Pattern 'SCRIPT ERROR:|ERROR:|Parse Error:') { throw "Exported launcher logged errors" }
+          if (!(Test-Path $bootLog)) { throw "Boot log missing" }
+          Get-Content $bootLog
+          if (Select-String -Path $bootLog -Pattern 'SCRIPT ERROR:|ERROR:|Parse Error:') { throw "Exported launcher logged errors" }
       - name: Upload Windows package
         uses: actions/upload-artifact@v4
         with:
