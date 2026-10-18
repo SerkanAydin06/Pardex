@@ -8,6 +8,8 @@ on:
       - "distribution/**"
       - "tools/publish_release.py"
       - "tools/test_publish_release.py"
+      - "tools/upload_r2.py"
+      - "tools/test_upload_r2.py"
       - ".github/workflows/pardex-online-ci.yml"
   pull_request:
     paths:
@@ -16,6 +18,8 @@ on:
       - "distribution/**"
       - "tools/publish_release.py"
       - "tools/test_publish_release.py"
+      - "tools/upload_r2.py"
+      - "tools/test_upload_r2.py"
       - ".github/workflows/pardex-online-ci.yml"
 
 jobs:
@@ -60,6 +64,8 @@ jobs:
         run: |
           node ../distribution/smoke-test.js
           python3 ../tools/test_publish_release.py
+          node ../distribution/cloudflare/worker-test.mjs
+          python3 ../tools/test_upload_r2.py
 
       - name: Build deployable container
         run: docker build -t pardex-online-ci .

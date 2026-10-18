@@ -1,0 +1,7 @@
+{
+  "name": "pardex-distribution",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-18",
+  "workers_dev": true,
+  "r2_buckets": [{"binding": "RELEASES", "bucket_name": "pardex-releases"}]
+}
