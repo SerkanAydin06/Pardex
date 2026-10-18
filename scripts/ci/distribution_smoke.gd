@@ -98,6 +98,18 @@ func _run() -> void:
 	store = Catalog.game("ci_update_fixture")
 	expect(str(store.get("cover", "")).begins_with("user://art/") and Catalog.texture(str(store["cover"])) != null, "use downloaded cover")
 
+	# A file that cannot be removed keeps the install record. Read-only folders
+	# block deletion for normal users (CI); root ignores them, so skip there.
+	var installed_folder := D.executable("ci_update_fixture").get_base_dir()
+	OS.execute("chmod", ["555", installed_folder])
+	var probe := FileAccess.open(installed_folder.path_join(".probe"), FileAccess.WRITE)
+	if probe == null:
+		expect(not D.uninstall("ci_update_fixture") and not D.installed("ci_update_fixture").is_empty(), "failed uninstall keeps the install record")
+	else:
+		probe.close()
+		DirAccess.remove_absolute(installed_folder.path_join(".probe"))
+		print("Distribution: locked-file uninstall check skipped (running as root)")
+	OS.execute("chmod", ["755", installed_folder])
 	# Uninstall removes files and the install record.
 	expect(D.uninstall("ci_update_fixture") and D.executable("ci_update_fixture").is_empty() and not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path("user://games/ci_update_fixture")), "uninstall removes files and record")
 	expect(Catalog.action_label("ci_update_fixture") == "İndir", "uninstalled game can be downloaded again")

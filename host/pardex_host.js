@@ -381,8 +381,22 @@ async function publishAddress(onlineUrl) {
 
 // While the address cannot be published the hub keeps running (reachable
 // with the address shown in the panel) and publishing is retried.
-const PUBLISH_RETRY_MS = 60_000;
+let publishRetryMs = 60_000;
 let publishRetryTimer = null;
+// Every start and stop gets a new number. A publish answer that arrives after
+// the server was stopped (or restarted) belongs to an old run: it must not
+// mark the panel as running, and if it did write the dead address to
+// online.json the closed state is published again.
+let publishGeneration = 0;
+let publish = publishAddress;
+
+function isCurrentRun(generation, onlineUrl) {
+  return generation === publishGeneration && state.phase === "running" && state.onlineUrl === onlineUrl;
+}
+
+function clearStaleAddress() {
+  publish("").catch((error) => log(`Kapalı durumu yayınlanamadı: ${error.message}`));
+}
 
 function stopPublishRetry() {
   clearTimeout(publishRetryTimer);
@@ -391,19 +405,25 @@ function stopPublishRetry() {
 
 function schedulePublishRetry(onlineUrl) {
   stopPublishRetry();
+  const generation = publishGeneration;
   publishRetryTimer = setTimeout(async () => {
     publishRetryTimer = null;
-    if (state.phase !== "running" || state.onlineUrl !== onlineUrl) return;
+    if (!isCurrentRun(generation, onlineUrl)) return;
     try {
-      await publishAddress(onlineUrl);
+      await publish(onlineUrl);
+      if (!isCurrentRun(generation, onlineUrl)) {
+        clearStaleAddress();
+        return;
+      }
       state.publishError = "";
       setPhase("running", "Sunucu açık. Adres yayınlandı; arkadaşların PARDEX'i açınca otomatik bağlanır.");
     } catch (error) {
+      if (!isCurrentRun(generation, onlineUrl)) return;
       state.publishError = error.message;
       log(`${error.message} 60 saniye sonra tekrar denenecek.`);
       schedulePublishRetry(onlineUrl);
     }
-  }, PUBLISH_RETRY_MS);
+  }, publishRetryMs);
 }
 
 // ------------------------------------------------------------------ start / stop
@@ -417,6 +437,7 @@ function killChildren() {
 
 async function startServer(localOnly) {
   if (state.phase === "starting" || state.phase === "running") return;
+  const generation = ++publishGeneration;
   state.localOnly = Boolean(localOnly);
   state.onlineUrl = "";
   state.gameUrl = "";
@@ -459,11 +480,17 @@ async function startServer(localOnly) {
     if (!state.localOnly) {
       setPhase("starting", "Adres arkadaşlarına duyuruluyor...");
       try {
-        await publishAddress(onlineUrl);
+        await publish(onlineUrl);
       } catch (error) {
         state.publishError = error.message;
       }
+      if (generation !== publishGeneration) {
+        // Stopped while announcing: a successful late announce is undone.
+        if (!state.publishError) clearStaleAddress();
+        return;
+      }
     }
+    if (generation !== publishGeneration) return;
     state.onlineUrl = onlineUrl;
     state.gameUrl = gameUrls.join(", ");
     if (state.publishError) {
@@ -475,6 +502,8 @@ async function startServer(localOnly) {
       ? "Sunucu açık (yerel test: yalnızca bu bilgisayar bağlanabilir)."
       : "Sunucu açık. Arkadaşların PARDEX'i açınca otomatik bağlanır.");
   } catch (error) {
+    // Stopping kills the tunnels and servers; that is not a start error.
+    if (generation !== publishGeneration) return;
     killChildren();
     setPhase("error", error.message);
   }
@@ -483,13 +512,14 @@ async function startServer(localOnly) {
 async function stopServer(reason = "Sunucu kapatıldı. Tekrar başlatmak için düğmeye bas.") {
   if (state.phase === "stopped" || state.phase === "stopping") return;
   const wasPublic = !state.localOnly && Boolean(state.onlineUrl) && !state.publishError;
+  publishGeneration += 1;
   stopPublishRetry();
   state.phase = "stopping";
   state.message = "Sunucu kapatılıyor...";
   killChildren();
   if (wasPublic) {
     await Promise.race([
-      publishAddress("").catch((error) => log(`Kapalı durumu yayınlanamadı: ${error.message}`)),
+      publish("").catch((error) => log(`Kapalı durumu yayınlanamadı: ${error.message}`)),
       new Promise((resolve) => setTimeout(resolve, 5000)),
     ]);
   }
@@ -701,4 +731,14 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { handle };
+module.exports = {
+  handle,
+  // Test hooks: no network, no real tunnels.
+  _test: {
+    state,
+    stopServer,
+    schedulePublishRetry,
+    setPublisher(fn) { publish = fn; },
+    setRetryDelay(ms) { publishRetryMs = ms; },
+  },
+};

@@ -233,19 +233,22 @@ static func install_zip(archive: String, entry: Dictionary) -> bool:
 	return true
 
 
-# Deletes the game's files and its install record. Saves made by the game in
-# its own user folder are not touched.
+# Deletes the game's files, then its install record. If a file cannot be
+# removed (for example locked by a running game) the record stays, so PARDEX
+# still knows the game is on disk. Saves made by the game in its own user
+# folder are not touched.
 static func uninstall(id: String) -> bool:
 	if not valid_id(id):
+		return false
+	var folder := ProjectSettings.globalize_path(ROOT.path_join(id))
+	if DirAccess.dir_exists_absolute(folder) and not _remove_tree(folder):
 		return false
 	var config := ConfigFile.new()
 	config.load(INSTALLED)
 	if config.has_section(id):
 		config.erase_section(id)
-		if config.save(INSTALLED) != OK:
-			return false
-	var folder := ProjectSettings.globalize_path(ROOT.path_join(id))
-	return not DirAccess.dir_exists_absolute(folder) or _remove_tree(folder)
+		return config.save(INSTALLED) == OK
+	return true
 
 
 static func _remove_tree(path: String) -> bool:
