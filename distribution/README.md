@@ -16,7 +16,7 @@
   "launcher": {"version":"0.2.0", "setup":"dist/PARDEX-Setup.exe"},
   "games":[
     {"id":"korsanlar", "title":"Korsanların Hazinesi", "version":"1.0.0",
-     "directory":"dist/PARDEX-Windows/games/korsanlar", "executable":"KorsanlarinHazinesi.exe",
+     "directory":"dist/games/korsanlar", "executable":"KorsanlarinHazinesi.exe",
      "description":"Korsan macerası", "players":"1–4 oyuncu"}
   ]
 }

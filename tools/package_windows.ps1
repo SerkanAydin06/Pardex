@@ -1,6 +1,5 @@
 param(
     [string]$GodotExe = "godot",
-    [string]$KorsanProject = "",
     [string]$OutputDir = "",
     [Parameter(Mandatory=$true)][string]$DistributionUrl
 )
@@ -22,9 +21,11 @@ function Invoke-GodotExport {
     New-Item -ItemType Directory -Force -Path $parent | Out-Null
 
     Write-Host "Exporting $ProjectDir -> $OutputPath"
-    & $GodotExe --headless --path $ProjectDir --export-release $Preset $OutputPath
-    if ($LASTEXITCODE -ne 0) {
-        throw "Godot export failed for '$ProjectDir' with exit code $LASTEXITCODE. Make sure Godot 4.7.2 export templates are installed."
+    # Wait for GUI Godot executables too; Windows PowerShell otherwise returns early.
+    $arguments = '--headless --path "{0}" --export-release "{1}" "{2}"' -f $ProjectDir, $Preset, $OutputPath
+    $process = Start-Process -FilePath $GodotExe -ArgumentList $arguments -NoNewWindow -Wait -PassThru
+    if ($process.ExitCode -ne 0) {
+        throw "Godot export failed for '$ProjectDir' with exit code $($process.ExitCode). Install export templates matching your Godot version."
     }
     if (-not (Test-Path $OutputPath)) {
         throw "Expected export was not created: $OutputPath"
@@ -32,14 +33,6 @@ function Invoke-GodotExport {
 }
 
 $PardexProject = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-
-if ([string]::IsNullOrWhiteSpace($KorsanProject)) {
-    $KorsanProject = Join-Path (Split-Path -Parent $PardexProject) "Korsanlarin-Hazinesi"
-}
-if (-not (Test-Path (Join-Path $KorsanProject "project.godot"))) {
-    throw "Korsan project was not found at '$KorsanProject'. Pass -KorsanProject with the repository path."
-}
-$KorsanProject = (Resolve-Path $KorsanProject).Path
 
 if ([string]::IsNullOrWhiteSpace($OutputDir)) {
     $OutputDir = Join-Path $PardexProject "dist\PARDEX-Windows"
@@ -52,17 +45,12 @@ if (Test-Path $OutputDir) {
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 
 $PardexExe = Join-Path $OutputDir "PARDEX.exe"
-$KorsanDir = Join-Path $OutputDir "games\korsanlar"
-$KorsanExe = Join-Path $KorsanDir "KorsanlarinHazinesi.exe"
 
 Invoke-GodotExport -ProjectDir $PardexProject -Preset "Windows Desktop" -OutputPath $PardexExe
-Invoke-GodotExport -ProjectDir $KorsanProject -Preset "Windows Desktop" -OutputPath $KorsanExe
 
 $requiredFiles = @(
     $PardexExe,
-    (Join-Path $OutputDir "PARDEX.pck"),
-    $KorsanExe,
-    (Join-Path $KorsanDir "KorsanlarinHazinesi.pck")
+    (Join-Path $OutputDir "PARDEX.pck")
 )
 foreach ($file in $requiredFiles) {
     if (-not (Test-Path $file)) {
@@ -108,4 +96,4 @@ if ($setupPath) {
     Write-Host "  Setup:  skipped (install Inno Setup 6 to build PARDEX-Setup.exe)"
 }
 Write-Host ""
-Write-Host "Expected runtime game path: games\korsanlar\KorsanlarinHazinesi.exe"
+Write-Host "Launcher only. Publish games separately; players download them in PARDEX."

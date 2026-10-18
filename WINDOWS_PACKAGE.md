@@ -1,51 +1,37 @@
-# PARDEX Windows Paketi
+# PARDEX Windows paketi
 
-PARDEX, paketlenmiş sürümde Korsanların Hazinesi'ni varsayılan olarak şu yoldan başlatır:
-
-`games\korsanlar\KorsanlarinHazinesi.exe`
-
-Repo içindeki `tools\package_windows.ps1` hem PARDEX'i hem de yan klasördeki `Korsanlarin-Hazinesi` projesini export eder ve bu klasör yapısını otomatik oluşturur.
+`tools/package_windows.ps1` yalnız Pardex'i dışa aktarır. Kurulum ve ZIP hiçbir oyun içermez; Korsan projesi paketleme sırasında gerekli değildir.
 
 ## Gereksinimler
 
-- Godot 4.7.2
-- Godot 4.7.2 Windows export templates
-- `Pardex` ve `Korsanlarin-Hazinesi` repolarının varsayılan olarak aynı üst klasörde bulunması
+- Godot 4.7.x ve kullandığınız sürümle aynı Windows export templates.
+- Otomatik güncelleme için gereken `PARDEX-Setup.exe` çıktısını oluşturmak üzere Inno Setup 6.
 
 ## Paket oluşturma
 
-PARDEX repo kökünde PowerShell açıp:
+PowerShell'de (Godot yolunu bilgisayarınıza göre değiştirin):
 
 ```powershell
-.\tools\package_windows.ps1 -DistributionUrl "https://ALAN-ADIN" -GodotExe "C:\Godot\Godot_v4.7.2-stable_win64.exe"
+.\tools\package_windows.ps1 -GodotExe "C:\Godot\Godot.exe" -DistributionUrl "https://pardex-distribution.srknydn88.workers.dev"
 ```
 
-Korsan repo başka bir yerdeyse:
+Betik GUI veya konsol Godot işleminin bitmesini bekler. `dist/PARDEX-Windows` çıktı klasörü yeniden oluşturulur. Çıktılar:
 
-```powershell
-.\tools\package_windows.ps1 `
-  -DistributionUrl "https://ALAN-ADIN" -GodotExe "C:\Godot\Godot_v4.7.2-stable_win64.exe" `
-  -KorsanProject "D:\Projeler\Korsanlarin-Hazinesi"
-```
+- `dist/PARDEX-Windows/PARDEX.exe` ve `PARDEX.pck`
+- Aynı klasörde `pardex-distribution.json`
+- `dist/PARDEX-Windows.zip`
+- Inno Setup kuruluysa `dist/PARDEX-Setup.exe`
 
-Başarılı olduğunda:
+EXE ve PCK birlikte kalmalıdır. Kullanıcılara Setup dağıtılır; kurulum kullanıcı başına `%LOCALAPPDATA%/Programs/PARDEX` altına yapılır.
 
-- `dist\PARDEX-Windows\PARDEX.exe`
-- `dist\PARDEX-Windows\PARDEX.pck`
-- `dist\PARDEX-Windows\games\korsanlar\KorsanlarinHazinesi.exe`
-- `dist\PARDEX-Windows\games\korsanlar\KorsanlarinHazinesi.pck`
-- `dist\PARDEX-Windows.zip`
+## Oyunları ayrı yayınlama
 
-oluşturulur.
+Korsan'ı kendi Godot projesinden Windows Desktop preset'iyle Pardex projesinin `dist/games/korsanlar/KorsanlarinHazinesi.exe` yoluna dışa aktarın. EXE, PCK ve gerekli diğer oyun dosyaları bu ayrı klasörde olmalıdır. Bu klasör Pardex kurulumuna eklenmez.
 
-Dağıtılacak paket `PARDEX-Windows.zip` dosyasıdır. Kullanıcı klasör yapısını değiştirmeden ZIP'i açıp `PARDEX.exe` çalıştırmalıdır.
+`distribution/README.md` içindeki yayın tanımıyla oyunları ve uygulama kurulumunu ayrı paketler olarak hazırlayın. Paketleri önce, `channel.json` dosyasını en son R2'ye yükleyin. Katalog yayınlanınca kullanıcı Pardex içinden oyunları indirir; indirilen oyunlar uygulama kurulumundan ayrı `user://games` altında tutulur.
 
-İstenirse Korsan executable yolu `PARDEX_KORSAN_EXECUTABLE` ortam değişkeniyle override edilebilir.
+## Uygulama güncellemeleri
 
-## Kurulum dosyası ve otomatik güncelleme
+Pardex açılışta ve 15 dakikada bir kataloğu kontrol eder. Yeni sürüm bulunduğunda kullanıcıya onay penceresi gösterir; onaydan sonra paket boyutu ve SHA-256 doğrulanır, Setup çalıştırılır ve Pardex yeniden açılır. Açık oyunlar önce kapatılmalıdır. GitHub'a kod göndermek tek başına güncelleme yayınlamaz: APP_VERSION ve project.godot sürümünü artırıp yeni Setup ve kataloğu R2'ye yükleyin.
 
-Bilgisayarda [Inno Setup 6](https://jrsoftware.org/isdl.php) kuruluysa paket betiği ayrıca `dist\PARDEX-Setup.exe` üretir (`tools\pardex_installer.iss`). Kurulum yönetici izni istemez, PARDEX'i `%LOCALAPPDATA%\Programs\PARDEX` altına kurar ve kısayol oluşturur.
-
-Yeni sürüm yayınlamak için `APP_VERSION` ve `project.godot` sürümünü artır, kalıcı `-DistributionUrl` ile paketi oluştur ve [bağımsız dağıtım yönergesindeki](distribution/README.md) yayınlama aracını çalıştır. Paketler kendi HTTPS hizmetinde barındırılır; GitHub Release kullanılmaz.
-
-Pardex açılışta ve 15 dakikada bir `channel.json` dosyasını kontrol eder. Uygulama güncellemesi Windows export sürümünde çalışır; paket boyutu ve SHA-256 doğrulanır, kurulum mevcut dizine yapılır ve Pardex tekrar açılır. Kurulu oyunlar ayrı sürüm klasörlerinde tutulur; yeni katalog oyunları indirilebilir. Canlı dağıtım adresi ayarlanmadan kullanıcıya paket gönderilmemelidir.
+Eski oyun içeren kurulumun üzerine kurmak eski oyun dosyalarını silmez. Temiz kurulumu sınamak için ayrı bir kurulum klasörü seçin. Kullanıcının oyunları ve kayıtları otomatik silinmez.

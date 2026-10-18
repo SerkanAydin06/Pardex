@@ -45,7 +45,7 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 Name: "desktopicon"; Description: "Masaüstüne kısayol oluştur"; GroupDescription: "Kısayollar:"
 
 [Files]
-Source: "{#SourceDir}\*"; DestDir: "{app}"; Excludes: "pardex-distribution.json"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourceDir}\*"; DestDir: "{app}"; Excludes: "pardex-distribution.json,games\*"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#SourceDir}\pardex-distribution.json"; DestDir: "{app}"; Flags: onlyifdoesntexist
 
 [Icons]
