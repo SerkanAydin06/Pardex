@@ -21,11 +21,9 @@ signal recovery_code_created(code: String)
 signal account_recovered(account_id: String, display_name: String)
 signal account_recovery_failed(message: String)
 
-# Empty server_url = automatic: the host PC publishes its current tunnel
-# address to online.json on the sunucu-adresi branch (host/pardex_host.js) and
-# every client reads it from there, so friends never type an address.
+# The owner's HTTPS distribution service publishes online.json.
 const DEFAULT_SERVER_URL := ""
-const ADDRESS_BOARD_URL := "https://api.github.com/repos/SerkanAydin06/Pardex/contents/online.json?ref=sunucu-adresi"
+const Distribution := preload("res://scripts/data/pardex_distribution.gd")
 const ADDRESS_REFRESH_SECONDS := 65.0
 const LEGACY_SERVER_URLS := [
 	"ws://127.0.0.1:8765",
@@ -229,8 +227,11 @@ func _resolve_address() -> void:
 		_set_connection_state("connecting")
 	var board_url := OS.get_environment("PARDEX_ADDRESS_BOARD_URL").strip_edges()
 	if board_url.is_empty():
-		board_url = ADDRESS_BOARD_URL
-	var headers := PackedStringArray(["Accept: application/vnd.github.raw+json", "Cache-Control: no-cache"])
+		board_url = Distribution.base_url() + "/online.json"
+	if not Distribution.valid_url(board_url):
+		_on_address_resolved(HTTPRequest.RESULT_CANT_CONNECT, 0, PackedStringArray(), PackedByteArray())
+		return
+	var headers := PackedStringArray(["Accept: application/json", "Cache-Control: no-cache"])
 	if _address_request.request(board_url, headers) != OK:
 		_on_address_resolved(HTTPRequest.RESULT_CANT_CONNECT, 0, PackedStringArray(), PackedByteArray())
 

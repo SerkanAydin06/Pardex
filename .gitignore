@@ -30,3 +30,8 @@ npm-debug.log*
 host/pardex_host.local.json
 host/bin/
 host/data/
+
+# Local distribution artifacts and release specifications
+distribution/public/
+release.local.json
+__pycache__/

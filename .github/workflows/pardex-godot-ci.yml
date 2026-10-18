@@ -61,6 +61,12 @@ jobs:
             exit 1
           fi
 
+      - name: Verify independent distribution
+        run: |
+          set -o pipefail
+          XDG_DATA_HOME="$(mktemp -d)" godot --headless --path . --script res://scripts/ci/distribution_smoke.gd 2>&1 | tee distribution-smoke.log
+          if grep -E 'SCRIPT ERROR:|ERROR:|Parse Error:' distribution-smoke.log; then exit 1; fi
+
       - name: Verify editor page preview layouts
         run: |
           set -o pipefail

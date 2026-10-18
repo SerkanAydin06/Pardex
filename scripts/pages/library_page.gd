@@ -156,7 +156,7 @@ func _render_quick_start() -> void:
 		(row.get_node("Title") as Label).text = str(entry["title"])
 		var playable := bool(entry["playable"])
 		var play := row.get_node("Play") as Button
-		play.text = "Oyna" if playable else "Yakında"
+		play.text = Catalog.action_label(str(entry["id"]))
 		play.disabled = not playable
 		var callback := _play_quick_game.bind(str(entry["id"]))
 		if not play.pressed.is_connected(callback):
@@ -226,7 +226,7 @@ func _more(entry: Dictionary) -> Button:
 	more.pressed.connect(func():
 		_menu_game = str(entry["id"])
 		_game_menu.clear()
-		_game_menu.add_item("Oyna", 0)
+		_game_menu.add_item(Catalog.action_label(str(entry["id"])), 0)
 		_game_menu.set_item_disabled(0, not bool(entry["playable"]))
 		_game_menu.add_item("Favorilerden çıkar" if bool(entry["favorite"]) else "Favorilere ekle", 1)
 		var rect := more.get_global_rect()
@@ -275,6 +275,7 @@ func _list_row(entry: Dictionary) -> Control:
 	(card.get_node("Row/StatusSlot") as HBoxContainer).add_child(_status_pill(entry))
 	(card.get_node("Row/FavoriteSlot") as HBoxContainer).add_child(_star(entry))
 	var play := card.get_node("Row/PlayButton") as Button
+	play.text = Catalog.action_label(str(entry["id"]))
 	play.disabled = not bool(entry["playable"])
 	play.pressed.connect(func(): play_requested.emit(str(entry["id"])))
 	(card.get_node("Row/MoreSlot") as HBoxContainer).add_child(_more(entry))

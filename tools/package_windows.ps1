@@ -1,10 +1,15 @@
 param(
     [string]$GodotExe = "godot",
     [string]$KorsanProject = "",
-    [string]$OutputDir = ""
+    [string]$OutputDir = "",
+    [Parameter(Mandatory=$true)][string]$DistributionUrl
 )
 
 $ErrorActionPreference = "Stop"
+$distributionUri = [Uri]$DistributionUrl
+if ($distributionUri.Scheme -ne "https" -or $distributionUri.UserInfo -or $distributionUri.Query -or $distributionUri.Fragment) {
+    throw "A permanent HTTPS DistributionUrl is required."
+}
 
 function Invoke-GodotExport {
     param(
@@ -65,6 +70,8 @@ foreach ($file in $requiredFiles) {
     }
 }
 
+$distributionConfig = @{ url = $DistributionUrl.TrimEnd('/') } | ConvertTo-Json
+[System.IO.File]::WriteAllText((Join-Path $OutputDir "pardex-distribution.json"), $distributionConfig, [System.Text.UTF8Encoding]::new($false))
 $zipPath = "$OutputDir.zip"
 if (Test-Path $zipPath) {
     Remove-Item -Force $zipPath
@@ -73,7 +80,7 @@ Compress-Archive -Path (Join-Path $OutputDir "*") -DestinationPath $zipPath -Com
 
 # Installer (PARDEX-Setup.exe) when Inno Setup 6 is installed. The version
 # comes from APP_VERSION in scripts/main.gd; the launcher compares it with the
-# latest GitHub release to offer updates.
+# independent distribution manifest to offer updates.
 $versionMatch = Select-String -Path (Join-Path $PardexProject "scripts\main.gd") -Pattern 'const APP_VERSION := "([^"]+)"'
 $appVersion = if ($versionMatch) { $versionMatch.Matches[0].Groups[1].Value } else { "0.0.0" }
 $iscc = @(

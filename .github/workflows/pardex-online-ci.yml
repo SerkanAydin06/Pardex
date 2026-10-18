@@ -5,11 +5,17 @@ on:
     paths:
       - "server/**"
       - "host/**"
+      - "distribution/**"
+      - "tools/publish_release.py"
+      - "tools/test_publish_release.py"
       - ".github/workflows/pardex-online-ci.yml"
   pull_request:
     paths:
       - "server/**"
       - "host/**"
+      - "distribution/**"
+      - "tools/publish_release.py"
+      - "tools/test_publish_release.py"
       - ".github/workflows/pardex-online-ci.yml"
 
 jobs:
@@ -49,6 +55,11 @@ jobs:
         run: |
           node --check ../host/pardex_host.js
           node ../host/user-admin-test.js
+
+      - name: Independent distribution server and publisher
+        run: |
+          node ../distribution/smoke-test.js
+          python3 ../tools/test_publish_release.py
 
       - name: Build deployable container
         run: docker build -t pardex-online-ci .

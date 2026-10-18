@@ -77,7 +77,7 @@ func _render_search() -> void:
 	var grid := %SearchGrid as GridContainer
 	UI.clear(grid)
 	var count := 0
-	for entry in Catalog.GAMES:
+	for entry in Catalog.all_games():
 		var haystack := " ".join([str(entry["title"]), " ".join(entry["genres"]), str(entry["tagline"])]).to_lower()
 		if _query in haystack:
 			grid.add_child(_featured_card(entry))
@@ -106,7 +106,7 @@ func _slides() -> Array:
 		"banner": "res://assets/ui/home_hero_banner.png",
 		"game": "",
 	}]
-	for entry in Catalog.GAMES:
+	for entry in Catalog.all_games():
 		result.append({
 			"tag": str(entry["badge"]).to_upper(),
 			"title": str(entry["title"]),
@@ -143,7 +143,7 @@ func _explore_slide() -> void:
 func _toggle_slide_wishlist() -> void:
 	var game_id := str(_slides()[_slide]["game"])
 	if game_id.is_empty():
-		game_id = str(Catalog.GAMES[0]["id"])
+		game_id = str(Catalog.all_games()[0]["id"])
 	var added := Catalog.toggle_wishlist(game_id)
 	toast.emit("%s istek listene %s." % [str(Catalog.game(game_id)["title"]), "eklendi" if added else "çıkarıldı"])
 	_render_shelves()
@@ -153,10 +153,10 @@ func _toggle_slide_wishlist() -> void:
 
 func _render_shelves() -> void:
 	UI.clear(_featured)
-	for entry in Catalog.GAMES:
+	for entry in Catalog.all_games():
 		_featured.add_child(_featured_card(entry))
 	UI.clear(_new_row)
-	for entry in Catalog.GAMES:
+	for entry in Catalog.all_games():
 		_new_row.add_child(_new_card(entry))
 
 

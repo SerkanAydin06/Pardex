@@ -5,6 +5,8 @@ extends RefCounted
 # activity log. Nothing here is invented: every number shown in the store,
 # library and profile comes from the catalog or from these records.
 
+const Distribution := preload("res://scripts/data/pardex_distribution.gd")
+
 const ACTIVITY_PATH := "user://pardex_activity.cfg"
 const MAX_EVENTS := 40
 
@@ -45,8 +47,40 @@ const GAMES := [
 ]
 
 
+static func all_games() -> Array:
+	var result := GAMES.duplicate(true)
+	for remote in Distribution.manifest.get("games", []):
+		var item: Dictionary = GAMES[0].duplicate(true)
+		item["cover"] = "res://assets/ui/pardex_hub_app_icon.png"
+		item["banner"] = "res://assets/ui/top_banner.png"
+		item["id"] = remote["id"]
+		item["title"] = remote["title"]
+		item["tagline"] = str(remote.get("description", ""))
+		item["genres"] = ["Oyun"]
+		item["players"] = str(remote.get("players", ""))
+		item["badge"] = "Yeni"
+		item["playable"] = true
+		var replaced := false
+		for index in result.size():
+			if result[index]["id"] == item["id"]:
+				item["cover"] = result[index]["cover"]
+				item["banner"] = result[index]["banner"]
+				result[index] = item
+				replaced = true
+				break
+		if not replaced:
+			result.append(item)
+	return result
+
+
+static func action_label(id: String) -> String:
+	if Distribution.needs_install(id):
+		return "Güncelle" if is_installed(id) else "İndir"
+	return "Oyna" if bool(game(id).get("playable", false)) else "Yakında"
+
+
 static func game(game_id: String) -> Dictionary:
-	for entry in GAMES:
+	for entry in all_games():
 		if entry["id"] == game_id:
 			return entry
 	return {}
@@ -68,6 +102,8 @@ static func _load() -> ConfigFile:
 # builds) or as the sibling Godot project (editor); other games are not
 # released yet.
 static func is_installed(game_id: String) -> bool:
+	if not Distribution.executable(game_id).is_empty():
+		return true
 	if game_id != "korsanlar":
 		return false
 	if OS.has_feature("editor"):
@@ -90,6 +126,8 @@ static func status(game_id: String) -> Array:
 	var entry := game(game_id)
 	if entry.is_empty() or not bool(entry["playable"]):
 		return ["Yakında", "clock", "muted"]
+	if Distribution.needs_install(game_id) and is_installed(game_id):
+		return ["Güncelleme Var", "download", "amber"]
 	if is_installed(game_id):
 		return ["Yüklü", "check", "green"]
 	return ["Kurulum Gerekli", "download", "amber"]
@@ -181,7 +219,7 @@ static func events() -> Array:
 static func games_with_stats() -> Array:
 	var config := _load()
 	var result := []
-	for entry in GAMES:
+	for entry in all_games():
 		var item: Dictionary = entry.duplicate()
 		var game_id := str(entry["id"])
 		item["last_played"] = int(config.get_value(game_id, "last_played", 0))
