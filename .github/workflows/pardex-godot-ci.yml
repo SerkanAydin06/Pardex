@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - "project.godot"
+      - "export_presets.cfg"
+      - "tools/package_windows.ps1"
+      - "tools/pardex_installer.iss"
       - "scenes/**"
       - "scripts/**"
       - "assets/**"
@@ -13,6 +16,9 @@ on:
   pull_request:
     paths:
       - "project.godot"
+      - "export_presets.cfg"
+      - "tools/package_windows.ps1"
+      - "tools/pardex_installer.iss"
       - "scenes/**"
       - "scripts/**"
       - "assets/**"
@@ -115,3 +121,50 @@ jobs:
             shell-preview-*.png
             visual-current/*.png
           if-no-files-found: warn
+
+  windows-package:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Windows Godot and matching export templates
+        shell: pwsh
+        run: |
+          $release = "https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable"
+          Invoke-WebRequest "$release/Godot_v4.7.1-stable_win64.exe.zip" -OutFile "$env:RUNNER_TEMP/godot.zip"
+          Expand-Archive "$env:RUNNER_TEMP/godot.zip" "$env:RUNNER_TEMP/godot"
+          "GODOT_EXE=$env:RUNNER_TEMP/godot/Godot_v4.7.1-stable_win64_console.exe" >> $env:GITHUB_ENV
+          Invoke-WebRequest "$release/Godot_v4.7.1-stable_export_templates.tpz" -OutFile "$env:RUNNER_TEMP/templates.zip"
+          Expand-Archive "$env:RUNNER_TEMP/templates.zip" "$env:RUNNER_TEMP/templates"
+          $destination = "$env:APPDATA/Godot/export_templates/4.7.1.stable"
+          New-Item -ItemType Directory -Force $destination | Out-Null
+          Copy-Item "$env:RUNNER_TEMP/templates/templates/*" $destination -Recurse
+      - name: Import launcher resources
+        shell: pwsh
+        run: |
+          & $env:GODOT_EXE --headless --editor --path . --quit
+          if ($LASTEXITCODE -ne 0) { throw "Godot import failed" }
+      - name: Build standalone launcher installer
+        shell: pwsh
+        run: |
+          ./tools/package_windows.ps1 -GodotExe $env:GODOT_EXE -DistributionUrl "https://pardex-distribution.srknydn88.workers.dev"
+          if (!(Test-Path "dist/PARDEX-Setup.exe")) { throw "Installer was not built" }
+          if (Test-Path "dist/PARDEX-Windows/games") { throw "Games must not be bundled" }
+          $config = Get-Content "dist/PARDEX-Windows/pardex-distribution.json" -Raw | ConvertFrom-Json
+          if ($config.url -ne "https://pardex-distribution.srknydn88.workers.dev") { throw "Incorrect distribution URL" }
+      - name: Boot exported Windows launcher
+        shell: pwsh
+        run: |
+          $bootLog = Join-Path $env:RUNNER_TEMP "pardex-export-boot.log"
+          $bootArgs = '--headless --quit-after 10 --log-file "{0}"' -f $bootLog
+          $process = Start-Process -FilePath "$pwd/dist/PARDEX-Windows/PARDEX.exe" -ArgumentList $bootArgs -WorkingDirectory "$pwd/dist/PARDEX-Windows" -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "Exported launcher failed" }
+          if (!(Test-Path $bootLog)) { throw "Boot log missing" }
+          Get-Content $bootLog
+          if (Select-String -Path $bootLog -Pattern 'SCRIPT ERROR:|ERROR:|Parse Error:') { throw "Exported launcher logged errors" }
+      - name: Upload Windows package
+        uses: actions/upload-artifact@v4
+        with:
+          name: PARDEX-Windows
+          path: |
+            dist/PARDEX-Setup.exe
+            dist/PARDEX-Windows.zip

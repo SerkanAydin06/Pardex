@@ -33,7 +33,7 @@ func _on_game_start_requested(payload: Dictionary) -> void:
 		PardexOnline.report_game_launch_failed()
 		_show_toast(
 			main_scene,
-			"Korsanların Hazinesi paketi bulunamadı. games/korsanlar/KorsanlarinHazinesi.exe yolunu kontrol et."
+			"Korsanların Hazinesi yüklü değil. Kütüphaneden oyunu indir; indirme görünmüyorsa oyun paketi henüz yayınlanmamıştır."
 		)
 		return
 
