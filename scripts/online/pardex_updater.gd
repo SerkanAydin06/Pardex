@@ -42,6 +42,10 @@ func busy() -> bool:
 
 
 func check(current_version: String) -> void:
+	# The installer from the last self-update is no longer needed (in use only
+	# while it is still finishing; then the next start removes it).
+	if not busy():
+		DirAccess.remove_absolute(OS.get_user_data_dir().path_join(SETUP_ASSET))
 	Distribution.load_cache()
 	catalog_changed.emit()
 	var base := Distribution.base_url()

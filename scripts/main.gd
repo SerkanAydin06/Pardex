@@ -127,6 +127,7 @@ func _bind_page(page_name: String, node_name: String) -> VBoxContainer:
 
 
 func _bind_settings_page() -> void:
+	(_settings_content.get_node("SupportPanel/VBox/VersionLabel") as Label).text = "PARDEX sürüm %s" % APP_VERSION
 	(_settings_content.get_node("ProfilePanel/VBox/ProfileRow/SaveProfileButton") as Button).pressed.connect(_save_profile_from_settings)
 	(_settings_content.get_node("OnlinePanel/VBox/ServerRow/ConnectButton") as Button).pressed.connect(_save_online_settings_and_connect)
 	var settings_page := _pages["settings"] as Control
