@@ -186,7 +186,8 @@ function tableCount() {
 
 // A named Cloudflare tunnel keeps the same addresses on every start. Its
 // public hostnames are set in the Cloudflare dashboard: the PARDEX address to
-// http://localhost:8765 and table N's game address to http://localhost:(8766+N).
+// http://127.0.0.1:8765 and table N's game address to http://127.0.0.1:(8766+N)
+// (not "localhost": on Windows it may resolve to IPv6, where nothing listens).
 function namedTunnelHosts() {
   const host = (value) => String(value || "").trim().replace(/^[a-z]+:\/\//i, "").replace(/\/.*$/, "");
   return {
