@@ -136,13 +136,10 @@ func _verify_activity_and_chat(main_scene: Node, online: Node) -> bool:
 		_fail("checkpoint/shutdown lost or duplicated playtime")
 		return false
 	sessions.clear()
-	# A closed official server still allows choosing private play.
-	main_scene.call("_play_game", "korsanlar")
-	var modes := main_scene.get_node("GameModeDialog") as AcceptDialog
-	if not modes.visible:
-		_fail("offline play did not offer private server mode")
+	# No mode question: without PARDEX Online the game opens for private play.
+	if main_scene.get_node_or_null("GameModeDialog") != null or main_scene.call("play_mode") != "private":
+		_fail("offline play must open private mode directly")
 		return false
-	modes.hide()
 	var private_before := Catalog.games_with_stats()[0] as Dictionary
 	main_scene.call("_track_session", "korsanlar", test_pid + 1, false)
 	main_scene.call("_save_session_playtime", sessions[test_pid + 1], now + 120)

@@ -14,6 +14,7 @@ const SETTINGS_PATH := "user://pardex.cfg"
 const DEFAULT_SERVER_URL := ""
 const MIN_WINDOW_SIZE := Vector2i(1024, 640)
 const SESSION_POLL_INTERVAL := 5.0
+const OFFICIAL_SESSION_WAIT := 8.0
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 
@@ -53,6 +54,7 @@ var _display_name := "Pardus"
 var _server_url := DEFAULT_SERVER_URL
 var _game_launch_in_progress := false
 var _selected_launch_game := ""
+var _official_session_received := false
 var _toast_revision := 0
 # pid -> {"game": id, "started": unix} for games PARDEX launched.
 var _sessions: Dictionary = {}
@@ -72,8 +74,6 @@ func _ready() -> void:
 	add_child(_desktop)
 	_wire_updater()
 	_wire_online_signals()
-	%GameModeDialog.get_node("Options/Official").pressed.connect(_launch_official_game)
-	%GameModeDialog.get_node("Options/Private").pressed.connect(_launch_private_game)
 	PardexOnline.welcome_received.connect(_on_profile_name_accepted)
 	_apply_profile()
 	_update_connection_ui(PardexOnline.connection_state)
@@ -529,25 +529,37 @@ func _play_game(game_id: String, skip_update := false) -> void:
 			else:
 				_show_toast("Oyun başlatılamadı.")
 		return
+	# No mode question: online PARDEX opens the game with its online session,
+	# otherwise it opens for private (offline / LAN) play.
 	_selected_launch_game = game_id
-	(%GameModeDialog as AcceptDialog).popup_centered(Vector2i(440, 250))
+	if play_mode() == "official":
+		_launch_official_game()
+	else:
+		_launch_private_game()
+
+
+func play_mode() -> String:
+	return "official" if PardexOnline.is_online() else "private"
 
 
 func _launch_official_game() -> void:
-	%GameModeDialog.hide()
-	if not PardexOnline.is_online():
-		_show_toast("Resmî sunucu kapalı. Özel Sunucu seçeneğiyle oynayabilirsin.")
-		return
-	PardexOnline.request_game_session(_selected_launch_game)
-	_show_toast("Oyun resmî sunucu bağlantısıyla açılıyor…")
+	var game_id := _selected_launch_game
+	PardexOnline.request_game_session(game_id)
+	_show_toast("Oyun açılıyor…")
+	# If the server does not answer in time the game still opens, for private play.
+	get_tree().create_timer(OFFICIAL_SESSION_WAIT).timeout.connect(func():
+		if _selected_launch_game == game_id and not _is_game_running(game_id) and not _official_session_received:
+			_launch_private_game()
+		_official_session_received = false
+	)
 
 
 func _launch_private_game() -> void:
-	%GameModeDialog.hide()
 	_launch_game_menu(_selected_launch_game, PackedStringArray(["--private-game"]), true)
 
 
 func _on_game_session_ready(game_id: String, token: String) -> void:
+	_official_session_received = true
 	if game_id != "korsanlar" or token.is_empty() or _is_game_running(game_id):
 		return
 	var args := PackedStringArray([
