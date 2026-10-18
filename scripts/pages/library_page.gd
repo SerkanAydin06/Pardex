@@ -6,11 +6,13 @@ extends VBoxContainer
 
 signal play_requested(game_id: String)
 signal toast(message: String)
+signal uninstall_requested(game_id: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const LibraryGameCardScene := preload("res://scenes/ui/library_game_card.tscn")
 const LibraryListRowScene := preload("res://scenes/ui/library_list_row.tscn")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
+const Distribution := preload("res://scripts/data/pardex_distribution.gd")
 const FILTERS := [["all", "Tümü", ""], ["installed", "Yüklü", "download"], ["recent", "Son Oynanan", "clock"], ["favorites", "Favoriler", "heart"]]
 
 var _filter := "all"
@@ -229,6 +231,9 @@ func _more(entry: Dictionary) -> Button:
 		_game_menu.add_item(Catalog.action_label(str(entry["id"])), 0)
 		_game_menu.set_item_disabled(0, not bool(entry["playable"]))
 		_game_menu.add_item("Favorilerden çıkar" if bool(entry["favorite"]) else "Favorilere ekle", 1)
+		# Only games PARDEX downloaded itself can be removed from here.
+		if not Distribution.executable(str(entry["id"])).is_empty():
+			_game_menu.add_item("Oyunu kaldır", 2)
 		var rect := more.get_global_rect()
 		_game_menu.popup(Rect2i(Vector2i(rect.position + Vector2(0, rect.size.y + 4)), Vector2i.ZERO))
 	)
@@ -241,6 +246,7 @@ func _on_menu(id: int) -> void:
 		1:
 			Catalog.toggle_favorite(_menu_game)
 			refresh()
+		2: uninstall_requested.emit(_menu_game)
 
 
 func _genre_chips(entry: Dictionary) -> HBoxContainer:

@@ -26,11 +26,12 @@ def upload(root, base, account, bucket='pardex-releases', run=subprocess.run):
     entries = manifest['games'] + ([manifest['launcher']] if manifest.get('launcher') else [])
     packages = {}
     # Validate every artifact before the first remote write.
-    for entry in entries:
-        package = entry['package']
+    assets = [entry['package'] for entry in entries]
+    assets += [entry[key] for entry in manifest['games'] for key in ('cover', 'banner') if entry.get(key)]
+    for package in assets:
         prefix = base.rstrip('/') + '/packages/'
         name = package['url'].removeprefix(prefix)
-        if not package['url'].startswith(prefix) or not re.fullmatch(r'[a-f0-9]{64}\.(zip|exe)', name):
+        if not package['url'].startswith(prefix) or not re.fullmatch(r'[a-f0-9]{64}\.(zip|exe|png|jpg|webp)', name):
             raise ValueError('Package URL does not belong to this Worker')
         source = root / 'packages' / name
         if source.is_symlink() or not source.is_file() or source.stat().st_size != package['size'] or not 0 < package['size'] <= 2147483648:
@@ -42,7 +43,8 @@ def upload(root, base, account, bucket='pardex-releases', run=subprocess.run):
         packages[name] = source
     common = ['aws', '--endpoint-url', f'https://{account}.r2.cloudflarestorage.com', '--region', 'auto', 's3', 'cp']
     for name, source in packages.items():
-        run(common + [str(source), f's3://{bucket}/packages/{name}', '--no-progress', '--content-type', 'application/octet-stream', '--cache-control', 'public,max-age=31536000,immutable'], check=True)
+        kind = {'png': 'image/png', 'jpg': 'image/jpeg', 'webp': 'image/webp'}.get(name.rsplit('.', 1)[1], 'application/octet-stream')
+        run(common + [str(source), f's3://{bucket}/packages/{name}', '--no-progress', '--content-type', kind, '--cache-control', 'public,max-age=31536000,immutable'], check=True)
     # No sync/delete: retain old versions and leave the live PC address untouched.
     run(common + [str(catalog), f's3://{bucket}/channel.json', '--no-progress', '--content-type', 'application/json', '--cache-control', 'no-store'], check=True)
 

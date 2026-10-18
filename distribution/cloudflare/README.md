@@ -44,6 +44,29 @@ python tools/publish_release.py --spec release.local.json --url https://GERCEK-W
 python tools/upload_r2.py --account-id CLOUDFLARE_HESAP_KIMLIGI --url https://GERCEK-WORKER-ADRESI
 ```
 
+`release.local.json` örneği (Git'e eklenmez; `cover`, `banner`, `genres`,
+`description` ve `players` isteğe bağlıdır):
+
+```json
+{
+  "games": [{
+    "id": "ornek-oyun",
+    "title": "Örnek Oyun",
+    "version": "1.0.0",
+    "directory": "C:/Godot Projeleri/OrnekOyun/export",
+    "executable": "OrnekOyun.exe",
+    "description": "Kısa tanıtım cümlesi.",
+    "players": "Tek oyunculu",
+    "genres": ["Macera", "Bulmaca"],
+    "cover": "C:/Godot Projeleri/OrnekOyun/kapak.png",
+    "banner": "C:/Godot Projeleri/OrnekOyun/afis.png"
+  }]
+}
+```
+
+Kapak dikey kart görseli, afiş mağazanın geniş üst görselidir; PNG, JPG veya WebP,
+en çok 8 MB. En çok 4 tür yazılabilir. PARDEX görselleri arka planda indirip doğrular.
+
 Yükleyici tüm dosyaların SHA-256 ve boyutunu önce kontrol eder. AWS CLI büyük dosyaları
 multipart yükler; paket yüklemesi başarısızsa katalog değiştirilmez. Paketlerden sonra
 katalog yayınlanır. Eski paketler silinmez, `online.json` üzerine yazılmaz. Aynı anda

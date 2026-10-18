@@ -75,6 +75,19 @@ def publish(spec, base, output):
             entry.update(version=version(game['version']), package=package(archive, '.zip'))
             for key in ('description','players'):
                 entry[key] = str(game.get(key,''))
+            genres = game.get('genres', [])
+            if not isinstance(genres, list) or len(genres) > 4 or not all(isinstance(g, str) and 0 < len(g.strip()) <= 24 for g in genres):
+                raise ValueError('Genres must be up to 4 short names')
+            if genres:
+                entry['genres'] = [g.strip() for g in genres]
+            # Store artwork: cover (portrait card) and banner (wide hero), optional.
+            for key in ('cover', 'banner'):
+                if game.get(key):
+                    image = Path(game[key]).resolve()
+                    suffix = {'.png': '.png', '.jpg': '.jpg', '.jpeg': '.jpg', '.webp': '.webp'}.get(image.suffix.lower())
+                    if not suffix or not image.is_file() or image.stat().st_size > 8388608:
+                        raise ValueError(f'{key} must be a PNG/JPG/WebP image up to 8 MiB')
+                    entry[key] = package(image, suffix)
             manifest['games'].append(entry)
     if len(ids) > 100:
         raise ValueError('Too many games')

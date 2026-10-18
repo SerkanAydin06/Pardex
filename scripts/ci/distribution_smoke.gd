@@ -69,9 +69,42 @@ func _run() -> void:
 	zip.close_file()
 	zip.close()
 	expect(D.install_zip(archive, newer), "install second version")
-	expect(D.executable("ci_update_fixture") != old and FileAccess.file_exists(old), "retain previous version")
+	# Once the new version is active the previous folder is deleted (disk space).
+	expect(D.executable("ci_update_fixture") != old and not FileAccess.file_exists(old) and not DirAccess.dir_exists_absolute(old.get_base_dir()), "remove previous version after activation")
+	expect(FileAccess.get_file_as_string(D.executable("ci_update_fixture")) == "new-fixture", "new version active")
+
+	# Store artwork and genres come from the catalog; nothing is borrowed from another game.
+	var image := Image.create(8, 4, false, Image.FORMAT_RGB8)
+	image.fill(Color(0.1, 0.6, 0.9))
+	var png := ProjectSettings.globalize_path("user://distribution-test.png")
+	image.save_png(png)
+	var cover := {"url":"https://distribution.invalid/packages/%s.png" % FileAccess.get_sha256(png), "sha256":FileAccess.get_sha256(png), "size":FileAccess.get_file_as_bytes(png).size()}
+	var styled := newer.duplicate(true)
+	styled["cover"] = cover
+	styled["genres"] = ["Bulmaca"]
+	styled["players"] = "Tek oyunculu"
+	expect(D.validate({"schema":1, "launcher":{}, "games":[styled]}), "accept cover and genres")
+	for art in [{"url":"https://distribution.invalid/x.exe", "sha256":cover["sha256"], "size":10}, {"url":cover["url"], "sha256":cover["sha256"], "size":9000000}]:
+		var bad_art := styled.duplicate(true)
+		bad_art["banner"] = art
+		expect(not D.validate({"schema":1, "launcher":{}, "games":[bad_art]}), "reject non-image or oversized artwork")
+	var many := styled.duplicate(true)
+	many["genres"] = ["a", "b", "c", "d", "e"]
+	expect(not D.validate({"schema":1, "launcher":{}, "games":[many]}), "reject more than four genres")
+	D.manifest = {"schema":1, "launcher":{}, "games":[styled]}
+	var store := Catalog.game("ci_update_fixture")
+	expect(store.get("genres") == ["Bulmaca"] and store.get("players") == "Tek oyunculu" and not str(store.get("cover", "")).begins_with("user://"), "clean store entry before art download")
+	DirAccess.copy_absolute(png, ProjectSettings.globalize_path(D.art_download_path(cover)))
+	store = Catalog.game("ci_update_fixture")
+	expect(str(store.get("cover", "")).begins_with("user://art/") and Catalog.texture(str(store["cover"])) != null, "use downloaded cover")
+
+	# Uninstall removes files and the install record.
+	expect(D.uninstall("ci_update_fixture") and D.executable("ci_update_fixture").is_empty() and not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path("user://games/ci_update_fixture")), "uninstall removes files and record")
+	expect(Catalog.action_label("ci_update_fixture") == "İndir", "uninstalled game can be downloaded again")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(D.art_download_path(cover)))
+	DirAccess.remove_absolute(png)
 	D.manifest = saved
 	DirAccess.remove_absolute(archive)
 	if failures == 0:
-		print("DISTRIBUTION SMOKE PASSED: catalog, update, paths, atomic activation and previous-version preservation")
+		print("DISTRIBUTION SMOKE PASSED: catalog, update, paths, atomic activation, old version cleanup, store art, uninstall")
 	quit(0 if failures == 0 else 1)

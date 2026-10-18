@@ -726,3 +726,12 @@ unique_name_in_owner = true
 title = "Oyun kurulumu"
 ok_button_text = "İndir ve Kur"
 cancel_button_text = "Vazgeç"
+
+[node name="UninstallDialog" type="ConfirmationDialog" parent="." unique_id=2144534740]
+unique_name_in_owner = true
+title = "Oyunu kaldır"
+size = Vector2i(440, 160)
+ok_button_text = "Kaldır"
+cancel_button_text = "Vazgeç"
+dialog_text = "Oyun bu bilgisayardan kaldırılsın mı? İstediğinde mağazadan tekrar indirebilirsin."
+dialog_autowrap = true
