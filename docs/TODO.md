@@ -3,7 +3,6 @@
 Yalnızca henüz yapılmamış işler. Biten maddeyi listeden sil.
 
 ## Senin yapman gerekenler
-- [ ] PR #76'yı birleştir (Sorun bildir, bildirimler, çoklu masa, kurulum/güncelleme, görsel test).
 - [ ] Windows'ta elle dene: tepsi simgesi ve görev çubuğu yanıp sönmesi.
 - [ ] Inno Setup 6 kur, `tools\package_windows.ps1` ile `PARDEX-Setup.exe` üret ve kurulumu dene.
 - [ ] İlk GitHub Release'i (`v0.1.0` ve üstü) `PARDEX-Setup.exe` ile yayınla; bir sonraki sürümde otomatik güncellemeyi dene.
