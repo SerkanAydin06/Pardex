@@ -35,12 +35,46 @@ async function lateAnswer(succeeds) {
   return calls;
 }
 
+// Stop, then start a new server while the old run's write is still pending:
+// the old answer must not erase or overwrite the new server's address.
+async function restartWhileOldWritePending() {
+  const written = [];
+  let release;
+  host.setPublisher((address) => {
+    if (address === "wss://old.example") {
+      return new Promise((resolve) => {
+        release = () => { written.push(address); resolve(); };
+      });
+    }
+    written.push(address);
+    return Promise.resolve();
+  });
+  host.setRetryDelay(5);
+  Object.assign(host.state, { phase: "running", onlineUrl: "wss://old.example", localOnly: false, publishError: "Sunucu adresi yayınlanamadı." });
+  host.schedulePublishRetry("wss://old.example");
+  await wait(30);
+  await host.stopServer();
+  // New run, as startServer does it: new generation, then announce.
+  host.nextRun();
+  Object.assign(host.state, { phase: "starting", onlineUrl: "", publishError: "" });
+  const announce = host.publish("wss://new.example");
+  await wait(10);
+  release();
+  await announce;
+  Object.assign(host.state, { phase: "running", onlineUrl: "wss://new.example" });
+  await wait(30);
+  assert.equal(host.state.phase, "running");
+  assert.equal(written.at(-1), "wss://new.example", `online.json must end with the new address, got ${JSON.stringify(written)}`);
+  assert.ok(written.indexOf("wss://old.example") < written.lastIndexOf("wss://new.example"), "old write lands before the new one");
+}
+
 async function run() {
   const afterSuccess = await lateAnswer(true);
   assert.equal(afterSuccess.at(-1), "", "a late successful publish is undone");
   const afterFailure = await lateAnswer(false);
   assert.ok(!afterFailure.includes(""), "nothing to undo when the late publish failed");
-  console.log("Host publish retry test passed: late answer after stop keeps the panel stopped and clears the dead address");
+  await restartWhileOldWritePending();
+  console.log("Host publish retry test passed: late answer after stop keeps the panel stopped, clears the dead address, and never erases a restarted server's address");
 }
 
 run().then(() => process.exit(0)).catch((error) => {
