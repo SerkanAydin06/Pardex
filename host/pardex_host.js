@@ -385,17 +385,37 @@ let publishRetryMs = 60_000;
 let publishRetryTimer = null;
 // Every start and stop gets a new number. A publish answer that arrives after
 // the server was stopped (or restarted) belongs to an old run: it must not
-// mark the panel as running, and if it did write the dead address to
-// online.json the closed state is published again.
+// mark the panel as running, and if it wrote an old address to online.json
+// the current state is written again.
 let publishGeneration = 0;
-let publish = publishAddress;
+let sendAddress = publishAddress;
+// Writes to online.json go out one at a time, in the order they were asked
+// for, so a slow old request can never land after a newer address.
+let publishQueue = Promise.resolve();
+
+function publish(address) {
+  const result = publishQueue.then(() => sendAddress(address));
+  publishQueue = result.catch(() => {});
+  return result;
+}
 
 function isCurrentRun(generation, onlineUrl) {
   return generation === publishGeneration && state.phase === "running" && state.onlineUrl === onlineUrl;
 }
 
-function clearStaleAddress() {
-  publish("").catch((error) => log(`Kapalı durumu yayınlanamadı: ${error.message}`));
+// After an old run's late write: publish what is true now. A running server
+// keeps its address, a server still starting announces itself shortly, and
+// a stopped server is published as closed.
+function reconcileAddress() {
+  if (state.phase === "starting" || state.localOnly) return;
+  const current = state.phase === "running" ? state.onlineUrl : "";
+  publish(current).catch((error) => {
+    log(`Güncel adres yeniden yayınlanamadı: ${error.message}`);
+    if (current && state.phase === "running" && state.onlineUrl === current) {
+      state.publishError = error.message;
+      schedulePublishRetry(current);
+    }
+  });
 }
 
 function stopPublishRetry() {
@@ -412,7 +432,7 @@ function schedulePublishRetry(onlineUrl) {
     try {
       await publish(onlineUrl);
       if (!isCurrentRun(generation, onlineUrl)) {
-        clearStaleAddress();
+        reconcileAddress();
         return;
       }
       state.publishError = "";
@@ -486,7 +506,7 @@ async function startServer(localOnly) {
       }
       if (generation !== publishGeneration) {
         // Stopped while announcing: a successful late announce is undone.
-        if (!state.publishError) clearStaleAddress();
+        if (!state.publishError) reconcileAddress();
         return;
       }
     }
@@ -738,7 +758,9 @@ module.exports = {
     state,
     stopServer,
     schedulePublishRetry,
-    setPublisher(fn) { publish = fn; },
+    setPublisher(fn) { sendAddress = fn; },
+    publish,
+    nextRun() { publishGeneration += 1; return publishGeneration; },
     setRetryDelay(ms) { publishRetryMs = ms; },
   },
 };
