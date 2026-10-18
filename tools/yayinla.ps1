@@ -1,4 +1,4 @@
-﻿# PARDEX yayınlama: sürümü artırır, kurulum dosyasını üretir ve arkadaşların
+# PARDEX yayınlama: sürümü artırır, kurulum dosyasını üretir ve arkadaşların
 # PARDEX'i açınca güncellenecek şekilde Cloudflare R2'ye yükler.
 # Kişisel ayarlar (Godot yolu, hesap kimliği) tools\yayinla.local.json'da
 # saklanır ve Git'e eklenmez. Gizli anahtar istemez: R2 yüklemesi AWS CLI'nin
@@ -99,6 +99,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Cloudflare'a yuklenemedi. AWS 'pardex-r2' profilini ve internet baglantisini (WARP) kontrol et." }
 } catch {
     Pop-Location
+    # Yayin olmadi: surum numarasi da eski haline doner, tekrar denenebilir.
+    [IO.File]::WriteAllText($MainPath, $main, $utf8)
     Fail $_.Exception.Message
 }
 Pop-Location

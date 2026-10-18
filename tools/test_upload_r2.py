@@ -4,10 +4,12 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 from upload_r2 import upload
 
 class UploadTest(unittest.TestCase):
-    def test_publication_order_and_failures(self):
+    @mock.patch('upload_r2.shutil.which', return_value='/usr/local/bin/aws')
+    def test_publication_order_and_failures(self, _which):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             (root / 'packages').mkdir()
