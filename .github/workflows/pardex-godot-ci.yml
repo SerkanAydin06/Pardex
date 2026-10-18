@@ -127,20 +127,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Windows Godot and matching export templates
-        uses: solarlabyrinth/action-setup-godot@v3
-        with:
-          version: 4.7.1-stable
-          csharp: false
-          export-templates: true
+        shell: pwsh
+        run: |
+          $release = "https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable"
+          Invoke-WebRequest "$release/Godot_v4.7.1-stable_win64.exe.zip" -OutFile "$env:RUNNER_TEMP/godot.zip"
+          Expand-Archive "$env:RUNNER_TEMP/godot.zip" "$env:RUNNER_TEMP/godot"
+          "GODOT_EXE=$env:RUNNER_TEMP/godot/Godot_v4.7.1-stable_win64_console.exe" >> $env:GITHUB_ENV
+          Invoke-WebRequest "$release/Godot_v4.7.1-stable_export_templates.tpz" -OutFile "$env:RUNNER_TEMP/templates.zip"
+          Expand-Archive "$env:RUNNER_TEMP/templates.zip" "$env:RUNNER_TEMP/templates"
+          $destination = "$env:APPDATA/Godot/export_templates/4.7.1.stable"
+          New-Item -ItemType Directory -Force $destination | Out-Null
+          Copy-Item "$env:RUNNER_TEMP/templates/templates/*" $destination -Recurse
       - name: Import launcher resources
         shell: pwsh
         run: |
-          godot --headless --editor --path . --quit
+          & $env:GODOT_EXE --headless --editor --path . --quit
           if ($LASTEXITCODE -ne 0) { throw "Godot import failed" }
       - name: Build standalone launcher installer
         shell: pwsh
         run: |
-          ./tools/package_windows.ps1 -GodotExe (Get-Command godot).Source -DistributionUrl "https://pardex-distribution.srknydn88.workers.dev"
+          ./tools/package_windows.ps1 -GodotExe $env:GODOT_EXE -DistributionUrl "https://pardex-distribution.srknydn88.workers.dev"
           if (!(Test-Path "dist/PARDEX-Setup.exe")) { throw "Installer was not built" }
           if (Test-Path "dist/PARDEX-Windows/games") { throw "Games must not be bundled" }
           $config = Get-Content "dist/PARDEX-Windows/pardex-distribution.json" -Raw | ConvertFrom-Json
