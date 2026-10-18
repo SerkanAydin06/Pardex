@@ -46,6 +46,7 @@ const state = {
   onlineUrl: "",
   gameUrl: "",
   localOnly: false,
+  publishError: "",
 };
 
 // ------------------------------------------------------------------ helpers
@@ -185,7 +186,8 @@ function tableCount() {
 
 // A named Cloudflare tunnel keeps the same addresses on every start. Its
 // public hostnames are set in the Cloudflare dashboard: the PARDEX address to
-// http://localhost:8765 and table N's game address to http://localhost:(8766+N).
+// http://127.0.0.1:8765 and table N's game address to http://127.0.0.1:(8766+N)
+// (not "localhost": on Windows it may resolve to IPv6, where nothing listens).
 function namedTunnelHosts() {
   const host = (value) => String(value || "").trim().replace(/^[a-z]+:\/\//i, "").replace(/\/.*$/, "");
   return {
@@ -333,15 +335,75 @@ function startGameServer(table) {
 
 // ------------------------------------------------------------------ address board
 
+// Node's "fetch failed" hides the reason in error.cause; turn it into a
+// short Turkish explanation. Never includes the request headers or token.
+function describePublishError(error) {
+  let host = "dağıtım sunucusu";
+  try { host = new URL(config.publish_url).host; } catch { /* keep generic name */ }
+  if (error?.name === "TimeoutError" || error?.name === "AbortError") {
+    return `${host} 15 saniyede yanıt vermedi.`;
+  }
+  const cause = error?.cause;
+  const code = String(cause?.code || cause?.errors?.[0]?.code || "");
+  const reasons = {
+    ECONNRESET: "bağlantı karşı taraftan ya da aradaki bir ağ cihazından kesildi (ECONNRESET)",
+    ENOTFOUND: "alan adı çözülemedi (ENOTFOUND)",
+    EAI_AGAIN: "DNS geçici olarak yanıt vermedi (EAI_AGAIN)",
+    ECONNREFUSED: "bağlantı reddedildi (ECONNREFUSED)",
+    ETIMEDOUT: "bağlantı zaman aşımına uğradı (ETIMEDOUT)",
+    UND_ERR_CONNECT_TIMEOUT: "bağlantı zaman aşımına uğradı",
+    UND_ERR_SOCKET: "bağlantı yarıda kesildi",
+  };
+  if (reasons[code]) return `${host}: ${reasons[code]}.`;
+  if (/CERT|SSL|TLS/i.test(code)) return `${host}: güvenli bağlantı (TLS) kurulamadı (${code}).`;
+  if (code) return `${host}: ağ hatası (${code}).`;
+  return error?.message || "bilinmeyen ağ hatası.";
+}
+
 async function publishAddress(onlineUrl) {
   const target = String(config.publish_url || "").trim();
   if (!target.startsWith("https://")) throw new Error("Dağıtım adresi HTTPS olmalı.");
-  const response = await fetch(target, {
-    method: "PUT", redirect: "error", signal: AbortSignal.timeout(15000),
-    headers: {"Content-Type":"application/json", Authorization:`Bearer ${config.publish_token || ""}`},
-    body: JSON.stringify({online:onlineUrl}),
-  });
+  let response;
+  try {
+    response = await fetch(target, {
+      method: "PUT", redirect: "error", signal: AbortSignal.timeout(15000),
+      headers: {"Content-Type":"application/json", Authorization:`Bearer ${config.publish_token || ""}`},
+      body: JSON.stringify({online:onlineUrl}),
+    });
+  } catch (error) {
+    throw new Error(`Sunucu adresi yayınlanamadı: ${describePublishError(error)}`);
+  }
+  if (response.status === 403) {
+    throw new Error("Sunucu adresi yayınlanamadı: yayın anahtarı reddedildi (HTTP 403). Paneldeki anahtar Cloudflare'daki PUBLISH_TOKEN ile aynı olmalı.");
+  }
   if (!response.ok) throw new Error(`Sunucu adresi yayınlanamadı (HTTP ${response.status}).`);
+}
+
+// While the address cannot be published the hub keeps running (reachable
+// with the address shown in the panel) and publishing is retried.
+const PUBLISH_RETRY_MS = 60_000;
+let publishRetryTimer = null;
+
+function stopPublishRetry() {
+  clearTimeout(publishRetryTimer);
+  publishRetryTimer = null;
+}
+
+function schedulePublishRetry(onlineUrl) {
+  stopPublishRetry();
+  publishRetryTimer = setTimeout(async () => {
+    publishRetryTimer = null;
+    if (state.phase !== "running" || state.onlineUrl !== onlineUrl) return;
+    try {
+      await publishAddress(onlineUrl);
+      state.publishError = "";
+      setPhase("running", "Sunucu açık. Adres yayınlandı; arkadaşların PARDEX'i açınca otomatik bağlanır.");
+    } catch (error) {
+      state.publishError = error.message;
+      log(`${error.message} 60 saniye sonra tekrar denenecek.`);
+      schedulePublishRetry(onlineUrl);
+    }
+  }, PUBLISH_RETRY_MS);
 }
 
 // ------------------------------------------------------------------ start / stop
@@ -393,12 +455,22 @@ async function startServer(localOnly) {
       setPhase("starting", "Oyun sunucusu hazırlanıyor (ilk açılış birkaç dakika sürebilir)...");
       await Promise.all(tableIndexes.map((table) => startGameServer(table)));
     }
+    state.publishError = "";
     if (!state.localOnly) {
       setPhase("starting", "Adres arkadaşlarına duyuruluyor...");
-      await publishAddress(onlineUrl);
+      try {
+        await publishAddress(onlineUrl);
+      } catch (error) {
+        state.publishError = error.message;
+      }
     }
     state.onlineUrl = onlineUrl;
     state.gameUrl = gameUrls.join(", ");
+    if (state.publishError) {
+      setPhase("running", `Sunucu açık ama adres yayınlanamadı. ${state.publishError} 60 saniyede bir tekrar denenecek; bu sırada adres PARDEX ayarlarına elle girilebilir: ${onlineUrl}`);
+      schedulePublishRetry(onlineUrl);
+      return;
+    }
     setPhase("running", state.localOnly
       ? "Sunucu açık (yerel test: yalnızca bu bilgisayar bağlanabilir)."
       : "Sunucu açık. Arkadaşların PARDEX'i açınca otomatik bağlanır.");
@@ -410,7 +482,8 @@ async function startServer(localOnly) {
 
 async function stopServer(reason = "Sunucu kapatıldı. Tekrar başlatmak için düğmeye bas.") {
   if (state.phase === "stopped" || state.phase === "stopping") return;
-  const wasPublic = !state.localOnly && Boolean(state.onlineUrl);
+  const wasPublic = !state.localOnly && Boolean(state.onlineUrl) && !state.publishError;
+  stopPublishRetry();
   state.phase = "stopping";
   state.message = "Sunucu kapatılıyor...";
   killChildren();
