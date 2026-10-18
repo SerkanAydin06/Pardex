@@ -6,11 +6,12 @@ import json
 import re
 import shutil
 import subprocess
+import time
 from pathlib import Path
 from urllib.parse import urlsplit
 
 
-def upload(root, base, account, bucket='pardex-releases', run=subprocess.run):
+def upload(root, base, account, bucket='pardex-releases', run=subprocess.run, attempts=3, sleep=time.sleep):
     root = Path(root).resolve()
     url = urlsplit(base)
     if url.scheme != 'https' or not url.hostname or url.username or url.password or url.query or url.fragment or url.path not in ('', '/'):
@@ -46,10 +47,26 @@ def upload(root, base, account, bucket='pardex-releases', run=subprocess.run):
     aws = shutil.which('aws')
     if not aws:
         raise FileNotFoundError('AWS CLI (aws) bulunamadi; AWS CLI v2 kurulu ve PATH icinde olmali.')
-    common = [aws, '--endpoint-url', f'https://{account}.r2.cloudflarestorage.com', '--region', 'auto', 's3', 'cp']
+    endpoint = [aws, '--endpoint-url', f'https://{account}.r2.cloudflarestorage.com', '--region', 'auto']
+    common = endpoint + ['s3', 'cp']
     for name, source in packages.items():
+        # Package names are their SHA-256: one already in R2 is this exact file.
+        head = run(endpoint + ['s3api', 'head-object', '--bucket', bucket, '--key', f'packages/{name}'], check=False, capture_output=True)
+        if head.returncode == 0:
+            print(f'skip: packages/{name} (already uploaded)')
+            continue
         kind = {'png': 'image/png', 'jpg': 'image/jpeg', 'webp': 'image/webp'}.get(name.rsplit('.', 1)[1], 'application/octet-stream')
-        run(common + [str(source), f's3://{bucket}/packages/{name}', '--no-progress', '--content-type', kind, '--cache-control', 'public,max-age=31536000,immutable'], check=True)
+        command = common + [str(source), f's3://{bucket}/packages/{name}', '--no-progress', '--content-type', kind, '--cache-control', 'public,max-age=31536000,immutable']
+        # A dropped connection (socket timeout) is retried before giving up.
+        for attempt in range(1, attempts + 1):
+            try:
+                run(command, check=True)
+                break
+            except subprocess.CalledProcessError:
+                if attempt == attempts:
+                    raise
+                print(f'retry {attempt + 1}/{attempts}: packages/{name}')
+                sleep(5 * attempt)
     # No sync/delete: retain old versions and leave the live PC address untouched.
     run(common + [str(catalog), f's3://{bucket}/channel.json', '--no-progress', '--content-type', 'application/json', '--cache-control', 'no-store'], check=True)
 
