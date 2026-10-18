@@ -39,6 +39,7 @@ var _profile_page: VBoxContainer
 var _messages_page: VBoxContainer
 var _desktop: DesktopNotify
 var _install_game_id := ""
+var _uninstall_game_id := ""
 var _existing_version_button: Button
 var _updater: Updater
 var _settings_content: VBoxContainer
@@ -105,6 +106,8 @@ func _create_pages() -> void:
 	_bind_settings_page()
 	if _social_page.has_signal("message_requested"):
 		_social_page.message_requested.connect(_open_conversation)
+	if _library_page.has_signal("uninstall_requested"):
+		_library_page.uninstall_requested.connect(_confirm_uninstall)
 	for page in [_store_page, _library_page, _social_page, _profile_page, _messages_page]:
 		if page.has_signal("navigate"):
 			page.navigate.connect(_navigate)
@@ -409,6 +412,13 @@ func _wire_updater() -> void:
 				page.call("_render_shelves")
 	)
 	_updater.game_installed.connect(func(id: String): _show_toast("%s hazır. Oyna düğmesiyle başlatabilirsin." % str(Catalog.game(id).get("title", id))))
+	_updater.game_uninstalled.connect(func(id: String): _show_toast("%s kaldırıldı." % str(Catalog.game(id).get("title", id))))
+	(%UninstallDialog as ConfirmationDialog).confirmed.connect(func():
+		if _is_game_running(_uninstall_game_id):
+			_show_toast("Kaldırmadan önce oyunu kapat.")
+			return
+		_updater.uninstall_game(_uninstall_game_id)
+	)
 	var install_dialog := %GameInstallDialog as ConfirmationDialog
 	_existing_version_button = install_dialog.add_button("Mevcut Sürümle Oyna", false, "play_existing")
 	_existing_version_button.name = "PlayExisting"
@@ -473,6 +483,16 @@ func _on_chat_message(with_account_id: String, message: Dictionary, _client_id: 
 
 
 # ------------------------------------------------------------------ games
+
+func _confirm_uninstall(game_id: String) -> void:
+	if _is_game_running(game_id):
+		_show_toast("Kaldırmadan önce oyunu kapat.")
+		return
+	_uninstall_game_id = game_id
+	var dialog := %UninstallDialog as ConfirmationDialog
+	dialog.dialog_text = "%s bu bilgisayardan kaldırılsın mı? İstediğinde mağazadan tekrar indirebilirsin." % str(Catalog.game(game_id).get("title", "Oyun"))
+	dialog.popup_centered()
+
 
 func _play_game(game_id: String, skip_update := false) -> void:
 	var entry := Catalog.game(game_id)

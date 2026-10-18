@@ -32,7 +32,7 @@ async function readAddress(request) {
 export default {
   async fetch(request, env) {
     const key = new URL(request.url).pathname.slice(1);
-    if (!/^(channel\.json|online\.json|packages\/[a-f0-9]{64}\.(zip|exe))$/.test(key)) return json(404, {error:'not found'});
+    if (!/^(channel\.json|online\.json|packages\/[a-f0-9]{64}\.(zip|exe|png|jpg|webp))$/.test(key)) return json(404, {error:'not found'});
     if (request.method === 'PUT' && key === 'online.json') {
       if (!await authorized(request, env.PUBLISH_TOKEN)) return json(403, {error:'forbidden'});
       let data;
@@ -52,7 +52,7 @@ export default {
     const object = await env.RELEASES[request.method === 'HEAD' ? 'head' : 'get'](key);
     if (!object) return json(404, {error:'not found'});
     return new Response(request.method === 'HEAD' ? null : object.body, {headers:{
-      'Content-Type':key.endsWith('.json') ? 'application/json' : 'application/octet-stream',
+      'Content-Type':key.endsWith('.json') ? 'application/json' : ({png:'image/png', jpg:'image/jpeg', webp:'image/webp'}[key.split('.').pop()] || 'application/octet-stream'),
       'Content-Length':String(object.size), 'ETag':object.httpEtag,
       'X-Content-Type-Options':'nosniff',
       'Cache-Control':key.endsWith('.json') ? 'no-store' : 'public, max-age=31536000, immutable',

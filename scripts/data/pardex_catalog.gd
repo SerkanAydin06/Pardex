@@ -55,25 +55,36 @@ static func all_games() -> Array:
 		for item in result:
 			item["playable"] = is_installed(str(item["id"]))
 	for remote in Distribution.manifest.get("games", []):
-		var item: Dictionary = GAMES[0].duplicate(true)
-		item["cover"] = "res://assets/ui/pardex_hub_app_icon.png"
-		item["banner"] = "res://assets/ui/top_banner.png"
-		item["id"] = remote["id"]
-		item["title"] = remote["title"]
-		item["tagline"] = str(remote.get("description", ""))
-		item["genres"] = ["Oyun"]
-		item["players"] = str(remote.get("players", ""))
-		item["badge"] = "Yeni"
-		item["playable"] = true
-		var replaced := false
-		for index in result.size():
-			if result[index]["id"] == item["id"]:
-				item["cover"] = result[index]["cover"]
-				item["banner"] = result[index]["banner"]
-				result[index] = item
-				replaced = true
+		# Only what the published catalog says; nothing is borrowed from another game.
+		var genres: Array = remote.get("genres", ["Oyun"])
+		var item := {
+			"id": str(remote["id"]),
+			"title": str(remote["title"]),
+			"genres": genres.duplicate(),
+			"players": str(remote.get("players", "")),
+			"tagline": str(remote.get("description", "")),
+			"cover": "res://assets/ui/pardex_hub_app_icon.png",
+			"banner": "res://assets/ui/top_banner.png",
+			"badge": "Yeni",
+			"playable": true,
+		}
+		var index := -1
+		for position in result.size():
+			if result[position]["id"] == item["id"]:
+				index = position
 				break
-		if not replaced:
+		if index >= 0:
+			# Built-in artwork stays until the published art has been downloaded.
+			item["cover"] = result[index]["cover"]
+			item["banner"] = result[index]["banner"]
+			item["badge"] = result[index]["badge"]
+		for key in ["cover", "banner"]:
+			var local := Distribution.art_path(remote.get(key))
+			if not local.is_empty():
+				item[key] = local
+		if index >= 0:
+			result[index] = item
+		else:
 			result.append(item)
 	return result
 
@@ -91,7 +102,16 @@ static func game(game_id: String) -> Dictionary:
 	return {}
 
 
+static var _downloaded_art := {}
+
+
 static func texture(path: String) -> Texture2D:
+	# Store art downloaded from the distribution server lives in user://art.
+	if path.begins_with("user://"):
+		if not _downloaded_art.has(path):
+			var image := Image.load_from_file(ProjectSettings.globalize_path(path))
+			_downloaded_art[path] = ImageTexture.create_from_image(image) if image != null and not image.is_empty() else null
+		return _downloaded_art[path]
 	return load(path) as Texture2D if ResourceLoader.exists(path) else null
 
 

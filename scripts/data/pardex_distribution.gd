@@ -3,6 +3,8 @@ extends RefCounted
 const CACHE := "user://distribution.json"
 const INSTALLED := "user://installed_games.cfg"
 const ROOT := "user://games"
+const ART := "user://art"
+const MAX_ART_BYTES := 8388608
 static var manifest: Dictionary = {}
 
 
@@ -68,6 +70,22 @@ static func verified_file(path: String, package: Dictionary) -> bool:
 	return FileAccess.get_sha256(path).to_lower() == str(package["sha256"]).to_lower()
 
 
+# Store artwork: a package whose URL ends in an image extension, at most 8 MiB.
+static func valid_art(value: Variant) -> bool:
+	if not valid_package(value) or int(value["size"]) > MAX_ART_BYTES:
+		return false
+	return str(value["url"]).get_extension().to_lower() in ["png", "jpg", "webp"]
+
+
+static func valid_genres(value: Variant) -> bool:
+	if not value is Array or value.size() > 4:
+		return false
+	for genre in value:
+		if not genre is String or genre.strip_edges().is_empty() or genre.length() > 24:
+			return false
+	return true
+
+
 static func validate(value: Variant) -> bool:
 	if not value is Dictionary or int(value.get("schema", 0)) != 1 or not value.get("games", []) is Array:
 		return false
@@ -84,8 +102,31 @@ static func validate(value: Variant) -> bool:
 		var executable := str(entry.get("executable", ""))
 		if not valid_id(id) or ids.has(id) or not valid_version(str(entry.get("version", ""))) or not safe_path(executable) or not executable.to_lower().ends_with(".exe") or not valid_package(entry.get("package")) or str(entry.get("title", "")).is_empty():
 			return false
+		for key in ["cover", "banner"]:
+			if entry.has(key) and not valid_art(entry[key]):
+				return false
+		if entry.has("genres") and not valid_genres(entry["genres"]):
+			return false
 		ids[id] = true
 	return ids.size() <= 100
+
+
+# Local copy of a verified artwork file, or "" until it has been downloaded.
+static func art_path(asset: Variant) -> String:
+	if not valid_art(asset):
+		return ""
+	var path := ART.path_join(str(asset["sha256"]).to_lower() + "." + str(asset["url"]).get_extension().to_lower())
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return ""
+	var matches := file.get_length() == int(asset["size"])
+	file.close()
+	return path if matches else ""
+
+
+static func art_download_path(asset: Dictionary) -> String:
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(ART))
+	return ART.path_join(str(asset["sha256"]).to_lower() + "." + str(asset["url"]).get_extension().to_lower())
 
 
 static func load_cache() -> void:
@@ -182,4 +223,36 @@ static func install_zip(archive: String, entry: Dictionary) -> bool:
 	config.set_value(str(entry["id"]), "package", {"version": entry["version"], "sha256": entry["package"]["sha256"], "path": folder.path_join(str(entry["executable"]))})
 	if config.save(INSTALLED + ".tmp") != OK:
 		return false
-	return DirAccess.rename_absolute(ProjectSettings.globalize_path(INSTALLED + ".tmp"), ProjectSettings.globalize_path(INSTALLED)) == OK
+	if DirAccess.rename_absolute(ProjectSettings.globalize_path(INSTALLED + ".tmp"), ProjectSettings.globalize_path(INSTALLED)) != OK:
+		return false
+	# The new version is active: earlier version folders only take disk space.
+	var game_root := ProjectSettings.globalize_path(ROOT.path_join(str(entry["id"])))
+	for old in DirAccess.get_directories_at(game_root):
+		if old != folder:
+			_remove_tree(game_root.path_join(old))
+	return true
+
+
+# Deletes the game's files and its install record. Saves made by the game in
+# its own user folder are not touched.
+static func uninstall(id: String) -> bool:
+	if not valid_id(id):
+		return false
+	var config := ConfigFile.new()
+	config.load(INSTALLED)
+	if config.has_section(id):
+		config.erase_section(id)
+		if config.save(INSTALLED) != OK:
+			return false
+	var folder := ProjectSettings.globalize_path(ROOT.path_join(id))
+	return not DirAccess.dir_exists_absolute(folder) or _remove_tree(folder)
+
+
+static func _remove_tree(path: String) -> bool:
+	for file in DirAccess.get_files_at(path):
+		if DirAccess.remove_absolute(path.path_join(file)) != OK:
+			return false
+	for child in DirAccess.get_directories_at(path):
+		if not _remove_tree(path.path_join(child)):
+			return false
+	return DirAccess.remove_absolute(path) == OK

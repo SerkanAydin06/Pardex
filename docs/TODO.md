@@ -7,6 +7,8 @@ Yalnızca henüz yapılmamış işler. Biten maddeyi listeden sil.
 - [ ] İkinci bir bilgisayardan (başka internet) PARDEX'e girip çevrimiçi görünürlüğü dene.
 - [ ] Windows'ta elle dene: tepsi simgesi ve görev çubuğu yanıp sönmesi.
 - [ ] İlk uygulama güncellemesini R2 kanalından (`channel.json`) uçtan uca dene.
+- [ ] Cloudflare'da `pardex-distribution` Worker'ını yeni `worker.mjs` ile yeniden dağıt (kapak/afiş görselleri için).
+- [ ] Deneme oyunuyla uçtan uca dene: yayınla → mağazada kapakla görün → indir (yüzde) → oyna → güncelle (eski sürüm silinir) → kaldır.
 - [ ] Sabit tünel istersen: Cloudflare'de tünel ve adresleri oluştur, sunucu panelinde kaydet.
 
 ## Geliştirme

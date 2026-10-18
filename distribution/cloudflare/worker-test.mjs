@@ -26,6 +26,10 @@ for (const online of ['wss://game.example.com','']) {
   assert.equal((await call('/online.json','PUT',JSON.stringify({online}),env.PUBLISH_TOKEN)).status,200);
   assert.equal((await (await call('/online.json')).json()).online,online);
 }
+const image = '/packages/'+'b'.repeat(64)+'.png';
+objects.set(image.slice(1), 'png-bytes');
+assert.equal((await call(image)).headers.get('content-type'), 'image/png');
+assert.equal((await call('/packages/'+'b'.repeat(64)+'.gif')).status, 404);
 const key = '/packages/'+ 'a'.repeat(64)+'.zip';
 objects.set(key.slice(1), 'binary-package');
 assert.equal(await (await call(key)).text(), 'binary-package');
