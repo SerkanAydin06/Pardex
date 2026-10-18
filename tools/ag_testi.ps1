@@ -16,7 +16,8 @@ function Show($label, $ok, $detail) {
 }
 
 function CurlTest($arguments) {
-    $output = & curl.exe @arguments 2>&1 | Out-String
+    # stderr satirlarini duz metne cevir; PowerShell 5 onlari kirmizi hata kaydi gibi basiyor.
+    $output = & curl.exe @arguments 2>&1 | ForEach-Object { "$_" } | Out-String
     return $output.Trim()
 }
 
@@ -49,6 +50,21 @@ if (Test-Path $Node) {
 } else {
     $ok3 = $null
     Show "Sunucu paneli (Node)" $false "host\bin\node\node.exe bulunamadi; panel bir kez acilinca indirilir."
+}
+
+# 4. Ucretsiz Cloudflare adresleri: hangisine baglanti kesilmeden ulasiliyor?
+# Herhangi bir HTTP yaniti (404 dahil) "ulasiliyor" demektir.
+Write-Host ""
+Write-Host "Ucretsiz Cloudflare adresleri:" -ForegroundColor Cyan
+$free = [ordered]@{
+    "pages.dev (Cloudflare Pages)" = "https://cloudflare-docs.pages.dev/"
+    "r2.dev (R2 genel adres)" = "https://pub-00000000000000000000000000000000.r2.dev/"
+    "r2.cloudflarestorage.com (R2 yukleme)" = "https://r2.cloudflarestorage.com/"
+    "trycloudflare.com (oyuncu tuneli)" = "https://api.trycloudflare.com/"
+}
+foreach ($name in $free.Keys) {
+    $r = CurlTest @("-sS", "-o", "NUL", "-w", "%{http_code}", "--max-time", "15", $free[$name])
+    Show $name ($r -match "^[1-5]\d\d$") $r
 }
 
 Write-Host ""
