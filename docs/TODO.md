@@ -3,9 +3,11 @@
 Yalnızca henüz yapılmamış işler. Biten maddeyi listeden sil.
 
 ## Senin yapman gerekenler
+- [ ] Sunucu bilgisayarına Cloudflare WARP (1.1.1.1) kur; `PARDEX-Ag-Testi.bat` ile dağıtım sunucusuna ulaşıldığını, panelde adresin yayınlandığını ve PARDEX'in otomatik bağlandığını doğrula.
+- [ ] Alan adı al (ör. Cloudflare Registrar) ve `pardex-distribution` Worker'ını ona bağla: internet sağlayıcısı `workers.dev`, `pages.dev` ve `r2.dev` adreslerini engelliyor. Sonra panelin yayın adresini ve `pardex-distribution.json` adresini yeni alan adıyla değiştir.
+- [ ] İkinci bir bilgisayardan (başka internet) PARDEX'e girip çevrimiçi görünürlüğü dene.
 - [ ] Windows'ta elle dene: tepsi simgesi ve görev çubuğu yanıp sönmesi.
-- [ ] Inno Setup 6 kur, `tools\package_windows.ps1` ile `PARDEX-Setup.exe` üret ve kurulumu dene.
-- [ ] İlk GitHub Release'i (`v0.1.0` ve üstü) `PARDEX-Setup.exe` ile yayınla; bir sonraki sürümde otomatik güncellemeyi dene.
+- [ ] İlk uygulama güncellemesini R2 kanalından (`channel.json`) uçtan uca dene.
 - [ ] Sabit tünel istersen: Cloudflare'de tünel ve adresleri oluştur, sunucu panelinde kaydet.
 
 ## Geliştirme
