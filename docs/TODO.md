@@ -3,7 +3,6 @@
 Yalnızca henüz yapılmamış işler. Biten maddeyi listeden sil.
 
 ## Senin yapman gerekenler
-- [ ] Sunucu bilgisayarına Cloudflare WARP (1.1.1.1) kur; `PARDEX-Ag-Testi.bat` ile dağıtım sunucusuna ulaşıldığını, panelde adresin yayınlandığını ve PARDEX'in otomatik bağlandığını doğrula.
 - [ ] Alan adı al (ör. Cloudflare Registrar) ve `pardex-distribution` Worker'ını ona bağla: internet sağlayıcısı `workers.dev`, `pages.dev` ve `r2.dev` adreslerini engelliyor. Sonra panelin yayın adresini ve `pardex-distribution.json` adresini yeni alan adıyla değiştir.
 - [ ] İkinci bir bilgisayardan (başka internet) PARDEX'e girip çevrimiçi görünürlüğü dene.
 - [ ] Windows'ta elle dene: tepsi simgesi ve görev çubuğu yanıp sönmesi.
