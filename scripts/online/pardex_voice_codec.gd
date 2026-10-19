@@ -58,7 +58,7 @@ static func encode(samples: PackedFloat32Array, state := {}) -> PackedByteArray:
 		return bytes
 	var predictor: int = state.get("predictor", clampi(int(samples[0] * 32767.0), -32768, 32767))
 	var index: int = state.get("index", 0)
-	bytes.resize(HEADER_BYTES + (samples.size() + 1) / 2)
+	bytes.resize(HEADER_BYTES + ((samples.size() + 1) >> 1))
 	bytes.encode_s16(0, predictor)
 	bytes[2] = index
 	for i in samples.size():
@@ -83,7 +83,7 @@ static func encode(samples: PackedFloat32Array, state := {}) -> PackedByteArray:
 			delta += step >> 2
 		predictor = clampi(predictor - delta if code & 8 else predictor + delta, -32768, 32767)
 		index = clampi(index + INDEX_TABLE[code], 0, 88)
-		var position := HEADER_BYTES + i / 2
+		var position := HEADER_BYTES + (i >> 1)
 		bytes[position] = bytes[position] | (code << 4 if i % 2 else code)
 	state["predictor"] = predictor
 	state["index"] = index
@@ -99,7 +99,7 @@ static func decode(bytes: PackedByteArray) -> PackedFloat32Array:
 	var count := (bytes.size() - HEADER_BYTES) * 2
 	out.resize(count)
 	for i in count:
-		var packed := bytes[HEADER_BYTES + i / 2]
+		var packed := bytes[HEADER_BYTES + (i >> 1)]
 		var code := (packed >> 4) & 15 if i % 2 else packed & 15
 		var step: int = STEP_TABLE[index]
 		var delta := step >> 3

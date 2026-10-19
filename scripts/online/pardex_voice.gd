@@ -125,8 +125,8 @@ func set_muted(value: bool) -> void:
 		_set_speaking(false)
 
 
-func _on_call_state(call: Dictionary) -> void:
-	_set_in_call(str(call.get("state", "")) == "active")
+func _on_call_state(call_state: Dictionary) -> void:
+	_set_in_call(str(call_state.get("state", "")) == "active")
 
 
 func _set_in_call(active: bool) -> void:

@@ -17,10 +17,10 @@ var _active_since := 0
 
 func setup(voice_node: Node) -> void:
 	voice = voice_node
-	PardexOnline.call_state_changed.connect(func(call: Dictionary):
-		if str(call.get("state", "")) == "active" and str(_call.get("state", "")) != "active":
+	PardexOnline.call_state_changed.connect(func(call_state: Dictionary):
+		if str(call_state.get("state", "")) == "active" and str(_call.get("state", "")) != "active":
 			_active_since = Time.get_ticks_msec()
-		_call = call
+		_call = call_state
 		_peer_muted = false
 		_refresh()
 	)
