@@ -1472,7 +1472,7 @@ text = "3"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 12
-text = "Katalogdaki Oyunlar"
+text = "Kütüphanemde"
 clip_text = true
 text_overrun_behavior = 3
 

@@ -6,7 +6,6 @@ signal uninstall_requested(game_id: String)
 
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const Distribution := preload("res://scripts/data/pardex_distribution.gd")
-const UI := preload("res://scripts/ui/pardex_ui.gd")
 
 var game_id := ""
 var _busy := false
