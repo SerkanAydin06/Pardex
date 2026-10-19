@@ -179,6 +179,330 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
+[sub_resource type="StyleBoxFlat" id="Buttonnormal"]
+bg_color = Color(0.06667, 0.10588, 0.18824, 1)
+border_color = Color(0.16863, 0.2902, 0.47059, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="Buttonhover"]
+bg_color = Color(0.09804, 0.16471, 0.26275, 1)
+border_color = Color(0.16863, 0.2902, 0.47059, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="Buttonpressed"]
+bg_color = Color(0.03922, 0.07059, 0.12549, 1)
+border_color = Color(0.16863, 0.2902, 0.47059, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="Buttondisabled"]
+bg_color = Color(0.06667, 0.09804, 0.15294, 1)
+border_color = Color(0.12549, 0.17647, 0.25098, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="Buttonfocus"]
+bg_color = Color(0.0, 0.0, 0.0, 0.0)
+border_color = Color(0.65098, 0.90196, 1.0, 1)
+border_width_left = 2
+content_margin_left = 12.0
+border_width_top = 2
+content_margin_top = 6.0
+border_width_right = 2
+content_margin_right = 12.0
+border_width_bottom = 2
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+draw_center = false
+
+[sub_resource type="StyleBoxFlat" id="PardexPrimarynormal"]
+bg_color = Color(0.15294, 0.66275, 1.0, 1)
+border_color = Color(0.37255, 0.81569, 1.0, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="PardexPrimaryhover"]
+bg_color = Color(0.32157, 0.72941, 1.0, 1)
+border_color = Color(0.37255, 0.81569, 1.0, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="PardexPrimarypressed"]
+bg_color = Color(0.08627, 0.52549, 0.87843, 1)
+border_color = Color(0.37255, 0.81569, 1.0, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="PardexPrimarydisabled"]
+bg_color = Color(0.06667, 0.09804, 0.15294, 1)
+border_color = Color(0.12549, 0.17647, 0.25098, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="PardexPrimaryfocus"]
+bg_color = Color(0.0, 0.0, 0.0, 0.0)
+border_color = Color(0.65098, 0.90196, 1.0, 1)
+border_width_left = 2
+content_margin_left = 12.0
+border_width_top = 2
+content_margin_top = 6.0
+border_width_right = 2
+content_margin_right = 12.0
+border_width_bottom = 2
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+draw_center = false
+
+[sub_resource type="StyleBoxFlat" id="PardexLinknormal"]
+bg_color = Color(0.0, 0.0, 0.0, 0.0)
+border_color = Color(0.0, 0.0, 0.0, 0.0)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="PardexLinkhover"]
+bg_color = Color(0.08235, 0.1451, 0.22745, 1)
+border_color = Color(0.0, 0.0, 0.0, 0.0)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="PardexLinkpressed"]
+bg_color = Color(0.04706, 0.09412, 0.15686, 1)
+border_color = Color(0.0, 0.0, 0.0, 0.0)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="PardexLinkdisabled"]
+bg_color = Color(0.06667, 0.09804, 0.15294, 1)
+border_color = Color(0.12549, 0.17647, 0.25098, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="PardexLinkfocus"]
+bg_color = Color(0.0, 0.0, 0.0, 0.0)
+border_color = Color(0.65098, 0.90196, 1.0, 1)
+border_width_left = 2
+content_margin_left = 12.0
+border_width_top = 2
+content_margin_top = 6.0
+border_width_right = 2
+content_margin_right = 12.0
+border_width_bottom = 2
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+draw_center = false
+
+[sub_resource type="StyleBoxFlat" id="PardexDangernormal"]
+bg_color = Color(0.12941, 0.07451, 0.11765, 1)
+border_color = Color(0.44706, 0.20392, 0.25098, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="PardexDangerhover"]
+bg_color = Color(0.21961, 0.12549, 0.16471, 1)
+border_color = Color(0.44706, 0.20392, 0.25098, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="PardexDangerpressed"]
+bg_color = Color(0.10196, 0.0549, 0.0902, 1)
+border_color = Color(0.44706, 0.20392, 0.25098, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="PardexDangerdisabled"]
+bg_color = Color(0.06667, 0.09804, 0.15294, 1)
+border_color = Color(0.12549, 0.17647, 0.25098, 1)
+border_width_left = 1
+content_margin_left = 12.0
+border_width_top = 1
+content_margin_top = 6.0
+border_width_right = 1
+content_margin_right = 12.0
+border_width_bottom = 1
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+
+[sub_resource type="StyleBoxFlat" id="PardexDangerfocus"]
+bg_color = Color(0.0, 0.0, 0.0, 0.0)
+border_color = Color(0.65098, 0.90196, 1.0, 1)
+border_width_left = 2
+content_margin_left = 12.0
+border_width_top = 2
+content_margin_top = 6.0
+border_width_right = 2
+content_margin_right = 12.0
+border_width_bottom = 2
+content_margin_bottom = 6.0
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+draw_center = false
+
 [resource]
 default_font_size = 14
 AcceptDialog/styles/panel = SubResource("StyleBoxFlat_jns6g")
@@ -206,3 +530,79 @@ VScrollBar/styles/scroll = SubResource("StyleBoxFlat_1kskn")
 VScrollBar/styles/scroll_focus = SubResource("StyleBoxFlat_1kskn")
 Window/colors/title_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
 Window/styles/embedded_border = SubResource("StyleBoxFlat_hiw5g")
+
+Button/styles/normal = SubResource("Buttonnormal")
+Button/styles/hover = SubResource("Buttonhover")
+Button/styles/pressed = SubResource("Buttonpressed")
+Button/styles/disabled = SubResource("Buttondisabled")
+Button/styles/focus = SubResource("Buttonfocus")
+Button/styles/hover_pressed = SubResource("Buttonpressed")
+Button/colors/font_color = Color(0.93333, 0.95294, 0.98431, 1)
+Button/colors/font_hover_color = Color(0.93333, 0.95294, 0.98431, 1)
+Button/colors/font_pressed_color = Color(0.93333, 0.95294, 0.98431, 1)
+Button/colors/font_focus_color = Color(0.93333, 0.95294, 0.98431, 1)
+Button/colors/icon_normal_color = Color(0.93333, 0.95294, 0.98431, 1)
+Button/colors/icon_hover_color = Color(0.93333, 0.95294, 0.98431, 1)
+Button/colors/icon_pressed_color = Color(0.93333, 0.95294, 0.98431, 1)
+Button/colors/icon_focus_color = Color(0.93333, 0.95294, 0.98431, 1)
+Button/colors/font_disabled_color = Color(0.44314, 0.50196, 0.58824, 1)
+Button/colors/icon_disabled_color = Color(0.44314, 0.50196, 0.58824, 1)
+Button/constants/h_separation = 8
+Button/constants/icon_max_width = 16
+PardexPrimary/base_type = &"Button"
+PardexPrimary/styles/normal = SubResource("PardexPrimarynormal")
+PardexPrimary/styles/hover = SubResource("PardexPrimaryhover")
+PardexPrimary/styles/pressed = SubResource("PardexPrimarypressed")
+PardexPrimary/styles/disabled = SubResource("PardexPrimarydisabled")
+PardexPrimary/styles/focus = SubResource("PardexPrimaryfocus")
+PardexPrimary/styles/hover_pressed = SubResource("PardexPrimarypressed")
+PardexPrimary/colors/font_color = Color(0.01176, 0.07843, 0.13725, 1)
+PardexPrimary/colors/font_hover_color = Color(0.01176, 0.07843, 0.13725, 1)
+PardexPrimary/colors/font_pressed_color = Color(0.01176, 0.07843, 0.13725, 1)
+PardexPrimary/colors/font_focus_color = Color(0.01176, 0.07843, 0.13725, 1)
+PardexPrimary/colors/icon_normal_color = Color(0.01176, 0.07843, 0.13725, 1)
+PardexPrimary/colors/icon_hover_color = Color(0.01176, 0.07843, 0.13725, 1)
+PardexPrimary/colors/icon_pressed_color = Color(0.01176, 0.07843, 0.13725, 1)
+PardexPrimary/colors/icon_focus_color = Color(0.01176, 0.07843, 0.13725, 1)
+PardexPrimary/colors/font_disabled_color = Color(0.44314, 0.50196, 0.58824, 1)
+PardexPrimary/colors/icon_disabled_color = Color(0.44314, 0.50196, 0.58824, 1)
+PardexPrimary/constants/h_separation = 8
+PardexPrimary/constants/icon_max_width = 16
+PardexLink/base_type = &"Button"
+PardexLink/styles/normal = SubResource("PardexLinknormal")
+PardexLink/styles/hover = SubResource("PardexLinkhover")
+PardexLink/styles/pressed = SubResource("PardexLinkpressed")
+PardexLink/styles/disabled = SubResource("PardexLinkdisabled")
+PardexLink/styles/focus = SubResource("PardexLinkfocus")
+PardexLink/styles/hover_pressed = SubResource("PardexLinkpressed")
+PardexLink/colors/font_color = Color(0.37255, 0.81569, 1.0, 1)
+PardexLink/colors/font_hover_color = Color(0.37255, 0.81569, 1.0, 1)
+PardexLink/colors/font_pressed_color = Color(0.37255, 0.81569, 1.0, 1)
+PardexLink/colors/font_focus_color = Color(0.37255, 0.81569, 1.0, 1)
+PardexLink/colors/icon_normal_color = Color(0.37255, 0.81569, 1.0, 1)
+PardexLink/colors/icon_hover_color = Color(0.37255, 0.81569, 1.0, 1)
+PardexLink/colors/icon_pressed_color = Color(0.37255, 0.81569, 1.0, 1)
+PardexLink/colors/icon_focus_color = Color(0.37255, 0.81569, 1.0, 1)
+PardexLink/colors/font_disabled_color = Color(0.44314, 0.50196, 0.58824, 1)
+PardexLink/colors/icon_disabled_color = Color(0.44314, 0.50196, 0.58824, 1)
+PardexLink/constants/h_separation = 8
+PardexLink/constants/icon_max_width = 16
+PardexDanger/base_type = &"Button"
+PardexDanger/styles/normal = SubResource("PardexDangernormal")
+PardexDanger/styles/hover = SubResource("PardexDangerhover")
+PardexDanger/styles/pressed = SubResource("PardexDangerpressed")
+PardexDanger/styles/disabled = SubResource("PardexDangerdisabled")
+PardexDanger/styles/focus = SubResource("PardexDangerfocus")
+PardexDanger/styles/hover_pressed = SubResource("PardexDangerpressed")
+PardexDanger/colors/font_color = Color(1.0, 0.57255, 0.57255, 1)
+PardexDanger/colors/font_hover_color = Color(1.0, 0.57255, 0.57255, 1)
+PardexDanger/colors/font_pressed_color = Color(1.0, 0.57255, 0.57255, 1)
+PardexDanger/colors/font_focus_color = Color(1.0, 0.57255, 0.57255, 1)
+PardexDanger/colors/icon_normal_color = Color(1.0, 0.57255, 0.57255, 1)
+PardexDanger/colors/icon_hover_color = Color(1.0, 0.57255, 0.57255, 1)
+PardexDanger/colors/icon_pressed_color = Color(1.0, 0.57255, 0.57255, 1)
+PardexDanger/colors/icon_focus_color = Color(1.0, 0.57255, 0.57255, 1)
+PardexDanger/colors/font_disabled_color = Color(0.44314, 0.50196, 0.58824, 1)
+PardexDanger/colors/icon_disabled_color = Color(0.44314, 0.50196, 0.58824, 1)
+PardexDanger/constants/h_separation = 8
+PardexDanger/constants/icon_max_width = 16

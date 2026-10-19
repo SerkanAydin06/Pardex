@@ -88,195 +88,6 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_feavi"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.15294118, 0.6627451, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eb0iv"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.23764706, 0.6964706, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hpplb"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kt3fq"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ssmw4"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.16, 0.19529411, 0.26941177, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.15294118, 0.6627451, 1, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nf8ii"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7d4f1"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3puj7"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ymcjn"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.15294118, 0.6627451, 1, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ujbdc"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.3)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u74hn"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.3)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i28ax"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.3)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d1ti5"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vl62s"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n1483"]
 content_margin_left = 18.0
 content_margin_top = 18.0
@@ -308,29 +119,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eqy3h"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cjr18"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h2ny0"]
 content_margin_left = 0.0
@@ -388,54 +176,6 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1lp76"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.18)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i4m08"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_35x84"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gbolw"]
 content_margin_left = 0.0
 content_margin_top = 0.0
@@ -491,54 +231,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1ecvx"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.18)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c4ubw"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a7136"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bcvvw"]
 content_margin_left = 0.0
@@ -596,77 +288,6 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5mgl7"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.18)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ra1ln"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d6y68"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8r23d"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dqbxq"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u6uqb"]
 content_margin_left = 14.0
 content_margin_top = 14.0
@@ -682,29 +303,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_suqsq"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u3n53"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cjyp7"]
 content_margin_left = 0.0
@@ -765,54 +363,6 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ovf4q"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.18)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ibmsg"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_thkg7"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5lwha"]
 content_margin_left = 0.0
 content_margin_top = 0.0
@@ -872,54 +422,6 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_47ecf"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.18)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wkd1a"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rhwwq"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a5687"]
 content_margin_left = 0.0
 content_margin_top = 0.0
@@ -978,54 +480,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tlrru"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.65)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 1, 1, 0.18)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tk5h7"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_phkm2"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.9)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
 
 [node name="StorePage" type="VBoxContainer" unique_id=850492761]
 offset_right = 1440.0
@@ -1233,19 +687,11 @@ theme_override_constants/separation = 12
 unique_name_in_owner = true
 custom_minimum_size = Vector2(190, 44)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBoxFlat_feavi")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_eb0iv")
-theme_override_styles/hover = SubResource("StyleBoxFlat_eb0iv")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_hpplb")
 icon_alignment = 2
 metadata/label = "Şimdi İncele"
+theme_type_variation = &"PardexPrimary"
 
 [node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/ExploreButton" unique_id=707404709]
 layout_mode = 0
@@ -1282,18 +728,10 @@ text = "Şimdi İncele"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(232, 44)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBoxFlat_kt3fq")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ssmw4")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ssmw4")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_nf8ii")
 metadata/label = "İstek Listesi"
+theme_type_variation = &"Button"
 
 [node name="Content" type="CenterContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/WishButton" unique_id=235147394]
 layout_mode = 0
@@ -1341,19 +779,11 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 tooltip_text = "Önceki"
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/icon_normal_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_7d4f1")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_3puj7")
-theme_override_styles/hover = SubResource("StyleBoxFlat_3puj7")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_7d4f1")
 icon = ExtResource("8_73wbi")
 icon_alignment = 1
+theme_type_variation = &"PardexLink"
 
 [node name="HeroDots" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2" unique_id=2105893230]
 unique_name_in_owner = true
@@ -1364,60 +794,40 @@ theme_override_constants/separation = 7
 custom_minimum_size = Vector2(9, 9)
 layout_mode = 2
 size_flags_vertical = 4
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_ymcjn")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ymcjn")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ymcjn")
+theme_type_variation = &"PardexPrimary"
 
 [node name="Dot1" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2/HeroDots" unique_id=1304948364]
 custom_minimum_size = Vector2(9, 9)
 layout_mode = 2
 size_flags_vertical = 4
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_ujbdc")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ujbdc")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ujbdc")
+theme_type_variation = &"Button"
 
 [node name="Dot2" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2/HeroDots" unique_id=144077600]
 custom_minimum_size = Vector2(9, 9)
 layout_mode = 2
 size_flags_vertical = 4
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_u74hn")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_u74hn")
-theme_override_styles/hover = SubResource("StyleBoxFlat_u74hn")
+theme_type_variation = &"Button"
 
 [node name="Dot3" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2/HeroDots" unique_id=1253879430]
 custom_minimum_size = Vector2(9, 9)
 layout_mode = 2
 size_flags_vertical = 4
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_i28ax")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_i28ax")
-theme_override_styles/hover = SubResource("StyleBoxFlat_i28ax")
+theme_type_variation = &"Button"
 
 [node name="NextButton" type="Button" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer2" unique_id=1979782977]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 tooltip_text = "Sonraki"
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/icon_normal_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
-theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_d1ti5")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_vl62s")
-theme_override_styles/hover = SubResource("StyleBoxFlat_vl62s")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_d1ti5")
 icon = ExtResource("9_ev38r")
 icon_alignment = 1
+theme_type_variation = &"PardexLink"
 
 [node name="HeroFeatures" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/PanelContainer1/MarginContainer1/HBoxContainer1" unique_id=557724571]
 unique_name_in_owner = true
@@ -1620,24 +1030,13 @@ mouse_filter = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_hover_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
-theme_override_colors/icon_normal_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_hover_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_constants/icon_max_width = 14
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_eqy3h")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_eqy3h")
-theme_override_styles/hover = SubResource("StyleBoxFlat_eqy3h")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_cjr18")
 text = "Tümünü Gör  "
 icon = ExtResource("6_1k4yc")
 icon_alignment = 2
+theme_type_variation = &"PardexLink"
 
 [node name="FeaturedGrid" type="GridContainer" parent="ScrollContainer1/VBoxContainer1/Shelves" unique_id=683367877]
 unique_name_in_owner = true
@@ -1779,19 +1178,11 @@ custom_minimum_size = Vector2(38, 38)
 layout_mode = 2
 size_flags_vertical = 8
 tooltip_text = "İstek listesi"
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/icon_normal_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 19
-theme_override_styles/normal = SubResource("StyleBoxFlat_1lp76")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_i4m08")
-theme_override_styles/hover = SubResource("StyleBoxFlat_i4m08")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_35x84")
 icon = ExtResource("7_vytwn")
 icon_alignment = 1
+theme_type_variation = &"Button"
 
 [node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid" unique_id=2011335488]
 clip_children = 2
@@ -1924,19 +1315,11 @@ custom_minimum_size = Vector2(38, 38)
 layout_mode = 2
 size_flags_vertical = 8
 tooltip_text = "İstek listesi"
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/icon_normal_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 19
-theme_override_styles/normal = SubResource("StyleBoxFlat_1ecvx")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_c4ubw")
-theme_override_styles/hover = SubResource("StyleBoxFlat_c4ubw")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_a7136")
 icon = ExtResource("7_vytwn")
 icon_alignment = 1
+theme_type_variation = &"Button"
 
 [node name="PanelContainer3" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/FeaturedGrid" unique_id=784245634]
 clip_children = 2
@@ -2069,19 +1452,11 @@ custom_minimum_size = Vector2(38, 38)
 layout_mode = 2
 size_flags_vertical = 8
 tooltip_text = "İstek listesi"
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/icon_normal_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 19
-theme_override_styles/normal = SubResource("StyleBoxFlat_5mgl7")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ra1ln")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ra1ln")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_d6y68")
 icon = ExtResource("7_vytwn")
 icon_alignment = 1
+theme_type_variation = &"Button"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Shelves" unique_id=438544655]
 layout_mode = 2
@@ -2121,24 +1496,13 @@ mouse_filter = 2
 visible = false
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_hover_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
-theme_override_colors/icon_normal_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_hover_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_constants/icon_max_width = 14
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_8r23d")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_8r23d")
-theme_override_styles/hover = SubResource("StyleBoxFlat_8r23d")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_dqbxq")
 text = "Tümünü Gör  "
 icon = ExtResource("6_1k4yc")
 icon_alignment = 2
+theme_type_variation = &"PardexLink"
 
 [node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves" unique_id=1314793758]
 custom_minimum_size = Vector2(0, 76)
@@ -2218,24 +1582,13 @@ mouse_filter = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_hover_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
-theme_override_colors/icon_normal_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_hover_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_constants/icon_max_width = 14
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_suqsq")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_suqsq")
-theme_override_styles/hover = SubResource("StyleBoxFlat_suqsq")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_u3n53")
 text = "Tümünü Gör  "
 icon = ExtResource("6_1k4yc")
 icon_alignment = 2
+theme_type_variation = &"PardexLink"
 
 [node name="NewGrid" type="GridContainer" parent="ScrollContainer1/VBoxContainer1/Shelves" unique_id=2028926467]
 unique_name_in_owner = true
@@ -2378,19 +1731,11 @@ custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_vertical = 0
 tooltip_text = "İstek listesi"
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/icon_normal_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 16
-theme_override_styles/normal = SubResource("StyleBoxFlat_ovf4q")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ibmsg")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ibmsg")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_thkg7")
 icon = ExtResource("7_vytwn")
 icon_alignment = 1
+theme_type_variation = &"Button"
 
 [node name="PanelContainer2" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid" unique_id=1189161828]
 layout_mode = 2
@@ -2524,19 +1869,11 @@ custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_vertical = 0
 tooltip_text = "İstek listesi"
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/icon_normal_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 16
-theme_override_styles/normal = SubResource("StyleBoxFlat_47ecf")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_wkd1a")
-theme_override_styles/hover = SubResource("StyleBoxFlat_wkd1a")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_rhwwq")
 icon = ExtResource("7_vytwn")
 icon_alignment = 1
+theme_type_variation = &"Button"
 
 [node name="PanelContainer3" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/Shelves/NewGrid" unique_id=1769622857]
 layout_mode = 2
@@ -2670,16 +2007,8 @@ custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_vertical = 0
 tooltip_text = "İstek listesi"
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/icon_normal_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 16
-theme_override_styles/normal = SubResource("StyleBoxFlat_tlrru")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_tk5h7")
-theme_override_styles/hover = SubResource("StyleBoxFlat_tk5h7")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_phkm2")
 icon = ExtResource("7_vytwn")
 icon_alignment = 1
+theme_type_variation = &"Button"

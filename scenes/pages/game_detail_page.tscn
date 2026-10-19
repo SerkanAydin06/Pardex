@@ -1,5 +1,7 @@
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://themes/pardex_theme.tres" id="shared_buttons"]
+
 [ext_resource type="Script" path="res://scripts/pages/game_detail_page.gd" id="1"]
 
 [sub_resource type="StyleBoxFlat" id="Panel"]
@@ -13,18 +15,8 @@ corner_radius_top_right = 16
 corner_radius_bottom_left = 16
 corner_radius_bottom_right = 16
 
-[sub_resource type="StyleBoxFlat" id="Primary"]
-bg_color = Color(0.05, 0.48, 0.82, 1)
-content_margin_left = 20.0
-content_margin_right = 20.0
-content_margin_top = 12.0
-content_margin_bottom = 12.0
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
-
 [node name="GameDetailPage" type="VBoxContainer"]
+theme = ExtResource("shared_buttons")
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1")
@@ -43,8 +35,12 @@ theme_override_constants/separation = 18
 [node name="BackButton" type="Button" parent="Scroll/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "‹ Geri"
+text = "Geri"
 custom_minimum_size = Vector2(0, 42)
+
+size_flags_horizontal = 0
+theme_type_variation = &"PardexLink"
+mouse_default_cursor_shape = 2
 
 [node name="HeroColumns" type="BoxContainer" parent="Scroll/Content"]
 unique_name_in_owner = true
@@ -100,25 +96,32 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "İndir"
 custom_minimum_size = Vector2(0, 42)
-theme_override_styles/normal = SubResource("Primary")
+theme_type_variation = &"PardexPrimary"
+mouse_default_cursor_shape = 2
 
 [node name="WishButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "İstek listesine ekle"
 custom_minimum_size = Vector2(0, 42)
+theme_type_variation = &"Button"
+mouse_default_cursor_shape = 2
 
 [node name="FavoriteButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Favorilere ekle"
 custom_minimum_size = Vector2(0, 42)
+theme_type_variation = &"Button"
+mouse_default_cursor_shape = 2
 
 [node name="UninstallButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Oyunu kaldır"
 custom_minimum_size = Vector2(0, 42)
+theme_type_variation = &"PardexDanger"
+mouse_default_cursor_shape = 2
 
 [node name="Playtime" type="Label" parent="Scroll/Content/HeroColumns/Info"]
 unique_name_in_owner = true
@@ -170,18 +173,24 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "‹"
 custom_minimum_size = Vector2(44, 42)
+theme_type_variation = &"Button"
+mouse_default_cursor_shape = 2
 
 [node name="EnlargeButton" type="Button" parent="Scroll/Content/Gallery/Controls"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Büyüt"
 custom_minimum_size = Vector2(120, 42)
+theme_type_variation = &"Button"
+mouse_default_cursor_shape = 2
 
 [node name="NextImage" type="Button" parent="Scroll/Content/Gallery/Controls"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "›"
 custom_minimum_size = Vector2(44, 42)
+theme_type_variation = &"Button"
+mouse_default_cursor_shape = 2
 
 [node name="ImageCount" type="Label" parent="Scroll/Content/Gallery/Controls"]
 unique_name_in_owner = true

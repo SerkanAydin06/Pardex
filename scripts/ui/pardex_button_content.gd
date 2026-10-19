@@ -15,7 +15,9 @@ func _ready() -> void:
 
 func _sync() -> void:
 	var button := get_parent() as Button
-	var tint := disabled_color if button and button.disabled else color
+	var tint := color
+	if button:
+		tint = button.get_theme_color("font_disabled_color" if button.disabled else "font_color")
 	var icon := get_node_or_null("Group/Icon") as CanvasItem
 	if icon:
 		icon.modulate = tint

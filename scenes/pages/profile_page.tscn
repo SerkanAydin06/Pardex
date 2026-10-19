@@ -134,54 +134,6 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i003v"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0.023529412, 0.039215688, 0.078431375, 0.75)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t63gn"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.16, 0.19529411, 0.26941177, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.15294118, 0.6627451, 1, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_06qol"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vh85q"]
 content_margin_left = 10.0
 content_margin_top = 10.0
@@ -326,29 +278,6 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_meloo"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pa1ib"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8jdvc"]
 content_margin_left = 16.0
 content_margin_top = 16.0
@@ -419,29 +348,6 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v0w3o"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1rsa6"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q273j"]
 content_margin_left = 0.0
 content_margin_top = 0.0
@@ -476,28 +382,6 @@ corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vbd7e"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_78rdx"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.08)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4qlwe"]
 content_margin_left = 0.0
@@ -546,29 +430,6 @@ corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0ahti"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g8jt5"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0)
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_delus"]
 content_margin_left = 0.0
@@ -809,18 +670,10 @@ mouse_filter = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(167, 48)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 15
-theme_override_styles/normal = SubResource("StyleBoxFlat_i003v")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_t63gn")
-theme_override_styles/hover = SubResource("StyleBoxFlat_t63gn")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_06qol")
 metadata/label = "Profili Düzenle"
+theme_type_variation = &"Button"
 
 [node name="Content" type="CenterContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer1/MarginContainer1/HBoxContainer1/VBoxContainer1/HBoxContainer1/EditProfileButton" unique_id=1974015587]
 layout_mode = 0
@@ -1091,24 +944,13 @@ mouse_filter = 2
 visible = false
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_hover_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
-theme_override_colors/icon_normal_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_hover_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_constants/icon_max_width = 14
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_meloo")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_meloo")
-theme_override_styles/hover = SubResource("StyleBoxFlat_meloo")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_pa1ib")
 text = "Tüm Rozetleri Gör  "
 icon = ExtResource("9_h3mxa")
 icon_alignment = 2
+theme_type_variation = &"PardexLink"
 
 [node name="BadgeEmpty" type="VBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer2/VBoxContainer1" unique_id=1715769829]
 custom_minimum_size = Vector2(0, 108)
@@ -1255,24 +1097,13 @@ mouse_filter = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_hover_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
-theme_override_colors/icon_normal_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_hover_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_constants/icon_max_width = 14
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_v0w3o")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_v0w3o")
-theme_override_styles/hover = SubResource("StyleBoxFlat_v0w3o")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_1rsa6")
 text = "Tümünü Gör  "
 icon = ExtResource("9_h3mxa")
 icon_alignment = 2
+theme_type_variation = &"PardexLink"
 
 [node name="FavoritesRow" type="HBoxContainer" parent="ScrollContainer1/Columns/VBoxContainer1/PanelContainer4/VBoxContainer1" unique_id=1777120230]
 unique_name_in_owner = true
@@ -1380,19 +1211,11 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(34, 34)
 layout_mode = 2
 tooltip_text = "Ayarlar"
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/icon_normal_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/icon_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 0.6)
 theme_override_constants/icon_max_width = 17
-theme_override_styles/normal = SubResource("StyleBoxFlat_vbd7e")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_78rdx")
-theme_override_styles/hover = SubResource("StyleBoxFlat_78rdx")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_vbd7e")
 icon = ExtResource("13_murwy")
 icon_alignment = 1
+theme_type_variation = &"PardexLink"
 
 [node name="AccountList" type="VBoxContainer" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1" unique_id=585192146]
 unique_name_in_owner = true
@@ -1588,24 +1411,13 @@ text_overrun_behavior = 3
 [node name="RecoveryLink" type="Button" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList/RecoveryRow/Row" unique_id=284844041]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_hover_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
-theme_override_colors/icon_normal_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_pressed_color = Color(0.15294118, 0.6627451, 1, 1)
-theme_override_colors/icon_hover_color = Color(0.15294118, 0.6627451, 1, 1)
 theme_override_constants/icon_max_width = 14
 theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_0ahti")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_0ahti")
-theme_override_styles/hover = SubResource("StyleBoxFlat_0ahti")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_g8jt5")
 text = "Oluştur  "
 icon = ExtResource("9_h3mxa")
 icon_alignment = 2
+theme_type_variation = &"PardexLink"
 
 [node name="ColorRect3" type="ColorRect" parent="ScrollContainer1/Columns/RightColumn/PanelContainer1/VBoxContainer1/AccountList" unique_id=1126283198]
 custom_minimum_size = Vector2(0, 1)
