@@ -7,6 +7,7 @@ extends Control
 
 const BugReport := preload("res://scripts/online/pardex_bug_report.gd")
 const DesktopNotify := preload("res://scripts/ui/pardex_desktop_notify.gd")
+const Voice := preload("res://scripts/online/pardex_voice.gd")
 const Distribution := preload("res://scripts/data/pardex_distribution.gd")
 const Updater := preload("res://scripts/online/pardex_updater.gd")
 const APP_VERSION := "0.2.4"
@@ -39,6 +40,7 @@ var _social_page: VBoxContainer
 var _profile_page: VBoxContainer
 var _messages_page: VBoxContainer
 var _desktop: DesktopNotify
+var _voice: Voice
 var _install_game_id := ""
 var _uninstall_game_id := ""
 var _existing_version_button: Button
@@ -73,6 +75,7 @@ func _ready() -> void:
 	_desktop = DesktopNotify.new()
 	add_child(_desktop)
 	_wire_updater()
+	_wire_calls()
 	_wire_online_signals()
 	PardexOnline.welcome_received.connect(_on_profile_name_accepted)
 	_apply_profile()
@@ -106,6 +109,8 @@ func _create_pages() -> void:
 	_bind_settings_page()
 	if _social_page.has_signal("message_requested"):
 		_social_page.message_requested.connect(_open_conversation)
+	if _messages_page.has_signal("call_requested"):
+		_messages_page.call_requested.connect(start_call)
 	if _library_page.has_signal("uninstall_requested"):
 		_library_page.uninstall_requested.connect(_confirm_uninstall)
 	for page in [_store_page, _library_page, _social_page, _profile_page, _messages_page]:
@@ -139,6 +144,67 @@ func _bind_settings_page() -> void:
 	)
 	PardexOnline.avatar_ready.connect(func(_account_id): _render_avatar_preview())
 	(_settings_content.get_node("SupportPanel/VBox/ReportRow/ReportButton") as Button).pressed.connect(_send_bug_report)
+
+
+const VOICE_SETTINGS := "VoicePanel/VBox/"
+const VOICE_SPEAKING_COLOR := Color(0.3, 0.85, 0.5)
+const VOICE_IDLE_COLOR := Color(0.15294118, 0.6627451, 1)
+
+
+# Ayarlar › Sesli sohbet: mode, threshold, devices and a live microphone test.
+func _bind_voice_settings() -> void:
+	var mode := _settings_content.get_node(VOICE_SETTINGS + "ModeRow/ModeOption") as OptionButton
+	var slider := _settings_content.get_node(VOICE_SETTINGS + "SensitivityRow/SensitivitySlider") as HSlider
+	var test := _settings_content.get_node(VOICE_SETTINGS + "TestRow/TestButton") as Button
+	var bar := _settings_content.get_node(VOICE_SETTINGS + "TestRow/LevelBar") as ProgressBar
+	var fill := (bar.get_theme_stylebox("fill") as StyleBoxFlat).duplicate() as StyleBoxFlat
+	bar.add_theme_stylebox_override("fill", fill)
+	mode.item_selected.connect(func(index: int):
+		_voice.mode = "push" if index == 1 else "voice"
+		_voice.save_settings()
+	)
+	slider.drag_ended.connect(func(_changed: bool):
+		_voice.sensitivity = slider.value
+		_voice.save_settings()
+	)
+	for input in [true, false]:
+		var option := _voice_device_option(input)
+		option.item_selected.connect(func(index: int): _voice.set_device(str(option.get_item_metadata(index)), input))
+	test.toggled.connect(func(on: bool):
+		_voice.set_test(on)
+		test.text = "Testi durdur" if on else "Mikrofonu test et"
+		if not on:
+			bar.value = bar.min_value
+	)
+	_voice.mic_level_changed.connect(func(level: float):
+		if not test.button_pressed:
+			return
+		bar.value = level
+		fill.bg_color = VOICE_SPEAKING_COLOR if _voice.mode == "voice" and level >= slider.value else VOICE_IDLE_COLOR
+	)
+	_pages["settings"].visibility_changed.connect(func():
+		if not (_pages["settings"] as Control).visible and test.button_pressed:
+			test.button_pressed = false
+	)
+
+
+func _voice_device_option(input: bool) -> OptionButton:
+	return _settings_content.get_node(VOICE_SETTINGS + ("InputRow/InputOption" if input else "OutputRow/OutputOption")) as OptionButton
+
+
+func _prepare_voice_settings() -> void:
+	(_settings_content.get_node(VOICE_SETTINGS + "ModeRow/ModeOption") as OptionButton).select(1 if _voice.mode == "push" else 0)
+	(_settings_content.get_node(VOICE_SETTINGS + "SensitivityRow/SensitivitySlider") as HSlider).set_value_no_signal(_voice.sensitivity)
+	for input in [true, false]:
+		var option := _voice_device_option(input)
+		var devices := AudioServer.get_input_device_list() if input else AudioServer.get_output_device_list()
+		var current := AudioServer.input_device if input else AudioServer.output_device
+		option.clear()
+		for device in devices:
+			option.add_item("Varsayılan" if device == "Default" else device)
+			option.set_item_metadata(option.item_count - 1, device)
+			if device == current:
+				option.select(option.item_count - 1)
 
 
 func _send_bug_report() -> void:
@@ -451,6 +517,57 @@ func _install_pending_update() -> void:
 	_updater.install()
 
 
+# ------------------------------------------------------------------ voice calls
+
+const CALL_END_MESSAGES := {
+	"declined": "Arama reddedildi.",
+	"missed": "Cevap verilmedi.",
+	"cancelled": "Arama iptal edildi.",
+	"disconnected": "Bağlantı koptuğu için arama bitti.",
+	"ended": "Arama bitti.",
+}
+
+
+func _wire_calls() -> void:
+	_voice = Voice.new()
+	add_child(_voice)
+	(%CallBar as Control).call("setup", _voice)
+	_bind_voice_settings()
+	var dialog := %IncomingCallDialog as ConfirmationDialog
+	var ring := %RingSound as AudioStreamPlayer
+	dialog.confirmed.connect(PardexOnline.accept_call)
+	dialog.canceled.connect(PardexOnline.decline_call)
+	# The ring repeats until the call is answered, declined or missed.
+	ring.finished.connect(func():
+		if dialog.visible:
+			ring.play()
+	)
+	PardexOnline.call_state_changed.connect(func(call: Dictionary):
+		var incoming := str(call.get("state", "")) == "ringing" and not bool(call.get("outgoing", false))
+		if incoming and not dialog.visible:
+			var caller := str(call.get("peer_name", "Arkadaşın"))
+			dialog.dialog_text = "%s seni arıyor." % caller
+			dialog.popup_centered()
+			ring.play()
+			_desktop.notify("%s seni arıyor" % caller)
+		elif not incoming:
+			dialog.hide()
+			ring.stop()
+	)
+	PardexOnline.call_ended.connect(func(reason: String):
+		dialog.hide()
+		ring.stop()
+		_show_toast(str(CALL_END_MESSAGES.get(reason, "Arama bitti.")))
+	)
+
+
+func start_call(account_id: String) -> void:
+	if not PardexOnline.current_call.is_empty():
+		_show_toast("Zaten bir aramadasın.")
+		return
+	PardexOnline.start_call(account_id)
+
+
 # ------------------------------------------------------------------ messages
 
 func _open_conversation(account_id: String) -> void:
@@ -726,6 +843,7 @@ func _prepare_settings() -> void:
 	(_settings_content.get_node("ProfilePanel/VBox/ProfileRow/ProfileNameEdit") as LineEdit).text = _display_name
 	(_settings_content.get_node("OnlinePanel/VBox/ServerRow/ServerUrlEdit") as LineEdit).text = _server_url
 	_render_avatar_preview()
+	_prepare_voice_settings()
 
 
 func _load_settings() -> void:

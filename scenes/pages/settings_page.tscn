@@ -460,6 +460,44 @@ corner_radius_bottom_right = 9
 corner_radius_bottom_left = 9
 shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_voice_field"]
+content_margin_left = 14.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.047058824, 0.078431375, 0.14117648, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_voice_track"]
+content_margin_left = 0.0
+content_margin_top = 3.0
+content_margin_right = 0.0
+content_margin_bottom = 3.0
+bg_color = Color(1, 1, 1, 0.08)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_voice_fill"]
+content_margin_left = 0.0
+content_margin_top = 3.0
+content_margin_right = 0.0
+content_margin_bottom = 3.0
+bg_color = Color(0.15294118, 0.6627451, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [node name="SettingsPage" type="VBoxContainer" unique_id=272890082]
 layout_mode = 0
 offset_right = 1440.0
@@ -952,6 +990,189 @@ theme_override_colors/font_color = Color(0.9, 0.7, 0.32, 1)
 theme_override_font_sizes/font_size = 14
 text = "●  ÇEVRİMDIŞI"
 text_overrun_behavior = 3
+
+[node name="VoicePanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1946200001]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hit1x")
+
+[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/VoicePanel" unique_id=1946200002]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Section" type="Label" parent="Scroll/SettingsContent/VoicePanel/VBox" unique_id=1946200003]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
+theme_override_font_sizes/font_size = 13
+text = "●  SESLİ SOHBET"
+text_overrun_behavior = 3
+
+[node name="Description" type="Label" parent="Scroll/SettingsContent/VoicePanel/VBox" unique_id=1946200004]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
+theme_override_font_sizes/font_size = 14
+text = "Arkadaşlarınla birebir sesli görüşme. Bas-konuş tuşu (V) yalnızca PARDEX penceresi öndeyken çalışır."
+autowrap_mode = 2
+
+[node name="ModeRow" type="HBoxContainer" parent="Scroll/SettingsContent/VoicePanel/VBox" unique_id=1946200005]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Scroll/SettingsContent/VoicePanel/VBox/ModeRow" unique_id=1946200006]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
+theme_override_font_sizes/font_size = 14
+text = "Konuşma biçimi"
+custom_minimum_size = Vector2(170, 0)
+vertical_alignment = 1
+
+[node name="ModeOption" type="OptionButton" parent="Scroll/SettingsContent/VoicePanel/VBox/ModeRow" unique_id=1946200007]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxFlat_voice_field")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_voice_field")
+theme_override_styles/hover = SubResource("StyleBoxFlat_voice_field")
+text_overrun_behavior = 3
+clip_text = true
+selected = 0
+item_count = 2
+popup/item_0/text = "Ses algılama"
+popup/item_0/id = 0
+popup/item_1/text = "Bas-konuş (V)"
+popup/item_1/id = 1
+
+[node name="SensitivityRow" type="HBoxContainer" parent="Scroll/SettingsContent/VoicePanel/VBox" unique_id=1946200008]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Scroll/SettingsContent/VoicePanel/VBox/SensitivityRow" unique_id=1946200009]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
+theme_override_font_sizes/font_size = 14
+text = "Algılama eşiği"
+custom_minimum_size = Vector2(170, 0)
+vertical_alignment = 1
+
+[node name="SensitivitySlider" type="HSlider" parent="Scroll/SettingsContent/VoicePanel/VBox/SensitivityRow" unique_id=1946200010]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_voice_track")
+theme_override_styles/grabber_area = SubResource("StyleBoxFlat_voice_fill")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_voice_fill")
+min_value = 0.002
+max_value = 0.2
+step = 0.001
+value = 0.02
+exp_edit = true
+
+[node name="InputRow" type="HBoxContainer" parent="Scroll/SettingsContent/VoicePanel/VBox" unique_id=1946200011]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Scroll/SettingsContent/VoicePanel/VBox/InputRow" unique_id=1946200012]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
+theme_override_font_sizes/font_size = 14
+text = "Mikrofon"
+custom_minimum_size = Vector2(170, 0)
+vertical_alignment = 1
+
+[node name="InputOption" type="OptionButton" parent="Scroll/SettingsContent/VoicePanel/VBox/InputRow" unique_id=1946200013]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxFlat_voice_field")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_voice_field")
+theme_override_styles/hover = SubResource("StyleBoxFlat_voice_field")
+text_overrun_behavior = 3
+clip_text = true
+
+[node name="OutputRow" type="HBoxContainer" parent="Scroll/SettingsContent/VoicePanel/VBox" unique_id=1946200014]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Scroll/SettingsContent/VoicePanel/VBox/OutputRow" unique_id=1946200015]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
+theme_override_font_sizes/font_size = 14
+text = "Hoparlör"
+custom_minimum_size = Vector2(170, 0)
+vertical_alignment = 1
+
+[node name="OutputOption" type="OptionButton" parent="Scroll/SettingsContent/VoicePanel/VBox/OutputRow" unique_id=1946200016]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxFlat_voice_field")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_voice_field")
+theme_override_styles/hover = SubResource("StyleBoxFlat_voice_field")
+text_overrun_behavior = 3
+clip_text = true
+
+[node name="TestRow" type="HBoxContainer" parent="Scroll/SettingsContent/VoicePanel/VBox" unique_id=1946200017]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Scroll/SettingsContent/VoicePanel/VBox/TestRow" unique_id=1946200018]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
+theme_override_font_sizes/font_size = 14
+text = "Mikrofon testi"
+custom_minimum_size = Vector2(170, 0)
+vertical_alignment = 1
+
+[node name="LevelBar" type="ProgressBar" parent="Scroll/SettingsContent/VoicePanel/VBox/TestRow" unique_id=1946200019]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_voice_track")
+theme_override_styles/fill = SubResource("StyleBoxFlat_voice_fill")
+min_value = 0.002
+max_value = 0.2
+step = 0.0
+value = 0.002
+exp_edit = true
+show_percentage = false
+
+[node name="TestButton" type="Button" parent="Scroll/SettingsContent/VoicePanel/VBox/TestRow" unique_id=1946200020]
+custom_minimum_size = Vector2(176, 44)
+layout_mode = 2
+focus_mode = 0
+mouse_default_cursor_shape = 2
+toggle_mode = true
+theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
+theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxFlat_4hs0q")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_nbfqp")
+theme_override_styles/hover = SubResource("StyleBoxFlat_nbfqp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_nbfqp")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_4yqvt")
+text = "Mikrofonu test et"
+
+[node name="TestHint" type="Label" parent="Scroll/SettingsContent/VoicePanel/VBox" unique_id=1946200021]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.38, 0.44, 0.53, 1)
+theme_override_font_sizes/font_size = 12
+text = "Konuşunca çubuk dolar; yeşile dönerse ses algılama seni duyuyor. Dönmüyorsa algılama eşiğini sola çek."
+autowrap_mode = 2
 
 [node name="SupportPanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1738450090]
 layout_mode = 2
