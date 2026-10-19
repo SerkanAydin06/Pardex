@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/placeholder_korsan.png" id="1_iodcs"]
+[ext_resource type="Texture2D" path="res://assets/ui/korsan_cover_v2.webp" id="1_iodcs"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_apmut"]
 content_margin_left = 0.0

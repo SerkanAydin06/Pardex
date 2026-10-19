@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bok4dhsdk6unq" path="res://scripts/pages/store_page.gd" id="1_g3r46"]
 [ext_resource type="Texture2D" uid="uid://n1jqljryt3tt" path="res://assets/ui/icons/search.svg" id="2_kp775"]
-[ext_resource type="Texture2D" uid="uid://cdh36ofpnnwfr" path="res://assets/ui/home_hero_banner.png" id="3_iaeb0"]
+[ext_resource type="Texture2D" path="res://assets/ui/store_hero_v2.webp" id="3_iaeb0"]
 [ext_resource type="Texture2D" uid="uid://drcgvmr40eubj" path="res://assets/ui/icons/crown.svg" id="4_iywm8"]
 [ext_resource type="Script" uid="uid://dq7tfe6yyxu7a" path="res://scripts/ui/pardex_button_content.gd" id="5_s5o6p"]
 [ext_resource type="Texture2D" uid="uid://cjj1bprg4j75u" path="res://assets/ui/icons/arrow_right.svg" id="6_1k4yc"]
@@ -13,7 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://cikg7yjvrb33a" path="res://assets/ui/icons/check_circle.svg" id="11_7fhsp"]
 [ext_resource type="Texture2D" uid="uid://8leraydps6gt" path="res://assets/ui/icons/gamepad.svg" id="12_gns5g"]
 [ext_resource type="Texture2D" uid="uid://0hkeo31n7ipe" path="res://assets/ui/icons/friends.svg" id="13_j3b0q"]
-[ext_resource type="Texture2D" uid="uid://tqeew4v23sdh" path="res://assets/ui/placeholder_korsan.png" id="14_sa4b1"]
+[ext_resource type="Texture2D" path="res://assets/ui/korsan_cover_v2.webp" id="14_sa4b1"]
 [ext_resource type="Texture2D" uid="uid://b8tby51dsjw1i" path="res://assets/ui/icons/check.svg" id="15_3wpne"]
 [ext_resource type="Texture2D" uid="uid://bmdjg7rmg8lac" path="res://assets/ui/placeholder_vex.png" id="16_1a7j0"]
 [ext_resource type="Texture2D" uid="uid://72ap7ji03mvg" path="res://assets/ui/icons/sparkles.svg" id="17_oamof"]
