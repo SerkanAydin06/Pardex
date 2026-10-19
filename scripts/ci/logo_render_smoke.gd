@@ -107,6 +107,18 @@ func _run() -> void:
 				push_error("PARDEX shell preview could not be saved.")
 				quit(1)
 				return
+		root.size = Vector2i(1366, 768)
+		shell.size = Vector2(1366, 768)
+		shell.call("_apply_responsive_layout")
+		var store := shell.get_node("%Pages/StorePage")
+		store.call("_show_slide", 1)
+		await create_timer(0.25).timeout
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png(preview_path.get_base_dir().path_join("shell-preview-pirates.png"))
+		shell.call("_open_game_details", "korsanlar")
+		await create_timer(0.3).timeout
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png(preview_path.get_base_dir().path_join("shell-preview-pirate-detail.png"))
 		shell.queue_free()
 		await process_frame
 	quit(0)

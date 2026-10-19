@@ -99,7 +99,7 @@ func _slides() -> Array:
 		"tag": "OYUNLARIN YENİ EVİ",
 		"title": "PARDEX Mağazaya Hoş Geldin",
 		"body": "Yeni oyunları keşfet, arkadaşlarınla oyna\nve öne çıkan içerikleri hemen incele.",
-		"banner": "res://assets/ui/home_hero_banner.png",
+		"banner": "res://assets/ui/store_hero_v2.webp",
 		"game": "",
 	}]
 	for entry in Catalog.all_games():

@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cq4yqnvgdrx3s" path="res://assets/ui/icons/download.svg" id="5_idi43"]
 [ext_resource type="Texture2D" uid="uid://c0cnkwxjmvl28" path="res://assets/ui/icons/clock.svg" id="6_lj2w6"]
 [ext_resource type="Texture2D" uid="uid://deqyuxtcl4rb6" path="res://assets/ui/icons/heart.svg" id="7_u3pvn"]
-[ext_resource type="Texture2D" uid="uid://tqeew4v23sdh" path="res://assets/ui/placeholder_korsan.png" id="8_0b3lu"]
+[ext_resource type="Texture2D" path="res://assets/ui/korsan_cover_v2.webp" id="8_0b3lu"]
 [ext_resource type="Texture2D" uid="uid://bmdjg7rmg8lac" path="res://assets/ui/placeholder_vex.png" id="9_jyi4k"]
 [ext_resource type="Texture2D" uid="uid://bt5l0v45nba6j" path="res://assets/ui/placeholder_firtina.png" id="10_it0hw"]
 [ext_resource type="Texture2D" uid="uid://bus1dr6a78n2a" path="res://assets/ui/icons/grid.svg" id="11_1fb5q"]
