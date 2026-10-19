@@ -49,6 +49,33 @@ func _run() -> void:
 		push_error("PARDEX logo preview could not be saved.")
 		quit(1)
 		return
+	var divider := TextureRect.new()
+	divider.texture = load("res://assets/ui/logo_divider.svg")
+	divider.material = load("res://themes/pardex_divider_material.tres").duplicate()
+	divider.position = Vector2(244, 230)
+	divider.size = Vector2(232, 18)
+	root.add_child(divider)
+	var pulse := divider.material as ShaderMaterial
+	pulse.set_shader_parameter("preview_time", 1.2)
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var resting := root.get_texture().get_image()
+	pulse.set_shader_parameter("preview_time", 0.24)
+	await process_frame
+	await RenderingServer.frame_post_draw
+	var beating := root.get_texture().get_image()
+	var delta := 0.0
+	for y in range(230, 248):
+		for x in range(342, 378):
+			delta += beating.get_pixel(x, y).v - resting.get_pixel(x, y).v
+	if delta < 1.0 or resting.get_pixel(270, 239) != beating.get_pixel(270, 239):
+		push_error("Divider heartbeat missing or side rails changed")
+		quit(1)
+		return
+	if not preview_path.is_empty():
+		resting.save_png(preview_path.get_base_dir().path_join("divider-rest.png"))
+		beating.save_png(preview_path.get_base_dir().path_join("divider-beat.png"))
+	divider.queue_free()
 	print("PARDEX logo render passed: silhouette glow -> chrome sweep -> transparent background")
 	logo.queue_free()
 	background.queue_free()

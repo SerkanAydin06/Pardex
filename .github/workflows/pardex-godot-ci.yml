@@ -134,6 +134,7 @@ jobs:
           name: pardex-ui-preview
           path: |
             logo-preview.png
+            divider-*.png
             shell-preview-*.png
             visual-current/*.png
           if-no-files-found: warn

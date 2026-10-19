@@ -29,6 +29,7 @@
 [ext_resource type="Script" path="res://scripts/ui/pardex_logo_effect.gd" id="46_logo_effect"]
 
 [ext_resource type="Texture2D" path="res://assets/ui/logo_divider.svg" id="47_logo_divider"]
+[ext_resource type="ShaderMaterial" path="res://themes/pardex_divider_material.tres" id="48_divider_pulse"]
 
 
 [ext_resource type="AudioStream" uid="uid://dokqhe8khbham" path="res://assets/sfx/message.wav" id="90_message_sound"]
@@ -261,6 +262,7 @@ custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
 mouse_filter = 2
 texture_filter = 2
+material = ExtResource("48_divider_pulse")
 texture = ExtResource("47_logo_divider")
 expand_mode = 1
 stretch_mode = 5

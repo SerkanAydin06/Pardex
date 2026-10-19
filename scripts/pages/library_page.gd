@@ -238,7 +238,7 @@ func _genre_chips(entry: Dictionary) -> HBoxContainer:
 
 # Editor-owned card layouts, populated with live catalog data.
 func _on_details_input(event: InputEvent, game_id: String) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+	if event is InputEventMouseButton and event.pressed and event.double_click and event.button_index == MOUSE_BUTTON_LEFT:
 		details_requested.emit(game_id)
 
 
