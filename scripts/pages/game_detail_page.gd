@@ -28,12 +28,18 @@ func _ready() -> void:
 	)
 	%PreviousImage.pressed.connect(func(): _show_image(_image_index - 1))
 	%NextImage.pressed.connect(func(): _show_image(_image_index + 1))
-	%EnlargeButton.pressed.connect(func():
-		if _images.is_empty():
-			return
-		%LargeImage.texture = _images[_image_index]
-		%ImageDialog.popup_centered(Vector2i(860, 540).min(Vector2i(get_viewport_rect().size) - Vector2i(40, 80)))
+	%EnlargeButton.pressed.connect(_enlarge_image)
+	%Screenshot.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+			_enlarge_image()
 	)
+
+
+func _enlarge_image() -> void:
+	if _images.is_empty():
+		return
+	%LargeImage.texture = _images[_image_index]
+	%ImageDialog.popup_centered(Vector2i(860, 540).min(Vector2i(get_viewport_rect().size) - Vector2i(40, 80)))
 
 
 func show_game(id: String) -> void:

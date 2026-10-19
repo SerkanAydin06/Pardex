@@ -58,6 +58,16 @@ func _run() -> void:
 		var output := OS.get_environment("PARDEX_VISUAL_OUTPUT")
 		if not output.is_empty():
 			root.get_texture().get_image().save_png(output.path_join("detail-%d.png" % width))
+	detail.get_node("%EnlargeButton").pressed.emit()
+	await process_frame
+	expect(detail.get_node("%ImageDialog").visible and detail.get_node("%LargeImage").texture != null, "enlarge screenshot")
+	detail.get_node("%ImageDialog").hide()
+	detail.get_node("%Scroll").scroll_vertical = 100000
+	await create_timer(0.3).timeout
+	await RenderingServer.frame_post_draw
+	var output := OS.get_environment("PARDEX_VISUAL_OUTPUT")
+	if not output.is_empty():
+		root.get_texture().get_image().save_png(output.path_join("detail-bottom.png"))
 	detail.show_game("vex")
 	expect(detail.get_node("%ActionButton").disabled and not detail.get_node("%Gallery").visible, "upcoming game and empty gallery")
 	D.manifest = saved
