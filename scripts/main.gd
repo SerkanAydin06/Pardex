@@ -542,10 +542,10 @@ func _wire_calls() -> void:
 		if dialog.visible:
 			ring.play()
 	)
-	PardexOnline.call_state_changed.connect(func(call: Dictionary):
-		var incoming := str(call.get("state", "")) == "ringing" and not bool(call.get("outgoing", false))
+	PardexOnline.call_state_changed.connect(func(call_state: Dictionary):
+		var incoming := str(call_state.get("state", "")) == "ringing" and not bool(call_state.get("outgoing", false))
 		if incoming and not dialog.visible:
-			var caller := str(call.get("peer_name", "Arkadaşın"))
+			var caller := str(call_state.get("peer_name", "Arkadaşın"))
 			dialog.dialog_text = "%s seni arıyor." % caller
 			dialog.popup_centered()
 			ring.play()

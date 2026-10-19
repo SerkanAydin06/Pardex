@@ -240,11 +240,11 @@ func _render_header() -> void:
 	_header.add_child(titles)
 	# Voice call, like Steam's chat window: online friends, one call at a time.
 	if presence != "offline" and PardexOnline.current_call.is_empty():
-		var call := UI.button("Ara", "ghost", 13, 38, "phone")
-		call.custom_minimum_size.x = 96
-		call.tooltip_text = "Sesli arama başlat"
-		call.pressed.connect(func(): call_requested.emit(_selected_id))
-		_header.add_child(call)
+		var call_button := UI.button("Ara", "ghost", 13, 38, "phone")
+		call_button.custom_minimum_size.x = 96
+		call_button.tooltip_text = "Sesli arama başlat"
+		call_button.pressed.connect(func(): call_requested.emit(_selected_id))
+		_header.add_child(call_button)
 	# A friend at an open table can be joined straight from the chat; from my
 	# own table I can invite the friend.
 	if bool(profile.get("room_joinable", false)):

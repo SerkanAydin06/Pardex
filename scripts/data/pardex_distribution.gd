@@ -99,8 +99,8 @@ static func validate(value: Variant) -> bool:
 		if not entry is Dictionary:
 			return false
 		var id := str(entry.get("id", ""))
-		var executable := str(entry.get("executable", ""))
-		if not valid_id(id) or ids.has(id) or not valid_version(str(entry.get("version", ""))) or not safe_path(executable) or not executable.to_lower().ends_with(".exe") or not valid_package(entry.get("package")) or str(entry.get("title", "")).is_empty():
+		var executable_path := str(entry.get("executable", ""))
+		if not valid_id(id) or ids.has(id) or not valid_version(str(entry.get("version", ""))) or not safe_path(executable_path) or not executable_path.to_lower().ends_with(".exe") or not valid_package(entry.get("package")) or str(entry.get("title", "")).is_empty():
 			return false
 		for key in ["cover", "banner"]:
 			if entry.has(key) and not valid_art(entry[key]):
