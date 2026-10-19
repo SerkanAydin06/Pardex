@@ -68,8 +68,14 @@ func _run() -> void:
 	for y in range(230, 248):
 		for x in range(342, 378):
 			delta += beating.get_pixel(x, y).v - resting.get_pixel(x, y).v
-	if delta < 1.0 or resting.get_pixel(270, 239) != beating.get_pixel(270, 239):
-		push_error("Divider heartbeat missing or side rails changed")
+	var outside_changed := false
+	for y in range(230, 248):
+		for x in range(244, 476):
+			if absf(float(x) + 0.5 - 360.0) > 5.0 or absf(float(y) + 0.5 - 239.0) > 2.0:
+				if resting.get_pixel(x, y) != beating.get_pixel(x, y):
+					outside_changed = true
+	if delta < 1.0 or outside_changed:
+		push_error("Divider inner heartbeat missing or outer frame changed")
 		quit(1)
 		return
 	if not preview_path.is_empty():
