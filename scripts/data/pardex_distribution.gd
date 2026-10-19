@@ -107,6 +107,15 @@ static func validate(value: Variant) -> bool:
 				return false
 		if entry.has("genres") and not valid_genres(entry["genres"]):
 			return false
+		for field in ["long_description", "requirements", "release_notes", "connection_modes"]:
+			if entry.has(field) and (not entry[field] is String or entry[field].length() > 16000):
+				return false
+		if entry.has("screenshots"):
+			if not entry["screenshots"] is Array or entry["screenshots"].size() > 8:
+				return false
+			for asset in entry["screenshots"]:
+				if not valid_art(asset):
+					return false
 		ids[id] = true
 	return ids.size() <= 100
 

@@ -68,6 +68,9 @@ static func all_games() -> Array:
 			"badge": "Yeni",
 			"playable": true,
 		}
+		for field in ["long_description", "requirements", "release_notes", "connection_modes", "version", "screenshots"]:
+			if remote.has(field):
+				item[field] = remote[field]
 		var index := -1
 		for position in result.size():
 			if result[position]["id"] == item["id"]:

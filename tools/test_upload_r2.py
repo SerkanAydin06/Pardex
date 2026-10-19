@@ -21,7 +21,7 @@ class UploadTest(unittest.TestCase):
             (root / 'packages' / art).write_bytes(b'png')
             manifest = {'schema':1, 'launcher':{}, 'games':[{'package':{
                 'url':'https://example.workers.dev/packages/'+name, 'sha256':digest, 'size':4},
-                'cover':{'url':'https://example.workers.dev/packages/'+art, 'sha256':art[:64], 'size':3}}]}
+                'screenshots':[{'url':'https://example.workers.dev/packages/'+art, 'sha256':art[:64], 'size':3}]}]}
             (root / 'channel.json').write_text(json.dumps(manifest))
             calls = []
             uploaded = set()

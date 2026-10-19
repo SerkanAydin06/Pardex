@@ -19,6 +19,7 @@
 [ext_resource type="PackedScene" path="res://scenes/pages/profile_page.tscn" id="20_profile"]
 [ext_resource type="PackedScene" path="res://scenes/pages/settings_page.tscn" id="20_settings"]
 [ext_resource type="PackedScene" path="res://scenes/pages/store_page.tscn" id="20_store"]
+[ext_resource type="PackedScene" path="res://scenes/pages/game_detail_page.tscn" id="20_details"]
 
 [ext_resource type="Script" path="res://scripts/tools/pardex_editor_preview.gd" id="30_editor_preview"]
 
@@ -568,6 +569,10 @@ visible = false
 layout_mode = 2
 
 [node name="ProfilePage" parent="Root/Body/ContentColumn/MainMargin/Pages" unique_id=169794569 instance=ExtResource("20_profile")]
+visible = false
+layout_mode = 2
+
+[node name="GameDetailPage" parent="Root/Body/ContentColumn/MainMargin/Pages" instance=ExtResource("20_details")]
 visible = false
 layout_mode = 2
 

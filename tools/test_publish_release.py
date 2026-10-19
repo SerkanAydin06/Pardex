@@ -14,12 +14,17 @@ class PublishTest(unittest.TestCase):
                 self.assertEqual(archive.read('Game.exe'),b'fixture')
             # Artwork and genres are published with the game.
             (root/'cover.png').write_bytes(b'\x89PNG fixture')
-            spec['games'][0].update(cover=str(root/'cover.png'), genres=['Bulmaca'])
+            spec['games'][0].update(cover=str(root/'cover.png'), genres=['Bulmaca'], screenshots=[str(root/'cover.png')], long_description='Ayrıntılı açıklama', requirements='Windows', release_notes='İlk sürüm', connection_modes='Tek oyunculu')
             manifest=publish(spec,'https://distribution.invalid',out)
             cover=manifest['games'][0]['cover']
             self.assertTrue(cover['url'].endswith('.png'))
             self.assertTrue((out/'packages'/cover['url'].split('/')[-1]).is_file())
             self.assertEqual(manifest['games'][0]['genres'],['Bulmaca'])
+            self.assertEqual(manifest['games'][0]['screenshots'][0], cover)
+            self.assertEqual(manifest['games'][0]['long_description'], 'Ayrıntılı açıklama')
+            spec['games'][0]['screenshots'] = [str(root/'cover.png')] * 9
+            with self.assertRaises(ValueError): publish(spec,'https://distribution.invalid',out)
+            spec['games'][0]['screenshots'] = [str(root/'cover.png')]
             (root/'cover.txt').write_text('x')
             spec['games'][0]['cover']=str(root/'cover.txt')
             with self.assertRaises(ValueError): publish(spec,'https://distribution.invalid',out)

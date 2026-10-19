@@ -88,6 +88,23 @@ def publish(spec, base, output):
                     if not suffix or not image.is_file() or image.stat().st_size > 8388608:
                         raise ValueError(f'{key} must be a PNG/JPG/WebP image up to 8 MiB')
                     entry[key] = package(image, suffix)
+            for key in ('long_description', 'requirements', 'release_notes', 'connection_modes'):
+                value = game.get(key, '')
+                if not isinstance(value, str) or len(value) > 16000:
+                    raise ValueError(f'{key} must be text up to 16000 characters')
+                if value:
+                    entry[key] = value
+            screenshots = game.get('screenshots', [])
+            if not isinstance(screenshots, list) or len(screenshots) > 8:
+                raise ValueError('At most 8 screenshots are allowed')
+            if screenshots:
+                entry['screenshots'] = []
+            for source in screenshots:
+                image = Path(source).resolve()
+                suffix = {'.png': '.png', '.jpg': '.jpg', '.jpeg': '.jpg', '.webp': '.webp'}.get(image.suffix.lower())
+                if not suffix or not image.is_file() or image.stat().st_size > 8388608:
+                    raise ValueError('Screenshot must be PNG/JPG/WebP up to 8 MiB')
+                entry['screenshots'].append(package(image, suffix))
             manifest['games'].append(entry)
     if len(ids) > 100:
         raise ValueError('Too many games')

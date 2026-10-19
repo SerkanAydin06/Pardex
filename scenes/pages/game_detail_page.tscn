@@ -1,0 +1,287 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/pages/game_detail_page.gd" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="Panel"]
+bg_color = Color(0.035, 0.065, 0.12, 1)
+content_margin_left = 20.0
+content_margin_top = 18.0
+content_margin_right = 20.0
+content_margin_bottom = 18.0
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_left = 16
+corner_radius_bottom_right = 16
+
+[sub_resource type="StyleBoxFlat" id="Primary"]
+bg_color = Color(0.05, 0.48, 0.82, 1)
+content_margin_left = 20.0
+content_margin_right = 20.0
+content_margin_top = 12.0
+content_margin_bottom = 12.0
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+
+[node name="GameDetailPage" type="VBoxContainer"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1")
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Content" type="VBoxContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 18
+
+[node name="BackButton" type="Button" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "‹ Geri"
+custom_minimum_size = Vector2(0, 42)
+
+[node name="HeroColumns" type="BoxContainer" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Banner" type="TextureRect" parent="Scroll/Content/HeroColumns"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 280)
+size_flags_horizontal = 3
+expand_mode = 1
+stretch_mode = 6
+mouse_filter = 2
+
+[node name="Info" type="VBoxContainer" parent="Scroll/Content/HeroColumns"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(290, 0)
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="GameTitle" type="Label" parent="Scroll/Content/HeroColumns/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Oyun adı"
+theme_override_font_sizes/font_size = 30
+autowrap_mode = 3
+
+[node name="Tagline" type="Label" parent="Scroll/Content/HeroColumns/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Oyunun dünyasını keşfet."
+theme_override_font_sizes/font_size = 17
+autowrap_mode = 3
+
+[node name="Facts" type="Label" parent="Scroll/Content/HeroColumns/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 3
+
+[node name="Version" type="Label" parent="Scroll/Content/HeroColumns/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 3
+
+[node name="ActionButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "İndir"
+custom_minimum_size = Vector2(0, 42)
+theme_override_styles/normal = SubResource("Primary")
+
+[node name="WishButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "İstek listesine ekle"
+custom_minimum_size = Vector2(0, 42)
+
+[node name="FavoriteButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Favorilere ekle"
+custom_minimum_size = Vector2(0, 42)
+
+[node name="UninstallButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Oyunu kaldır"
+custom_minimum_size = Vector2(0, 42)
+
+[node name="Playtime" type="Label" parent="Scroll/Content/HeroColumns/Info"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 3
+
+[node name="Operation" type="Label" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 3
+
+[node name="GalleryTitle" type="Label" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Ekran görüntüleri"
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+
+[node name="NoScreenshots" type="Label" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Henüz ekran görüntüsü paylaşılmadı."
+theme_override_font_sizes/font_size = 15
+autowrap_mode = 3
+
+[node name="Gallery" type="VBoxContainer" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Screenshot" type="TextureRect" parent="Scroll/Content/Gallery"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 300)
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Controls" type="HBoxContainer" parent="Scroll/Content/Gallery"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="PreviousImage" type="Button" parent="Scroll/Content/Gallery/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "‹"
+custom_minimum_size = Vector2(44, 42)
+
+[node name="EnlargeButton" type="Button" parent="Scroll/Content/Gallery/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Büyüt"
+custom_minimum_size = Vector2(120, 42)
+
+[node name="NextImage" type="Button" parent="Scroll/Content/Gallery/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "›"
+custom_minimum_size = Vector2(44, 42)
+
+[node name="ImageCount" type="Label" parent="Scroll/Content/Gallery/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+theme_override_font_sizes/font_size = 15
+autowrap_mode = 0
+custom_minimum_size = Vector2(60, 0)
+horizontal_alignment = 1
+
+[node name="TextColumns" type="BoxContainer" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="AboutPanel" type="PanelContainer" parent="Scroll/Content/TextColumns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("Panel")
+
+[node name="Content" type="VBoxContainer" parent="Scroll/Content/TextColumns/AboutPanel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="AboutPanelTitle" type="Label" parent="Scroll/Content/TextColumns/AboutPanel/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Oyun hakkında"
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+
+[node name="About" type="Label" parent="Scroll/Content/TextColumns/AboutPanel/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Henüz paylaşılmadı."
+theme_override_font_sizes/font_size = 16
+autowrap_mode = 3
+
+[node name="RequirementsPanel" type="PanelContainer" parent="Scroll/Content/TextColumns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("Panel")
+
+[node name="Content" type="VBoxContainer" parent="Scroll/Content/TextColumns/RequirementsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="RequirementsPanelTitle" type="Label" parent="Scroll/Content/TextColumns/RequirementsPanel/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Sistem gereksinimleri"
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+
+[node name="Requirements" type="Label" parent="Scroll/Content/TextColumns/RequirementsPanel/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Henüz paylaşılmadı."
+theme_override_font_sizes/font_size = 16
+autowrap_mode = 3
+
+[node name="ModesTitle" type="Label" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Oyun ve bağlantı türleri"
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+
+[node name="Modes" type="Label" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Henüz paylaşılmadı."
+theme_override_font_sizes/font_size = 16
+autowrap_mode = 3
+
+[node name="NotesTitle" type="Label" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Güncelleme notları"
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 3
+
+[node name="ReleaseNotes" type="Label" parent="Scroll/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Henüz paylaşılmadı."
+theme_override_font_sizes/font_size = 16
+autowrap_mode = 3
+
+[node name="ImageDialog" type="AcceptDialog" parent="."]
+unique_name_in_owner = true
+title = "Ekran görüntüsü"
+size = Vector2i(860, 540)
+
+[node name="LargeImage" type="TextureRect" parent="ImageDialog"]
+unique_name_in_owner = true
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -46.0
+expand_mode = 1
+stretch_mode = 5
