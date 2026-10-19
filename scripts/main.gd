@@ -371,7 +371,7 @@ func _on_search_changed(query: String) -> void:
 # Steam-style reflow: sidebar and content always split the window (Body is an
 # HBoxContainer); layout choices use the window width, never content width.
 func _apply_responsive_layout() -> void:
-	var width := size.x
+	var width := get_viewport_rect().size.x
 	if width <= 1.0:
 		return
 	var narrow := width <= WINDOW_NARROW

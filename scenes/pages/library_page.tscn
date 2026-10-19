@@ -678,6 +678,7 @@ theme_override_colors/font_outline_color = Color(0.93333334, 0.9529412, 0.984313
 theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 42
 text = "Oyunların, tek bir yerde"
+autowrap_mode = 3
 
 [node name="Label2" type="Label" parent="ScrollContainer1/VBoxContainer1/TopRow/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=1289943440]
 layout_mode = 2
@@ -685,16 +686,20 @@ theme_override_colors/font_color = Color(0.6392157, 0.69411767, 0.78431374, 1)
 theme_override_font_sizes/font_size = 15
 text = "Oyunlarını, favorilerini ve son oynadıklarını tek yerden yönet.
 Kaldığın yerden devam et."
+autowrap_mode = 3
 
 [node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/TopRow/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=2033659240]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="StatsRow" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/TopRow/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=331799188]
+[node name="StatsRow" type="GridContainer" parent="ScrollContainer1/VBoxContainer1/TopRow/PanelContainer1/MarginContainer1/VBoxContainer1" unique_id=331799188]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
+columns = 4
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
 
 [node name="CatalogStat" type="PanelContainer" parent="ScrollContainer1/VBoxContainer1/TopRow/PanelContainer1/MarginContainer1/VBoxContainer1/StatsRow" unique_id=2120614398]
 layout_mode = 2
@@ -1061,9 +1066,11 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="HBoxContainer1" type="HBoxContainer" parent="ScrollContainer1/VBoxContainer1/Toolbar" unique_id=1416525574]
+[node name="HBoxContainer1" type="HFlowContainer" parent="ScrollContainer1/VBoxContainer1/Toolbar" unique_id=1416525574]
 layout_mode = 2
 theme_override_constants/separation = 0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
 
 [node name="Filter_all" type="Button" parent="ScrollContainer1/VBoxContainer1/Toolbar/HBoxContainer1" unique_id=433326229]
 unique_name_in_owner = true
@@ -1119,6 +1126,7 @@ theme_type_variation = &"PardexToggle"
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
+size_flags_vertical = 4
 
 [node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/Toolbar/HBoxContainer2" unique_id=1071374034]
 layout_mode = 2
