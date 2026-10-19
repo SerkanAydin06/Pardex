@@ -5,6 +5,14 @@
 [ext_resource type="Script" path="res://scripts/pages/game_detail_page.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ui/pardex_button_content.gd" id="content_sync"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/icons/download.svg" id="detail_download"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/icons/heart.svg" id="detail_heart"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/icons/star.svg" id="detail_star"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/icons/trash.svg" id="detail_trash"]
+
 [sub_resource type="StyleBoxFlat" id="Panel"]
 bg_color = Color(0.035, 0.065, 0.12, 1)
 content_margin_left = 20.0
@@ -132,10 +140,14 @@ size_flags_vertical = 4
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+texture = ExtResource("detail_download")
+modulate = Color(0.012, 0.078, 0.137, 1)
 
 [node name="Label" type="Label" parent="Scroll/Content/HeroColumns/Info/ActionButton/Content/Group"]
 layout_mode = 2
 mouse_filter = 2
+text = "İndir"
+theme_override_colors/font_color = Color(0.012, 0.078, 0.137, 1)
 
 [node name="WishButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
 unique_name_in_owner = true
@@ -177,10 +189,12 @@ size_flags_vertical = 4
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+texture = ExtResource("detail_heart")
 
 [node name="Label" type="Label" parent="Scroll/Content/HeroColumns/Info/WishButton/Content/Group"]
 layout_mode = 2
 mouse_filter = 2
+text = "İstek listesine ekle"
 
 [node name="FavoriteButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
 unique_name_in_owner = true
@@ -222,10 +236,12 @@ size_flags_vertical = 4
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+texture = ExtResource("detail_star")
 
 [node name="Label" type="Label" parent="Scroll/Content/HeroColumns/Info/FavoriteButton/Content/Group"]
 layout_mode = 2
 mouse_filter = 2
+text = "Favorilere ekle"
 
 [node name="UninstallButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
 unique_name_in_owner = true
@@ -267,10 +283,12 @@ size_flags_vertical = 4
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
+texture = ExtResource("detail_trash")
 
 [node name="Label" type="Label" parent="Scroll/Content/HeroColumns/Info/UninstallButton/Content/Group"]
 layout_mode = 2
 mouse_filter = 2
+text = "Oyunu kaldır"
 
 [node name="Playtime" type="Label" parent="Scroll/Content/HeroColumns/Info"]
 unique_name_in_owner = true
