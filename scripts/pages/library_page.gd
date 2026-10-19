@@ -106,8 +106,12 @@ func apply_layout(content_width: float) -> void:
 
 # ------------------------------------------------------------------ data
 
+func _installed_games() -> Array:
+	return Catalog.games_with_stats().filter(func(game): return game["installed"])
+
+
 func _games() -> Array:
-	var games := Catalog.games_with_stats()
+	var games := _installed_games()
 	match _filter:
 		"installed": games = games.filter(func(g): return g["installed"])
 		"recent": games = games.filter(func(g): return g["last_played"] > 0)
@@ -121,7 +125,7 @@ func _games() -> Array:
 
 
 func _count(kind: String) -> int:
-	var games := Catalog.games_with_stats()
+	var games := _installed_games()
 	match kind:
 		"installed": return games.filter(func(g): return g["installed"]).size()
 		"recent": return games.filter(func(g): return g["last_played"] > 0).size()
@@ -148,12 +152,15 @@ func _wrapped_title(title: String, font_size: int) -> Label:
 
 
 func _render_quick_start() -> void:
-	for entry in Catalog.games_with_stats():
+	for child in _quick_list.get_children():
+		(child as Control).hide()
+	for entry in _installed_games():
 		var row := _quick_list.get_node_or_null("Quick_" + str(entry["id"])) as HBoxContainer
 		if row == null:
 			row = (load("res://scenes/ui/quick_launch_row.tscn") as PackedScene).instantiate() as HBoxContainer
 			row.name = "Quick_" + str(entry["id"])
 			_quick_list.add_child(row)
+		row.show()
 		(row.get_node("Artwork/Art") as TextureRect).texture = Catalog.texture(str(entry["cover"]))
 		(row.get_node("Title") as Label).text = str(entry["title"])
 		var playable := bool(entry["playable"])
@@ -198,7 +205,7 @@ func _render_grid() -> void:
 			"recent": "Henüz oyun oynamadın",
 			"favorites": "Favori oyunun yok — kartlardaki ☆ ile ekleyebilirsin",
 		}
-		empty.add_child(UI.empty_state("gamepad", messages.get(_filter, "Aramana uyan oyun yok")))
+		empty.add_child(UI.empty_state("gamepad", messages.get(_filter, "Henüz yüklü oyun yok" if _installed_games().is_empty() else "Aramana uyan oyun yok")))
 		_grid.add_child(empty)
 		return
 	for entry in games:
@@ -293,7 +300,7 @@ func _list_row(entry: Dictionary) -> Control:
 
 func _render_recent() -> void:
 	UI.clear(_recent_row)
-	var recent := Catalog.recent_games()
+	var recent := Catalog.recent_games().filter(func(game): return game["installed"])
 	if recent.is_empty():
 		_recent_row.add_child(UI.expand(UI.empty_state("clock", "Henüz oyun oynamadın", "Oynadığın oyunlar burada görünecek.", true)))
 		return
@@ -312,7 +319,7 @@ func _render_recent() -> void:
 
 func _render_continue() -> void:
 	UI.clear(_continue_list)
-	var recent := Catalog.recent_games().filter(func(g): return g["playable"])
+	var recent := Catalog.recent_games().filter(func(game): return game["installed"]).filter(func(g): return g["playable"])
 	if recent.is_empty():
 		_continue_list.add_child(UI.empty_state("play", "Devam edilecek oyun yok", "", true))
 		return

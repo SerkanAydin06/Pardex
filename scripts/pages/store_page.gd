@@ -13,7 +13,6 @@ const UI := preload("res://scripts/ui/pardex_ui.gd")
 const FeaturedCardScene := preload("res://scenes/ui/store_featured_card.tscn")
 const NewCardScene := preload("res://scenes/ui/store_new_card.tscn")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
-const SLIDE_SECONDS := 8.0
 const HERO_TITLE_HEIGHT := 80.0
 const HERO_BODY_HEIGHT := 46.0
 const HEART := preload("res://assets/ui/icons/heart.svg")
@@ -37,11 +36,6 @@ func _ready() -> void:
 	_bind()
 	_render_shelves()
 	_show_slide(0)
-	var timer := Timer.new()
-	timer.wait_time = SLIDE_SECONDS
-	timer.autostart = true
-	timer.timeout.connect(func(): if is_visible_in_tree(): _show_slide(_slide + 1))
-	add_child(timer)
 	visibility_changed.connect(func(): if is_visible_in_tree(): _render_shelves())
 
 

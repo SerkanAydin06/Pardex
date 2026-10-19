@@ -185,7 +185,7 @@ func _verify_scene_owned_ui(main_scene: Node) -> bool:
 		_fail("refresh overwrote an editor-owned caption")
 		return false
 	var play := quick.get_node("Quick_korsanlar/Play") as Button
-	if play.pressed.get_connections().size() != 1:
+	if play.pressed.get_connections().size() > 1 or (play.is_visible_in_tree() and play.pressed.get_connections().size() != 1):
 		_fail("quick launch has duplicated action connections")
 		return false
 	var preview := main_scene.get_node("EditorPreview")
