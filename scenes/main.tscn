@@ -32,6 +32,8 @@
 
 [ext_resource type="AudioStream" uid="uid://dokqhe8khbham" path="res://assets/sfx/message.wav" id="90_message_sound"]
 [ext_resource type="AudioStream" uid="uid://5xk8gvmacidx" path="res://assets/sfx/invite.wav" id="91_invite_sound"]
+[ext_resource type="AudioStream" uid="uid://dl33b3p16dsig" path="res://assets/sfx/ring.wav" id="92_ring_sound"]
+[ext_resource type="PackedScene" path="res://scenes/ui/call_bar.tscn" id="93_call_bar"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBg"]
 bg_color = Color(0.024, 0.039, 0.078, 1)
@@ -707,6 +709,33 @@ volume_db = -10.0
 unique_name_in_owner = true
 stream = ExtResource("91_invite_sound")
 volume_db = -8.0
+
+[node name="RingSound" type="AudioStreamPlayer" parent="." unique_id=2144534741]
+unique_name_in_owner = true
+stream = ExtResource("92_ring_sound")
+volume_db = -6.0
+
+[node name="IncomingCallDialog" type="ConfirmationDialog" parent="." unique_id=2144534742]
+unique_name_in_owner = true
+title = "Gelen arama"
+size = Vector2i(420, 150)
+ok_button_text = "Kabul et"
+cancel_button_text = "Reddet"
+dialog_text = "Arkadaşın seni arıyor."
+dialog_autowrap = true
+
+[node name="CallBar" parent="." unique_id=2144534743 instance=ExtResource("93_call_bar")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -384.0
+offset_top = 62.0
+offset_right = -24.0
+offset_bottom = 124.0
+grow_horizontal = 0
 
 [node name="GameInstallDialog" type="ConfirmationDialog" parent="."]
 unique_name_in_owner = true

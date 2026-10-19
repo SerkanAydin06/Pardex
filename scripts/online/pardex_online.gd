@@ -10,6 +10,11 @@ signal game_session_ready(game_id: String, token: String)
 signal chat_message_received(with_account_id: String, message: Dictionary, client_id: String)
 signal chat_history_received(with_account_id: String, messages: Array)
 signal voice_frame_received(user_id: String, sequence: int, pcm_base64: String)
+# One-to-one voice calls with friends.
+signal call_state_changed(call: Dictionary)
+signal call_ended(reason: String)
+signal call_frame_received(sequence: int, data: String)
+signal call_peer_muted(muted: bool)
 signal social_state_changed(state: Dictionary)
 signal user_search_results(results: Array)
 signal social_notice(message: String)
@@ -143,6 +148,8 @@ func _process(delta: float) -> void:
 		_server_silence_elapsed = 0.0
 		_set_effective_presence("offline")
 		_set_connection_state("offline")
+		# The server ends a call when the connection drops; match it here.
+		_finish_call("disconnected")
 		if was_manual:
 			_clear_session_state()
 			_manual_disconnect = false
@@ -531,6 +538,54 @@ func send_voice_frame(sequence: int, pcm_base64: String) -> void:
 	_send({"type": "voice_frame", "seq": sequence, "pcm": pcm_base64})
 
 
+# ------------------------------------------------------------------ voice calls
+
+var current_call: Dictionary = {}
+
+
+func start_call(target_account_id: String) -> void:
+	if not is_online():
+		online_error.emit("Arama için PARDEX Online bağlantısı gerekli.")
+		return
+	_send({"type": "call_start", "account_id": target_account_id.strip_edges()})
+
+
+func accept_call() -> void:
+	if not current_call.is_empty():
+		_send({"type": "call_accept", "call_id": str(current_call.get("id", ""))})
+
+
+func decline_call() -> void:
+	if not current_call.is_empty():
+		_send({"type": "call_decline", "call_id": str(current_call.get("id", ""))})
+
+
+func end_call() -> void:
+	if not current_call.is_empty():
+		_send({"type": "call_end"})
+
+
+func send_call_mute(muted: bool) -> void:
+	if not current_call.is_empty():
+		_send({"type": "call_mute", "muted": muted})
+
+
+func send_call_frame(sequence: int, data: String) -> void:
+	if str(current_call.get("state", "")) != "active" or data.is_empty():
+		return
+	# Drop audio rather than queue it behind a slow connection (latency).
+	if _socket != null and _socket.get_current_outbound_buffered_amount() >= VOICE_OUTBOUND_QUEUE_LIMIT:
+		return
+	_send({"type": "call_frame", "seq": sequence, "data": data})
+
+
+func _finish_call(reason: String) -> void:
+	if current_call.is_empty():
+		return
+	current_call.clear()
+	call_ended.emit(reason)
+
+
 # Connecting, or connected while the friend list has not arrived yet: lists
 # show loading placeholders instead of "no friends".
 func is_loading_social() -> bool:
@@ -639,7 +694,7 @@ func _send(payload: Dictionary) -> Error:
 	if _socket == null or _socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		return ERR_UNAVAILABLE
 	var result := _socket.send_text(JSON.stringify(payload))
-	if result != OK and str(payload.get("type", "")) != "voice_frame":
+	if result != OK and not str(payload.get("type", "")) in ["voice_frame", "call_frame"]:
 		push_warning("PARDEX WebSocket send failed: %s" % error_string(result))
 	return result
 
@@ -746,6 +801,18 @@ func _handle_packet(packet: String) -> void:
 		"left_room":
 			current_room.clear()
 			room_left.emit()
+		"call_state":
+			var call_data = message.get("call", {})
+			if typeof(call_data) == TYPE_DICTIONARY:
+				current_call = (call_data as Dictionary).duplicate(true)
+				call_state_changed.emit(current_call.duplicate(true))
+		"call_ended":
+			if str(message.get("call_id", "")) == str(current_call.get("id", "")):
+				_finish_call(str(message.get("reason", "ended")))
+		"call_frame":
+			call_frame_received.emit(int(message.get("seq", 0)), str(message.get("data", "")))
+		"call_peer_muted":
+			call_peer_muted.emit(bool(message.get("muted", false)))
 		"error":
 			var error_message := str(message.get("message", "Bilinmeyen PARDEX Online hatası."))
 			var error_code := str(message.get("code", ""))
@@ -769,6 +836,8 @@ func _handle_packet(packet: String) -> void:
 
 
 func _clear_session_state() -> void:
+	# The server ends calls when the connection drops.
+	_finish_call("disconnected")
 	user_id = ""
 	resume_token = ""
 	_session_ready = false

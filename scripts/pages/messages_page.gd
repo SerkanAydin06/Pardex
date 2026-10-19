@@ -5,6 +5,7 @@ extends VBoxContainer
 # box. History lives on the server (last 200 messages per friend).
 
 signal navigate(page: String)
+signal call_requested(account_id: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const ConversationRowScene := preload("res://scenes/ui/conversation_row.tscn")
@@ -40,6 +41,8 @@ func _ready() -> void:
 	PardexOnline.avatar_ready.connect(func(_account_id): _render_list(); _render_header())
 	PardexOnline.connection_state_changed.connect(func(_state): _render())
 	PardexOnline.room_state_changed.connect(func(_room): _render_header())
+	PardexOnline.call_state_changed.connect(func(_call): _render_header())
+	PardexOnline.call_ended.connect(func(_reason): _render_header())
 	PardexOnline.room_left.connect(func(): _render_header())
 	PardexOnline.welcome_received.connect(func(_user_id, _display_name):
 		# Messages delivered while disconnected must be fetched from the server.
@@ -235,6 +238,13 @@ func _render_header() -> void:
 		status += " • " + game_name
 	titles.add_child(UI.fit(UI.label("●  " + status, 12, UI.presence_color(presence) if presence != "offline" else UI.TEXT_3)))
 	_header.add_child(titles)
+	# Voice call, like Steam's chat window: online friends, one call at a time.
+	if presence != "offline" and PardexOnline.current_call.is_empty():
+		var call := UI.button("Ara", "ghost", 13, 38, "phone")
+		call.custom_minimum_size.x = 96
+		call.tooltip_text = "Sesli arama başlat"
+		call.pressed.connect(func(): call_requested.emit(_selected_id))
+		_header.add_child(call)
 	# A friend at an open table can be joined straight from the chat; from my
 	# own table I can invite the friend.
 	if bool(profile.get("room_joinable", false)):

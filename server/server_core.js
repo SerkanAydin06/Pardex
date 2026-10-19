@@ -37,11 +37,16 @@ const VOICE_RATE_WINDOW_MS = 1_000;
 const VOICE_RATE_LIMIT_MESSAGES = 20;
 const MAX_VOICE_BASE64_CHARS = 6_000;
 const VOICE_RELAY_BUFFER_LIMIT_BYTES = 64 * 1024;
+// One-to-one voice calls between friends (like Steam). Audio frames are
+// relayed by this server; the ring stops after CALL_RING_TIMEOUT_MS.
+const CALL_RING_TIMEOUT_MS = Math.max(1000, Number(process.env.CALL_RING_TIMEOUT_MS || 30_000));
 const PRESENCE_VALUES = new Set(["online", "away", "busy"]);
 const ROOM_STATES = new Set(["lobby", "launching", "in_game", "ended", "closed"]);
 
 const clients = new Map();
 const rooms = new Map();
+const calls = new Map();
+const callByUser = new Map();
 const resumeTokens = new Map();
 const roomInvites = new Map();
 const gameLaunchTickets = new Map();
@@ -697,6 +702,9 @@ function detachClient(client, ws) {
   if (!client || client.replaced || client.ws !== ws) return;
   const accountId = client.accountId;
   client.ws = null;
+  // A dropped connection ends the call for both sides.
+  const call = activeCallOf(client);
+  if (call) endCall(call, "disconnected");
   if (!client.helloReceived) {
     clients.delete(client.userId);
     resumeTokens.delete(client.resumeToken);
@@ -1100,6 +1108,110 @@ function allowVoiceFrame(client) {
   return client.voiceRateMessageCount <= VOICE_RATE_LIMIT_MESSAGES;
 }
 
+// ------------------------------------------------------------------ voice calls
+
+function callPayload(call, forUserId) {
+  const outgoing = call.caller.userId === forUserId;
+  const peer = outgoing ? call.callee : call.caller;
+  return {
+    id: call.id,
+    state: call.state,
+    outgoing,
+    peer_account_id: peer.accountId,
+    peer_name: peer.displayName,
+    started_at: call.startedAt,
+  };
+}
+
+function sendCallState(call) {
+  for (const party of [call.caller, call.callee]) {
+    const client = clients.get(party.userId);
+    if (client?.ws) send(client.ws, { type: "call_state", call: callPayload(call, party.userId) });
+  }
+}
+
+function endCall(call, reason) {
+  if (!calls.has(call.id)) return;
+  calls.delete(call.id);
+  clearTimeout(call.ringTimer);
+  for (const party of [call.caller, call.callee]) {
+    if (callByUser.get(party.userId) === call.id) callByUser.delete(party.userId);
+    const client = clients.get(party.userId);
+    if (client?.ws) send(client.ws, { type: "call_ended", call_id: call.id, reason });
+  }
+}
+
+function activeCallOf(client) {
+  const call = calls.get(callByUser.get(client.userId));
+  return call || null;
+}
+
+function startCall(client, message) {
+  if (!requireSocialAccount(client)) return;
+  const targetId = String(message.account_id || "").trim();
+  if (!targetId || targetId === client.accountId) return sendError(client.ws, "CALL_INVALID", "Bu kişi aranamaz.");
+  if (social.relationshipBetween(client.accountId, targetId) !== "friend") {
+    return sendError(client.ws, "NOT_FRIENDS", "Yalnız arkadaşlarını arayabilirsin.");
+  }
+  if (activeCallOf(client)) return sendError(client.ws, "CALL_BUSY", "Zaten bir aramadasın.");
+  const target = clientsForAccount(targetId).at(-1);
+  if (!target) return sendError(client.ws, "CALL_OFFLINE", "Arkadaşın şu an çevrimiçi değil.");
+  if (activeCallOf(target)) return sendError(client.ws, "CALL_BUSY", "Arkadaşın şu an başka bir aramada.");
+  const call = {
+    id: crypto.randomUUID(),
+    state: "ringing",
+    startedAt: 0,
+    caller: { userId: client.userId, accountId: client.accountId, displayName: client.displayName },
+    callee: { userId: target.userId, accountId: target.accountId, displayName: target.displayName },
+  };
+  call.ringTimer = setTimeout(() => endCall(call, "missed"), CALL_RING_TIMEOUT_MS);
+  call.ringTimer.unref?.();
+  calls.set(call.id, call);
+  callByUser.set(client.userId, call.id);
+  callByUser.set(target.userId, call.id);
+  sendCallState(call);
+}
+
+function answerCall(client, message, accept) {
+  const call = activeCallOf(client);
+  if (!call || call.id !== String(message.call_id || "") || call.callee.userId !== client.userId || call.state !== "ringing") {
+    return sendError(client.ws, "CALL_NOT_FOUND", "Arama artık geçerli değil.");
+  }
+  if (!accept) return endCall(call, "declined");
+  clearTimeout(call.ringTimer);
+  call.state = "active";
+  call.startedAt = Date.now();
+  sendCallState(call);
+}
+
+function hangUp(client) {
+  const call = activeCallOf(client);
+  if (!call) return;
+  endCall(call, call.state === "ringing" && call.caller.userId === client.userId ? "cancelled" : "ended");
+}
+
+function callPeer(call, client) {
+  const peer = call.caller.userId === client.userId ? call.callee : call.caller;
+  return clients.get(peer.userId);
+}
+
+function relayCallFrame(client, message) {
+  const call = activeCallOf(client);
+  if (!call || call.state !== "active") return;
+  const data = String(message.data || "");
+  if (!data || data.length > MAX_VOICE_BASE64_CHARS) return;
+  const sequence = Number.isFinite(Number(message.seq)) ? Math.max(0, Math.floor(Number(message.seq))) : 0;
+  const peer = callPeer(call, client);
+  if (peer?.ws) sendVoice(peer.ws, { type: "call_frame", seq: sequence, data });
+}
+
+function relayCallMute(client, muted) {
+  const call = activeCallOf(client);
+  if (!call) return;
+  const peer = callPeer(call, client);
+  if (peer?.ws) send(peer.ws, { type: "call_peer_muted", muted: Boolean(muted) });
+}
+
 function setVoiceState(client, muted) {
   if (!client.roomCode) return;
   const room = rooms.get(client.roomCode);
@@ -1361,6 +1473,10 @@ function handleMessage(client, raw) {
 
   if (message.type === "voice_frame") {
     if (allowVoiceFrame(client)) relayVoiceFrame(client, message);
+    return;
+  }
+  if (message.type === "call_frame") {
+    if (client.helloReceived && allowVoiceFrame(client)) relayCallFrame(client, message);
     return;
   }
   if (!allowMessage(client)) return;
@@ -1628,6 +1744,21 @@ function handleMessage(client, raw) {
     case "return_to_lobby":
       returnRoomToLobby(client);
       break;
+    case "call_start":
+      startCall(client, message);
+      break;
+    case "call_accept":
+      answerCall(client, message, true);
+      break;
+    case "call_decline":
+      answerCall(client, message, false);
+      break;
+    case "call_end":
+      hangUp(client);
+      break;
+    case "call_mute":
+      relayCallMute(client, message.muted);
+      break;
     case "voice_state":
       setVoiceState(client, message.muted);
       break;
@@ -1689,6 +1820,7 @@ const httpServer = http.createServer((req, res) => {
       korsanGameServerAssigned: KORSAN_GAME_SERVER_URLS.length > 0,
       korsanGameServers: KORSAN_GAME_SERVER_URLS.length,
       voiceRelay: VOICE_RELAY_ENABLED,
+      voiceCalls: true,
       presence: true,
       friendRoomJoin: true,
       accountRecovery: true,
