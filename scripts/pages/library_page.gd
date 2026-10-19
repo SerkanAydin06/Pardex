@@ -18,7 +18,7 @@ var _filter := "all"
 var _query := ""
 var _sort := 0
 var _list_view := false
-var _stats_row: HBoxContainer
+var _stats_row: GridContainer
 var _quick_list: VBoxContainer
 var _filter_buttons: Dictionary = {}
 var _grid: GridContainer
@@ -89,12 +89,13 @@ func refresh() -> void:
 
 func apply_layout(content_width: float) -> void:
 	_content_width = content_width
-	_top.vertical = content_width < 900.0
+	_top.vertical = content_width < 1040.0
 	_bottom.vertical = content_width < 900.0
 	for side in [_top.get_child(1), _bottom.get_child(1)]:
 		var control := side as Control
 		control.custom_minimum_size.x = 0.0 if _top.vertical else clampf(content_width * 0.32, 320.0, 460.0)
-	_grid.columns = 1 if _list_view else clampi(floori((content_width + 14.0) / 260.0), 2, 6)
+	_grid.columns = 1 if _list_view else clampi(floori((content_width - 16.0 + 14.0) / 274.0), 1, 6)
+	_stats_row.columns = 2 if content_width < 620.0 else 4
 	if _toolbar != null:
 		_toolbar.vertical = content_width < 1040.0
 

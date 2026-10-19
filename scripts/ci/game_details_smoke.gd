@@ -113,6 +113,22 @@ func _run() -> void:
 			await RenderingServer.frame_post_draw
 			if not output.is_empty():
 				root.get_texture().get_image().save_png(output.path_join("library-actions-%d-%s.png" % [width, "list" if list_view else "grid"]))
+	# Navigation must not let a page minimum resize the shell or flip its breakpoint.
+	for width in [1024, 1200, 1280, 1366]:
+		root.size = Vector2i(width, 768)
+		main.size = Vector2(width, 768)
+		main.call("_apply_responsive_layout")
+		main.call("_navigate", "store")
+		await create_timer(0.2).timeout
+		var sidebar_width: float = main.get_node("%Sidebar").size.x
+		for target in ["library", "store", "library"]:
+			main.call("_navigate", target)
+			await create_timer(0.2).timeout
+			expect(is_equal_approx(main.get_node("%Sidebar").size.x, sidebar_width), "sidebar stays fixed at %d on %s" % [width, target])
+			expect(main.size.x <= width + 1, "page cannot widen shell at %d on %s" % [width, target])
+		await RenderingServer.frame_post_draw
+		if not output.is_empty():
+			root.get_texture().get_image().save_png(output.path_join("library-navigation-%d.png" % width))
 	D.uninstall("detail_fixture")
 	D.manifest = saved
 	if failures == 0:
