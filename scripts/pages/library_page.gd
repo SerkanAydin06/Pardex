@@ -12,7 +12,7 @@ const UI := preload("res://scripts/ui/pardex_ui.gd")
 const LibraryGameCardScene := preload("res://scenes/ui/library_game_card.tscn")
 const LibraryListRowScene := preload("res://scenes/ui/library_list_row.tscn")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
-const FILTERS := [["all", "Tümü", ""], ["installed", "Yüklü", "download"], ["recent", "Son Oynanan", "clock"], ["favorites", "Favoriler", "heart"]]
+const FILTERS := [["all", "Tümü", ""], ["installed", "Yüklü", "download"], ["recent", "Son Oynanan", "clock"], ["favorites", "Favoriler", "star"]]
 
 var _filter := "all"
 var _query := ""
@@ -215,7 +215,7 @@ func _status_pill(entry: Dictionary) -> Control:
 
 func _star(entry: Dictionary) -> Button:
 	var favorite := bool(entry["favorite"])
-	var star := UI.icon_button("star_fill" if favorite else "star", "Favorilere ekle", 34, UI.ACCENT if favorite else UI.TEXT, true)
+	var star := UI.icon_button("star_fill" if favorite else "star", "Favorilerden çıkar" if favorite else "Favorilere ekle", 34, UI.ACCENT if favorite else UI.TEXT, true)
 	star.add_theme_stylebox_override("normal", UI.box(Color(UI.BG, 0.6), 9, Color(1, 1, 1, 0.15), 1))
 	star.pressed.connect(func():
 		var added := Catalog.toggle_favorite(str(entry["id"]))

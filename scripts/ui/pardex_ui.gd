@@ -59,7 +59,7 @@ static func glow_style(pad := 0, radius := 12, color := ACCENT) -> StyleBoxFlat:
 # App-wide defaults: thin rounded scrollbars, readable base text, and the
 # same inputs/buttons the pages use, so older scene screens match too.
 static func app_theme() -> Theme:
-	var theme := Theme.new()
+	var theme := preload("res://themes/pardex_theme.tres").duplicate() as Theme
 	theme.default_font_size = 14
 	for bar in ["VScrollBar", "HScrollBar"]:
 		var track := box(Color(1, 1, 1, 0.03), 4)
@@ -104,7 +104,7 @@ static func restyle_screen(node: Node) -> void:
 			var source := child as Button
 			var kind := "primary" if not source.disabled else "ghost"
 			var styled := button(source.text, kind, 13, 42)
-			for state in ["normal", "hover", "pressed", "disabled"]:
+			for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 				source.add_theme_stylebox_override(state, styled.get_theme_stylebox(state))
 			for color_name in ["font_color", "font_hover_color", "font_pressed_color", "font_disabled_color"]:
 				source.add_theme_color_override(color_name, styled.get_theme_color(color_name))
@@ -313,52 +313,13 @@ static func button(text: String, kind := "primary", font_size := 13, height := 3
 	var item := Button.new()
 	item.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	item.text = text
-	item.focus_mode = Control.FOCUS_NONE
+	item.focus_mode = Control.FOCUS_ALL
 	item.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	item.custom_minimum_size.y = height
 	item.add_theme_font_size_override("font_size", font_size)
-	var bg := ACCENT
-	var fg := Color("031423")
-	var border := Color(ACCENT.lightened(0.3), 0.8)
-	match kind:
-		"gold":
-			bg = GOLD
-			fg = Color("241703")
-			border = GOLD.lightened(0.2)
-		"success":
-			bg = Color(GREEN, 0.22)
-			fg = GREEN.lightened(0.2)
-			border = Color(GREEN, 0.6)
-		"ghost":
-			bg = Color(SURFACE_2, 0.85)
-			fg = TEXT
-			border = BORDER_HI
-		"link":
-			bg = Color.TRANSPARENT
-			fg = ACCENT
-			border = Color.TRANSPARENT
-	var normal := box(bg, 9, border, 1 if border.a > 0 else 0)
-	normal.content_margin_left = 16
-	normal.content_margin_right = 16
-	if kind == "primary":
-		normal.shadow_color = Color(ACCENT, 0.28)
-		normal.shadow_size = 8
-	var hover := normal.duplicate() as StyleBoxFlat
-	hover.bg_color = bg.lightened(0.1) if kind != "link" else Color(1, 1, 1, 0.04)
-	if kind == "ghost":
-		hover.border_color = ACCENT
-	var disabled := normal.duplicate() as StyleBoxFlat
-	disabled.bg_color = Color(1, 1, 1, 0.05) if kind != "link" else Color.TRANSPARENT
-	disabled.border_color = BORDER
-	disabled.shadow_size = 0
-	item.add_theme_stylebox_override("normal", normal)
-	item.add_theme_stylebox_override("hover", hover)
-	item.add_theme_stylebox_override("pressed", hover)
-	item.add_theme_stylebox_override("disabled", disabled)
-	item.add_theme_color_override("font_color", fg)
-	item.add_theme_color_override("font_hover_color", fg)
-	item.add_theme_color_override("font_pressed_color", fg)
-	item.add_theme_color_override("font_disabled_color", TEXT_3)
+	item.theme = preload("res://themes/pardex_theme.tres")
+	item.theme_type_variation = &"PardexPrimary" if kind == "primary" else (&"PardexLink" if kind == "link" else &"Button")
+	var fg := Color("031423") if kind == "primary" else (CYAN if kind == "link" else TEXT)
 	if icon_name.is_empty() or kind == "link":
 		_apply_icon(item, icon_name, 16 if font_size < 15 else 18, fg)
 	else:
@@ -414,7 +375,7 @@ static func icon_button(icon_name: String, tooltip := "", size := 36.0, color :=
 	var item := Button.new()
 	item.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	item.tooltip_text = tooltip
-	item.focus_mode = Control.FOCUS_NONE
+	item.focus_mode = Control.FOCUS_ALL
 	item.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	item.custom_minimum_size = Vector2(size, size)
 	item.icon = Icons.texture(icon_name, int(size))
@@ -425,12 +386,8 @@ static func icon_button(icon_name: String, tooltip := "", size := 36.0, color :=
 	item.add_theme_color_override("icon_hover_color", TEXT)
 	item.add_theme_color_override("icon_pressed_color", TEXT)
 	item.add_theme_color_override("icon_disabled_color", Color(TEXT_3, 0.6))
-	var normal := box(Color(SURFACE_2, 0.9) if framed else Color.TRANSPARENT, 9, BORDER if framed else Color.TRANSPARENT, 1 if framed else 0)
-	var hover := box(Color(1, 1, 1, 0.08), 9, BORDER_HI if framed else Color.TRANSPARENT, 1 if framed else 0)
-	item.add_theme_stylebox_override("normal", normal)
-	item.add_theme_stylebox_override("hover", hover)
-	item.add_theme_stylebox_override("pressed", hover)
-	item.add_theme_stylebox_override("disabled", normal)
+	item.theme = preload("res://themes/pardex_theme.tres")
+	item.theme_type_variation = &"Button" if framed else &"PardexLink"
 	return item
 
 
@@ -438,9 +395,10 @@ static func icon_button(icon_name: String, tooltip := "", size := 36.0, color :=
 static func segment(text: String, icon_name := "", active := false) -> Button:
 	var item := Button.new()
 	item.text = text
+	item.theme = preload("res://themes/pardex_theme.tres")
 	item.toggle_mode = true
 	item.button_pressed = active
-	item.focus_mode = Control.FOCUS_NONE
+	item.focus_mode = Control.FOCUS_ALL
 	item.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	item.custom_minimum_size.y = 42
 	item.add_theme_font_size_override("font_size", 13)
@@ -451,7 +409,7 @@ static func segment(text: String, icon_name := "", active := false) -> Button:
 	on.content_margin_left = 18
 	on.content_margin_right = 18
 	on.shadow_color = Color(ACCENT, 0.3)
-	on.shadow_size = 8
+	on.shadow_size = 0
 	var hover := normal.duplicate() as StyleBoxFlat
 	hover.border_color = BORDER_HI
 	item.add_theme_stylebox_override("normal", normal)

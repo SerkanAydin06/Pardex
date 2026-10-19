@@ -1,64 +1,17 @@
 [gd_scene format=3]
 
+[ext_resource type="Theme" path="res://themes/pardex_theme.tres" id="shared_buttons"]
+
 [ext_resource type="Texture2D" path="res://assets/ui/icons/play.svg" id="1"]
 
-[sub_resource type="StyleBoxFlat" id="Normal"]
-bg_color = Color(0.07, 0.42, 0.65, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.17, 0.65, 0.91, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_left = 9
-corner_radius_bottom_right = 9
-content_margin_left = 12.0
-content_margin_right = 12.0
-
-[sub_resource type="StyleBoxFlat" id="Hover"]
-bg_color = Color(0.08, 0.55, 0.82, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_left = 9
-corner_radius_bottom_right = 9
-content_margin_left = 12.0
-content_margin_right = 12.0
-
-[sub_resource type="StyleBoxFlat" id="Pressed"]
-bg_color = Color(0.04, 0.29, 0.48, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_left = 9
-corner_radius_bottom_right = 9
-content_margin_left = 12.0
-content_margin_right = 12.0
-
-[sub_resource type="StyleBoxFlat" id="Focus"]
-bg_color = Color(0, 0, 0, 0)
-draw_center = false
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.6, 0.88, 1, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_left = 9
-corner_radius_bottom_right = 9
-
 [node name="PlayButton" type="Button"]
+theme = ExtResource("shared_buttons")
 custom_minimum_size = Vector2(86, 36)
 size_flags_vertical = 4
 mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 13
 theme_override_constants/h_separation = 7
 theme_override_constants/icon_max_width = 14
-theme_override_colors/font_color = Color(0.94, 0.98, 1, 1)
-theme_override_colors/icon_normal_color = Color(0.94, 0.98, 1, 1)
-theme_override_styles/normal = SubResource("Normal")
-theme_override_styles/hover = SubResource("Hover")
-theme_override_styles/pressed = SubResource("Pressed")
-theme_override_styles/focus = SubResource("Focus")
 text = "Oyna"
 icon = ExtResource("1")
+theme_type_variation = &"PardexPrimary"

@@ -4,6 +4,8 @@ signal back_requested
 signal play_requested(game_id: String)
 signal uninstall_requested(game_id: String)
 
+const Icons := preload("res://scripts/ui/pardex_icons.gd")
+
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 const Distribution := preload("res://scripts/data/pardex_distribution.gd")
 
@@ -14,6 +16,12 @@ var _image_index := 0
 
 
 func _ready() -> void:
+	for entry in [[%BackButton, "arrow_left"], [%WishButton, "heart"], [%FavoriteButton, "star"], [%UninstallButton, "trash"], [%PreviousImage, "chevron_left"], [%NextImage, "chevron_right"], [%EnlargeButton, "image"]]:
+		(entry[0] as Button).icon = Icons.texture(str(entry[1]))
+	%PreviousImage.text = ""
+	%PreviousImage.tooltip_text = "Önceki görüntü"
+	%NextImage.text = ""
+	%NextImage.tooltip_text = "Sonraki görüntü"
 	%BackButton.pressed.connect(func(): back_requested.emit())
 	%ActionButton.pressed.connect(func(): play_requested.emit(game_id))
 	%UninstallButton.pressed.connect(func(): uninstall_requested.emit(game_id))
@@ -70,12 +78,15 @@ func refresh() -> void:
 	%FavoriteButton.visible = installed
 	%FavoriteButton.text = "Favorilerden çıkar" if Catalog.favorites().has(game_id) else "Favorilere ekle"
 	%WishButton.text = "İstek listesinden çıkar" if Catalog.is_wishlisted(game_id) else "İstek listesine ekle"
+	%FavoriteButton.icon = Icons.texture("star_fill" if Catalog.favorites().has(game_id) else "star")
+	%WishButton.icon = Icons.texture("heart_fill" if Catalog.is_wishlisted(game_id) else "heart")
 	%Playtime.visible = installed
 	for record in Catalog.games_with_stats():
 		if str(record["id"]) == game_id:
 			%Playtime.text = "Oynama süresi: " + Catalog.hours(int(record["playtime"]))
 			break
 	%ActionButton.text = "İşlem sürüyor…" if _busy else Catalog.action_label(game_id)
+	%ActionButton.icon = Icons.texture("play" if %ActionButton.text == "Oyna" else ("clock" if _busy or %ActionButton.text == "Yakında" else "download"))
 	%ActionButton.disabled = _busy or not bool(entry.get("playable", false))
 	%UninstallButton.disabled = _busy
 	_images.clear()

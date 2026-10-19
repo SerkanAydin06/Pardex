@@ -105,59 +105,6 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mfbeq"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.15294118, 0.6627451, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_do3xs"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.23764706, 0.6964706, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kljuh"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-
 [node name="MessagesPage" type="VBoxContainer" unique_id=654228157]
 layout_mode = 0
 offset_right = 1440.0
@@ -415,19 +362,11 @@ editable = false
 unique_name_in_owner = true
 custom_minimum_size = Vector2(130, 46)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBoxFlat_mfbeq")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_do3xs")
-theme_override_styles/hover = SubResource("StyleBoxFlat_do3xs")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_kljuh")
 disabled = true
 metadata/label = "Gönder"
+theme_type_variation = &"PardexPrimary"
 
 [node name="Content" type="CenterContainer" parent="MessageColumns/ChatPanel/VBoxContainer1/MarginContainer2/HBoxContainer1/SendButton" unique_id=989191920]
 layout_mode = 0

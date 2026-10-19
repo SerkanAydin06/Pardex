@@ -8,54 +8,6 @@
 
 [ext_resource type="Theme" path="res://themes/pardex_theme.tres" id="40_editor_theme"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wfbdm"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j8bw4"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.16, 0.19529411, 0.26941177, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.15294118, 0.6627451, 1, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vjk2a"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3jslg"]
 content_margin_left = 20.0
 content_margin_top = 20.0
@@ -71,160 +23,6 @@ corner_radius_top_left = 14
 corner_radius_top_right = 14
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hhhtt"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.15294118, 0.6627451, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h8lea"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.23764706, 0.6964706, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e7hop"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g4khp"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.15294118, 0.6627451, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_keogx"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.23764706, 0.6964706, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qgjds"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_21uco"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qgdg3"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.16, 0.19529411, 0.26941177, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.15294118, 0.6627451, 1, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7fa33"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iecak"]
 content_margin_left = 20.0
@@ -242,155 +40,6 @@ corner_radius_top_right = 14
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kqrod"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4kb21"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.16, 0.19529411, 0.26941177, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.15294118, 0.6627451, 1, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2acj8"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lbrk4"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.15294118, 0.6627451, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tal3i"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.23764706, 0.6964706, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s78bx"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4q3rc"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.06666667, 0.105882354, 0.1882353, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.16862746, 0.2901961, 0.47058824, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_itwsi"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.16, 0.19529411, 0.26941177, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.15294118, 0.6627451, 1, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pa4bf"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hit1x"]
 content_margin_left = 20.0
 content_margin_top = 20.0
@@ -406,59 +55,6 @@ corner_radius_top_left = 14
 corner_radius_top_right = 14
 corner_radius_bottom_right = 14
 corner_radius_bottom_left = 14
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4hs0q"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.15294118, 0.6627451, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nbfqp"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.23764706, 0.6964706, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4yqvt"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_voice_field"]
 content_margin_left = 14.0
@@ -515,18 +111,12 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(110, 40)
 layout_mode = 2
 size_flags_vertical = 4
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBoxFlat_wfbdm")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_j8bw4")
-theme_override_styles/hover = SubResource("StyleBoxFlat_j8bw4")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_vjk2a")
 metadata/label = "Geri"
+
+size_flags_horizontal = 0
+theme_type_variation = &"PardexLink"
 
 [node name="Content" type="CenterContainer" parent="HeadingRow/BackButton" unique_id=891365822]
 layout_mode = 0
@@ -628,18 +218,10 @@ max_length = 24
 [node name="SaveProfileButton" type="Button" parent="Scroll/SettingsContent/ProfilePanel/VBox/ProfileRow" unique_id=1795708061]
 custom_minimum_size = Vector2(156, 44)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_hhhtt")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_h8lea")
-theme_override_styles/hover = SubResource("StyleBoxFlat_h8lea")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_e7hop")
 text = "Kaydet"
+theme_type_variation = &"PardexPrimary"
 
 [node name="AvatarRow" type="HBoxContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox" unique_id=1574293291]
 layout_mode = 2
@@ -677,18 +259,10 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(127, 42)
 layout_mode = 2
 size_flags_vertical = 4
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBoxFlat_g4khp")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_keogx")
-theme_override_styles/hover = SubResource("StyleBoxFlat_keogx")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_qgjds")
 metadata/label = "Resim Seç"
+theme_type_variation = &"PardexPrimary"
 
 [node name="Content" type="CenterContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/ChooseAvatarButton" unique_id=877184370]
 layout_mode = 0
@@ -726,18 +300,10 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(99, 42)
 layout_mode = 2
 size_flags_vertical = 4
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBoxFlat_21uco")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_qgdg3")
-theme_override_styles/hover = SubResource("StyleBoxFlat_qgdg3")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_7fa33")
 metadata/label = "Kaldır"
+theme_type_variation = &"Button"
 
 [node name="Content" type="CenterContainer" parent="Scroll/SettingsContent/ProfilePanel/VBox/AvatarRow/RemoveAvatarButton" unique_id=1011119449]
 layout_mode = 0
@@ -833,19 +399,11 @@ text_overrun_behavior = 3
 [node name="GenerateButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/GenerateRow" unique_id=45004816]
 custom_minimum_size = Vector2(196, 42)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_kqrod")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_4kb21")
-theme_override_styles/hover = SubResource("StyleBoxFlat_4kb21")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_2acj8")
 disabled = true
 text = "Kurtarma Kodu Oluştur"
+theme_type_variation = &"Button"
 
 [node name="CodeBox" type="VBoxContainer" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=1173832873]
 visible = false
@@ -867,18 +425,10 @@ editable = false
 [node name="CopyButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox/CodeRow" unique_id=1758091403]
 custom_minimum_size = Vector2(112, 42)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_lbrk4")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_tal3i")
-theme_override_styles/hover = SubResource("StyleBoxFlat_tal3i")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_s78bx")
 text = "Kopyala"
+theme_type_variation = &"PardexPrimary"
 
 [node name="CodeHint" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox/CodeBox" unique_id=121078402]
 layout_mode = 2
@@ -911,19 +461,11 @@ max_length = 48
 [node name="RecoverButton" type="Button" parent="Scroll/SettingsContent/AccountPanel/VBox/RecoverRow" unique_id=1661521208]
 custom_minimum_size = Vector2(156, 42)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_pressed_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_hover_color = Color(0.93333334, 0.9529412, 0.9843137, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_4q3rc")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_itwsi")
-theme_override_styles/hover = SubResource("StyleBoxFlat_itwsi")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_pa4bf")
 disabled = true
 text = "Hesabı Kurtar"
+theme_type_variation = &"Button"
 
 [node name="Status" type="Label" parent="Scroll/SettingsContent/AccountPanel/VBox" unique_id=873876173]
 layout_mode = 2
@@ -971,18 +513,10 @@ placeholder_text = "Otomatik (boş bırak)"
 [node name="ConnectButton" type="Button" parent="Scroll/SettingsContent/OnlinePanel/VBox/ServerRow" unique_id=787938788]
 custom_minimum_size = Vector2(176, 44)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_4hs0q")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_nbfqp")
-theme_override_styles/hover = SubResource("StyleBoxFlat_nbfqp")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_4yqvt")
 text = "Bağlan"
+theme_type_variation = &"PardexPrimary"
 
 [node name="State" type="Label" parent="Scroll/SettingsContent/OnlinePanel/VBox" unique_id=671305103]
 layout_mode = 2
@@ -1151,21 +685,11 @@ show_percentage = false
 [node name="TestButton" type="Button" parent="Scroll/SettingsContent/VoicePanel/VBox/TestRow" unique_id=1946200020]
 custom_minimum_size = Vector2(176, 44)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
 toggle_mode = true
-theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_hover_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_4hs0q")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_nbfqp")
-theme_override_styles/hover = SubResource("StyleBoxFlat_nbfqp")
-theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_nbfqp")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_4yqvt")
 text = "Mikrofonu test et"
+theme_type_variation = &"PardexToggle"
 
 [node name="TestHint" type="Label" parent="Scroll/SettingsContent/VoicePanel/VBox" unique_id=1946200021]
 layout_mode = 2
@@ -1213,18 +737,10 @@ max_length = 500
 [node name="ReportButton" type="Button" parent="Scroll/SettingsContent/SupportPanel/VBox/ReportRow" unique_id=1738450096]
 custom_minimum_size = Vector2(176, 44)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_4hs0q")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_nbfqp")
-theme_override_styles/hover = SubResource("StyleBoxFlat_nbfqp")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_4yqvt")
 text = "Gönder"
+theme_type_variation = &"PardexPrimary"
 
 [node name="ReportState" type="Label" parent="Scroll/SettingsContent/SupportPanel/VBox" unique_id=1738450097]
 layout_mode = 2
@@ -1237,4 +753,3 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.38, 0.44, 0.53, 1)
 theme_override_font_sizes/font_size = 12
 text = "PARDEX sürüm 0.0.0"
-

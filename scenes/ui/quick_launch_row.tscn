@@ -13,59 +13,6 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bgocs"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.15294118, 0.6627451, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ym6sg"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(0.23764706, 0.6964706, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.40705884, 0.7639216, 1, 0.8)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wpp2c"]
-content_margin_left = 16.0
-content_margin_top = 0.0
-content_margin_right = 16.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 1, 1, 0.05)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.101960786, 0.16078432, 0.26666668, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_right = 9
-corner_radius_bottom_left = 9
-shadow_color = Color(0.15294118, 0.6627451, 1, 0.28)
-
 [node name="QuickLaunchRow" type="HBoxContainer" unique_id=433924022]
 theme_override_constants/separation = 12
 
@@ -97,15 +44,7 @@ text_overrun_behavior = 3
 [node name="Play" type="Button" parent="." unique_id=1484750802]
 custom_minimum_size = Vector2(92, 38)
 layout_mode = 2
-focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_bgocs")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_ym6sg")
-theme_override_styles/hover = SubResource("StyleBoxFlat_ym6sg")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_wpp2c")
-theme_override_colors/font_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_pressed_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_hover_color = Color(0.011764706, 0.078431375, 0.13725491, 1)
-theme_override_colors/font_disabled_color = Color(0.41960785, 0.4745098, 0.5647059, 1)
 theme_override_font_sizes/font_size = 13
 text = "Oyna"
+theme_type_variation = &"PardexPrimary"
