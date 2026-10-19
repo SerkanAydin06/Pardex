@@ -43,7 +43,14 @@ func _run() -> void:
 	detail.back_requested.emit()
 	expect(pages.get_node("StorePage").visible, "return to store")
 	main.call("_navigate", "library")
-	pages.get_node("LibraryPage").details_requested.emit("detail_fixture")
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.pressed = true
+	pages.get_node("LibraryPage").call("_on_details_input", click, "detail_fixture")
+	expect(pages.get_node("LibraryPage").visible, "single click leaves library open")
+	click.double_click = true
+	pages.get_node("LibraryPage").call("_on_details_input", click, "detail_fixture")
+	expect(detail.visible, "double click opens details")
 	detail.back_requested.emit()
 	expect(pages.get_node("LibraryPage").visible, "return to library")
 	main.call("_open_game_details", "detail_fixture")
