@@ -6,7 +6,7 @@ extends VBoxContainer
 # that no campaign is running.
 
 signal navigate(page: String)
-signal play_requested(game_id: String)
+signal details_requested(game_id: String)
 signal toast(message: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
@@ -139,8 +139,7 @@ func _update_hero_actions(game_id: String) -> void:
 	wish.visible = not game_id.is_empty()
 	if game_id.is_empty():
 		return
-	var action := Catalog.action_label(game_id)
-	(explore.get_node("Content/Group/Label") as Label).text = "Şimdi İncele" if action == "Yakında" else action
+	(explore.get_node("Content/Group/Label") as Label).text = "Oyunu İncele"
 	var wished := Catalog.is_wishlisted(game_id)
 	(wish.get_node("Content/Group/Label") as Label).text = "İstek Listesinden Çıkar" if wished else "İstek Listesine Ekle"
 	(wish.get_node("Content/Group/Icon") as TextureRect).texture = HEART_FILL if wished else HEART
@@ -260,8 +259,4 @@ func _on_card_input(event: InputEvent, game_id: String) -> void:
 
 
 func _open_game(game_id: String) -> void:
-	var entry := Catalog.game(game_id)
-	if bool(entry.get("playable", false)):
-		play_requested.emit(game_id)
-	else:
-		toast.emit("%s çok yakında PARDEX'te. İstek listene ekleyebilirsin." % str(entry.get("title", "Bu oyun")))
+	details_requested.emit(game_id)

@@ -52,6 +52,7 @@ var _previous_page := "store"
 @onready var _avatar_dialog: FileDialog = %AvatarFileDialog
 # Page name -> the node shown for it.
 var _pages: Dictionary = {}
+var _detail_origin := "store"
 var _display_name := "Pardus"
 var _server_url := DEFAULT_SERVER_URL
 var _game_launch_in_progress := false
@@ -104,6 +105,12 @@ func _create_pages() -> void:
 	_social_page = _bind_page("friends", "FriendsPage")
 	_profile_page = _bind_page("profile", "ProfilePage")
 	_messages_page = _bind_page("messages", "MessagesPage")
+	var details := _bind_page("details", "GameDetailPage")
+	details.play_requested.connect(_play_game)
+	details.uninstall_requested.connect(_confirm_uninstall)
+	details.back_requested.connect(func(): _navigate(_detail_origin))
+	for source in [_store_page, _library_page]:
+		source.details_requested.connect(_open_game_details)
 	_bind_page("settings", "SettingsPage")
 	_settings_content = %Pages.get_node("SettingsPage/%SettingsContent") as VBoxContainer
 	_bind_settings_page()
@@ -270,6 +277,16 @@ func _wire_navigation() -> void:
 	_build_presence_menu()
 
 
+func _open_game_details(game_id: String) -> void:
+	if Catalog.game(game_id).is_empty():
+		return
+	if _current_page in ["store", "library"]:
+		_detail_origin = _current_page
+	_pages["details"].show_game(game_id)
+	_pages["details"].set_operation(_updater.busy(), "")
+	_navigate("details")
+
+
 func _navigate(page_name: String) -> void:
 	if not _pages.has(page_name):
 		return
@@ -382,6 +399,7 @@ func _apply_responsive_layout() -> void:
 	var content_width := width - sidebar_width - float(outer * 2)
 	for page in [_store_page, _library_page, _social_page, _profile_page, _messages_page]:
 		page.apply_layout(content_width)
+	_pages["details"].apply_layout(content_width)
 
 # ------------------------------------------------------------------ presence
 
@@ -469,6 +487,9 @@ func _wire_updater() -> void:
 	_updater.update_available.connect(func(_version: String): _install_pending_update())
 	_updater.update_failed.connect(_show_toast)
 	_updater.progress.connect(_show_toast)
+	_updater.progress.connect(func(message: String): _pages["details"].set_operation(_updater.busy(), message))
+	_updater.update_failed.connect(func(message: String): _pages["details"].set_operation(false, message))
+	_updater.game_installed.connect(func(_id: String): _pages["details"].set_operation(false, "Kurulum tamamlandı."))
 	_updater.catalog_changed.connect(func():
 		for page in _pages.values():
 			if page.has_method("refresh"):

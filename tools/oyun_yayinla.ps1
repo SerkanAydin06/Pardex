@@ -90,6 +90,31 @@ foreach ($image in @($cover, $banner)) {
     if ($image -and -not (Test-Path $image)) { Fail "Resim bulunamadi: $image" }
 }
 
+# Ayrintilar: uzun metinler UTF-8 .txt dosyalarindan okunabilir.
+$details = @{}
+foreach ($field in @("long_description", "requirements", "release_notes", "connection_modes")) {
+    $labels = @{
+        long_description = "Uzun aciklama"; requirements = "Sistem gereksinimleri"
+        release_notes = "Guncelleme notlari"; connection_modes = "Oyun/baglanti turleri"
+    }
+    $details[$field] = if ($old -and $old.$field) { $old.$field } else { "" }
+    $textPath = Ask "$($labels[$field]) icin UTF-8 .txt yolu (bos = mevcut bilgiyi koru)" ""
+    if ($textPath) {
+        if (-not (Test-Path $textPath -PathType Leaf)) { Fail "Metin dosyasi bulunamadi: $textPath" }
+        $details[$field] = [IO.File]::ReadAllText($textPath, [Text.Encoding]::UTF8)
+    }
+}
+$shotsDefault = if ($old -and $old.screenshots) { $old.screenshots -join ";" } else { "" }
+$shotsText = Ask "Ekran goruntuleri (en cok 8 dosya yolu, ; ile ayir; silmek icin -)" $shotsDefault
+$screenshots = @()
+if ($shotsText -and $shotsText -ne "-") {
+    $screenshots = @($shotsText -split ";" | ForEach-Object { $_.Trim().Trim('"') } | Where-Object { $_ })
+}
+if ($screenshots.Count -gt 8) { Fail "En cok 8 ekran goruntusu eklenebilir." }
+foreach ($shot in $screenshots) {
+    if (-not (Test-Path $shot -PathType Leaf)) { Fail "Ekran goruntusu bulunamadi: $shot" }
+}
+
 # 3. Windows icin disa aktar (build\games\<kimlik>, her seferinde temiz)
 $out = Join-Path $Root "build\games\$id"
 if (Test-Path $out) { Remove-Item -Recurse -Force $out }
@@ -108,6 +133,9 @@ $entry = [ordered]@{
     id = $id; title = $title; version = $version; directory = $out; executable = $exe
     description = $description; players = $players; genres = $genres
     cover = $cover; banner = $banner; project = $project
+    screenshots = $screenshots
+    long_description = $details.long_description; requirements = $details.requirements
+    release_notes = $details.release_notes; connection_modes = $details.connection_modes
 }
 $games = @($games | Where-Object { $_.id -ne $id }) + @([pscustomobject]$entry)
 $newSpec = [ordered]@{ games = $games }

@@ -3,9 +3,9 @@ extends Node
 
 # Inspector-only page switcher. It never starts the online client or runs
 # the page scripts in the editor; existing scene nodes are the preview.
-const PAGE_NAMES := ["StorePage", "LibraryPage", "FriendsPage", "MessagesPage", "ProfilePage", "SettingsPage"]
+const PAGE_NAMES := ["StorePage", "LibraryPage", "FriendsPage", "MessagesPage", "ProfilePage", "SettingsPage", "GameDetailPage"]
 
-@export_enum("Mağaza", "Kütüphane", "Arkadaşlar", "Mesajlar", "Profil", "Ayarlar")
+@export_enum("Mağaza", "Kütüphane", "Arkadaşlar", "Mesajlar", "Profil", "Ayarlar", "Oyun Detayı")
 var preview_page: int = 0:
 	set(value):
 		preview_page = clampi(value, 0, PAGE_NAMES.size() - 1)

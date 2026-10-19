@@ -5,6 +5,7 @@ extends VBoxContainer
 # last played and playtime are real (catalog + local records).
 
 signal play_requested(game_id: String)
+signal details_requested(game_id: String)
 signal toast(message: String)
 signal uninstall_requested(game_id: String)
 
@@ -235,6 +236,7 @@ func _more(entry: Dictionary) -> Button:
 	more.pressed.connect(func():
 		_menu_game = str(entry["id"])
 		_game_menu.clear()
+		_game_menu.add_item("Oyun sayfası", 3)
 		_game_menu.add_item(Catalog.action_label(str(entry["id"])), 0)
 		_game_menu.set_item_disabled(0, not bool(entry["playable"]))
 		_game_menu.add_item("Favorilerden çıkar" if bool(entry["favorite"]) else "Favorilere ekle", 1)
@@ -254,6 +256,7 @@ func _on_menu(id: int) -> void:
 			Catalog.toggle_favorite(_menu_game)
 			refresh()
 		2: uninstall_requested.emit(_menu_game)
+		3: details_requested.emit(_menu_game)
 
 
 func _genre_chips(entry: Dictionary) -> HBoxContainer:
@@ -268,8 +271,14 @@ func _genre_chips(entry: Dictionary) -> HBoxContainer:
 
 
 # Editor-owned card layouts, populated with live catalog data.
+func _on_details_input(event: InputEvent, game_id: String) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		details_requested.emit(game_id)
+
+
 func _card(entry: Dictionary) -> Control:
 	var card := LibraryGameCardScene.instantiate() as PanelContainer
+	card.gui_input.connect(_on_details_input.bind(str(entry["id"])))
 	(card.get_node("Column/Artwork/Art") as TextureRect).texture = Catalog.texture(str(entry["cover"]))
 	(card.get_node("Column/Artwork/OverlayMargin/Overlay/Top/StarSlot") as HBoxContainer).add_child(_star(entry))
 	(card.get_node("Column/Artwork/OverlayMargin/Overlay/Title") as Label).text = str(entry["title"])
@@ -281,6 +290,7 @@ func _card(entry: Dictionary) -> Control:
 
 func _list_row(entry: Dictionary) -> Control:
 	var card := LibraryListRowScene.instantiate() as PanelContainer
+	card.gui_input.connect(_on_details_input.bind(str(entry["id"])))
 	(card.get_node("Row/Art") as TextureRect).texture = Catalog.texture(str(entry["cover"]))
 	(card.get_node("Row/Info/Title") as Label).text = str(entry["title"])
 	(card.get_node("Row/Info/GenreSlot") as HBoxContainer).add_child(_genre_chips(entry))

@@ -30,6 +30,7 @@ def upload(root, base, account, bucket='pardex-releases', run=subprocess.run, at
     # Validate every artifact before the first remote write.
     assets = [entry['package'] for entry in entries]
     assets += [entry[key] for entry in manifest['games'] for key in ('cover', 'banner') if entry.get(key)]
+    assets += [asset for entry in manifest["games"] for asset in entry.get("screenshots", [])]
     for package in assets:
         prefix = base.rstrip('/') + '/packages/'
         name = package['url'].removeprefix(prefix)

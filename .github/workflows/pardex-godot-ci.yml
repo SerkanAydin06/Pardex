@@ -103,6 +103,16 @@ jobs:
             exit 1
           fi
 
+      - name: Verify and render game detail page
+        env:
+          XDG_DATA_HOME: ${{ runner.temp }}/pardex-detail-data
+          PARDEX_VISUAL_OUTPUT: ${{ github.workspace }}/visual-current
+        run: |
+          set -o pipefail
+          mkdir -p "$PARDEX_VISUAL_OUTPUT"
+          xvfb-run -a -s "-screen 0 1920x1080x24" godot --windowed --display-driver x11 --rendering-method gl_compatibility --audio-driver Dummy --path . --script res://scripts/ci/game_details_smoke.gd 2>&1 | tee godot-details.log
+          if grep -E 'SCRIPT ERROR:|ERROR:|Parse Error:' godot-details.log; then exit 1; fi
+
       - name: Compare pages with visual references
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"

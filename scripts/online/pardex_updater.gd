@@ -174,8 +174,10 @@ func uninstall_game(id: String) -> bool:
 # Store artwork from the catalog, one small file at a time in the background.
 func _queue_art() -> void:
 	for entry in Distribution.manifest.get("games", []):
-		for key in ["cover", "banner"]:
-			var asset: Variant = entry.get(key)
+		var assets: Array = entry.get("screenshots", []).duplicate()
+		assets.append(entry.get("cover"))
+		assets.append(entry.get("banner"))
+		for asset in assets:
 			if Distribution.valid_art(asset) and Distribution.art_path(asset).is_empty() and not _art_queue.has(asset):
 				_art_queue.append(asset)
 	_next_art()
