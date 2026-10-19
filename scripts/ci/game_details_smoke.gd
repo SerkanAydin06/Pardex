@@ -53,6 +53,7 @@ func _run() -> void:
 		main.size = Vector2(width, 768)
 		main.call("_apply_responsive_layout")
 		await create_timer(0.4).timeout
+		expect(detail.get_node("%ImageCount").size.y <= 44, "gallery counter stays on one line")
 		expect(detail.get_node("%Scroll").get_h_scroll_bar().max_value <= detail.get_node("%Scroll").size.x + 2, "no horizontal overflow")
 		await RenderingServer.frame_post_draw
 		var output := OS.get_environment("PARDEX_VISUAL_OUTPUT")
