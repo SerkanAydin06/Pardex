@@ -18,16 +18,16 @@ config/features=PackedStringArray("4.7", "GL Compatibility")
 boot_splash/show_image=false
 config/icon="res://assets/ui/pardex_hub_app_icon.png"
 
+[audio]
+
+driver/enable_input=true
+
 [autoload]
 
 PardexIdentityGuard="*res://scripts/online/pardex_identity_guard.gd"
 PardexOnline="*res://scripts/online/pardex_online_secure_handoff.gd"
 PardexGameLauncher="*res://scripts/online/pardex_game_launcher.gd"
 PardexNotifications="*res://scripts/online/pardex_notifications.gd"
-
-[audio]
-
-driver/enable_input=true
 
 [display]
 
