@@ -1069,6 +1069,8 @@ theme_override_constants/separation = 10
 [node name="HBoxContainer1" type="HFlowContainer" parent="ScrollContainer1/VBoxContainer1/Toolbar" unique_id=1416525574]
 layout_mode = 2
 theme_override_constants/separation = 0
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
 
 [node name="Filter_all" type="Button" parent="ScrollContainer1/VBoxContainer1/Toolbar/HBoxContainer1" unique_id=433326229]
 unique_name_in_owner = true
@@ -1124,6 +1126,7 @@ theme_type_variation = &"PardexToggle"
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
+size_flags_vertical = 4
 
 [node name="Control1" type="Control" parent="ScrollContainer1/VBoxContainer1/Toolbar/HBoxContainer2" unique_id=1071374034]
 layout_mode = 2
