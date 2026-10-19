@@ -1,5 +1,7 @@
 [gd_scene format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/ui/library_play_button.tscn" id="2_play"]
+
 [ext_resource type="Texture2D" path="res://assets/ui/placeholder_vex.png" id="1_cover"]
 
 [sub_resource type="StyleBoxFlat" id="Card"]
@@ -12,13 +14,6 @@ content_margin_left = 10
 content_margin_top = 10
 content_margin_right = 10
 content_margin_bottom = 10
-
-[sub_resource type="StyleBoxFlat" id="PlayStyle"]
-bg_color = Color(0.153, 0.663, 1, 1)
-corner_radius_top_left = 9
-corner_radius_top_right = 9
-corner_radius_bottom_left = 9
-corner_radius_bottom_right = 9
 
 [node name="LibraryListRow" type="PanelContainer"]
 size_flags_horizontal = 3
@@ -60,16 +55,8 @@ text = "Bugün"
 [node name="StatusSlot" type="HBoxContainer" parent="Row"]
 layout_mode = 2
 
+[node name="PlayButton" parent="Row" instance=ExtResource("2_play")]
+layout_mode = 2
+
 [node name="FavoriteSlot" type="HBoxContainer" parent="Row"]
-layout_mode = 2
-
-[node name="PlayButton" type="Button" parent="Row"]
-custom_minimum_size = Vector2(0, 36)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.012, 0.078, 0.137, 1)
-theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("PlayStyle")
-text = "Oyna"
-
-[node name="MoreSlot" type="HBoxContainer" parent="Row"]
 layout_mode = 2

@@ -71,6 +71,35 @@ func _run() -> void:
 		root.get_texture().get_image().save_png(output.path_join("detail-bottom.png"))
 	detail.show_game("vex")
 	expect(detail.get_node("%ActionButton").disabled and not detail.get_node("%Gallery").visible, "upcoming game and empty gallery")
+	# Render an installed card and list row; the regular library reference is empty.
+	var folder := ProjectSettings.globalize_path(D.ROOT.path_join("detail_fixture").path_join("fixture"))
+	DirAccess.make_dir_recursive_absolute(folder)
+	var executable := FileAccess.open(folder.path_join("Game.exe"), FileAccess.WRITE)
+	executable.store_string("visual fixture")
+	executable.close()
+	var installed := ConfigFile.new()
+	installed.set_value("detail_fixture", "package", {"version": entry.version, "sha256": entry.package.sha256, "path": "fixture/Game.exe"})
+	installed.save(D.INSTALLED)
+	main.call("_navigate", "library")
+	var library := pages.get_node("LibraryPage")
+	library.refresh()
+	for width in [1366, 1024]:
+		root.size = Vector2i(width, 768)
+		main.size = Vector2(width, 768)
+		main.call("_apply_responsive_layout")
+		for list_view in [false, true]:
+			library.call("_set_view", list_view)
+			await create_timer(0.3).timeout
+			var grid: GridContainer = library.get("_grid")
+			expect(grid.get_child_count() == 1, "installed fixture in library")
+			var card := grid.get_child(0)
+			var play_path := "Row/PlayButton" if list_view else "Column/InfoMargin/Info/Bottom/PlayButton"
+			expect(card.get_node(play_path).text == "Oyna", "direct play action")
+			expect(card.get_node(play_path).get_global_rect().end.x <= library.get_global_rect().end.x, "play action fits")
+			await RenderingServer.frame_post_draw
+			if not output.is_empty():
+				root.get_texture().get_image().save_png(output.path_join("library-actions-%d-%s.png" % [width, "list" if list_view else "grid"]))
+	D.uninstall("detail_fixture")
 	D.manifest = saved
 	if failures == 0:
 		print("GAME DETAILS PASSED: routing, metadata, gallery, action state and responsive layout")
