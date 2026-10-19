@@ -2705,6 +2705,3 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_lgavi")
 theme_override_styles/hover = SubResource("StyleBoxFlat_lgavi")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_qi1v7")
 text = "Oyna"
-
-[node name="GameMenu" type="PopupMenu" parent="." unique_id=1810032633]
-unique_name_in_owner = true

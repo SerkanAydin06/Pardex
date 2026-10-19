@@ -118,8 +118,6 @@ func _create_pages() -> void:
 		_social_page.message_requested.connect(_open_conversation)
 	if _messages_page.has_signal("call_requested"):
 		_messages_page.call_requested.connect(start_call)
-	if _library_page.has_signal("uninstall_requested"):
-		_library_page.uninstall_requested.connect(_confirm_uninstall)
 	for page in [_store_page, _library_page, _social_page, _profile_page, _messages_page]:
 		if page.has_signal("navigate"):
 			page.navigate.connect(_navigate)

@@ -1,5 +1,7 @@
 [gd_scene format=3]
 
+[ext_resource type="PackedScene" path="res://scenes/ui/library_play_button.tscn" id="2_play"]
+
 [ext_resource type="Texture2D" path="res://assets/ui/placeholder_vex.png" id="1_cover"]
 
 [sub_resource type="StyleBoxFlat" id="PanelCard"]
@@ -113,5 +115,5 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MoreSlot" type="HBoxContainer" parent="Column/InfoMargin/Info/Bottom"]
+[node name="PlayButton" parent="Column/InfoMargin/Info/Bottom" instance=ExtResource("2_play")]
 layout_mode = 2

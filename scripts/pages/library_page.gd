@@ -7,13 +7,11 @@ extends VBoxContainer
 signal play_requested(game_id: String)
 signal details_requested(game_id: String)
 signal toast(message: String)
-signal uninstall_requested(game_id: String)
 
 const UI := preload("res://scripts/ui/pardex_ui.gd")
 const LibraryGameCardScene := preload("res://scenes/ui/library_game_card.tscn")
 const LibraryListRowScene := preload("res://scenes/ui/library_list_row.tscn")
 const Catalog := preload("res://scripts/data/pardex_catalog.gd")
-const Distribution := preload("res://scripts/data/pardex_distribution.gd")
 const FILTERS := [["all", "Tümü", ""], ["installed", "Yüklü", "download"], ["recent", "Son Oynanan", "clock"], ["favorites", "Favoriler", "heart"]]
 
 var _filter := "all"
@@ -31,16 +29,12 @@ var _bottom: BoxContainer
 var _toolbar: BoxContainer
 var _grid_button: Button
 var _list_button: Button
-var _game_menu: PopupMenu
-var _menu_game := ""
 var _content_width := 1200.0
 
 
 func _ready() -> void:
 	# Layout is owned by scenes/pages; runtime code only binds data and actions.
 	_bind()
-	_game_menu = %GameMenu
-	_game_menu.id_pressed.connect(_on_menu)
 	visibility_changed.connect(func(): if is_visible_in_tree(): refresh())
 	refresh()
 
@@ -100,7 +94,7 @@ func apply_layout(content_width: float) -> void:
 	for side in [_top.get_child(1), _bottom.get_child(1)]:
 		var control := side as Control
 		control.custom_minimum_size.x = 0.0 if _top.vertical else clampf(content_width * 0.32, 320.0, 460.0)
-	_grid.columns = 1 if _list_view else clampi(floori((content_width + 14.0) / 210.0), 2, 6)
+	_grid.columns = 1 if _list_view else clampi(floori((content_width + 14.0) / 260.0), 2, 6)
 	if _toolbar != null:
 		_toolbar.vertical = content_width < 1040.0
 
@@ -231,34 +225,6 @@ func _star(entry: Dictionary) -> Button:
 	return star
 
 
-func _more(entry: Dictionary) -> Button:
-	var more := UI.icon_button("dots_h", "Seçenekler", 34, UI.TEXT_2, true)
-	more.pressed.connect(func():
-		_menu_game = str(entry["id"])
-		_game_menu.clear()
-		_game_menu.add_item("Oyun sayfası", 3)
-		_game_menu.add_item(Catalog.action_label(str(entry["id"])), 0)
-		_game_menu.set_item_disabled(0, not bool(entry["playable"]))
-		_game_menu.add_item("Favorilerden çıkar" if bool(entry["favorite"]) else "Favorilere ekle", 1)
-		# Only games PARDEX downloaded itself can be removed from here.
-		if not Distribution.executable(str(entry["id"])).is_empty():
-			_game_menu.add_item("Oyunu kaldır", 2)
-		var rect := more.get_global_rect()
-		_game_menu.popup(Rect2i(Vector2i(rect.position + Vector2(0, rect.size.y + 4)), Vector2i.ZERO))
-	)
-	return more
-
-
-func _on_menu(id: int) -> void:
-	match id:
-		0: play_requested.emit(_menu_game)
-		1:
-			Catalog.toggle_favorite(_menu_game)
-			refresh()
-		2: uninstall_requested.emit(_menu_game)
-		3: details_requested.emit(_menu_game)
-
-
 func _genre_chips(entry: Dictionary) -> HBoxContainer:
 	var row := UI.hbox(6)
 	for genre in entry["genres"]:
@@ -284,8 +250,14 @@ func _card(entry: Dictionary) -> Control:
 	(card.get_node("Column/Artwork/OverlayMargin/Overlay/Title") as Label).text = str(entry["title"])
 	(card.get_node("Column/InfoMargin/Info/GenreSlot") as HBoxContainer).add_child(_genre_chips(entry))
 	(card.get_node("Column/InfoMargin/Info/Bottom/StatusSlot") as HBoxContainer).add_child(_status_pill(entry))
-	(card.get_node("Column/InfoMargin/Info/Bottom/MoreSlot") as HBoxContainer).add_child(_more(entry))
+	_bind_play(card.get_node("Column/InfoMargin/Info/Bottom/PlayButton") as Button, entry)
 	return card
+
+
+func _bind_play(button: Button, entry: Dictionary) -> void:
+	button.disabled = not bool(entry["installed"])
+	button.tooltip_text = str(entry["title"]) + " oyununu başlat"
+	button.pressed.connect(func(): play_requested.emit(str(entry["id"])))
 
 
 func _list_row(entry: Dictionary) -> Control:
@@ -297,11 +269,7 @@ func _list_row(entry: Dictionary) -> Control:
 	(card.get_node("Row/LastPlayed") as Label).text = Catalog.ago(int(entry["last_played"]))
 	(card.get_node("Row/StatusSlot") as HBoxContainer).add_child(_status_pill(entry))
 	(card.get_node("Row/FavoriteSlot") as HBoxContainer).add_child(_star(entry))
-	var play := card.get_node("Row/PlayButton") as Button
-	play.text = Catalog.action_label(str(entry["id"]))
-	play.disabled = not bool(entry["playable"])
-	play.pressed.connect(func(): play_requested.emit(str(entry["id"])))
-	(card.get_node("Row/MoreSlot") as HBoxContainer).add_child(_more(entry))
+	_bind_play(card.get_node("Row/PlayButton") as Button, entry)
 	return card
 
 
