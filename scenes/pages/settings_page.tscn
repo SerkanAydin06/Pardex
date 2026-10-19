@@ -689,7 +689,7 @@ mouse_default_cursor_shape = 2
 toggle_mode = true
 theme_override_font_sizes/font_size = 13
 text = "Mikrofonu test et"
-theme_type_variation = &"PardexPrimary"
+theme_type_variation = &"PardexToggle"
 
 [node name="TestHint" type="Label" parent="Scroll/SettingsContent/VoicePanel/VBox" unique_id=1946200021]
 layout_mode = 2

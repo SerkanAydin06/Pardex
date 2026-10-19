@@ -41,6 +41,7 @@ custom_minimum_size = Vector2(0, 42)
 size_flags_horizontal = 0
 theme_type_variation = &"PardexLink"
 mouse_default_cursor_shape = 2
+icon_alignment = 1
 
 [node name="HeroColumns" type="BoxContainer" parent="Scroll/Content"]
 unique_name_in_owner = true
@@ -98,6 +99,7 @@ text = "İndir"
 custom_minimum_size = Vector2(0, 42)
 theme_type_variation = &"PardexPrimary"
 mouse_default_cursor_shape = 2
+icon_alignment = 1
 
 [node name="WishButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
 unique_name_in_owner = true
@@ -106,6 +108,7 @@ text = "İstek listesine ekle"
 custom_minimum_size = Vector2(0, 42)
 theme_type_variation = &"Button"
 mouse_default_cursor_shape = 2
+icon_alignment = 1
 
 [node name="FavoriteButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
 unique_name_in_owner = true
@@ -114,6 +117,7 @@ text = "Favorilere ekle"
 custom_minimum_size = Vector2(0, 42)
 theme_type_variation = &"Button"
 mouse_default_cursor_shape = 2
+icon_alignment = 1
 
 [node name="UninstallButton" type="Button" parent="Scroll/Content/HeroColumns/Info"]
 unique_name_in_owner = true
@@ -122,6 +126,7 @@ text = "Oyunu kaldır"
 custom_minimum_size = Vector2(0, 42)
 theme_type_variation = &"PardexDanger"
 mouse_default_cursor_shape = 2
+icon_alignment = 1
 
 [node name="Playtime" type="Label" parent="Scroll/Content/HeroColumns/Info"]
 unique_name_in_owner = true
@@ -175,6 +180,7 @@ text = "‹"
 custom_minimum_size = Vector2(44, 42)
 theme_type_variation = &"Button"
 mouse_default_cursor_shape = 2
+icon_alignment = 1
 
 [node name="EnlargeButton" type="Button" parent="Scroll/Content/Gallery/Controls"]
 unique_name_in_owner = true
@@ -183,6 +189,7 @@ text = "Büyüt"
 custom_minimum_size = Vector2(120, 42)
 theme_type_variation = &"Button"
 mouse_default_cursor_shape = 2
+icon_alignment = 1
 
 [node name="NextImage" type="Button" parent="Scroll/Content/Gallery/Controls"]
 unique_name_in_owner = true
@@ -191,6 +198,7 @@ text = "›"
 custom_minimum_size = Vector2(44, 42)
 theme_type_variation = &"Button"
 mouse_default_cursor_shape = 2
+icon_alignment = 1
 
 [node name="ImageCount" type="Label" parent="Scroll/Content/Gallery/Controls"]
 unique_name_in_owner = true

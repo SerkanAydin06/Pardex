@@ -606,3 +606,9 @@ PardexDanger/colors/font_disabled_color = Color(0.44314, 0.50196, 0.58824, 1)
 PardexDanger/colors/icon_disabled_color = Color(0.44314, 0.50196, 0.58824, 1)
 PardexDanger/constants/h_separation = 8
 PardexDanger/constants/icon_max_width = 16
+
+PardexToggle/base_type = &"Button"
+PardexToggle/styles/pressed = SubResource("PardexPrimarynormal")
+PardexToggle/styles/hover_pressed = SubResource("PardexPrimaryhover")
+PardexToggle/colors/font_pressed_color = Color(0.012, 0.078, 0.137, 1)
+PardexToggle/colors/icon_pressed_color = Color(0.012, 0.078, 0.137, 1)

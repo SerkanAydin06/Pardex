@@ -35,6 +35,13 @@ func _run() -> void:
 	var detail := pages.get_node("GameDetailPage")
 	expect(detail.visible and detail.game_id == "detail_fixture", "store opens details")
 	expect(detail.get_node("%ActionButton").text == "İndir", "uninstalled game action")
+	var action := detail.get_node("%ActionButton") as Button
+	expect(action.get_theme_stylebox("normal") != action.get_theme_stylebox("pressed"), "distinct primary press feedback")
+	expect(action.get_theme_stylebox("focus") is StyleBoxFlat and not (action.get_theme_stylebox("focus") as StyleBoxFlat).draw_center, "focus ring preserves button content")
+	action.grab_focus()
+	expect(action.has_focus(), "primary action accepts keyboard focus")
+	action.release_focus()
+
 	expect(detail.get_node("%About").text == entry.long_description, "catalog description")
 	expect(detail.get_node("%Gallery").visible, "downloaded screenshot")
 	detail.set_operation(true, "İndiriliyor… %25")
