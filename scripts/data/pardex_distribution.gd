@@ -2,7 +2,14 @@ extends RefCounted
 
 const CACHE := "user://distribution.json"
 const INSTALLED := "user://installed_games.cfg"
+# Where games went before a folder could be chosen; still the fallback.
 const ROOT := "user://games"
+
+# Install folder chosen in Ayarlar ("" = default_games_root()). Each install
+# record keeps its own folder, so changing this never loses an installed
+# game: it moves to the new folder with its next update.
+static var games_root := ""
+static var _default_root := ""
 const ART := "user://art"
 const MAX_ART_BYTES := 8388608
 static var manifest: Dictionary = {}
@@ -163,6 +170,40 @@ static func game(id: String) -> Dictionary:
 	return {}
 
 
+# Next to PARDEX when that folder is writable (C:\PARDEX -> C:\PARDEX\games);
+# otherwise (Program Files, the editor) the user data folder.
+static func default_games_root() -> String:
+	if _default_root.is_empty():
+		_default_root = ProjectSettings.globalize_path(ROOT)
+		if not OS.has_feature("editor"):
+			var beside := OS.get_executable_path().get_base_dir().path_join("games")
+			if is_writable_folder(beside):
+				_default_root = beside
+	return _default_root
+
+
+static func active_games_root() -> String:
+	return games_root if not games_root.is_empty() else default_games_root()
+
+
+static func is_writable_folder(path: String) -> bool:
+	if path.is_empty() or DirAccess.make_dir_recursive_absolute(path) != OK:
+		return false
+	var probe := path.path_join(".pardex_yazma_denemesi")
+	var file := FileAccess.open(probe, FileAccess.WRITE)
+	if file == null:
+		return false
+	file.close()
+	DirAccess.remove_absolute(probe)
+	return true
+
+
+# The folder that holds this game's version folders (where it is installed).
+static func game_folder(id: String) -> String:
+	var root := str(installed(id).get("root", ""))
+	return (root if not root.is_empty() else ProjectSettings.globalize_path(ROOT)).path_join(id)
+
+
 static func installed(id: String) -> Dictionary:
 	var config := ConfigFile.new()
 	config.load(INSTALLED)
@@ -177,7 +218,7 @@ static func executable(id: String) -> String:
 	var relative := str(record.get("path", ""))
 	if not safe_path(relative):
 		return ""
-	var path := ProjectSettings.globalize_path(ROOT.path_join(id).path_join(relative))
+	var path := game_folder(id).path_join(relative)
 	return path if FileAccess.file_exists(path) else ""
 
 
@@ -206,7 +247,9 @@ static func install_zip(archive: String, entry: Dictionary) -> bool:
 			return false
 		names[clean.to_lower()] = true
 	var folder := str(entry["version"]) + "-" + str(entry["package"]["sha256"]).left(16)
-	var destination := ProjectSettings.globalize_path(ROOT.path_join(str(entry["id"])).path_join(folder))
+	var root := active_games_root()
+	var previous_folder := game_folder(str(entry["id"])) if not installed(str(entry["id"])).is_empty() else ""
+	var destination := root.path_join(str(entry["id"])).path_join(folder)
 	var total := 0
 	for filename in files:
 		if filename.ends_with("/"):
@@ -231,16 +274,19 @@ static func install_zip(archive: String, entry: Dictionary) -> bool:
 	zip.close()
 	var config := ConfigFile.new()
 	config.load(INSTALLED)
-	config.set_value(str(entry["id"]), "package", {"version": entry["version"], "sha256": entry["package"]["sha256"], "path": folder.path_join(str(entry["executable"]))})
+	config.set_value(str(entry["id"]), "package", {"version": entry["version"], "sha256": entry["package"]["sha256"], "path": folder.path_join(str(entry["executable"])), "root": root})
 	if config.save(INSTALLED + ".tmp") != OK:
 		return false
 	if DirAccess.rename_absolute(ProjectSettings.globalize_path(INSTALLED + ".tmp"), ProjectSettings.globalize_path(INSTALLED)) != OK:
 		return false
-	# The new version is active: earlier version folders only take disk space.
-	var game_root := ProjectSettings.globalize_path(ROOT.path_join(str(entry["id"])))
+	# The new version is active: earlier version folders only take disk space,
+	# and so does the old install folder if the game moved to a new one.
+	var game_root := root.path_join(str(entry["id"]))
 	for old in DirAccess.get_directories_at(game_root):
 		if old != folder:
 			_remove_tree(game_root.path_join(old))
+	if not previous_folder.is_empty() and previous_folder.simplify_path() != game_root.simplify_path() and DirAccess.dir_exists_absolute(previous_folder):
+		_remove_tree(previous_folder)
 	return true
 
 
@@ -251,7 +297,7 @@ static func install_zip(archive: String, entry: Dictionary) -> bool:
 static func uninstall(id: String) -> bool:
 	if not valid_id(id):
 		return false
-	var folder := ProjectSettings.globalize_path(ROOT.path_join(id))
+	var folder := game_folder(id)
 	if DirAccess.dir_exists_absolute(folder) and not _remove_tree(folder):
 		return false
 	var config := ConfigFile.new()

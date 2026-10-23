@@ -113,10 +113,30 @@ func _run() -> void:
 	# Uninstall removes files and the install record.
 	expect(D.uninstall("ci_update_fixture") and D.executable("ci_update_fixture").is_empty() and not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path("user://games/ci_update_fixture")), "uninstall removes files and record")
 	expect(Catalog.action_label("ci_update_fixture") == "İndir", "uninstalled game can be downloaded again")
+
+	# Chosen install folder (Ayarlar › Oyun kurulumu): new installs go there,
+	# an installed game keeps running from its own folder after the choice
+	# changes, its next update moves it, and uninstall follows the record.
+	var game_id := "ci_update_fixture"
+	expect(D.default_games_root() == ProjectSettings.globalize_path(D.ROOT), "editor default stays in user data")
+	expect(not D.is_writable_folder(""), "empty folder is not an install folder")
+	var chosen := ProjectSettings.globalize_path("user://secilen_oyunlar")
+	var other := ProjectSettings.globalize_path("user://diger_oyunlar")
+	expect(D.is_writable_folder(chosen) and D.is_writable_folder(other), "chosen folders writable")
+	D.games_root = chosen
+	expect(D.install_zip(archive, entry) and D.executable(game_id).begins_with(chosen.path_join(game_id)), "install into chosen folder")
+	D.games_root = other
+	expect(D.executable(game_id).begins_with(chosen), "installed game still runs after the folder changes")
+	expect(D.install_zip(archive, newer) and D.executable(game_id).begins_with(other.path_join(game_id)), "update installs into the new folder")
+	expect(not DirAccess.dir_exists_absolute(chosen.path_join(game_id)), "old install folder removed after the move")
+	expect(D.uninstall(game_id) and not DirAccess.dir_exists_absolute(other.path_join(game_id)) and D.installed(game_id).is_empty(), "uninstall from the chosen folder")
+	D.games_root = ""
+	DirAccess.remove_absolute(chosen)
+	DirAccess.remove_absolute(other)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(D.art_download_path(cover)))
 	DirAccess.remove_absolute(png)
 	D.manifest = saved
 	DirAccess.remove_absolute(archive)
 	if failures == 0:
-		print("DISTRIBUTION SMOKE PASSED: catalog, update, paths, atomic activation, old version cleanup, store art, uninstall")
+		print("DISTRIBUTION SMOKE PASSED: catalog, update, paths, atomic activation, old version cleanup, store art, uninstall, chosen install folder")
 	quit(0 if failures == 0 else 1)

@@ -149,6 +149,46 @@ func _bind_settings_page() -> void:
 	)
 	PardexOnline.avatar_ready.connect(func(_account_id): _render_avatar_preview())
 	(_settings_content.get_node("SupportPanel/VBox/ReportRow/ReportButton") as Button).pressed.connect(_send_bug_report)
+	_bind_games_folder_settings()
+
+
+const GAMES_FOLDER := "GamesPanel/VBox/FolderRow/"
+
+
+# Ayarlar › Oyun kurulumu: where store downloads go (pardex.cfg [games] root).
+func _bind_games_folder_settings() -> void:
+	var dialog := %GamesFolderDialog as FileDialog
+	(_settings_content.get_node(GAMES_FOLDER + "ChooseFolderButton") as Button).pressed.connect(func():
+		dialog.current_dir = Distribution.active_games_root()
+		dialog.popup_centered_ratio(0.6)
+	)
+	(_settings_content.get_node(GAMES_FOLDER + "DefaultFolderButton") as Button).pressed.connect(func():
+		_set_games_folder("")
+	)
+	dialog.dir_selected.connect(_set_games_folder)
+
+
+func _set_games_folder(folder: String) -> void:
+	if not folder.is_empty() and not Distribution.is_writable_folder(folder):
+		_show_toast("Bu klasöre yazılamıyor; başka bir klasör seç.")
+		return
+	Distribution.games_root = folder
+	# Saved only here: a drive that is unplugged at start keeps its choice.
+	var config := ConfigFile.new()
+	config.load(SETTINGS_PATH)
+	config.set_value("games", "root", folder)
+	if config.save(SETTINGS_PATH) != OK:
+		_show_toast("Ayar kaydedilemedi.")
+		return
+	_render_games_folder()
+	_show_toast("Yeni oyunlar artık buraya kurulacak: %s" % Distribution.active_games_root())
+
+
+func _render_games_folder() -> void:
+	var edit := _settings_content.get_node(GAMES_FOLDER + "FolderEdit") as LineEdit
+	edit.text = Distribution.active_games_root()
+	edit.tooltip_text = edit.text
+	(_settings_content.get_node(GAMES_FOLDER + "DefaultFolderButton") as Button).disabled = Distribution.games_root.is_empty()
 
 
 const VOICE_SETTINGS := "VoicePanel/VBox/"
@@ -866,6 +906,7 @@ func _prepare_settings() -> void:
 	(_settings_content.get_node("OnlinePanel/VBox/ServerRow/ServerUrlEdit") as LineEdit).text = _server_url
 	_render_avatar_preview()
 	_prepare_voice_settings()
+	_render_games_folder()
 
 
 func _load_settings() -> void:
@@ -878,6 +919,9 @@ func _load_settings() -> void:
 	_server_url = str(config.get_value("online", "server_url", DEFAULT_SERVER_URL)).strip_edges()
 	if PardexOnline.is_automatic_url(_server_url):
 		_server_url = DEFAULT_SERVER_URL
+	# A chosen folder that is gone (unplugged drive) falls back to the default.
+	var games_root := str(config.get_value("games", "root", "")).strip_edges()
+	Distribution.games_root = games_root if Distribution.is_writable_folder(games_root) else ""
 
 
 func _save_settings() -> int:

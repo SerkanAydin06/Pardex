@@ -632,6 +632,14 @@ access = 2
 filters = PackedStringArray("*.png, *.jpg, *.jpeg, *.webp ; Resimler")
 use_native_dialog = true
 
+[node name="GamesFolderDialog" type="FileDialog" parent="." unique_id=1946300040]
+unique_name_in_owner = true
+title = "Oyun kurulum klasörünü seç"
+size = Vector2i(800, 550)
+file_mode = 2
+access = 2
+use_native_dialog = true
+
 [node name="NotificationCenter" type="PanelContainer" parent="." unique_id=1299719955]
 unique_name_in_owner = true
 visible = false

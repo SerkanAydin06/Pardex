@@ -525,6 +525,65 @@ theme_override_font_sizes/font_size = 14
 text = "●  ÇEVRİMDIŞI"
 text_overrun_behavior = 3
 
+[node name="GamesPanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1946300001]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hit1x")
+
+[node name="VBox" type="VBoxContainer" parent="Scroll/SettingsContent/GamesPanel" unique_id=1946300002]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Section" type="Label" parent="Scroll/SettingsContent/GamesPanel/VBox" unique_id=1946300003]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.46, 0.9, 0.86, 1)
+theme_override_font_sizes/font_size = 13
+text = "●  OYUN KURULUMU"
+text_overrun_behavior = 3
+
+[node name="Description" type="Label" parent="Scroll/SettingsContent/GamesPanel/VBox" unique_id=1946300004]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.61, 0.68, 0.77, 1)
+theme_override_font_sizes/font_size = 14
+text = "Mağazadan indirdiğin oyunların kurulacağı klasör. Varsayılan: PARDEX'in kurulu olduğu klasördeki \"games\"."
+autowrap_mode = 2
+
+[node name="FolderRow" type="HBoxContainer" parent="Scroll/SettingsContent/GamesPanel/VBox" unique_id=1946300005]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="FolderEdit" type="LineEdit" parent="Scroll/SettingsContent/GamesPanel/VBox/FolderRow" unique_id=1946300006]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.93, 0.98, 1)
+theme_override_colors/font_uneditable_color = Color(0.9, 0.93, 0.98, 1)
+theme_override_font_sizes/font_size = 14
+text = "C:/PARDEX/games"
+editable = false
+
+[node name="ChooseFolderButton" type="Button" parent="Scroll/SettingsContent/GamesPanel/VBox/FolderRow" unique_id=1946300007]
+custom_minimum_size = Vector2(140, 44)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 13
+text = "Klasör Seç"
+theme_type_variation = &"PardexPrimary"
+
+[node name="DefaultFolderButton" type="Button" parent="Scroll/SettingsContent/GamesPanel/VBox/FolderRow" unique_id=1946300008]
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 13
+text = "Varsayılan"
+theme_type_variation = &"Button"
+
+[node name="FolderHint" type="Label" parent="Scroll/SettingsContent/GamesPanel/VBox" unique_id=1946300009]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.38, 0.44, 0.53, 1)
+theme_override_font_sizes/font_size = 12
+text = "Yüklü oyunlar bulundukları yerden çalışmaya devam eder; ilk güncellemelerinde yeni klasöre taşınır."
+autowrap_mode = 2
+
 [node name="VoicePanel" type="PanelContainer" parent="Scroll/SettingsContent" unique_id=1946200001]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_hit1x")
