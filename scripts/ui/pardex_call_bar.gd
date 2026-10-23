@@ -86,22 +86,22 @@ func _refresh() -> void:
 	_refresh_quality()
 
 
-# "● Bağlantı iyi • 45 ms" under the call time; hidden until measured.
+# "● İyi • 45 ms • %4 kayıp" under the call time; hidden until measured.
 func _refresh_quality() -> void:
 	var label := $Row/Info/Quality as Label
 	label.visible = str(_call.get("state", "")) == "active" and _latency_ms >= 0
 	if not label.visible:
 		return
 	var loss := maxf(_loss_percent, 0.0)
-	var quality := "iyi"
+	var quality := "İyi"
 	var color := QUALITY_GOOD
 	if _latency_ms >= 300 or loss >= 10.0:
-		quality = "zayıf"
+		quality = "Zayıf"
 		color = QUALITY_POOR
 	elif _latency_ms >= 150 or loss >= 3.0:
-		quality = "orta"
+		quality = "Orta"
 		color = QUALITY_FAIR
-	var text := "● Bağlantı %s • %d ms" % [quality, _latency_ms]
+	var text := "● %s • %d ms" % [quality, _latency_ms]
 	if loss >= 1.0:
 		text += " • %%%d kayıp" % roundi(loss)
 	label.text = text
