@@ -89,6 +89,7 @@ theme_override_constants/separation = 6
 
 [node name="Name" type="Label" parent="Row/Info/NameRow"]
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.933, 0.953, 0.984, 1)
 theme_override_font_sizes/font_size = 14
 text = "Arkadaş"
@@ -111,11 +112,11 @@ text_overrun_behavior = 3
 [node name="Quality" type="Label" parent="Row/Info"]
 visible = false
 layout_mode = 2
-tooltip_text = "Gecikme: PARDEX sunucusuna gidip gelme süresi. Kayıp: arkadaşından gelmeyen ses paketleri."
+tooltip_text = "Bağlantı kalitesi. ms: PARDEX sunucusuna gidip gelme süresi. Kayıp: arkadaşından gelmeyen ses paketleri."
 mouse_filter = 1
 theme_override_colors/font_color = Color(0.204, 0.827, 0.6, 1)
 theme_override_font_sizes/font_size = 11
-text = "● Bağlantı iyi • 45 ms"
+text = "● İyi • 45 ms"
 text_overrun_behavior = 3
 
 [node name="MicButton" type="Button" parent="Row"]
