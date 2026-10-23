@@ -22,6 +22,8 @@ const STEP_TABLE := [
 
 
 # Stereo capture at the mixer rate -> mono 16 kHz (box filter + linear step).
+# Each frame keeps its louder channel: many Windows microphones arrive on the
+# left channel only, and averaging would halve them below the speech threshold.
 static func to_mono_16k(frames: PackedVector2Array, from_rate: float) -> PackedFloat32Array:
 	var out := PackedFloat32Array()
 	if frames.is_empty() or from_rate <= 0.0:
@@ -35,7 +37,7 @@ static func to_mono_16k(frames: PackedVector2Array, from_rate: float) -> PackedF
 		var total := 0.0
 		for j in range(start, maxi(stop, start + 1)):
 			var frame := frames[mini(j, frames.size() - 1)]
-			total += (frame.x + frame.y) * 0.5
+			total += frame.x if absf(frame.x) >= absf(frame.y) else frame.y
 		out[i] = total / maxf(1.0, stop - start)
 	return out
 

@@ -181,6 +181,9 @@ func _bind_voice_settings() -> void:
 		if not on:
 			bar.value = bar.min_value
 	)
+	_voice.microphone_silent.connect(func():
+		_show_toast("Mikrofonundan ses gelmiyor. Windows Ayarlar › Gizlilik › Mikrofon'da masaüstü uygulamalarına izin ver ve Ayarlar › Sesli sohbet'te doğru mikrofonu seç.")
+	)
 	_voice.mic_level_changed.connect(func(level: float):
 		if not test.button_pressed:
 			return
