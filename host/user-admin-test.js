@@ -63,7 +63,7 @@ async function run() {
     const rows = elements.get("userRows").children[0].children;
     assert.equal(rows.length, 1);
     assert.equal(rows[0].children[0].textContent, users.users[0].display_name, "user markup must remain plain text");
-    assert.equal(elements.get("userTotal").textContent, 1);
+    assert.equal(elements.get("statUsers").textContent, 1);
     elements.get("userSearch").value = "missing";
     vm.runInContext("renderUsers()", context);
     assert.equal(elements.get("userRows").children[0].children.length, 0);

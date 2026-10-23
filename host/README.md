@@ -8,7 +8,7 @@ Arkadaşların hiçbir ayar yapmaz: PARDEX açılışta senin sunucunun güncel 
 1. **`PARDEX-Sunucu-Paneli.vbs`** dosyasına çift tıkla. **PARDEX Sunucu Paneli** kendi penceresinde açılır,
    siyah pencere çıkmaz. (İlk seferde Node.js'i `host/bin/node` klasörüne indirirken bir kez görünür pencere açılır.)
    Masaüstüne kısayol: dosyaya sağ tık → Gönder → Masaüstü (kısayol oluştur).
-2. İlk sefer **Ayarlar** bölümünü doldur ve **Kaydet**'e bas:
+2. İlk sefer sol menüden **Ayarlar**'ı doldur ve **Kaydet**'e bas. **Genel bakış** sayfasındaki **Hazırlık** listesi eksik adımları gösterir:
    - **Masa sunucusu:** çok oyunculu masalar senin bilgisayarında çalışır. Varsayılan **En son yayınlanan sürüm**:
      Yayınla › Oyun'dan en son yayınladığın Korsanların Hazinesi (kimlik `korsanlar`), yani arkadaşlarının indirdiğiyle
      aynı sürüm. Yayınlanmamış değişiklikleri denemek için **Geliştirme: proje klasörü** seçip klasörü gösterebilirsin.
@@ -42,6 +42,6 @@ Oynarken bilgisayarın uyku moduna geçmemeli. (Sorun ararken `host/pardex_sunuc
 ## Bilmen gerekenler
 
 - Arkadaşlıklar ve profiller `host/data/social.json` dosyasında, senin bilgisayarında durur. Ara sıra yedekle.
-- "Yalnızca bu bilgisayarda test et" kutusu tünel açmadan ve adres yayınlamadan yerel deneme yapar.
+- Ayarlar › Gelişmiş'teki "Yalnızca bu bilgisayarda test et" kutusu tünel açmadan ve adres yayınlamadan yerel deneme yapar.
 - Sorun olursa paneldeki **Kayıtlar** bölümünü bana gönder.
 - Arkadaşlarının PARDEX'inde Ayarlar → PARDEX Online alanı **boş** kalmalı (boş = otomatik).
