@@ -18,9 +18,21 @@ Arkadaşların hiçbir ayar yapmaz: PARDEX açılışta senin sunucunun güncel 
 3. **Sunucuyu Başlat**'a bas, yeşil **Sunucu açık** yazısını bekle (~10–20 sn).
 4. Bitince **Sunucuyu Durdur**. Arkadaşlarının PARDEX'i "sunucu kapalı" görür.
 
+## Yayınla
+
+Ayrı dosya çalıştırmana gerek yok; hepsi paneldeki **Yayınla** bölümünde:
+
+- **PARDEX güncellemesi:** yeni sürüm numarasını yaz, **PARDEX'i Yayınla**'ya bas. Kurulum dosyası üretilip yüklenir;
+  arkadaşların PARDEX'i açınca güncellenir. Sonra `scripts/main.gd` sürüm değişikliğini GitHub Desktop'ta gönder.
+- **Oyun:** listeden oyunu seç (ya da "Yeni oyun"), bilgileri doldur, **Oyunu Yayınla**'ya bas.
+- **Ağ testi:** dağıtım sunucusuna ve Cloudflare adreslerine ulaşılıp ulaşılmadığını gösterir.
+
+Yayın için Ayarlar'da **Godot programı** ve **Cloudflare hesap kimliği** dolu olmalı; bilgisayarda Python,
+AWS CLI (`pardex-r2` profili) ve Inno Setup 6 kurulu olmalı. İşin çıktısı panelde görünür.
+
 Panel penceresini kapatsan da açık sunucu arka planda çalışır; paneli tekrar açmak için .vbs dosyasına yeniden çift tıkla.
 Tamamen kapatmak için panelde **Paneli Kapat**. Sunucu kapalıyken panel penceresini kapatırsan arka plan da kendiliğinden kapanır.
-Oynarken bilgisayarın uyku moduna geçmemeli. (Sorun ararken `PARDEX-Sunucu.bat` ile görünür pencerede de açabilirsin.)
+Oynarken bilgisayarın uyku moduna geçmemeli. (Sorun ararken `host/pardex_sunucu.bat` ile görünür pencerede de açabilirsin.)
 
 ## Bilmen gerekenler
 

@@ -1,8 +1,12 @@
 ﻿# PARDEX ağ testi: sunucu panelinin adres yayınladığı dağıtım sunucusuna
 # (workers.dev) bu bilgisayardan ulaşılabiliyor mu? Yalnız okuma yapar;
-# anahtar kullanmaz, ayar değiştirmez.
+# anahtar kullanmaz, ayar değiştirmez. Sunucu Paneli › Ağ testi bunu -Panel ile
+# çalıştırır.
+
+param([switch]$Panel)
 
 $ErrorActionPreference = "Continue"
+if ($Panel) { [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false) }
 $HostName = "pardex-distribution.srknydn88.workers.dev"
 $Url = "https://$HostName/online.json"
 $Root = Split-Path -Parent $PSScriptRoot
@@ -77,8 +81,10 @@ if ($ok1 -and $ok3 -ne $false) {
 } elseif (-not $ok1 -and -not $ok2) {
     Write-Host "Bu IP'deki Cloudflare'a hic ulasilamiyor; ag ya da guvenlik yazilimi baglantiyi kesiyor olabilir."
 } else {
-    Write-Host "Sonuclar karisik; bu pencerenin ekran goruntusunu gonder."
+    Write-Host "Sonuclar karisik; bu sonuclarin ekran goruntusunu gonder."
 }
-Write-Host ""
-Write-Host "Bu pencerenin ekran goruntusunu Claude'a gonder."
-Read-Host "Kapatmak icin Enter'a bas"
+if (-not $Panel) {
+    Write-Host ""
+    Write-Host "Bu pencerenin ekran goruntusunu Claude'a gonder."
+    Read-Host "Kapatmak icin Enter'a bas"
+}

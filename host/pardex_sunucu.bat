@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
 title PARDEX Sunucusu
-cd /d "%~dp0"
+cd /d "%~dp0.."
 
 rem Node.js: once PARDEX'in kendi kopyasi (host\bin\node), sonra kurulu surum.
-set "PARDEX_NODE_DIR=%~dp0host\bin\node"
+set "PARDEX_NODE_DIR=%~dp0bin\node"
 if exist "%PARDEX_NODE_DIR%\node.exe" goto run
 for %%D in ("%ProgramFiles%\nodejs" "%LOCALAPPDATA%\Programs\nodejs") do (
   if exist "%%~D\node.exe" (

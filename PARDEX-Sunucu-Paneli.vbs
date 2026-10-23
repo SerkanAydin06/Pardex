@@ -1,10 +1,11 @@
-' PARDEX Sunucu Paneli: sunucuyu siyah pencere olmadan baslatir ve paneli acar.
-' Ilk seferde (Node.js henuz yoksa) indirme ilerlemesi gorunsun diye PARDEX-Sunucu.bat gorunur acilir.
+' PARDEX Sunucu Paneli: sunucu, yayinlama ve ag testi tek pencerede. Siyah pencere olmadan
+' baslatir ve paneli acar.
+' Ilk seferde (Node.js henuz yoksa) indirme ilerlemesi gorunsun diye host\pardex_sunucu.bat gorunur acilir.
 Set fso = CreateObject("Scripting.FileSystemObject")
 Set sh = CreateObject("WScript.Shell")
 dir = fso.GetParentFolderName(WScript.ScriptFullName)
 sh.CurrentDirectory = dir
-bat = dir & "\PARDEX-Sunucu.bat"
+bat = dir & "\host\pardex_sunucu.bat"
 hasNode = fso.FileExists(dir & "\host\bin\node\node.exe") _
   Or fso.FileExists(sh.ExpandEnvironmentStrings("%ProgramFiles%") & "\nodejs\node.exe") _
   Or fso.FileExists(sh.ExpandEnvironmentStrings("%LOCALAPPDATA%") & "\Programs\nodejs\node.exe")
