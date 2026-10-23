@@ -78,6 +78,8 @@ jobs:
           set -o pipefail
           godot --headless --path . --script res://scripts/ci/voice_codec_smoke.gd 2>&1 | tee voice-codec.log
           if grep -E 'SCRIPT ERROR:|ERROR:|Parse Error:' voice-codec.log; then exit 1; fi
+          godot --headless --path . --script res://scripts/ci/voice_jitter_smoke.gd 2>&1 | tee voice-jitter.log
+          if grep -E 'SCRIPT ERROR:|ERROR:|Parse Error:' voice-jitter.log; then exit 1; fi
 
       - name: Verify editor page preview layouts
         run: |

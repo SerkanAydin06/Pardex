@@ -13,7 +13,9 @@ signal voice_frame_received(user_id: String, sequence: int, pcm_base64: String)
 # One-to-one voice calls with friends.
 signal call_state_changed(call: Dictionary)
 signal call_ended(reason: String)
-signal call_frame_received(sequence: int, data: String)
+signal call_frame_received(sequence: int, data: PackedByteArray)
+# Round trip to the PARDEX server in ms, measured every few seconds in a call.
+signal latency_changed(milliseconds: int)
 signal call_peer_muted(muted: bool)
 signal social_state_changed(state: Dictionary)
 signal user_search_results(results: Array)
@@ -41,11 +43,15 @@ const AVATAR_PIXELS := 96
 const AVATAR_MAX_BASE64 := 12000
 const RECONNECT_DELAY := 3.0
 const HEARTBEAT_INTERVAL := 20.0
+# During a call the heartbeat also measures the connection (call bar).
+const CALL_HEARTBEAT_INTERVAL := 2.0
+# Binary call audio: [CALL_FRAME_BINARY, seq u16 LE, audio...].
+const CALL_FRAME_BINARY := 1
 const SERVER_TIMEOUT := 60.0
 const WEBSOCKET_OUTBOUND_BUFFER_SIZE := 262144
 # Launcher <-> server protocol (server/server_core.js PROTOCOL_VERSION).
 # REQUIRED_SERVER_PROTOCOL: the oldest server this launcher fully works with.
-const CLIENT_PROTOCOL := 4
+const CLIENT_PROTOCOL := 5
 const REQUIRED_SERVER_PROTOCOL := 4
 const OUTDATED_SERVER_MESSAGE := "Sunucu bilgisayarındaki PARDEX eski sürüm: o bilgisayarda PARDEX'i güncelleyip (git pull) sunucuyu panelden yeniden başlat."
 # Chat history (up to 200 messages) arrives in one packet.
@@ -123,17 +129,22 @@ func _process(delta: float) -> void:
 
 		_heartbeat_elapsed += delta
 		_server_silence_elapsed += delta
-		if _heartbeat_elapsed >= HEARTBEAT_INTERVAL:
+		var heartbeat := CALL_HEARTBEAT_INTERVAL if str(current_call.get("state", "")) == "active" else HEARTBEAT_INTERVAL
+		if _heartbeat_elapsed >= heartbeat:
 			_heartbeat_elapsed = 0.0
+			_ping_sent_at = Time.get_ticks_msec()
 			_send({"type": "ping"})
 		if _server_silence_elapsed >= SERVER_TIMEOUT:
 			_socket.close(4000, "PARDEX heartbeat timeout")
 			return
 
 		while _socket.get_available_packet_count() > 0:
-			var packet := _socket.get_packet().get_string_from_utf8()
+			var raw := _socket.get_packet()
 			_server_silence_elapsed = 0.0
-			_handle_packet(packet)
+			if _socket.was_string_packet():
+				_handle_packet(raw.get_string_from_utf8())
+			else:
+				_handle_binary_packet(raw)
 	elif socket_state == WebSocketPeer.STATE_CLOSING:
 		_session_ready = false
 		_set_effective_presence("offline")
@@ -143,6 +154,7 @@ func _process(delta: float) -> void:
 		_socket = null
 		_hello_sent = false
 		_no_delay_configured = false
+		_server_binary_voice = false
 		_session_ready = false
 		_heartbeat_elapsed = 0.0
 		_server_silence_elapsed = 0.0
@@ -541,6 +553,8 @@ func send_voice_frame(sequence: int, pcm_base64: String) -> void:
 # ------------------------------------------------------------------ voice calls
 
 var current_call: Dictionary = {}
+var _server_binary_voice := false
+var _ping_sent_at := 0
 
 
 func start_call(target_account_id: String) -> void:
@@ -570,13 +584,26 @@ func send_call_mute(muted: bool) -> void:
 		_send({"type": "call_mute", "muted": muted})
 
 
-func send_call_frame(sequence: int, data: String) -> void:
-	if str(current_call.get("state", "")) != "active" or data.is_empty():
+func send_call_frame(sequence: int, audio: PackedByteArray) -> void:
+	if str(current_call.get("state", "")) != "active" or audio.is_empty():
+		return
+	if _socket == null or _socket.get_ready_state() != WebSocketPeer.STATE_OPEN:
 		return
 	# Drop audio rather than queue it behind a slow connection (latency).
-	if _socket != null and _socket.get_current_outbound_buffered_amount() >= VOICE_OUTBOUND_QUEUE_LIMIT:
+	if _socket.get_current_outbound_buffered_amount() >= VOICE_OUTBOUND_QUEUE_LIMIT:
 		return
-	_send({"type": "call_frame", "seq": sequence, "data": data})
+	if not _server_binary_voice:
+		_send({"type": "call_frame", "seq": sequence & 0xFFFF, "data": Marshalls.raw_to_base64(audio)})
+		return
+	var packet := PackedByteArray([CALL_FRAME_BINARY, sequence & 0xFF, (sequence >> 8) & 0xFF])
+	packet.append_array(audio)
+	_socket.send(packet, WebSocketPeer.WRITE_MODE_BINARY)
+
+
+func _handle_binary_packet(packet: PackedByteArray) -> void:
+	if packet.size() <= 3 or packet[0] != CALL_FRAME_BINARY:
+		return
+	call_frame_received.emit(packet.decode_u16(1), packet.slice(3))
 
 
 func _finish_call(reason: String) -> void:
@@ -682,6 +709,7 @@ func _send_hello() -> void:
 		"identity_key": identity_key,
 		"presence_status": presence_status,
 		"client_protocol": CLIENT_PROTOCOL,
+		"binary_voice": true,
 	}
 	if not _pending_recovery_code.is_empty():
 		payload["recovery_code"] = _pending_recovery_code
@@ -710,6 +738,7 @@ func _handle_packet(packet: String) -> void:
 	match message_type:
 		"welcome":
 			_outdated_server_warned = int(message.get("protocol_version", 0)) < REQUIRED_SERVER_PROTOCOL
+			_server_binary_voice = message.get("binary_voice", false) == true
 			if _outdated_server_warned:
 				online_error.emit(OUTDATED_SERVER_MESSAGE)
 			var previous_user_id := user_id
@@ -810,7 +839,7 @@ func _handle_packet(packet: String) -> void:
 			if str(message.get("call_id", "")) == str(current_call.get("id", "")):
 				_finish_call(str(message.get("reason", "ended")))
 		"call_frame":
-			call_frame_received.emit(int(message.get("seq", 0)), str(message.get("data", "")))
+			call_frame_received.emit(int(message.get("seq", 0)) & 0xFFFF, Marshalls.base64_to_raw(str(message.get("data", ""))))
 		"call_peer_muted":
 			call_peer_muted.emit(bool(message.get("muted", false)))
 		"error":
@@ -832,7 +861,9 @@ func _handle_packet(packet: String) -> void:
 			online_error.emit(error_message)
 			social_notice.emit(error_message)
 		"pong":
-			pass
+			if _ping_sent_at > 0:
+				latency_changed.emit(Time.get_ticks_msec() - _ping_sent_at)
+				_ping_sent_at = 0
 
 
 func _clear_session_state() -> void:

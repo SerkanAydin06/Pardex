@@ -61,10 +61,26 @@ async function connectSocket() {
   return ws;
 }
 
-async function connectClient(name) {
+function waitForBinary(ws, timeoutMs = 7000) {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      ws.off("message", onMessage);
+      reject(new Error("Timed out waiting for a binary WebSocket message"));
+    }, timeoutMs);
+    function onMessage(raw, isBinary) {
+      if (!isBinary) return;
+      clearTimeout(timeout);
+      ws.off("message", onMessage);
+      resolve(Buffer.from(raw));
+    }
+    ws.on("message", onMessage);
+  });
+}
+
+async function connectClient(name, extra = {}) {
   const ws = await connectSocket();
   const welcomePromise = waitForMessage(ws, (message) => message.type === "welcome");
-  ws.send(JSON.stringify({ type: "hello", display_name: name, identity_key: identityKeyFor(name) }));
+  ws.send(JSON.stringify({ type: "hello", display_name: name, identity_key: identityKeyFor(name), ...extra }));
   const welcome = await welcomePromise;
   return { ws, userId: welcome.user_id, accountId: welcome.account_id };
 }
@@ -173,6 +189,26 @@ async function main() {
     await unfriended;
     await befriend(ali, veli);
 
+    // Binary call audio: a binary_voice client talks to an older JSON client
+    // and back; the server converts for each side.
+    const deniz = await connectClient("Call-Deniz", { binary_voice: true });
+    sockets.push(deniz.ws);
+    await befriend(ali, deniz);
+    const ring6 = callState(deniz.ws, "ringing");
+    ali.ws.send(JSON.stringify({ type: "call_start", account_id: deniz.accountId }));
+    const active6 = callState(ali.ws, "active");
+    deniz.ws.send(JSON.stringify({ type: "call_accept", call_id: (await ring6).call.id }));
+    await active6;
+    const toBinary = waitForBinary(deniz.ws);
+    ali.ws.send(JSON.stringify({ type: "call_frame", seq: 65537, data: Buffer.from([7, 8, 9, 10]).toString("base64") }));
+    assert.deepStrictEqual([...(await toBinary)], [1, 1, 0, 7, 8, 9, 10], "JSON -> binary, seq wraps to 16 bits");
+    const toJson = waitForMessage(ali.ws, (m) => m.type === "call_frame");
+    deniz.ws.send(Buffer.from([1, 0x34, 0x12, 1, 2, 3]));
+    assert.deepStrictEqual(await toJson, { type: "call_frame", seq: 0x1234, data: Buffer.from([1, 2, 3]).toString("base64") }, "binary -> JSON");
+    const bothEnded = Promise.all([ended(ali.ws, "ended"), ended(deniz.ws, "ended")]);
+    deniz.ws.send(JSON.stringify({ type: "call_end" }));
+    await bothEnded;
+
     // A dropped connection ends the call for the other side.
     const ring4 = callState(veli.ws, "ringing");
     ali.ws.send(JSON.stringify({ type: "call_start", account_id: veli.accountId }));
@@ -183,7 +219,7 @@ async function main() {
     await closeSocket(veli.ws);
     await dropped;
 
-    console.log("PARDEX call smoke passed: friends only + ring + busy + no audio before accept + audio both ways + mute + hang up + decline + missed + unfriend + disconnect");
+    console.log("PARDEX call smoke passed: friends only + ring + busy + no audio before accept + audio both ways + mute + hang up + decline + missed + unfriend + binary/JSON audio + disconnect");
   } finally {
     for (const ws of sockets) await closeSocket(ws);
     server.kill();
