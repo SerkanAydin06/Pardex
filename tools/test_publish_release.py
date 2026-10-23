@@ -22,6 +22,11 @@ class PublishTest(unittest.TestCase):
             self.assertEqual(manifest['games'][0]['genres'],['Bulmaca'])
             self.assertEqual(manifest['games'][0]['screenshots'][0], cover)
             self.assertEqual(manifest['games'][0]['long_description'], 'Ayrıntılı açıklama')
+            self.assertNotIn('test', manifest['games'][0])
+            spec['games'][0]['test'] = True
+            self.assertIs(publish(spec,'https://distribution.invalid',out)['games'][0]['test'], True)
+            spec['games'][0]['test'] = False
+            self.assertNotIn('test', publish(spec,'https://distribution.invalid',out)['games'][0])
             spec['games'][0]['screenshots'] = [str(root/'cover.png')] * 9
             with self.assertRaises(ValueError): publish(spec,'https://distribution.invalid',out)
             spec['games'][0]['screenshots'] = [str(root/'cover.png')]

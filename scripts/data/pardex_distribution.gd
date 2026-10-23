@@ -107,6 +107,8 @@ static func validate(value: Variant) -> bool:
 				return false
 		if entry.has("genres") and not valid_genres(entry["genres"]):
 			return false
+		if entry.has("test") and not entry["test"] is bool:
+			return false
 		for field in ["long_description", "requirements", "release_notes", "connection_modes"]:
 			if entry.has(field) and (not entry[field] is String or entry[field].length() > 16000):
 				return false

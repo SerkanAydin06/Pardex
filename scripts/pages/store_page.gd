@@ -210,6 +210,7 @@ func _badge_color(badge: String) -> Color:
 	match badge:
 		"Popüler": return UI.RED
 		"Editörün Seçimi": return UI.GOLD
+		"Test": return UI.AMBER
 		_: return UI.ACCENT
 
 
@@ -217,6 +218,7 @@ func _badge_icon(badge: String) -> String:
 	match badge:
 		"Popüler": return "fire"
 		"Editörün Seçimi": return "crown"
+		"Test": return "pencil"
 		_: return "sparkles"
 
 

@@ -22,34 +22,14 @@ const GAMES := [
 		"badge": "Editörün Seçimi",
 		"playable": true,
 	},
-	{
-		"id": "vex",
-		"title": "VEX",
-		"genres": ["Aksiyon", "Bilim Kurgu"],
-		"players": "Tek oyunculu",
-		"tagline": "Karanlık bir gelecekte insanlığın son umutlarından biri ol.",
-		"cover": "res://assets/ui/placeholder_vex.png",
-		"banner": "res://assets/ui/placeholder_vex.png",
-		"badge": "Yeni",
-		"playable": false,
-	},
-	{
-		"id": "firtina",
-		"title": "Fırtına Vadisi",
-		"genres": ["Macera", "RPG"],
-		"players": "Tek oyunculu",
-		"tagline": "Unutulmuş topraklarda kendi hikâyeni yaz.",
-		"cover": "res://assets/ui/placeholder_firtina.png",
-		"banner": "res://assets/ui/placeholder_firtina.png",
-		"badge": "Yeni",
-		"playable": false,
-	},
 ]
 
 
+# The store lists only games friends can actually download (published in the
+# catalog) or already have. A test build is playable but marked "Test".
 static func all_games() -> Array:
 	var result := GAMES.duplicate(true)
-	# Built-in cards are previews until a package is published or installed.
+	# Built-in cards keep their artwork until published art is downloaded.
 	# Keep the editor's sibling-project preview workflow intact.
 	if not OS.has_feature("editor"):
 		for item in result:
@@ -81,6 +61,8 @@ static func all_games() -> Array:
 			item["cover"] = result[index]["cover"]
 			item["banner"] = result[index]["banner"]
 			item["badge"] = result[index]["badge"]
+		if remote.get("test", false) == true:
+			item["badge"] = "Test"
 		for key in ["cover", "banner"]:
 			var local := Distribution.art_path(remote.get(key))
 			if not local.is_empty():
@@ -89,6 +71,8 @@ static func all_games() -> Array:
 			result[index] = item
 		else:
 			result.append(item)
+	if not OS.has_feature("editor"):
+		result = result.filter(func(item): return bool(item["playable"]))
 	return result
 
 

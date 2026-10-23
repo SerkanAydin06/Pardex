@@ -9,9 +9,11 @@ Arkadaşların hiçbir ayar yapmaz: PARDEX açılışta senin sunucunun güncel 
    siyah pencere çıkmaz. (İlk seferde Node.js'i `host/bin/node` klasörüne indirirken bir kez görünür pencere açılır.)
    Masaüstüne kısayol: dosyaya sağ tık → Gönder → Masaüstü (kısayol oluştur).
 2. İlk sefer **Ayarlar** bölümünü doldur ve **Kaydet**'e bas:
-   - **Korsanların Hazinesi:** oyunun proje klasörü (içinde `project.godot` olan) ya da dışa aktarılmış exe.
-     PARDEX klasörüyle yan yana `Korsanlarin-Hazinesi` klasöründeyse kendisi bulur. **Klasör Seç** ile de seçebilirsin.
-   - **Godot programı:** proje klasörü kullanılıyorsa Godot'u açtığın .exe (**Dosya Seç**).
+   - **Masa sunucusu:** çok oyunculu masalar senin bilgisayarında çalışır. Varsayılan **En son yayınlanan sürüm**:
+     Yayınla › Oyun'dan en son yayınladığın Korsanların Hazinesi (kimlik `korsanlar`), yani arkadaşlarının indirdiğiyle
+     aynı sürüm. Yayınlanmamış değişiklikleri denemek için **Geliştirme: proje klasörü** seçip klasörü gösterebilirsin.
+   - **Godot programı:** Godot'u açtığın .exe (**Dosya Seç**). Yayınlarken ve geliştirme klasörüyle kullanılır.
+   - **Cloudflare hesap kimliği:** yayınlamak için.
    - **Dağıtım sunucusu yayın adresi:** kendi hizmetindeki `https://ALAN-ADIN/online.json` adresi.
    - **Yayın anahtarı:** dağıtım sunucusundaki `PARDEX_PUBLISH_TOKEN` değeri (en az 32 karakter). Yalnız yönetici bilgisayarında tutulur; oyunculara gönderilmez.
    - Dağıtım servisi kurulumu: [distribution/README.md](../distribution/README.md).
@@ -24,7 +26,10 @@ Ayrı dosya çalıştırmana gerek yok; hepsi paneldeki **Yayınla** bölümünd
 
 - **PARDEX güncellemesi:** yeni sürüm numarasını yaz, **PARDEX'i Yayınla**'ya bas. Kurulum dosyası üretilip yüklenir;
   arkadaşların PARDEX'i açınca güncellenir. Sonra `scripts/main.gd` sürüm değişikliğini GitHub Desktop'ta gönder.
-- **Oyun:** listeden oyunu seç (ya da "Yeni oyun"), bilgileri doldur, **Oyunu Yayınla**'ya bas.
+- **Oyun:** listeden oyunu seç (ya da "Yeni oyun"), bilgileri doldur, **Oyunu Yayınla**'ya bas. Arkadaşların PARDEX'te
+  Mağaza'dan indirir. Oyun henüz hazır değilse **Test sürümü** kutusunu işaretle: mağazada "Test" olarak görünür.
+  Mağazada yalnız yayınlanmış oyunlar görünür; PARDEX kurulum dosyası oyun içermez. Masa sunucusu Korsanların
+  Hazinesi'ni kullanırken onu yayınlamak için önce sunucuyu durdur.
 - **Ağ testi:** dağıtım sunucusuna ve Cloudflare adreslerine ulaşılıp ulaşılmadığını gösterir.
 
 Yayın için Ayarlar'da **Godot programı** ve **Cloudflare hesap kimliği** dolu olmalı; bilgisayarda Python,

@@ -106,9 +106,34 @@ function findKorsanGame() {
   return candidates.find((candidate) => isProjectFolder(candidate) || isFile(candidate)) || "";
 }
 
+// Table servers run the same Korsanların Hazinesi build friends download: the
+// one "Yayınla › Oyun" last exported to build/games/korsanlar. A project
+// folder ("geliştirme") is only for testing unpublished changes.
+const PUBLISHED_GAME_ID = "korsanlar";
+
+function publishedGameServer() {
+  const folder = path.join(ROOT, "build", "games", PUBLISHED_GAME_ID);
+  const names = IS_WINDOWS
+    ? [`${PUBLISHED_GAME_ID}.exe`, "KorsanlarinHazinesi.exe"]
+    : [`${PUBLISHED_GAME_ID}.x86_64`, "KorsanlarinHazinesi.x86_64"];
+  return names.map((name) => path.join(folder, name)).find(isFile) || "";
+}
+
+function usesProjectFolder() {
+  return config.korsan_source === "project";
+}
+
+function gameServerTarget() {
+  return usesProjectFolder() ? config.korsan_exe || "" : publishedGameServer();
+}
+
 function gameStatus() {
-  const target = config.korsan_exe || "";
-  if (!target) return { ok: false, needsGodot: false, text: "Oyun yolu seçilmedi; yalnızca PARDEX açılır." };
+  const target = gameServerTarget();
+  if (!usesProjectFolder()) {
+    if (target) return { ok: true, needsGodot: false, text: "Arkadaşlarının indirdiği, en son yayınlanan sürüm kullanılacak." };
+    return { ok: false, needsGodot: false, text: "Henüz yayınlanmış sürüm yok: Yayınla › Oyun'dan Korsanların Hazinesi'ni (kimlik: korsanlar) yayınla. O zamana kadar yalnızca PARDEX açılır." };
+  }
+  if (!target) return { ok: false, needsGodot: false, text: "Geliştirme klasörü seçilmedi; yalnızca PARDEX açılır." };
   if (isProjectFolder(target)) {
     if (isFile(config.godot_exe)) return { ok: true, needsGodot: true, text: "Proje klasöründen Godot ile açılacak." };
     return { ok: false, needsGodot: true, text: "Proje klasörü için Godot .exe dosyasını seç." };
@@ -194,12 +219,13 @@ function releaseInfo() {
     screenshots: joinList(game.screenshots, ";"),
     long_description: String(game.long_description || ""), requirements: String(game.requirements || ""),
     release_notes: String(game.release_notes || ""), connection_modes: String(game.connection_modes || ""),
+    test: game.test === true ? "true" : "false",
   }));
   return { launcher_version: launcherVersion, games };
 }
 
 const GAME_FIELDS = ["id", "title", "version", "project", "description", "players", "genres", "cover", "banner",
-  "screenshots", "long_description", "requirements", "release_notes", "connection_modes"];
+  "screenshots", "long_description", "requirements", "release_notes", "connection_modes", "test"];
 
 function jobLine(text) {
   for (const line of String(text).replace(/\x1b\[[0-9;]*m/g, "").split(/\r?\n/)) {
@@ -228,6 +254,10 @@ function startJob(kind, body) {
     if (!answers.project.trim()) return "Oyunun proje klasörünü seç.";
     if (!/^[a-z][a-z0-9_-]{0,47}$/.test(answers.id.trim())) return "Oyun kimliği küçük harfle başlamalı; yalnız a-z, 0-9, - ve _ olabilir.";
     if (!VERSION_PATTERN.test(answers.version.trim())) return "Sürüm 1.2.3 biçiminde olmalı.";
+    // Windows locks the running table server's files; the export replaces them.
+    if (answers.id.trim() === PUBLISHED_GAME_ID && !usesProjectFolder() && state.phase !== "stopped" && state.phase !== "error") {
+      return "Masa sunucusu bu oyunu kullanıyor; yayınlamadan önce sunucuyu durdur.";
+    }
     inputPath = path.join(require("os").tmpdir(), `pardex-oyun-${crypto.randomBytes(6).toString("hex")}.json`);
     fs.writeFileSync(inputPath, JSON.stringify(answers), "utf8");
     args.push("-InputPath", inputPath);
@@ -400,8 +430,9 @@ async function waitForHealth() {
 function dedicatedServerScene(fromProject) {
   const current = "scenes/ekranlar/PardexOzelSunucu.tscn";
   const legacy = "scenes/pardex_dedicated_server.tscn";
-  if (fromProject && !fs.existsSync(path.join(config.korsan_exe, current))
-    && fs.existsSync(path.join(config.korsan_exe, legacy))) return `res://${legacy}`;
+  const target = gameServerTarget();
+  if (fromProject && !fs.existsSync(path.join(target, current))
+    && fs.existsSync(path.join(target, legacy))) return `res://${legacy}`;
   return `res://${current}`;
 }
 
@@ -411,18 +442,19 @@ function dedicatedServerScene(fromProject) {
 function startGameServer(table) {
   const port = GAME_PORT + table;
   const label = table === 0 ? "Oyun sunucusu" : `Oyun sunucusu ${table + 1}`;
-  const fromProject = isProjectFolder(config.korsan_exe);
-  const program = fromProject ? config.godot_exe : config.korsan_exe;
+  const target = gameServerTarget();
+  const fromProject = isProjectFolder(target);
+  const program = fromProject ? config.godot_exe : target;
   const child = track(label, spawn(program, [
     "--headless",
-    ...(fromProject ? ["--path", config.korsan_exe] : []),
+    ...(fromProject ? ["--path", target] : []),
     dedicatedServerScene(fromProject),
     "--",
     "--pardex-dedicated",
     `--pardex-port=${port}`,
     `--pardex-online-server=ws://127.0.0.1:${ONLINE_PORT}`,
   ], {
-    cwd: fromProject ? config.korsan_exe : path.dirname(config.korsan_exe),
+    cwd: fromProject ? target : path.dirname(target),
     env: { ...process.env, PARDEX_GAME_SERVER_TOKEN: config.game_token, PARDEX_SESSION: "*" },
     stdio: ["ignore", "pipe", "pipe"],
     windowsHide: true,
@@ -453,7 +485,7 @@ function startGameServer(table) {
     }, 1000);
     child.stdout?.on("data", onData);
     child.once("exit", () => finish(new Error(
-      "Oyun sunucusu başlamadı. Korsanların Hazinesi klasörünü ve Godot programını kontrol et; ayrıntı Kayıtlar'da."
+      "Oyun sunucusu başlamadı. Ayarlar'daki masa sunucusu seçimini ve Godot programını kontrol et; ayrıntı Kayıtlar'da."
     )));
     child.once("error", () => finish(new Error("Oyun sunucusu programı açılamadı (Godot yolu doğru mu?).")));
   });
@@ -706,6 +738,7 @@ function publicState() {
     logs: logs.slice(-120),
     config: {
       korsan_path: config.korsan_exe || "",
+      korsan_source: usesProjectFolder() ? "project" : "published",
       godot_exe: config.godot_exe || "",
       has_token: Boolean(config.publish_token),
       publish_url: config.publish_url || "",
@@ -781,6 +814,7 @@ async function handle(request, response) {
   switch (url.pathname) {
     case "/api/config": {
       if (typeof body.korsan_path === "string") config.korsan_exe = cleanPath(body.korsan_path);
+      if (body.korsan_source === "project" || body.korsan_source === "published") config.korsan_source = body.korsan_source;
       if (typeof body.godot_exe === "string") {
         config.godot_exe = cleanPath(body.godot_exe);
         writePublishSettings({ godot: config.godot_exe });
