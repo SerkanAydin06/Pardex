@@ -361,12 +361,14 @@ function useNamedTunnel() {
 
 // QUIC (UDP 7844) times out on some networks ("failed to dial to edge with
 // quic"); HTTP/2 over TCP works everywhere and starts without that delay.
+// IPv4 only: home IPv6 often cannot reach the edge ("dial tcp [2606:...]:7844
+// i/o timeout") and cloudflared keeps retrying it.
 const TUNNEL_PROTOCOL = "http2";
 
 function openNamedTunnel(cloudflared) {
   return new Promise((resolve, reject) => {
     const child = track("Sabit tünel", spawn(cloudflared, [
-      "tunnel", "--no-autoupdate", "--protocol", TUNNEL_PROTOCOL, "run", "--token", String(config.tunnel_token).trim(),
+      "tunnel", "--no-autoupdate", "--protocol", TUNNEL_PROTOCOL, "--edge-ip-version", "4", "run", "--token", String(config.tunnel_token).trim(),
     ], { stdio: ["ignore", "pipe", "pipe"], windowsHide: true }), true);
     const timer = setTimeout(() => reject(new Error("Sabit tünel 60 saniyede bağlanamadı. Tünel anahtarını kontrol et.")), 60_000);
     const onData = (chunk) => {
@@ -385,7 +387,7 @@ function openNamedTunnel(cloudflared) {
 function openTunnel(cloudflared, port, label) {
   return new Promise((resolve, reject) => {
     const child = track(label, spawn(cloudflared, [
-      "tunnel", "--no-autoupdate", "--protocol", TUNNEL_PROTOCOL, "--url", `http://127.0.0.1:${port}`,
+      "tunnel", "--no-autoupdate", "--protocol", TUNNEL_PROTOCOL, "--edge-ip-version", "4", "--url", `http://127.0.0.1:${port}`,
     ], { stdio: ["ignore", "pipe", "pipe"], windowsHide: true }), true);
     const timer = setTimeout(() => reject(new Error(`${label} 60 saniyede açılamadı.`)), 60_000);
     const onData = (chunk) => {

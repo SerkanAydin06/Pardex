@@ -43,12 +43,17 @@ func _initialize() -> void:
 	capture.resize(2880)
 	capture.fill(Vector2(0.25, 0.75))
 	var mono := Codec.to_mono_16k(capture, 48000.0)
-	if mono.size() != 960 or absf(mono[100] - 0.5) > 0.001:
+	if mono.size() != 960 or absf(mono[100] - 0.75) > 0.001:
 		failures.append("resample %d / %.3f" % [mono.size(), mono[100] if not mono.is_empty() else -1.0])
+	# A left-only (mono) microphone keeps its full level.
+	capture.fill(Vector2(-0.6, 0.0))
+	mono = Codec.to_mono_16k(capture, 44100.0)
+	if absf(mono[50] + 0.6) > 0.001:
+		failures.append("mono microphone halved: %.3f" % mono[50])
 	if Codec.rms(PackedFloat32Array([0.5, -0.5])) != 0.5:
 		failures.append("rms")
 	if failures.is_empty():
-		print("PARDEX voice codec smoke passed: 4x smaller packets, clear audio, independent packets, 48k -> 16k mono")
+		print("PARDEX voice codec smoke passed: 4x smaller packets, clear audio, independent packets, 48k -> 16k mono, left-only mic at full level")
 		quit(0)
 	else:
 		push_error("PARDEX voice codec: " + "; ".join(failures))

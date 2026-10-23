@@ -603,7 +603,7 @@ theme_override_styles/grabber_area_highlight = SubResource("StyleBoxFlat_voice_f
 min_value = 0.002
 max_value = 0.2
 step = 0.001
-value = 0.02
+value = 0.008
 exp_edit = true
 
 [node name="InputRow" type="HBoxContainer" parent="Scroll/SettingsContent/VoicePanel/VBox" unique_id=1946200011]

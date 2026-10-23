@@ -9,6 +9,9 @@ extends Node
 signal local_speaking_changed(speaking: bool)
 signal remote_speaking_changed(speaking: bool)
 signal mic_level_changed(level: float)
+# Nothing at all came from the microphone early in a call (permission or
+# wrong device); emitted once per call.
+signal microphone_silent
 
 const Codec := preload("res://scripts/online/pardex_voice_codec.gd")
 const MIC_BUS := "PardexMikrofon"
@@ -16,10 +19,15 @@ const PUSH_TO_TALK_ACTION := "pardex_push_to_talk"
 # Speech keeps sending this long after the level drops (no cut-off words).
 const HANGOVER_SECONDS := 0.4
 const REMOTE_SPEAKING_SECONDS := 0.3
+const SILENT_CHECK_SECONDS := 5.0
+const SILENT_LEVEL := 0.0005
+# The previous default threshold: saved values equal to it follow the new one.
+const OLD_DEFAULT_SENSITIVITY := 0.02
 const SETTINGS_PATH := "user://pardex.cfg"
 
 var mode := "voice" # "voice" (ses algılama) or "push" (bas-konuş)
-var sensitivity := 0.02 # RMS level that counts as speech
+const DEFAULT_SENSITIVITY := 0.008
+var sensitivity := DEFAULT_SENSITIVITY # RMS level that counts as speech
 var muted := false
 var deafened := false
 var testing := false
@@ -36,6 +44,8 @@ var _speaking := false
 var _remote_timer := 0.0
 var _remote_speaking := false
 var _in_call := false
+var _call_seconds := 0.0
+var _call_peak := 0.0
 
 
 func _ready() -> void:
@@ -78,7 +88,10 @@ func load_settings() -> void:
 	var config := ConfigFile.new()
 	config.load(SETTINGS_PATH)
 	mode = "push" if str(config.get_value("voice", "mode", "voice")) == "push" else "voice"
-	sensitivity = clampf(float(config.get_value("voice", "sensitivity", 0.02)), 0.002, 0.2)
+	var saved := float(config.get_value("voice", "sensitivity", DEFAULT_SENSITIVITY))
+	if is_equal_approx(saved, OLD_DEFAULT_SENSITIVITY):
+		saved = DEFAULT_SENSITIVITY
+	sensitivity = clampf(saved, 0.002, 0.2)
 	_apply_device(str(config.get_value("voice", "input_device", "Default")), true)
 	_apply_device(str(config.get_value("voice", "output_device", "Default")), false)
 
@@ -136,6 +149,8 @@ func _set_in_call(active: bool) -> void:
 	_pending.clear()
 	_encoder_state.clear()
 	_sequence = 0
+	_call_seconds = 0.0
+	_call_peak = 0.0
 	_set_speaking(false)
 	if active:
 		_speaker.play()
@@ -157,6 +172,12 @@ func _update_microphone() -> void:
 
 
 func _process(delta: float) -> void:
+	# Counted here, not per captured frame: a microphone that never opens
+	# delivers no frames at all.
+	if _in_call and not muted and _call_seconds < SILENT_CHECK_SECONDS:
+		_call_seconds += delta
+		if _call_seconds >= SILENT_CHECK_SECONDS and _call_peak < SILENT_LEVEL:
+			microphone_silent.emit()
 	if _remote_timer > 0.0:
 		_remote_timer -= delta
 		if _remote_timer <= 0.0:
@@ -177,6 +198,7 @@ func _handle_frame(frame: PackedFloat32Array, duration: float) -> void:
 	mic_level_changed.emit(level)
 	if not _in_call or muted:
 		return
+	_call_peak = maxf(_call_peak, level)
 	var talking := false
 	if mode == "push":
 		talking = Input.is_action_pressed(PUSH_TO_TALK_ACTION)
