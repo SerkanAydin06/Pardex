@@ -443,9 +443,13 @@ function dedicatedServerScene(fromProject) {
   return `res://${current}`;
 }
 
-// Resolves once Korsan prints PARDEX_GAME_SERVER_READY. Without this check the
-// panel said "Sunucu açık" even when the game server never started, and
-// players' games fell back to the LAN screen.
+// Resolves once the game port answers. Without this check the panel said
+// "Sunucu açık" even when the game server never started, and players' games
+// fell back to the LAN screen. Older Korsan builds printed
+// PARDEX_GAME_SERVER_READY and then closed the server from their main menu, so
+// the message alone is not trusted.
+let gameReadyGraceMs = 15_000;
+
 function startGameServer(table) {
   const port = GAME_PORT + table;
   const label = table === 0 ? "Oyun sunucusu" : `Oyun sunucusu ${table + 1}`;
@@ -454,8 +458,9 @@ function startGameServer(table) {
   const program = fromProject ? config.godot_exe : target;
   const child = track(label, spawn(program, [
     "--headless",
-    ...(fromProject ? ["--path", target] : []),
-    dedicatedServerScene(fromProject),
+    // Exported (release) builds refuse a scene path on the command line; the
+    // game itself switches to its server scene when given --pardex-dedicated.
+    ...(fromProject ? ["--path", target, dedicatedServerScene(fromProject)] : []),
     "--",
     "--pardex-dedicated",
     `--pardex-port=${port}`,
@@ -472,19 +477,22 @@ function startGameServer(table) {
       if (done) return;
       done = true;
       clearTimeout(timer);
+      clearTimeout(readyTimer);
       clearInterval(poll);
       child.stdout?.off("data", onData);
       if (error) reject(error); else resolve();
     };
+    let readyTimer = null;
     const onData = (chunk) => {
-      if (String(chunk).includes("PARDEX_GAME_SERVER_READY")) finish();
+      if (readyTimer || !String(chunk).includes("PARDEX_GAME_SERVER_READY")) return;
+      readyTimer = setTimeout(() => finish(new Error(
+        "Oyun sunucusu açılıp hemen kapandı. Yayınlanan Korsanların Hazinesi sürümü eski olabilir: Yayınla › Oyun'dan yeniden yayınla."
+      )), gameReadyGraceMs);
     };
     // The first headless run of a project folder imports its assets first.
     const timer = setTimeout(() => finish(new Error(
       "Oyun sunucusu 3 dakikada hazır olmadı. Kayıtlar bölümüne bak."
     )), 180_000);
-    // Also accept the game port answering, in case Godot's output does not
-    // reach the panel.
     const poll = setInterval(() => {
       const socket = net.connect(port, "127.0.0.1");
       socket.once("connect", () => { socket.destroy(); finish(); });
@@ -961,6 +969,9 @@ module.exports = {
     job,
     startJob,
     releaseInfo,
+    startGameServer,
+    setConfig(values) { Object.assign(config, values); },
+    setGameReadyGrace(ms) { gameReadyGraceMs = ms; },
     setPublishPaths(folder) {
       TOOLS_DIR = path.join(folder, "tools");
       PUBLISH_SETTINGS_PATH = path.join(TOOLS_DIR, "yayinla.local.json");
