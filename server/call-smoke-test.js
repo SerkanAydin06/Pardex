@@ -162,6 +162,17 @@ async function main() {
     await ring3;
     await Promise.all([ended(ali.ws, "missed"), ended(veli.ws, "missed")]);
 
+    // Unfriending ends the call at once; they cannot call again until friends.
+    const ring5 = callState(veli.ws, "ringing");
+    ali.ws.send(JSON.stringify({ type: "call_start", account_id: veli.accountId }));
+    const active5 = callState(ali.ws, "active");
+    veli.ws.send(JSON.stringify({ type: "call_accept", call_id: (await ring5).call.id }));
+    await active5;
+    const unfriended = Promise.all([ended(ali.ws, "ended"), ended(veli.ws, "ended")]);
+    veli.ws.send(JSON.stringify({ type: "remove_friend", account_id: ali.accountId }));
+    await unfriended;
+    await befriend(ali, veli);
+
     // A dropped connection ends the call for the other side.
     const ring4 = callState(veli.ws, "ringing");
     ali.ws.send(JSON.stringify({ type: "call_start", account_id: veli.accountId }));
@@ -172,7 +183,7 @@ async function main() {
     await closeSocket(veli.ws);
     await dropped;
 
-    console.log("PARDEX call smoke passed: friends only + ring + busy + no audio before accept + audio both ways + mute + hang up + decline + missed + disconnect");
+    console.log("PARDEX call smoke passed: friends only + ring + busy + no audio before accept + audio both ways + mute + hang up + decline + missed + unfriend + disconnect");
   } finally {
     for (const ws of sockets) await closeSocket(ws);
     server.kill();

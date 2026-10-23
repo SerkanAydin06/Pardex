@@ -1263,6 +1263,13 @@ function applySocialAction(client, result, otherAccountId) {
   sendNotice(client.ws, result.code, result.message);
   pushSocialState(client.accountId);
   pushSocialState(otherAccountId);
+  // Unfriending or blocking ends a call between the two at once.
+  if (social.relationshipBetween(client.accountId, otherAccountId) !== "friend") {
+    for (const call of [...calls.values()]) {
+      const parties = [call.caller.accountId, call.callee.accountId];
+      if (parties.includes(client.accountId) && parties.includes(otherAccountId)) endCall(call, "ended");
+    }
+  }
 }
 
 function issueGameSession(client, message) {
