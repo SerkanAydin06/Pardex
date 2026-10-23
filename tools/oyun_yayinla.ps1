@@ -3,8 +3,13 @@
 # Oyuncular oyunu PARDEX'ten indirir; yeni surumde "Guncelle" gorurler.
 # Ayarlar: tools\yayinla.local.json (Godot yolu, hesap kimligi) ve
 # release.local.json (yayinlanan oyunlar). Ikisi de Git'e eklenmez.
+# Sunucu Paneli > Oyun yayinla bunu -Panel -InputPath <json> ile calistirir:
+# cevaplar o dosyadan gelir, soru sorulmaz, pencere beklemez.
+
+param([string]$InputPath = "", [switch]$Panel)
 
 $ErrorActionPreference = "Stop"
+if ($Panel) { [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false) }
 $Root = Split-Path -Parent $PSScriptRoot
 $Url = "https://pardex-distribution.srknydn88.workers.dev"
 $SettingsPath = Join-Path $PSScriptRoot "yayinla.local.json"
@@ -14,11 +19,22 @@ $utf8 = New-Object System.Text.UTF8Encoding($false)
 function Fail($message) {
     Write-Host ""
     Write-Host "HATA: $message" -ForegroundColor Red
-    Read-Host "Kapatmak icin Enter'a bas"
+    if (-not $Panel) { Read-Host "Kapatmak icin Enter'a bas" }
     exit 1
 }
 
-function Ask($question, $default) {
+# Panelden gelen cevaplar (alan adi -> deger).
+$Answers = @{}
+if ($Panel) {
+    if (-not $InputPath -or -not (Test-Path $InputPath)) { Fail "Panelden oyun bilgisi gelmedi." }
+    ([IO.File]::ReadAllText($InputPath, [Text.Encoding]::UTF8) | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Answers[$_.Name] = $_.Value }
+}
+
+function Ask($question, $default, $key = "") {
+    if ($Panel) {
+        if ($key -and $null -ne $Answers[$key]) { return ([string]$Answers[$key]).Trim().Trim('"') }
+        return $default
+    }
     $suffix = if ($default) { " [$default]" } else { "" }
     $answer = Read-Host "$question$suffix"
     if ([string]::IsNullOrWhiteSpace($answer)) { return $default }
@@ -36,7 +52,7 @@ Write-Host ""
 Write-Host "PARDEX oyun yayinla" -ForegroundColor Cyan
 Write-Host "-------------------"
 
-# 1. Kisisel ayarlar (PARDEX-Yayinla.bat ile ayni dosya)
+# 1. Kisisel ayarlar (PARDEX yayinlama ile ayni dosya)
 $settings = @{}
 if (Test-Path $SettingsPath) {
     (Get-Content $SettingsPath -Raw | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $settings[$_.Name] = $_.Value }
@@ -56,7 +72,9 @@ $spec = if (Test-Path $SpecPath) { Get-Content $SpecPath -Raw -Encoding UTF8 | C
 $games = @()
 if ($spec.PSObject.Properties["games"]) { $games = @($spec.games) }
 $old = $null
-if ($games.Count -gt 0) {
+if ($Panel) {
+    $old = @($games | Where-Object { $_.id -eq [string]$Answers["id"] }) | Select-Object -First 1
+} elseif ($games.Count -gt 0) {
     Write-Host ""
     Write-Host "Yayinlanan oyunlar:"
     for ($i = 0; $i -lt $games.Count; $i++) { Write-Host ("  {0}) {1}  (surum {2})" -f ($i + 1), $games[$i].title, $games[$i].version) }
@@ -65,7 +83,7 @@ if ($games.Count -gt 0) {
     if ($pick -match '^\d+$' -and [int]$pick -ge 1 -and [int]$pick -le $games.Count) { $old = $games[[int]$pick - 1] }
 }
 
-$project = Ask "Oyunun Godot proje klasoru (icinde project.godot olan)" $(if ($old) { $old.project } else { "" })
+$project = Ask "Oyunun Godot proje klasoru (icinde project.godot olan)" $(if ($old) { $old.project } else { "" }) "project"
 if (-not $project -or -not (Test-Path (Join-Path $project "project.godot"))) { Fail "Bu klasorde project.godot yok: $project" }
 $presets = Join-Path $project "export_presets.cfg"
 if (-not (Test-Path $presets) -or -not (Select-String -Path $presets -Pattern 'name="Windows Desktop"' -Quiet)) {
@@ -74,18 +92,18 @@ if (-not (Test-Path $presets) -or -not (Select-String -Path $presets -Pattern 'n
 $folderName = Split-Path $project -Leaf
 $defaultId = ($folderName.ToLower() -replace '[^a-z0-9]+', '-').Trim('-')
 if ($defaultId -notmatch '^[a-z]') { $defaultId = "oyun-" + $defaultId }
-$id = Ask "Oyun kimligi (kucuk harf, bosluksuz; sonra degistirme)" $(if ($old) { $old.id } else { $defaultId })
+$id = Ask "Oyun kimligi (kucuk harf, bosluksuz; sonra degistirme)" $(if ($old) { $old.id } else { $defaultId }) "id"
 if ($id -notmatch '^[a-z][a-z0-9_-]{0,47}$') { Fail "Kimlik kucuk harfle baslamali; yalniz a-z, 0-9, - ve _ olabilir." }
-$title = Ask "Magazada gorunecek ad" $(if ($old) { $old.title } else { $folderName })
-$version = Ask "Surum" $(NextVersion $(if ($old) { $old.version } else { "" }))
+$title = Ask "Magazada gorunecek ad" $(if ($old) { $old.title } else { $folderName }) "title"
+$version = Ask "Surum" $(NextVersion $(if ($old) { $old.version } else { "" })) "version"
 if ($version -notmatch '^[0-9]{1,6}(\.[0-9]{1,6}){0,3}$') { Fail "Surum 1.2.3 biciminde olmali." }
-$description = Ask "Kisa tanitim cumlesi" $(if ($old) { $old.description } else { "" })
-$players = Ask "Oyuncu sayisi (or. Tek oyunculu, 1-4 oyuncu)" $(if ($old) { $old.players } else { "Tek oyunculu" })
-$genreText = Ask "Turler (virgulle, en cok 4)" $(if ($old -and $old.genres) { ($old.genres -join ", ") } else { "" })
+$description = Ask "Kisa tanitim cumlesi" $(if ($old) { $old.description } else { "" }) "description"
+$players = Ask "Oyuncu sayisi (or. Tek oyunculu, 1-4 oyuncu)" $(if ($old) { $old.players } else { "Tek oyunculu" }) "players"
+$genreText = Ask "Turler (virgulle, en cok 4)" $(if ($old -and $old.genres) { ($old.genres -join ", ") } else { "" }) "genres"
 $genres = @($genreText -split "," | ForEach-Object { $_.Trim() } | Where-Object { $_ })
 if ($genres.Count -gt 4) { Fail "En cok 4 tur yazilabilir." }
-$cover = Ask "Kapak resmi (dikey, PNG/JPG; bos birakilabilir)" $(if ($old) { $old.cover } else { "" })
-$banner = Ask "Afis resmi (genis, PNG/JPG; bos birakilabilir)" $(if ($old) { $old.banner } else { "" })
+$cover = Ask "Kapak resmi (dikey, PNG/JPG; bos birakilabilir)" $(if ($old) { $old.cover } else { "" }) "cover"
+$banner = Ask "Afis resmi (genis, PNG/JPG; bos birakilabilir)" $(if ($old) { $old.banner } else { "" }) "banner"
 foreach ($image in @($cover, $banner)) {
     if ($image -and -not (Test-Path $image)) { Fail "Resim bulunamadi: $image" }
 }
@@ -98,6 +116,10 @@ foreach ($field in @("long_description", "requirements", "release_notes", "conne
         release_notes = "Guncelleme notlari"; connection_modes = "Oyun/baglanti turleri"
     }
     $details[$field] = if ($old -and $old.$field) { $old.$field } else { "" }
+    if ($Panel) {
+        if ($null -ne $Answers[$field]) { $details[$field] = ([string]$Answers[$field]).Trim() }
+        continue
+    }
     $textPath = Ask "$($labels[$field]) icin UTF-8 .txt yolu (bos = mevcut bilgiyi koru)" ""
     if ($textPath) {
         if (-not (Test-Path $textPath -PathType Leaf)) { Fail "Metin dosyasi bulunamadi: $textPath" }
@@ -105,7 +127,7 @@ foreach ($field in @("long_description", "requirements", "release_notes", "conne
     }
 }
 $shotsDefault = if ($old -and $old.screenshots) { $old.screenshots -join ";" } else { "" }
-$shotsText = Ask "Ekran goruntuleri (en cok 8 dosya yolu, ; ile ayir; silmek icin -)" $shotsDefault
+$shotsText = Ask "Ekran goruntuleri (en cok 8 dosya yolu, ; ile ayir; silmek icin -)" $shotsDefault "screenshots"
 $screenshots = @()
 if ($shotsText -and $shotsText -ne "-") {
     $screenshots = @($shotsText -split ";" | ForEach-Object { $_.Trim().Trim('"') } | Where-Object { $_ })
@@ -143,7 +165,7 @@ if ($spec.PSObject.Properties["launcher"] -and $spec.launcher.setup) {
     if (Test-Path $spec.launcher.setup) {
         $newSpec.launcher = $spec.launcher
     } else {
-        Fail "PARDEX kurulum dosyasi bulunamadi ($($spec.launcher.setup)). Once PARDEX-Yayinla.bat ile PARDEX'i bir kez yayinla."
+        Fail "PARDEX kurulum dosyasi bulunamadi ($($spec.launcher.setup)). Once Sunucu Paneli > Yayinla'dan PARDEX'i bir kez yayinla."
     }
 }
 $previous = if (Test-Path $SpecPath) { [IO.File]::ReadAllText($SpecPath) } else { $null }
@@ -167,4 +189,4 @@ Pop-Location
 Write-Host ""
 Write-Host "Yayinlandi: $title $version" -ForegroundColor Green
 Write-Host "Oyuncular PARDEX'i acinca (ya da 15 dakika icinde) magazada gorur; 'Indir' ya da 'Guncelle' ile kurar."
-Read-Host "Kapatmak icin Enter'a bas"
+if (-not $Panel) { Read-Host "Kapatmak icin Enter'a bas" }

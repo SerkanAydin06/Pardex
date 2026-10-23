@@ -1,10 +1,14 @@
 # PARDEX yayınlama: sürümü artırır, kurulum dosyasını üretir ve arkadaşların
 # PARDEX'i açınca güncellenecek şekilde Cloudflare R2'ye yükler.
-# Kişisel ayarlar (Godot yolu, hesap kimliği) tools\yayinla.local.json'da
-# saklanır ve Git'e eklenmez. Gizli anahtar istemez: R2 yüklemesi AWS CLI'nin
-# kayıtlı "pardex-r2" profilini kullanır.
+# Sunucu Paneli › Yayınla bunu -Panel ile çalıştırır (soru sormaz, pencere
+# beklemez). Kişisel ayarlar (Godot yolu, hesap kimliği) panelin yazdığı
+# tools\yayinla.local.json'da saklanır ve Git'e eklenmez. Gizli anahtar
+# istemez: R2 yüklemesi AWS CLI'nin kayıtlı "pardex-r2" profilini kullanır.
+
+param([string]$Version = "", [switch]$Panel)
 
 $ErrorActionPreference = "Stop"
+if ($Panel) { [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false) }
 $Root = Split-Path -Parent $PSScriptRoot
 $Url = "https://pardex-distribution.srknydn88.workers.dev"
 $SettingsPath = Join-Path $PSScriptRoot "yayinla.local.json"
@@ -14,11 +18,12 @@ $MainPath = Join-Path $Root "scripts\main.gd"
 function Fail($message) {
     Write-Host ""
     Write-Host "HATA: $message" -ForegroundColor Red
-    Read-Host "Kapatmak icin Enter'a bas"
+    if (-not $Panel) { Read-Host "Kapatmak icin Enter'a bas" }
     exit 1
 }
 
 function Ask($question, $default) {
+    if ($Panel) { return $default }
     $suffix = if ($default) { " [$default]" } else { "" }
     $answer = Read-Host "$question$suffix"
     if ([string]::IsNullOrWhiteSpace($answer)) { return $default }
@@ -62,7 +67,7 @@ if (-not $match.Success) { Fail "scripts\main.gd icinde APP_VERSION bulunamadi."
 $current = $match.Groups[1].Value
 $parts = $current.Split(".")
 $parts[$parts.Count - 1] = [string]([int]$parts[$parts.Count - 1] + 1)
-$version = Ask "Yeni surum (su an $current)" ($parts -join ".")
+$version = Ask "Yeni surum (su an $current)" $(if ($Version) { $Version.Trim() } else { $parts -join "." })
 if ($version -notmatch '^[0-9]{1,6}(\.[0-9]{1,6}){0,3}$') { Fail "Surum 1.2.3 biciminde olmali." }
 if (-not (Newer $version $current)) { Fail "Yeni surum $current'dan buyuk olmali; yoksa arkadaslarin guncellemeyi gormez." }
 
@@ -111,4 +116,4 @@ Write-Host ""
 Write-Host "Yayinlandi: PARDEX $version" -ForegroundColor Green
 Write-Host "Arkadaslarin PARDEX'i acinca (ya da 15 dakika icinde) kendiliginden guncellenecek."
 Write-Host "Surum degisikligini (scripts\main.gd) GitHub Desktop'ta commit edip gonder."
-Read-Host "Kapatmak icin Enter'a bas"
+if (-not $Panel) { Read-Host "Kapatmak icin Enter'a bas" }

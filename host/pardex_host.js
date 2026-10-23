@@ -10,7 +10,9 @@
 //   4. Güncel wss:// adresini kendi dağıtım sunucuna online.json olarak yazar.
 // PARDEX istemcileri adresi oradan okur; arkadaşların hiçbir ayar yapmaz.
 //
-// Kullanım: PARDEX-Sunucu.bat (Windows) veya `node host/pardex_host.js`.
+// Aynı panelden PARDEX güncellemesi ve oyun yayınlanır, ağ testi yapılır.
+//
+// Kullanım: PARDEX-Sunucu-Paneli.vbs (Windows) veya `node host/pardex_host.js`.
 
 const fs = require("fs");
 const net = require("net");
@@ -130,6 +132,130 @@ function ensureDefaults() {
     changed = true;
   }
   if (changed) saveConfig();
+  // The publish scripts and this panel share one Godot path.
+  const shared = readPublishSettings();
+  if (!config.godot_exe && shared.godot) {
+    config.godot_exe = String(shared.godot);
+    saveConfig();
+  }
+}
+
+// ------------------------------------------------------------------ publishing
+
+// Yayınla, Oyun yayınla and Ağ testi run the tools\*.ps1 scripts with -Panel
+// (no questions, no "press Enter"); their output is shown in the panel.
+// Tests point these at a temporary folder (never the real scripts).
+let TOOLS_DIR = path.join(ROOT, "tools");
+let PUBLISH_SETTINGS_PATH = path.join(TOOLS_DIR, "yayinla.local.json");
+let RELEASE_SPEC_PATH = path.join(ROOT, "release.local.json");
+let MAIN_SCRIPT_PATH = path.join(ROOT, "scripts", "main.gd");
+const JOBS = {
+  launcher: { script: "yayinla.ps1", title: "PARDEX yayını" },
+  game: { script: "oyun_yayinla.ps1", title: "Oyun yayını" },
+  network: { script: "ag_testi.ps1", title: "Ağ testi" },
+};
+const VERSION_PATTERN = /^[0-9]{1,6}(\.[0-9]{1,6}){0,3}$/;
+const job = { kind: "", title: "", running: false, ok: null, lines: [] };
+
+function readJsonFile(file) {
+  try {
+    return JSON.parse(fs.readFileSync(file, "utf8").replace(/^﻿/, ""));
+  } catch {
+    return {};
+  }
+}
+
+function readPublishSettings() {
+  return readJsonFile(PUBLISH_SETTINGS_PATH);
+}
+
+function writePublishSettings(changes) {
+  const settings = { ...readPublishSettings(), ...changes };
+  // BOM: Windows PowerShell 5 reads the file correctly only with it.
+  fs.writeFileSync(PUBLISH_SETTINGS_PATH, "﻿" + JSON.stringify(settings, null, 2), "utf8");
+}
+
+function joinList(value, separator) {
+  return Array.isArray(value) ? value.join(separator) : String(value || "");
+}
+
+function releaseInfo() {
+  let launcherVersion = "";
+  try {
+    const match = fs.readFileSync(MAIN_SCRIPT_PATH, "utf8").match(/const APP_VERSION := "([0-9.]+)"/);
+    launcherVersion = match ? match[1] : "";
+  } catch {}
+  const spec = readJsonFile(RELEASE_SPEC_PATH);
+  const games = [].concat(spec.games || []).filter((game) => game && game.id).map((game) => ({
+    id: String(game.id), title: String(game.title || ""), version: String(game.version || ""),
+    project: String(game.project || ""), description: String(game.description || ""),
+    players: String(game.players || ""), genres: joinList(game.genres, ", "),
+    cover: String(game.cover || ""), banner: String(game.banner || ""),
+    screenshots: joinList(game.screenshots, ";"),
+    long_description: String(game.long_description || ""), requirements: String(game.requirements || ""),
+    release_notes: String(game.release_notes || ""), connection_modes: String(game.connection_modes || ""),
+  }));
+  return { launcher_version: launcherVersion, games };
+}
+
+const GAME_FIELDS = ["id", "title", "version", "project", "description", "players", "genres", "cover", "banner",
+  "screenshots", "long_description", "requirements", "release_notes", "connection_modes"];
+
+function jobLine(text) {
+  for (const line of String(text).replace(/\x1b\[[0-9;]*m/g, "").split(/\r?\n/)) {
+    if (line.trim()) job.lines.push(line);
+  }
+  if (job.lines.length > 400) job.lines.splice(0, job.lines.length - 400);
+}
+
+function startJob(kind, body) {
+  const spec = JOBS[kind];
+  if (!spec) return "Bilinmeyen iş.";
+  if (job.running) return "Başka bir iş sürüyor; bitmesini bekle.";
+  const shell = process.env.PARDEX_POWERSHELL || (IS_WINDOWS ? "powershell" : "");
+  if (!shell) return "Bu iş yalnız Windows'ta çalışır.";
+  const args = ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", path.join(TOOLS_DIR, spec.script), "-Panel"];
+  let inputPath = "";
+  if (kind === "launcher" && body.version) {
+    const version = String(body.version).trim();
+    if (!VERSION_PATTERN.test(version)) return "Sürüm 1.2.3 biçiminde olmalı.";
+    args.push("-Version", version);
+  }
+  if (kind === "game") {
+    const game = body.game && typeof body.game === "object" ? body.game : {};
+    const answers = {};
+    for (const field of GAME_FIELDS) answers[field] = String(game[field] ?? "").slice(0, 20000);
+    if (!answers.project.trim()) return "Oyunun proje klasörünü seç.";
+    if (!/^[a-z][a-z0-9_-]{0,47}$/.test(answers.id.trim())) return "Oyun kimliği küçük harfle başlamalı; yalnız a-z, 0-9, - ve _ olabilir.";
+    if (!VERSION_PATTERN.test(answers.version.trim())) return "Sürüm 1.2.3 biçiminde olmalı.";
+    inputPath = path.join(require("os").tmpdir(), `pardex-oyun-${crypto.randomBytes(6).toString("hex")}.json`);
+    fs.writeFileSync(inputPath, JSON.stringify(answers), "utf8");
+    args.push("-InputPath", inputPath);
+  }
+  Object.assign(job, { kind, title: spec.title, running: true, ok: null, lines: [] });
+  log(`${spec.title} başladı.`);
+  let child;
+  try {
+    child = spawn(shell, args, { cwd: ROOT, windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
+  } catch (error) {
+    job.running = false;
+    job.ok = false;
+    jobLine(`HATA: PowerShell açılamadı (${error.message}).`);
+    return "";
+  }
+  child.stdout.on("data", jobLine);
+  child.stderr.on("data", jobLine);
+  const finish = (ok, note) => {
+    if (!job.running) return;
+    if (note) jobLine(note);
+    job.running = false;
+    job.ok = ok;
+    if (inputPath) fs.rmSync(inputPath, { force: true });
+    log(`${spec.title} ${ok ? "tamamlandı" : "başarısız oldu"}.`);
+  };
+  child.on("error", (error) => finish(false, `HATA: PowerShell açılamadı (${error.message}).`));
+  child.on("close", (code) => finish(code === 0));
+  return "";
 }
 
 // ------------------------------------------------------------------ processes
@@ -551,17 +677,24 @@ async function stopServer(reason = "Sunucu kapatıldı. Tekrar başlatmak için 
 // ------------------------------------------------------------------ panel
 
 // Native Windows pickers so nobody has to type a path.
+const FILE_FILTERS = {
+  godot: "Godot|Godot*.exe|Tum exe dosyalari|*.exe",
+  image: "Resim|*.png;*.jpg;*.jpeg;*.webp",
+  images: "Resim|*.png;*.jpg;*.jpeg;*.webp",
+};
+
 function browse(kind) {
   if (!IS_WINDOWS) return "";
-  const script = kind === "folder"
-    ? "Add-Type -AssemblyName System.Windows.Forms;" +
-      "$d=New-Object System.Windows.Forms.FolderBrowserDialog;" +
-      "$d.Description='Korsanlarin Hazinesi proje klasorunu sec (icinde project.godot olan)';" +
-      "if($d.ShowDialog((New-Object System.Windows.Forms.Form -Property @{TopMost=$true})) -eq 'OK'){[Console]::Out.Write($d.SelectedPath)}"
-    : "Add-Type -AssemblyName System.Windows.Forms;" +
-      "$d=New-Object System.Windows.Forms.OpenFileDialog;" +
-      `$d.Filter='${kind === "godot" ? "Godot|Godot*.exe|Tum exe dosyalari|*.exe" : "Oyun|*.exe"}';` +
-      "if($d.ShowDialog((New-Object System.Windows.Forms.Form -Property @{TopMost=$true})) -eq 'OK'){[Console]::Out.Write($d.FileName)}";
+  const show = "if($d.ShowDialog((New-Object System.Windows.Forms.Form -Property @{TopMost=$true})) -eq 'OK')";
+  const folderText = kind === "project"
+    ? "Oyunun Godot proje klasorunu sec (icinde project.godot olan)"
+    : "Korsanlarin Hazinesi proje klasorunu sec (icinde project.godot olan)";
+  const script = "[Console]::OutputEncoding=[Text.Encoding]::UTF8;Add-Type -AssemblyName System.Windows.Forms;" + (
+    kind === "folder" || kind === "project"
+      ? `$d=New-Object System.Windows.Forms.FolderBrowserDialog;$d.Description='${folderText}';${show}{[Console]::Out.Write($d.SelectedPath)}`
+      : "$d=New-Object System.Windows.Forms.OpenFileDialog;" +
+        `$d.Filter='${FILE_FILTERS[kind] || "Oyun|*.exe"}';` +
+        (kind === "images" ? `$d.Multiselect=$true;${show}{[Console]::Out.Write($d.FileNames -join ';')}` : `${show}{[Console]::Out.Write($d.FileName)}`));
   const result = spawnSync("powershell", ["-NoProfile", "-STA", "-Command", script], { encoding: "utf8" });
   return String(result.stdout || "").trim();
 }
@@ -580,7 +713,9 @@ function publicState() {
       has_tunnel_token: Boolean(String(config.tunnel_token || "").trim()),
       tunnel_online_host: config.tunnel_online_host || "",
       tunnel_game_hosts: config.tunnel_game_hosts || "",
+      cloudflare_account: String(readPublishSettings().account || ""),
     },
+    job: { ...job, lines: job.lines.slice(-400) },
     game,
     canBrowse: IS_WINDOWS,
   };
@@ -628,6 +763,9 @@ async function handle(request, response) {
     });
     return sendJson(response, users);
   }
+  if (request.method === "GET" && url.pathname === "/api/release") {
+    return sendJson(response, releaseInfo());
+  }
   if (request.method === "GET" && url.pathname === "/api/bug-reports") {
     return sendJson(response, readBugReports(DATA_PATH));
   }
@@ -643,7 +781,15 @@ async function handle(request, response) {
   switch (url.pathname) {
     case "/api/config": {
       if (typeof body.korsan_path === "string") config.korsan_exe = cleanPath(body.korsan_path);
-      if (typeof body.godot_exe === "string") config.godot_exe = cleanPath(body.godot_exe);
+      if (typeof body.godot_exe === "string") {
+        config.godot_exe = cleanPath(body.godot_exe);
+        writePublishSettings({ godot: config.godot_exe });
+      }
+      if (typeof body.cloudflare_account === "string") {
+        const account = body.cloudflare_account.trim().toLowerCase();
+        if (account && !/^[a-f0-9]{32}$/.test(account)) return sendJson(response, {error:"Cloudflare hesap kimliği 32 karakterlik küçük harf/rakam olmalı."}, 400);
+        writePublishSettings({ account });
+      }
       if (body.table_count !== undefined) config.table_count = Math.min(MAX_TABLES, Math.max(1, Math.floor(Number(body.table_count) || 1)));
       if (typeof body.tunnel_online_host === "string") config.tunnel_online_host = body.tunnel_online_host.trim();
       if (typeof body.tunnel_game_hosts === "string") config.tunnel_game_hosts = body.tunnel_game_hosts.trim();
@@ -667,8 +813,14 @@ async function handle(request, response) {
       return sendJson(response, publicState());
     }
     case "/api/browse": {
-      const picked = browse(String(body.kind || ""));
-      return sendJson(response, { path: picked ? cleanPath(picked) : "" });
+      const kind = String(body.kind || "");
+      const picked = browse(kind);
+      return sendJson(response, { path: picked && kind !== "images" ? cleanPath(picked) : picked });
+    }
+    case "/api/job": {
+      const error = startJob(String(body.kind || ""), body);
+      if (error) return sendJson(response, { error }, 400);
+      return sendJson(response, publicState());
     }
     case "/api/start":
       startServer(Boolean(body.local));
@@ -677,6 +829,7 @@ async function handle(request, response) {
       await stopServer();
       return sendJson(response, publicState());
     case "/api/quit":
+      if (job.running) return sendJson(response, { error: `${job.title} sürüyor; bitince kapat.` }, 409);
       sendJson(response, { ok: true });
       await stopServer();
       setTimeout(() => process.exit(0), 200);
@@ -708,7 +861,7 @@ function openBrowser(url) {
 
 function exitWhenIdle() {
   setInterval(() => {
-    const idle = state.phase === "stopped" || state.phase === "error";
+    const idle = (state.phase === "stopped" || state.phase === "error") && !job.running;
     if (idle && lastPanelPoll && Date.now() - lastPanelPoll > IDLE_EXIT_MS) {
       log("Panel kapatıldı ve sunucu kapalı; çıkılıyor.");
       process.exit(0);
@@ -762,5 +915,16 @@ module.exports = {
     publish,
     nextRun() { publishGeneration += 1; return publishGeneration; },
     setRetryDelay(ms) { publishRetryMs = ms; },
+    job,
+    startJob,
+    releaseInfo,
+    setPublishPaths(folder) {
+      TOOLS_DIR = path.join(folder, "tools");
+      PUBLISH_SETTINGS_PATH = path.join(TOOLS_DIR, "yayinla.local.json");
+      RELEASE_SPEC_PATH = path.join(folder, "release.local.json");
+      MAIN_SCRIPT_PATH = path.join(folder, "scripts", "main.gd");
+    },
+    writePublishSettings,
+    readPublishSettings,
   },
 };

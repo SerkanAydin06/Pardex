@@ -47,7 +47,8 @@ PARDEX Online artık ücretli bir bulut servisinde değil, oyunu kuran kişinin 
 `PARDEX-Sunucu-Paneli.vbs` ile açılan panel PARDEX sunucusunu ve Korsanların Hazinesi oyun sunucusunu başlatır,
 ikisini ücretsiz Cloudflare tüneliyle internete açar ve güncel `wss://` adresini `sunucu-adresi` dalındaki
 `online.json` dosyasına yazar. İstemci, Ayarlar → PARDEX Online alanı boşken adresi oradan otomatik okur;
-arkadaşların hiçbir ayar yapmaz. Kurulum ve kullanım: `host/README.md`.
+arkadaşların hiçbir ayar yapmaz. PARDEX güncellemesi, oyun yayınlama ve ağ testi de aynı paneldeki
+**Yayınla** bölümündedir. Kurulum ve kullanım: `host/README.md`.
 
 Arkadaşlık ve hesap verileri sunucuyu açan bilgisayarda `host/data/social.json` dosyasında tutulur.
 Eski Railway kurulumu için notlar `server/DEPLOYMENT.md` dosyasında duruyor.

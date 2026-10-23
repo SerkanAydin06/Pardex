@@ -60,6 +60,7 @@ jobs:
           node --check ../host/pardex_host.js
           node ../host/user-admin-test.js
           node ../host/publish-retry-test.js
+          node ../host/publish-job-test.js
 
       - name: Independent distribution server and publisher
         run: |
