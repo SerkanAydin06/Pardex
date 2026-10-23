@@ -6,255 +6,347 @@
 <title>PARDEX Sunucu Paneli</title>
 <style>
   :root {
-    --bg: #05080f; --panel: #0b1220; --panel-2: #0f1a2c; --border: #1b2a42;
-    --text: #e8f0fb; --text-2: #9fb0c8; --text-3: #61708a;
-    --cyan: #2fb8ff; --cyan-2: #1d8fe0; --green: #34d399; --amber: #fbbf24; --red: #f87171;
+    --bg: #070b13; --side: #0a101b; --panel: #0d1524; --panel-2: #111b2e; --line: #1c2a40; --field: #070c16;
+    --text: #e8eef8; --text-2: #a3b1c6; --text-3: #6b7a92;
+    --accent: #2fb8ff; --accent-2: #1d8fe0; --green: #34d399; --amber: #fbbf24; --red: #f87171;
+    --radius: 12px;
   }
   * { box-sizing: border-box; }
-  body {
-    margin: 0; min-height: 100vh; color: var(--text); background: radial-gradient(1200px 600px at 70% -10%, #0d2240 0%, var(--bg) 60%);
-    font: 15px/1.5 "Segoe UI", system-ui, sans-serif;
-  }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 28px 16px 40px; }
-  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
-  .brand { font-weight: 800; letter-spacing: .14em; font-size: 22px; color: var(--cyan); }
-  .brand small { display: block; letter-spacing: .02em; font-weight: 500; font-size: 13px; color: var(--text-2); }
-  .card { background: linear-gradient(180deg, var(--panel-2), var(--panel)); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
-  h2 { margin: 0 0 14px; font-size: 16px; }
-  .status { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-  .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--text-3); box-shadow: 0 0 0 4px #ffffff0d; flex: none; }
-  .dot.running { background: var(--green); box-shadow: 0 0 14px var(--green); }
-  .dot.starting, .dot.stopping { background: var(--amber); animation: pulse 1s infinite; }
-  .dot.error { background: var(--red); }
-  @keyframes pulse { 50% { opacity: .35; } }
-  .status-text { flex: 1; min-width: 220px; }
-  .status-text b { font-size: 18px; display: block; }
-  .status-text span { color: var(--text-2); }
-  button {
-    font: inherit; font-weight: 600; border-radius: 10px; border: 1px solid var(--border); background: #13203a; color: var(--text);
-    padding: 10px 18px; cursor: pointer; transition: filter .15s, background .15s;
-  }
-  button:hover:not(:disabled) { filter: brightness(1.2); }
-  button:disabled { opacity: .45; cursor: default; }
-  button.primary { background: linear-gradient(180deg, var(--cyan), var(--cyan-2)); border-color: transparent; color: #04111f; min-width: 190px; padding: 12px 22px; font-size: 16px; }
-  button.danger { background: #3a1620; border-color: #5b2230; color: #ffd5d5; min-width: 190px; padding: 12px 22px; font-size: 16px; }
-  button.small { padding: 8px 14px; font-size: 14px; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 "Segoe UI", system-ui, sans-serif; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: var(--accent); }
+
+  /* Layout: sidebar + page */
+  .app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh;
+    background: linear-gradient(to right, var(--side) 231px, var(--line) 231px, var(--line) 232px, transparent 232px); }
+  .side { padding: 20px 14px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100vh; }
+  .brand { padding: 0 10px 18px; }
+  .brand b { display: block; font-size: 20px; letter-spacing: .16em; color: var(--accent); }
+  .brand span { color: var(--text-3); font-size: 12px; }
+  .nav { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 12px; border: 0; border-radius: 10px; background: none; color: var(--text-2); cursor: pointer; text-align: left; font-weight: 600; }
+  .nav svg { width: 18px; height: 18px; flex: none; }
+  .nav:hover { background: #ffffff08; color: var(--text); }
+  .nav[aria-current=page] { background: #2fb8ff18; color: var(--accent); }
+  .nav .count { margin-left: auto; background: var(--red); color: #fff; border-radius: 9px; padding: 0 7px; font-size: 11px; }
+  .side-foot { margin-top: auto; padding: 12px 10px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+  .mini-status { display: flex; align-items: center; gap: 8px; color: var(--text-2); font-size: 13px; }
+  main { padding: 28px 32px 48px; max-width: 980px; width: 100%; }
+  .page[hidden] { display: none; }
+  .page-head { margin-bottom: 20px; }
+  .page-head h1 { margin: 0; font-size: 22px; }
+  .page-head p { margin: 4px 0 0; color: var(--text-2); }
+
+  /* Building blocks */
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+  .card h2 { margin: 0 0 4px; font-size: 15px; }
+  .card > .lead { margin: 0 0 16px; color: var(--text-3); font-size: 13px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+  .grid .wide { grid-column: 1 / -1; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+  .stat b { display: block; font-size: 24px; }
+  .stat span { color: var(--text-3); font-size: 12px; }
   .row { display: flex; gap: 10px; align-items: center; }
-  .field { margin-bottom: 16px; }
-  .field label { display: block; font-weight: 600; margin-bottom: 4px; }
-  .hint { color: var(--text-3); font-size: 13px; margin-top: 4px; }
+  .field { margin-bottom: 14px; }
+  .field > label, .label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 13px; }
+  .hint { color: var(--text-3); font-size: 12px; margin-top: 5px; }
   .hint.ok { color: var(--green); } .hint.warn { color: var(--amber); }
   input[type=text], input[type=password], input[type=url], select, textarea {
-    flex: 1; min-width: 0; font: inherit; color: var(--text); background: #060b15; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
+    width: 100%; min-width: 0; background: var(--field); border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px;
   }
-  textarea, .field > input { width: 100%; }
-  textarea { min-height: 70px; resize: vertical; }
-  input:focus, textarea:focus { outline: 2px solid #2fb8ff55; border-color: var(--cyan); }
-  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-  .tab[aria-selected=true] { border-color: var(--cyan); color: var(--cyan); }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
-  .grid .wide { grid-column: 1 / -1; }
-  .job { margin-top: 16px; }
-  .job b.ok { color: var(--green); } .job b.fail { color: var(--red); } .job b.busy { color: var(--amber); }
-  .check { display: flex; gap: 8px; align-items: center; color: var(--text-2); margin-top: 14px; font-size: 14px; }
-  .address { margin-top: 14px; display: none; gap: 8px; flex-direction: column; }
-  .address div { background: #060b15; border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-family: Consolas, monospace; font-size: 13px; color: var(--text-2); overflow-wrap: anywhere; }
-  .steps { margin: 8px 0 0; padding-left: 20px; color: var(--text-2); font-size: 14px; }
-  .steps a { color: var(--cyan); }
-  details summary { cursor: pointer; color: var(--text-2); font-weight: 600; }
-  pre { margin: 12px 0 0; max-height: 280px; overflow: auto; background: #04070d; border: 1px solid var(--border); border-radius: 10px; padding: 10px; font-size: 12px; color: var(--text-2); white-space: pre-wrap; overflow-wrap: anywhere; }
-  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: #13203a; border: 1px solid var(--cyan); padding: 10px 18px; border-radius: 10px; display: none; }
-  .user-counts { display: flex; gap: 24px; margin-bottom: 14px; color: var(--text-2); }
-  .user-counts b { color: var(--cyan); font-size: 24px; margin-right: 6px; }
-  .user-table { overflow-x: auto; margin-top: 14px; }
+  textarea { min-height: 72px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid #2fb8ff40; border-color: var(--accent); }
+  button.btn { border: 1px solid var(--line); background: var(--panel-2); border-radius: 9px; padding: 9px 16px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  button.btn:hover:not(:disabled) { filter: brightness(1.25); }
+  button.btn:disabled { opacity: .45; cursor: default; }
+  button.primary { background: linear-gradient(180deg, var(--accent), var(--accent-2)); border-color: transparent; color: #04111f; }
+  button.danger { background: #3a1620; border-color: #5b2230; color: #ffd5d5; }
+  button.big { padding: 12px 24px; font-size: 15px; min-width: 200px; }
+  button.link { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 0; font-weight: 600; }
+  details.more { margin-top: 4px; }
+  details.more > summary { cursor: pointer; color: var(--text-2); font-weight: 600; margin-bottom: 12px; }
+  .check { display: flex; gap: 8px; align-items: flex-start; color: var(--text-2); }
+  .check input { margin-top: 3px; }
+
+  /* Status */
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--text-3); flex: none; }
+  .dot.running { background: var(--green); box-shadow: 0 0 12px var(--green); }
+  .dot.starting, .dot.stopping, .dot.busy { background: var(--amber); animation: pulse 1s infinite; }
+  .dot.error { background: var(--red); }
+  @keyframes pulse { 50% { opacity: .35; } }
+  .hero { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .hero .dot { width: 16px; height: 16px; }
+  .hero-text { flex: 1; min-width: 220px; }
+  .hero-text b { display: block; font-size: 20px; }
+  .hero-text span { color: var(--text-2); }
+  .address { display: none; margin-top: 16px; gap: 8px; flex-direction: column; }
+  .address .row { background: var(--field); border: 1px solid var(--line); border-radius: 9px; padding: 6px 6px 6px 12px; }
+  .address code { flex: 1; font: 12px Consolas, monospace; color: var(--text-2); overflow-wrap: anywhere; }
+  .steps { list-style: none; margin: 0; padding: 0; }
+  .steps li { display: flex; gap: 12px; align-items: flex-start; padding: 11px 0; border-top: 1px solid var(--line); }
+  .steps li:first-child { border-top: 0; padding-top: 0; }
+  .steps .mark { width: 22px; height: 22px; border-radius: 50%; flex: none; display: grid; place-items: center; font-size: 12px; font-weight: 700; background: #fbbf2422; color: var(--amber); }
+  .steps .done .mark { background: #34d39922; color: var(--green); }
+  .steps .body { flex: 1; }
+  .steps .body span { display: block; color: var(--text-3); font-size: 12px; }
+
+  /* Tabs, tables, logs */
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; border-bottom: 1px solid var(--line); }
+  .tab { border: 0; background: none; padding: 9px 14px; color: var(--text-2); font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab[aria-selected=true] { color: var(--accent); border-bottom-color: var(--accent); }
+  .table-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-  th { color: var(--text-2); font-weight: 600; }
-  td, th { padding: 10px 8px; border-bottom: 1px solid var(--border); }
-  td:first-child { overflow-wrap: anywhere; }
-  td small { display: block; color: var(--text-3); font-family: Consolas, monospace; }
+  th { color: var(--text-3); font-weight: 600; font-size: 12px; }
+  td, th { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td small { display: block; color: var(--text-3); font-family: Consolas, monospace; overflow-wrap: anywhere; }
   td.online { color: var(--green); }
-  @media (max-width: 600px) { .row { flex-wrap: wrap; } button.primary, button.danger { width: 100%; } .grid { grid-template-columns: 1fr; } }
+  pre { margin: 0; max-height: 360px; overflow: auto; background: #04070d; border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; font-size: 12px; color: var(--text-2); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .job { margin-top: 18px; }
+  .job-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-weight: 600; }
+  .job-head.ok { color: var(--green); } .job-head.fail { color: var(--red); } .job-head.busy { color: var(--amber); }
+  .empty { color: var(--text-3); padding: 18px 0; text-align: center; }
+  .bug { border-top: 1px solid var(--line); padding: 10px 0; }
+  .bug summary { cursor: pointer; }
+  .bug small { display: block; color: var(--text-3); margin: 4px 0 8px; }
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--panel-2); border: 1px solid var(--accent); padding: 10px 18px; border-radius: 10px; display: none; z-index: 5; max-width: calc(100% - 32px); }
+
+  @media (max-width: 760px) {
+    .app { grid-template-columns: 1fr; background: none; }
+    .side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; padding: 12px; background: var(--side); border-bottom: 1px solid var(--line); }
+    .brand { width: 100%; padding-bottom: 8px; }
+    .nav { width: auto; }
+    .side-foot { width: 100%; }
+    main { padding: 20px 16px 40px; }
+    .grid { grid-template-columns: 1fr; }
+    .stat { padding: 10px 12px; }
+    .stat b { font-size: 20px; }
+    .row { flex-wrap: wrap; }
+    button.big { width: 100%; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="brand">PARDEX<small>Sunucu Paneli</small></div>
-    <button class="small" id="quitBtn" title="Sunucuyu kapatır ve paneli sonlandırır">Paneli Kapat</button>
-  </header>
-
-  <section class="card">
-    <div class="status">
-      <div class="dot" id="dot"></div>
-      <div class="status-text"><b id="phaseText">Sunucu kapalı</b><span id="message">Başlatmak için düğmeye bas.</span></div>
-      <button class="primary" id="toggleBtn">Sunucuyu Başlat</button>
+<div class="app">
+  <nav class="side" aria-label="Panel bölümleri">
+    <div class="brand"><b>PARDEX</b><span>Sunucu Paneli</span></div>
+    <button class="nav" data-page="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Genel bakış</button>
+    <button class="nav" data-page="publish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>Yayınla</button>
+    <button class="nav" data-page="players"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M17 11a3 3 0 1 0 0-6M22 21c0-3-2-5-5-5"/></svg>Oyuncular</button>
+    <button class="nav" data-page="reports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>Raporlar<span class="count" id="reportCount" hidden></span></button>
+    <button class="nav" data-page="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 2.9-1.2V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Ayarlar</button>
+    <button class="nav" data-page="logs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Kayıtlar</button>
+    <div class="side-foot">
+      <div class="mini-status"><span class="dot" id="sideDot"></span><span id="sideText">Sunucu kapalı</span></div>
+      <button class="btn" id="quitBtn" title="Sunucuyu kapatır ve paneli sonlandırır">Paneli Kapat</button>
     </div>
-    <div class="hint" style="margin-top:10px">Bu pencereyi kapatsan da açık sunucu arka planda çalışmaya devam eder. Tamamen kapatmak için <b>Paneli Kapat</b>.</div>
-    <label class="check"><input type="checkbox" id="localOnly"> Yalnızca bu bilgisayarda test et (arkadaşlar bağlanamaz)</label>
-    <div class="address" id="address">
-      <div id="onlineUrl"></div>
-      <div id="gameUrl"></div>
-    </div>
-  </section>
+  </nav>
 
-
-  <section class="card">
-    <h2>Yayınla</h2>
-    <div class="tabs" role="tablist">
-      <button class="small tab" role="tab" data-tab="launcher" aria-selected="true">PARDEX güncellemesi</button>
-      <button class="small tab" role="tab" data-tab="game" aria-selected="false">Oyun</button>
-      <button class="small tab" role="tab" data-tab="network" aria-selected="false">Ağ testi</button>
-    </div>
-    <div class="tab-body" id="tab-launcher">
-      <div class="field">
-        <label for="launcherVersion">Yeni sürüm</label>
-        <div class="row">
-          <input type="text" id="launcherVersion" placeholder="1.2.3">
-          <button class="primary job-start" id="launcherBtn">PARDEX'i Yayınla</button>
+  <main>
+    <section class="page" id="page-home">
+      <div class="page-head"><h1>Genel bakış</h1><p>Sunucuyu buradan aç ve kapat. Açıkken arkadaşların PARDEX'ten bağlanıp masalara oturabilir.</p></div>
+      <div class="card">
+        <div class="hero">
+          <span class="dot" id="dot"></span>
+          <div class="hero-text"><b id="phaseText">Sunucu kapalı</b><span id="message">Başlatmak için düğmeye bas.</span></div>
+          <button class="btn primary big" id="toggleBtn">Sunucuyu Başlat</button>
         </div>
-        <div class="hint" id="launcherHint">Kurulum dosyası üretilir ve yüklenir; arkadaşların PARDEX'i açınca kendiliğinden güncellenir.</div>
-      </div>
-    </div>
-    <div class="tab-body" id="tab-game" hidden>
-      <div class="field">
-        <label for="gamePick">Oyun</label>
-        <div class="row"><select id="gamePick"><option value="">Yeni oyun</option></select></div>
-      </div>
-      <div class="field">
-        <label for="gProject">Godot proje klasörü</label>
-        <div class="row">
-          <input type="text" id="gProject" placeholder="İçinde project.godot olan klasör">
-          <button class="small browse" data-kind="project" data-target="gProject">Klasör Seç</button>
+        <div class="address" id="address">
+          <div class="row"><code id="onlineUrl"></code><button class="btn copy" data-copy="onlineUrl">Kopyala</button></div>
+          <div class="row"><code id="gameUrl"></code></div>
         </div>
-        <div class="hint">Projede "Windows Desktop" dışa aktarma ayarı olmalı.</div>
+        <div class="hint" style="margin-top:12px">Bu pencereyi kapatsan da açık sunucu arka planda çalışır. Tamamen kapatmak için <b>Paneli Kapat</b> düğmesine bas.</div>
       </div>
-      <div class="grid">
-        <div class="field"><label for="gTitle">Mağazadaki adı</label><div class="row"><input type="text" id="gTitle"></div></div>
-        <div class="field"><label for="gId">Kimlik</label><div class="row"><input type="text" id="gId" placeholder="kucuk-harf"></div><div class="hint">Sonradan değiştirme.</div></div>
-        <div class="field"><label for="gVersion">Sürüm</label><div class="row"><input type="text" id="gVersion" placeholder="1.0.0"></div></div>
-        <div class="field"><label for="gPlayers">Oyuncu sayısı</label><div class="row"><input type="text" id="gPlayers" placeholder="Tek oyunculu, 1-4 oyuncu..."></div></div>
-        <div class="field wide"><label for="gDescription">Kısa tanıtım</label><div class="row"><input type="text" id="gDescription"></div></div>
-        <div class="field"><label for="gGenres">Türler (virgülle, en çok 4)</label><div class="row"><input type="text" id="gGenres" placeholder="Macera, Strateji"></div></div>
-        <div class="field"><label for="gModes">Oyun / bağlantı türleri</label><div class="row"><input type="text" id="gModes" placeholder="Tek oyunculu, Çevrimiçi"></div></div>
-        <div class="field"><label for="gCover">Kapak resmi (dikey)</label><div class="row"><input type="text" id="gCover"><button class="small browse" data-kind="image" data-target="gCover">Seç</button></div></div>
-        <div class="field"><label for="gBanner">Afiş resmi (geniş)</label><div class="row"><input type="text" id="gBanner"><button class="small browse" data-kind="image" data-target="gBanner">Seç</button></div></div>
-        <div class="field wide"><label for="gShots">Ekran görüntüleri (en çok 8, ; ile ayrılır)</label><div class="row"><input type="text" id="gShots"><button class="small browse" data-kind="images" data-target="gShots">Seç</button></div></div>
-        <div class="field wide"><label for="gLong">Uzun açıklama</label><textarea id="gLong"></textarea></div>
-        <div class="field"><label for="gReq">Sistem gereksinimleri</label><textarea id="gReq"></textarea></div>
-        <div class="field"><label for="gNotes">Güncelleme notları</label><textarea id="gNotes"></textarea></div>
+      <div class="stats">
+        <div class="stat"><b id="statOnline">—</b><span>Çevrimiçi oyuncu</span></div>
+        <div class="stat"><b id="statUsers">—</b><span>Kayıtlı hesap</span></div>
+        <div class="stat"><b id="statTables">—</b><span>Açık masa</span></div>
       </div>
-      <label class="check" style="margin:0 0 14px"><input type="checkbox" id="gTest"> Test sürümü: oyun henüz hazır değil; mağazada "Test" olarak görünür, arkadaşların isterse indirip dener.</label>
-      <button class="primary job-start" id="gameBtn">Oyunu Yayınla</button>
-      <div class="hint">Oyun Windows için dışa aktarılır ve mağazaya yüklenir; oyuncular "İndir" ya da "Güncelle" görür.</div>
-    </div>
-    <div class="tab-body" id="tab-network" hidden>
-      <div class="hint" style="margin-bottom:12px">Dağıtım sunucusuna ve Cloudflare adreslerine bu bilgisayardan ulaşılıyor mu, bakar. Hiçbir ayarı değiştirmez.</div>
-      <button class="primary job-start" id="networkBtn">Ağ Testini Çalıştır</button>
-    </div>
-    <div class="job" id="jobBox" hidden>
-      <b id="jobStatus"></b>
-      <pre id="jobLog" aria-live="polite"></pre>
-    </div>
-    <div class="hint" style="margin-top:12px">Yayın için Ayarlar'da Godot programı ve Cloudflare hesap kimliği, bilgisayarda Python, AWS CLI ("pardex-r2" profili) ve Inno Setup 6 gerekir.</div>
-  </section>
-
-  <section class="card">
-    <h2>Kullanıcılar</h2>
-    <div class="user-counts"><span><b id="userTotal">—</b>kayıtlı</span><span><b id="userOnline">—</b>çevrimiçi</span></div>
-    <div class="row"><input type="text" id="userSearch" aria-label="Kullanıcı ara" placeholder="Ad veya hesap kimliği ara..."></div>
-    <div class="hint" id="userHint" aria-live="polite">Kullanıcılar yükleniyor...</div>
-    <div class="user-table"><table>
-      <thead><tr><th>Kullanıcı / Kimlik</th><th>Durum</th><th>Kayıt tarihi</th><th>Arkadaş</th></tr></thead>
-      <tbody id="userRows"></tbody>
-    </table></div>
-  </section>
-
-  <section class="card">
-    <h2>Şikâyetler</h2>
-    <div class="hint" id="reportHint" aria-live="polite">Şikâyetler yükleniyor...</div>
-    <div class="user-table"><table>
-      <thead><tr><th>Tarih</th><th>Şikâyet edilen</th><th>Neden / son mesajlar</th></tr></thead>
-      <tbody id="reportRows"></tbody>
-    </table></div>
-  </section>
-
-  <section class="card">
-    <h2>Hata Raporları</h2>
-    <div class="hint" id="bugHint" aria-live="polite">Raporlar yükleniyor...</div>
-    <div id="bugRows"></div>
-  </section>
-
-  <section class="card" id="settingsCard">
-    <h2>Ayarlar</h2>
-    <div class="field">
-      <label for="korsanSource">Masa sunucusu (Korsanların Hazinesi)</label>
-      <div class="row"><select id="korsanSource">
-        <option value="published">En son yayınlanan sürüm (önerilen)</option>
-        <option value="project">Geliştirme: proje klasörü</option>
-      </select></div>
-      <div class="hint">Çok oyunculu masalar bu bilgisayarda çalışır. Yayınlanan sürüm, arkadaşlarının mağazadan indirdiğiyle aynıdır.</div>
-      <div class="row" id="korsanPathRow" style="margin-top:8px">
-        <input type="text" id="korsanPath" placeholder="Proje klasörü (project.godot olan) ya da KorsanlarinHazinesi.exe">
-        <button class="small browse" data-kind="folder" data-target="korsanPath">Klasör Seç</button>
+      <div class="card">
+        <h2>Hazırlık</h2>
+        <p class="lead">Eksik bir adım varsa yanındaki bağlantıyla tamamla.</p>
+        <ul class="steps" id="checklist"></ul>
       </div>
-      <div class="hint" id="gameHint"></div>
-    </div>
-    <div class="field">
-      <label for="godotExe">Godot programı</label>
-      <div class="row">
-        <input type="text" id="godotExe" placeholder="C:\Godot\Godot_v4.7.2-stable_win64.exe">
-        <button class="small browse" data-kind="godot" data-target="godotExe">Dosya Seç</button>
-      </div>
-      <div class="hint">Godot'u açtığın .exe dosyası. Oyun sunucusu proje klasöründen açılırken ve yayınlarken kullanılır.</div>
-    </div>
-    <div class="field">
-      <label for="cfAccount">Cloudflare hesap kimliği</label>
-      <div class="row"><input type="text" id="cfAccount" placeholder="32 karakter (gizli değil)" autocomplete="off"></div>
-      <div class="hint">Cloudflare panelinde sağ tarafta yazar. Yayınlarken kullanılır.</div>
-    </div>
-    <div class="field">
-      <label for="tableCount">Aynı anda kaç masa</label>
-      <div class="row"><select id="tableCount">
-        <option value="1">1 masa</option><option value="2">2 masa</option>
-        <option value="3">3 masa</option><option value="4">4 masa</option>
-      </select></div>
-      <div class="hint">Her masa ayrı bir oyun sunucusu açar; bilgisayar güçlüyse artır.</div>
-    </div>
-    <div class="field">
-      <label for="tunnelToken">Sabit tünel (isteğe bağlı)</label>
-      <div class="row"><input type="password" id="tunnelToken" placeholder="Cloudflare tünel anahtarı (eyJ...)" autocomplete="off"></div>
-      <div class="row" style="margin-top:8px"><input type="text" id="tunnelOnline" placeholder="PARDEX adresi, ör. pardex.alanadin.com"></div>
-      <div class="row" style="margin-top:8px"><input type="text" id="tunnelGames" placeholder="Oyun adresleri (masa başına bir), ör. masa1.alanadin.com, masa2.alanadin.com"></div>
-      <div class="hint" id="tunnelHint"></div>
-      <details style="margin-top:8px">
-        <summary>Sabit tünel nasıl kurulur?</summary>
-        <ol class="steps">
-          <li>Cloudflare'de alan adın olmalı. <b>Zero Trust › Networks › Tunnels</b>'tan yeni tünel oluştur.</li>
-          <li><i>Public hostname</i> ekle: PARDEX adresi → <b>http://127.0.0.1:8765</b>; masa 1 → <b>http://127.0.0.1:8766</b>, masa 2 → <b>8767</b>...</li>
-          <li>Kurulum komutundaki anahtarı (eyJ ile başlar) buraya yapıştır, adresleri yaz ve <b>Kaydet</b>'e bas.</li>
-        </ol>
-        <div class="hint">Boş bırakılırsa her açılışta yeni geçici adres alınır ve arkadaşlara otomatik duyurulur.</div>
-      </details>
-    </div>
-    <div class="field">
-      <label for="publishUrl">Dağıtım sunucusu yayın adresi</label>
-      <input type="url" id="publishUrl" placeholder="https://alan-adin/online.json">
-      <label for="token">Yayın anahtarı</label>
-      <input type="password" id="token" autocomplete="off" placeholder="Sunucuda tanımladığın yayın anahtarı">
-      <div class="hint" id="tokenHint"></div>
-      <div class="hint">Yayın anahtarı yalnız bu yönetici bilgisayarında tutulur; oyunculara gönderilmez.</div>
-    </div>
-    <button class="small" id="saveBtn">Kaydet</button>
-  </section>
+    </section>
 
-  <section class="card">
-    <details>
-      <summary>Kayıtlar (sorun olursa buradan bak)</summary>
-      <pre id="logs"></pre>
-    </details>
-  </section>
+    <section class="page" id="page-publish" hidden>
+      <div class="page-head"><h1>Yayınla</h1><p>PARDEX güncellemesini ve oyunları arkadaşlarına buradan gönder. Arkadaşların PARDEX'i açınca güncellemeyi ve mağazadaki oyunları görür.</p></div>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" data-tab="launcher" aria-selected="true">PARDEX güncellemesi</button>
+        <button class="tab" role="tab" data-tab="game" aria-selected="false">Oyun</button>
+        <button class="tab" role="tab" data-tab="network" aria-selected="false">Ağ testi</button>
+      </div>
+
+      <div class="tab-body" id="tab-launcher">
+        <div class="card">
+          <h2>PARDEX'in yeni sürümünü yayınla</h2>
+          <p class="lead" id="launcherLead">Kurulum dosyası hazırlanır ve yüklenir; arkadaşların PARDEX'i açınca kendiliğinden güncellenir.</p>
+          <div class="field">
+            <label for="launcherVersion">Yeni sürüm</label>
+            <div class="row"><input type="text" id="launcherVersion" placeholder="1.2.3" style="max-width:200px"><button class="btn primary job-start" id="launcherBtn">PARDEX'i Yayınla</button></div>
+            <div class="hint">Bitince <code>scripts/main.gd</code> içindeki sürüm değişikliğini GitHub Desktop'ta gönder.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-body" id="tab-game" hidden>
+        <div class="card">
+          <h2>Mağazaya oyun ekle ya da güncelle</h2>
+          <p class="lead">Oyun Windows için hazırlanıp yüklenir. Arkadaşların mağazada "İndir" ya da "Güncelle" görür.</p>
+          <div class="field">
+            <label for="gamePick">Oyun</label>
+            <select id="gamePick"><option value="">Yeni oyun</option></select>
+          </div>
+          <div class="field">
+            <label for="gProject">Godot proje klasörü</label>
+            <div class="row"><input type="text" id="gProject" placeholder="İçinde project.godot olan klasör"><button class="btn browse" data-kind="project" data-target="gProject">Klasör Seç</button></div>
+            <div class="hint">Projede "Windows Desktop" dışa aktarma ayarı olmalı (Godot › Proje › Dışa Aktar).</div>
+          </div>
+          <div class="grid">
+            <div class="field"><label for="gTitle">Mağazadaki adı</label><input type="text" id="gTitle"></div>
+            <div class="field"><label for="gVersion">Sürüm</label><input type="text" id="gVersion" placeholder="1.0.0"></div>
+            <div class="field wide"><label for="gDescription">Kısa tanıtım</label><input type="text" id="gDescription" placeholder="Mağaza kartında görünen tek cümle"></div>
+          </div>
+          <label class="check" style="margin-bottom:16px"><input type="checkbox" id="gTest"><span><b>Test sürümü</b> — oyun henüz hazır değil. Mağazada "Test" rozetiyle görünür; arkadaşların isterse indirip dener.</span></label>
+          <details class="more">
+            <summary>Mağaza bilgileri (isteğe bağlı)</summary>
+            <div class="grid">
+              <div class="field"><label for="gId">Kimlik</label><input type="text" id="gId" placeholder="kucuk-harf"><div class="hint">Klasör adından otomatik gelir; ilk yayından sonra değişmez.</div></div>
+              <div class="field"><label for="gPlayers">Oyuncu sayısı</label><input type="text" id="gPlayers" placeholder="Tek oyunculu, 1-4 oyuncu..."></div>
+              <div class="field"><label for="gGenres">Türler (virgülle, en çok 4)</label><input type="text" id="gGenres" placeholder="Macera, Strateji"></div>
+              <div class="field"><label for="gModes">Oyun / bağlantı türleri</label><input type="text" id="gModes" placeholder="Tek oyunculu, Çevrimiçi"></div>
+              <div class="field"><label for="gCover">Kapak resmi (dikey)</label><div class="row"><input type="text" id="gCover"><button class="btn browse" data-kind="image" data-target="gCover">Seç</button></div></div>
+              <div class="field"><label for="gBanner">Afiş resmi (geniş)</label><div class="row"><input type="text" id="gBanner"><button class="btn browse" data-kind="image" data-target="gBanner">Seç</button></div></div>
+              <div class="field wide"><label for="gShots">Ekran görüntüleri (en çok 8)</label><div class="row"><input type="text" id="gShots" placeholder="Dosya yolları ; ile ayrılır"><button class="btn browse" data-kind="images" data-target="gShots">Seç</button></div></div>
+              <div class="field wide"><label for="gLong">Uzun açıklama</label><textarea id="gLong"></textarea></div>
+              <div class="field"><label for="gReq">Sistem gereksinimleri</label><textarea id="gReq"></textarea></div>
+              <div class="field"><label for="gNotes">Güncelleme notları</label><textarea id="gNotes"></textarea></div>
+            </div>
+          </details>
+          <button class="btn primary big job-start" id="gameBtn">Oyunu Yayınla</button>
+        </div>
+      </div>
+
+      <div class="tab-body" id="tab-network" hidden>
+        <div class="card">
+          <h2>Ağ testi</h2>
+          <p class="lead">Yayın ya da sunucu bağlanamıyorsa çalıştır: dağıtım sunucusuna ve Cloudflare adreslerine bu bilgisayardan ulaşılıyor mu, bakar. Hiçbir ayarı değiştirmez.</p>
+          <button class="btn primary job-start" id="networkBtn">Ağ Testini Çalıştır</button>
+        </div>
+      </div>
+
+      <div class="job card" id="jobBox" hidden>
+        <div class="job-head" id="jobHead"><span class="dot" id="jobDot"></span><span id="jobStatus"></span></div>
+        <pre id="jobLog" aria-live="polite"></pre>
+      </div>
+    </section>
+
+    <section class="page" id="page-players" hidden>
+      <div class="page-head"><h1>Oyuncular</h1><p>Bu sunucuda hesabı olan herkes. Liste birkaç saniyede bir yenilenir.</p></div>
+      <div class="card">
+        <input type="text" id="userSearch" aria-label="Oyuncu ara" placeholder="Ad veya hesap kimliği ara...">
+        <div class="hint" id="userHint" aria-live="polite">Yükleniyor...</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Oyuncu</th><th>Durum</th><th>Kayıt tarihi</th><th>Arkadaş</th></tr></thead>
+          <tbody id="userRows"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-reports" hidden>
+      <div class="page-head"><h1>Raporlar</h1><p>Oyuncuların şikâyetleri ve PARDEX'teki "Sorun Bildir" ile gönderilen hata raporları. En yeni üstte.</p></div>
+      <div class="card">
+        <h2>Şikâyetler</h2>
+        <p class="lead">› işareti şikâyet edilen kişinin son mesajlarıdır.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Tarih</th><th>Şikâyet edilen</th><th>Neden / son mesajlar</th></tr></thead>
+          <tbody id="reportRows"></tbody>
+        </table></div>
+        <div class="empty" id="reportHint">Yükleniyor...</div>
+      </div>
+      <div class="card">
+        <h2>Hata raporları</h2>
+        <p class="lead">Bir satıra tıklayınca PARDEX kayıtları açılır.</p>
+        <div id="bugRows"></div>
+        <div class="empty" id="bugHint">Yükleniyor...</div>
+      </div>
+    </section>
+
+    <section class="page" id="page-logs" hidden>
+      <div class="page-head"><h1>Kayıtlar</h1><p>Sunucunun ve tünellerin son mesajları. Bir sorun olursa bu sayfanın ekran görüntüsünü gönder.</p></div>
+      <div class="card"><pre id="logs" style="max-height:70vh"></pre></div>
+    </section>
+
+    <section class="page" id="page-settings" hidden>
+      <div class="page-head"><h1>Ayarlar</h1><p>Bir kez doldurman yeterli. Değişiklikten sonra en alttaki <b>Kaydet</b>'e bas.</p></div>
+
+      <div class="card">
+        <h2>Adres yayını</h2>
+        <p class="lead">Sunucu açılınca adresi buraya yazılır; arkadaşlarının PARDEX'i oradan bulur. Yalnız bu bilgisayarda tutulur.</p>
+        <div class="field"><label for="publishUrl">Yayın adresi</label><input type="url" id="publishUrl" placeholder="https://alan-adin/online.json"></div>
+        <div class="field"><label for="token">Yayın anahtarı</label><input type="password" id="token" autocomplete="off" placeholder="Dağıtım sunucusundaki PARDEX_PUBLISH_TOKEN"><div class="hint" id="tokenHint"></div></div>
+      </div>
+
+      <div class="card">
+        <h2>Oyun yayınlama</h2>
+        <p class="lead">Yayınla sayfası bu bilgileri kullanır.</p>
+        <div class="field">
+          <label for="godotExe">Godot programı</label>
+          <div class="row"><input type="text" id="godotExe" placeholder="C:\Godot\Godot_v4.7.2-stable_win64.exe"><button class="btn browse" data-kind="godot" data-target="godotExe">Dosya Seç</button></div>
+          <div class="hint">Godot'u açtığın .exe dosyası.</div>
+        </div>
+        <div class="field">
+          <label for="cfAccount">Cloudflare hesap kimliği</label>
+          <input type="text" id="cfAccount" placeholder="32 karakter" autocomplete="off">
+          <div class="hint">Gizli değildir. dash.cloudflare.com adresinde, alan adından sonraki 32 karakter; ya da Workers &amp; Pages sayfasının sağında "Account ID".</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Masalar</h2>
+        <p class="lead">Çok oyunculu masalar bu bilgisayarda çalışır.</p>
+        <div class="grid">
+          <div class="field">
+            <label for="korsanSource">Korsanların Hazinesi sürümü</label>
+            <select id="korsanSource">
+              <option value="published">En son yayınlanan (önerilen)</option>
+              <option value="project">Geliştirme: proje klasörü</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tableCount">Aynı anda kaç masa</label>
+            <select id="tableCount"><option value="1">1 masa</option><option value="2">2 masa</option><option value="3">3 masa</option><option value="4">4 masa</option></select>
+          </div>
+        </div>
+        <div class="field" id="korsanPathRow">
+          <label for="korsanPath">Proje klasörü</label>
+          <div class="row"><input type="text" id="korsanPath" placeholder="İçinde project.godot olan klasör"><button class="btn browse" data-kind="folder" data-target="korsanPath">Klasör Seç</button></div>
+        </div>
+        <div class="hint" id="gameHint"></div>
+      </div>
+
+      <div class="card">
+        <details class="more">
+          <summary>Gelişmiş</summary>
+          <div class="field">
+            <span class="label">Sabit tünel (isteğe bağlı)</span>
+            <input type="password" id="tunnelToken" placeholder="Cloudflare tünel anahtarı (eyJ...)" autocomplete="off">
+            <div class="grid" style="margin-top:8px">
+              <input type="text" id="tunnelOnline" aria-label="PARDEX adresi" placeholder="PARDEX adresi, ör. pardex.alanadin.com">
+              <input type="text" id="tunnelGames" aria-label="Oyun adresleri" placeholder="Masa adresleri, ör. masa1.alanadin.com, masa2...">
+            </div>
+            <div class="hint" id="tunnelHint"></div>
+            <div class="hint">Boş bırakılırsa her açılışta yeni geçici adres alınır ve arkadaşlara otomatik duyurulur. Kurulum: Cloudflare › Zero Trust › Networks › Tunnels'ta tünel oluştur; PARDEX adresi → http://127.0.0.1:8765, masa 1 → 8766, masa 2 → 8767...</div>
+          </div>
+          <label class="check"><input type="checkbox" id="localOnly"><span>Yalnızca bu bilgisayarda test et: tünel açılmaz, adres yayınlanmaz, arkadaşlar bağlanamaz. Sunucu kapalıyken değiştirilebilir.</span></label>
+        </details>
+      </div>
+
+      <button class="btn primary big" id="saveBtn">Kaydet</button>
+    </section>
+  </main>
 </div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status"></div>
 
 <script>
 const $ = (id) => document.getElementById(id);
@@ -264,112 +356,8 @@ const PHASES = {
 };
 let editing = false;
 let lastLogCount = -1;
+let lastState = null;
 let userData = null;
-let usersLoading = false;
-
-function renderUsers() {
-  if (!userData) return;
-  $("userTotal").textContent = userData.total;
-  $("userOnline").textContent = userData.online;
-  const query = $("userSearch").value.trim().normalize("NFKC").toLocaleLowerCase("tr-TR");
-  const users = userData.users.filter((u) =>
-    (u.display_name + " " + u.account_id).normalize("NFKC").toLocaleLowerCase("tr-TR").includes(query));
-  const rows = document.createDocumentFragment();
-  const labels = { online: "Çevrimiçi", away: "Uzakta", busy: "Meşgul", offline: "Çevrimdışı" };
-  for (const user of users) {
-    const row = document.createElement("tr");
-    const name = document.createElement("td");
-    name.textContent = user.display_name;
-    const id = document.createElement("small");
-    id.textContent = user.account_id;
-    name.append(id);
-    const status = document.createElement("td");
-    status.textContent = user.in_game ? "Oyunda" : (labels[user.presence] || "Çevrimdışı");
-    status.className = user.online ? "online" : "";
-    const date = document.createElement("td");
-    date.textContent = user.created_at ? new Date(user.created_at).toLocaleDateString("tr-TR") : "—";
-    const friends = document.createElement("td");
-    friends.textContent = user.friend_count;
-    row.append(name, status, date, friends);
-    rows.append(row);
-  }
-  $("userRows").replaceChildren(rows);
-  $("userHint").textContent = users.length ? "Yalnızca bu sunucuda kayıtlı hesaplar gösterilir." : "Kullanıcı bulunamadı.";
-}
-
-async function refreshUsers() {
-  if (usersLoading) return;
-  usersLoading = true;
-  try {
-    const result = await api("/api/users");
-    if (result.error) throw new Error(result.error);
-    userData = result;
-    renderUsers();
-  } catch (error) {
-    userData = null;
-    $("userTotal").textContent = "—";
-    $("userOnline").textContent = "—";
-    $("userRows").replaceChildren();
-    $("userHint").textContent = error.message || "Kullanıcı listesi alınamadı.";
-  } finally { usersLoading = false; }
-}
-
-async function refreshBugReports() {
-  try {
-    const result = await api("/api/bug-reports");
-    const items = document.createDocumentFragment();
-    for (const report of result.reports || []) {
-      const box = document.createElement("details");
-      const summary = document.createElement("summary");
-      summary.textContent = `${new Date(report.at).toLocaleString("tr-TR")} • ${report.display_name} • ${report.text}`;
-      const meta = document.createElement("small");
-      meta.textContent = `Sürüm ${report.version || "?"} • ${report.os || "?"}`;
-      const log = document.createElement("pre");
-      log.textContent = report.log || "(kayıt yok)";
-      box.append(summary, meta, log);
-      items.append(box);
-    }
-    $("bugRows").replaceChildren(items);
-    $("bugHint").textContent = (result.reports || []).length
-      ? "PARDEX'teki Ayarlar › Sorun Bildir ile gönderilen raporlar (en yeni üstte)."
-      : "Hata raporu yok.";
-  } catch (error) {
-    $("bugHint").textContent = error.message || "Raporlar alınamadı.";
-  }
-}
-
-async function refreshReports() {
-  try {
-    const result = await api("/api/reports");
-    if (result.error) throw new Error(result.error);
-    const rows = document.createDocumentFragment();
-    for (const report of result.reports) {
-      const row = document.createElement("tr");
-      const date = document.createElement("td");
-      date.textContent = new Date(report.at).toLocaleString("tr-TR");
-      const target = document.createElement("td");
-      target.textContent = report.target_name || report.target;
-      const id = document.createElement("small");
-      id.textContent = report.target;
-      target.append(id);
-      const reason = document.createElement("td");
-      reason.textContent = report.reason;
-      for (const message of (report.messages || []).slice(-5)) {
-        const line = document.createElement("small");
-        line.textContent = (message.from === report.target ? "› " : "‹ ") + message.text;
-        reason.append(line);
-      }
-      row.append(date, target, reason);
-      rows.append(row);
-    }
-    $("reportRows").replaceChildren(rows);
-    $("reportHint").textContent = result.reports.length
-      ? "Oyuncuların şikâyetleri ve şikâyet edilen kişinin son mesajları (› şikâyet edilen)."
-      : "Şikâyet yok.";
-  } catch (error) {
-    $("reportHint").textContent = error.message || "Şikâyetler alınamadı.";
-  }
-}
 
 function toast(text) {
   const el = $("toast");
@@ -385,20 +373,70 @@ async function api(path, body) {
   return response.json();
 }
 
+// ------------------------------------------------------------------ pages
+function showPage(name) {
+  if (!$("page-" + name)) name = "home";
+  document.querySelectorAll(".page").forEach((page) => { page.hidden = page.id !== "page-" + name; });
+  document.querySelectorAll(".nav").forEach((nav) => {
+    if (nav.dataset.page === name) nav.setAttribute("aria-current", "page"); else nav.removeAttribute("aria-current");
+  });
+  try { localStorage.setItem("pardex-panel-page", name); } catch {}
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll(".nav").forEach((nav) => { nav.onclick = () => showPage(nav.dataset.page); });
+
+// ------------------------------------------------------------------ status + checklist
+function checklist(s) {
+  const items = [
+    { done: Boolean(s.config.publish_url && s.config.has_token), title: "Adres yayını",
+      text: "Arkadaşlarının PARDEX'i sunucunu bu adresten bulur.", page: "settings" },
+    { done: s.game.ok, title: "Masa sunucusu", text: s.game.text, page: s.config.korsan_source === "project" ? "settings" : "publish" },
+    { done: Boolean(s.config.godot_exe), title: "Godot programı", text: "Oyun yayınlamak için gerekli.", page: "settings" },
+    { done: Boolean(s.config.cloudflare_account), title: "Cloudflare hesap kimliği", text: "PARDEX ve oyun yayınlamak için gerekli.", page: "settings" },
+  ];
+  const list = document.createDocumentFragment();
+  for (const item of items) {
+    const li = document.createElement("li");
+    li.className = item.done ? "done" : "";
+    const mark = document.createElement("span");
+    mark.className = "mark";
+    mark.textContent = item.done ? "✓" : "!";
+    const body = document.createElement("div");
+    body.className = "body";
+    body.textContent = item.title;
+    const text = document.createElement("span");
+    text.textContent = item.text;
+    body.append(text);
+    li.append(mark, body);
+    if (!item.done) {
+      const go = document.createElement("button");
+      go.className = "link";
+      go.textContent = item.page === "publish" ? "Yayınla'ya git" : "Ayarlar'a git";
+      go.onclick = () => showPage(item.page);
+      li.append(go);
+    }
+    list.append(li);
+  }
+  $("checklist").replaceChildren(list);
+}
+
 function render(s) {
-  $("dot").className = "dot " + s.phase;
-  $("phaseText").textContent = PHASES[s.phase] || s.phase;
-  $("message").textContent = s.message;
-  const busy = s.phase === "starting" || s.phase === "stopping";
+  lastState = s;
   const on = s.phase === "running" || s.phase === "starting";
+  for (const dot of [$("dot"), $("sideDot")]) dot.className = "dot " + s.phase;
+  $("phaseText").textContent = PHASES[s.phase] || s.phase;
+  $("sideText").textContent = PHASES[s.phase] || s.phase;
+  $("message").textContent = s.publishError ? s.message + " " + s.publishError : s.message;
   const btn = $("toggleBtn");
   btn.textContent = on ? "Sunucuyu Durdur" : "Sunucuyu Başlat";
-  btn.className = on ? "danger" : "primary";
+  btn.className = "btn big " + (on ? "danger" : "primary");
   btn.disabled = s.phase === "stopping";
-  $("localOnly").disabled = on || busy;
+  $("localOnly").disabled = on || s.phase === "stopping";
   $("address").style.display = s.onlineUrl ? "flex" : "none";
-  $("onlineUrl").textContent = "PARDEX: " + s.onlineUrl;
-  $("gameUrl").textContent = "Oyun: " + (s.gameUrl || "kapalı");
+  $("onlineUrl").textContent = s.onlineUrl;
+  $("gameUrl").textContent = "Masalar: " + (s.gameUrl || "kapalı");
+  $("statTables").textContent = s.phase === "running" ? (s.gameUrl ? s.config.table_count : 0) : "—";
+  checklist(s);
 
   if (!editing) {
     $("korsanPath").value = s.config.korsan_path;
@@ -410,17 +448,16 @@ function render(s) {
     $("tunnelGames").value = s.config.tunnel_game_hosts;
     $("cfAccount").value = s.config.cloudflare_account;
   }
-  renderJob(s.job);
-  $("tunnelHint").textContent = s.config.has_tunnel_token && s.config.tunnel_online_host
-    ? "Sabit tünel kayıtlı: adresler her açılışta aynı kalır."
-    : "Kayıtlı değil: geçici adresler kullanılır.";
-  $("tunnelHint").className = "hint " + (s.config.has_tunnel_token && s.config.tunnel_online_host ? "ok" : "");
-  $("korsanPathRow").style.display = $("korsanSource").value === "project" ? "flex" : "none";
+  $("korsanPathRow").hidden = $("korsanSource").value !== "project";
   $("gameHint").textContent = s.game.text;
   $("gameHint").className = "hint " + (s.game.ok ? "ok" : "warn");
-  $("tokenHint").textContent = s.config.has_token ? "Anahtar kayıtlı. Değiştirmek için yenisini yapıştırıp Kaydet'e bas." : "Henüz yayın anahtarı kayıtlı değil.";
+  const tunnel = s.config.has_tunnel_token && s.config.tunnel_online_host;
+  $("tunnelHint").textContent = tunnel ? "Sabit tünel kayıtlı: adresler her açılışta aynı kalır." : "Sabit tünel yok: geçici adresler kullanılır.";
+  $("tunnelHint").className = "hint " + (tunnel ? "ok" : "");
+  $("tokenHint").textContent = s.config.has_token ? "Anahtar kayıtlı. Değiştirmek için yenisini yapıştır." : "Henüz anahtar kayıtlı değil.";
   $("tokenHint").className = "hint " + (s.config.has_token ? "ok" : "warn");
-  document.querySelectorAll(".browse").forEach((b) => { b.style.display = s.canBrowse ? "" : "none"; });
+  document.querySelectorAll(".browse").forEach((b) => { b.hidden = !s.canBrowse; });
+  renderJob(s.job);
 
   if (s.logs.length !== lastLogCount) {
     lastLogCount = s.logs.length;
@@ -432,7 +469,9 @@ function render(s) {
 }
 
 async function refresh() {
-  try { render(await api("/api/state")); } catch { $("message").textContent = "Panel bağlantısı koptu. Panel kapanmış olabilir; PARDEX-Sunucu-Paneli.vbs ile yeniden aç."; }
+  try { render(await api("/api/state")); } catch {
+    $("message").textContent = "Panel bağlantısı koptu. Panel kapanmış olabilir; PARDEX-Sunucu-Paneli.vbs ile yeniden aç.";
+  }
 }
 
 $("toggleBtn").onclick = async () => {
@@ -441,25 +480,36 @@ $("toggleBtn").onclick = async () => {
   else render(await api("/api/start", { local: $("localOnly").checked }));
 };
 
+document.querySelectorAll(".copy").forEach((button) => {
+  button.onclick = async () => {
+    try { await navigator.clipboard.writeText($(button.dataset.copy).textContent); toast("Kopyalandı."); }
+    catch { toast("Kopyalanamadı; adresi seçip Ctrl+C ile kopyala."); }
+  };
+});
+
+// ------------------------------------------------------------------ settings
 $("saveBtn").onclick = async () => {
   const body = {
     publish_url: $("publishUrl").value,
-    korsan_path: $("korsanPath").value, godot_exe: $("godotExe").value,
-    korsan_source: $("korsanSource").value,
+    korsan_path: $("korsanPath").value, korsan_source: $("korsanSource").value, godot_exe: $("godotExe").value,
     table_count: Number($("tableCount").value),
     tunnel_online_host: $("tunnelOnline").value, tunnel_game_hosts: $("tunnelGames").value,
     cloudflare_account: $("cfAccount").value,
   };
   if ($("token").value.trim()) body.publish_token = $("token").value.trim();
   if ($("tunnelToken").value.trim()) body.tunnel_token = $("tunnelToken").value.trim();
-  editing = false;
   const result = await api("/api/config", body);
-  render(result);
   if (result.error) { toast(result.error); return; }
+  editing = false;
+  render(result);
   $("token").value = "";
   $("tunnelToken").value = "";
   toast("Ayarlar kaydedildi.");
 };
+
+["korsanPath", "korsanSource", "godotExe", "tableCount", "tunnelOnline", "tunnelGames", "cfAccount", "publishUrl"]
+  .forEach((id) => $(id).addEventListener("input", () => { editing = true; }));
+$("korsanSource").addEventListener("change", () => { $("korsanPathRow").hidden = $("korsanSource").value !== "project"; });
 
 document.querySelectorAll(".browse").forEach((b) => {
   b.onclick = async () => {
@@ -468,22 +518,121 @@ document.querySelectorAll(".browse").forEach((b) => {
     b.disabled = false;
     if (!result.path) return;
     $(b.dataset.target).value = result.path;
-    if (b.closest("#settingsCard")) { editing = true; toast("Seçildi. Kaydet'e basmayı unutma."); }
-    else $(b.dataset.target).dispatchEvent(new Event("input"));
+    $(b.dataset.target).dispatchEvent(new Event("input"));
+    if (b.closest("#page-settings")) toast("Seçildi. Kaydet'e basmayı unutma.");
   };
 });
-
-["korsanPath", "korsanSource", "godotExe", "tableCount", "tunnelOnline", "tunnelGames", "cfAccount"].forEach((id) => $(id).addEventListener("input", () => { editing = true; }));
 
 $("quitBtn").onclick = async () => {
   if (!confirm("Sunucu kapatılıp panel sonlandırılsın mı?")) return;
   const result = await api("/api/quit", {}).catch(() => ({}));
   if (result.error) { toast(result.error); return; }
-  document.body.innerHTML = '<div class="wrap"><div class="card"><b>Panel kapatıldı.</b><br><span style="color:#9fb0c8">Tekrar açmak için PARDEX-Sunucu-Paneli.vbs dosyasına çift tıkla.</span></div></div>';
+  document.body.innerHTML = '<main><div class="card"><h2>Panel kapatıldı</h2><p class="lead" style="margin:0">Tekrar açmak için PARDEX-Sunucu-Paneli.vbs dosyasına çift tıkla.</p></div></main>';
 };
 
+// ------------------------------------------------------------------ players
+function cell(text, className) {
+  const td = document.createElement("td");
+  td.textContent = text;
+  if (className) td.className = className;
+  return td;
+}
 
-// ------------------------------------------------------------------ Yayınla
+function renderUsers() {
+  if (!userData) return;
+  $("statUsers").textContent = userData.total;
+  $("statOnline").textContent = userData.online;
+  const query = $("userSearch").value.trim().normalize("NFKC").toLocaleLowerCase("tr-TR");
+  const users = userData.users.filter((u) =>
+    (u.display_name + " " + u.account_id).normalize("NFKC").toLocaleLowerCase("tr-TR").includes(query));
+  const labels = { online: "Çevrimiçi", away: "Uzakta", busy: "Meşgul", offline: "Çevrimdışı" };
+  const rows = document.createDocumentFragment();
+  for (const user of users) {
+    const row = document.createElement("tr");
+    const name = cell(user.display_name);
+    const id = document.createElement("small");
+    id.textContent = user.account_id;
+    name.append(id);
+    row.append(
+      name,
+      cell(user.in_game ? "Oyunda" : (labels[user.presence] || "Çevrimdışı"), user.online ? "online" : ""),
+      cell(user.created_at ? new Date(user.created_at).toLocaleDateString("tr-TR") : "—"),
+      cell(user.friend_count),
+    );
+    rows.append(row);
+  }
+  $("userRows").replaceChildren(rows);
+  $("userHint").textContent = users.length ? `${users.length} hesap gösteriliyor.` : "Oyuncu bulunamadı.";
+}
+
+async function refreshUsers() {
+  try {
+    const result = await api("/api/users");
+    if (result.error) throw new Error(result.error);
+    userData = result;
+    renderUsers();
+  } catch (error) {
+    userData = null;
+    $("statUsers").textContent = "—";
+    $("statOnline").textContent = "—";
+    $("userRows").replaceChildren();
+    $("userHint").textContent = error.message || "Oyuncu listesi alınamadı.";
+  }
+}
+
+// ------------------------------------------------------------------ reports
+async function refreshReports() {
+  let complaints = 0;
+  try {
+    const result = await api("/api/reports");
+    if (result.error) throw new Error(result.error);
+    const rows = document.createDocumentFragment();
+    for (const report of result.reports) {
+      const target = cell(report.target_name || report.target);
+      const id = document.createElement("small");
+      id.textContent = report.target;
+      target.append(id);
+      const reason = cell(report.reason);
+      for (const message of (report.messages || []).slice(-5)) {
+        const line = document.createElement("small");
+        line.textContent = (message.from === report.target ? "› " : "‹ ") + message.text;
+        reason.append(line);
+      }
+      const row = document.createElement("tr");
+      row.append(cell(new Date(report.at).toLocaleString("tr-TR")), target, reason);
+      rows.append(row);
+    }
+    $("reportRows").replaceChildren(rows);
+    complaints = result.reports.length;
+    $("reportHint").textContent = complaints ? "" : "Şikâyet yok.";
+  } catch (error) {
+    $("reportHint").textContent = error.message || "Şikâyetler alınamadı.";
+  }
+  try {
+    const result = await api("/api/bug-reports");
+    const items = document.createDocumentFragment();
+    for (const report of result.reports || []) {
+      const box = document.createElement("details");
+      box.className = "bug";
+      const summary = document.createElement("summary");
+      summary.textContent = `${new Date(report.at).toLocaleString("tr-TR")} · ${report.display_name} · ${report.text}`;
+      const meta = document.createElement("small");
+      meta.textContent = `Sürüm ${report.version || "?"} · ${report.os || "?"}`;
+      const log = document.createElement("pre");
+      log.textContent = report.log || "(kayıt yok)";
+      box.append(summary, meta, log);
+      items.append(box);
+    }
+    $("bugRows").replaceChildren(items);
+    $("bugHint").textContent = (result.reports || []).length ? "" : "Hata raporu yok.";
+  } catch (error) {
+    $("bugHint").textContent = error.message || "Raporlar alınamadı.";
+  }
+  $("reportCount").textContent = complaints;
+  $("reportCount").hidden = complaints === 0;
+}
+
+// ------------------------------------------------------------------ publish
 const GAME_INPUTS = {
   project: "gProject", id: "gId", title: "gTitle", version: "gVersion", description: "gDescription",
   players: "gPlayers", genres: "gGenres", cover: "gCover", banner: "gBanner", screenshots: "gShots",
@@ -502,9 +651,9 @@ function nextVersion(version) {
 function fillGameForm() {
   const game = release.games.find((item) => item.id === $("gamePick").value);
   for (const [field, id] of Object.entries(GAME_INPUTS)) $(id).value = game ? game[field] : "";
-  $("gTest").checked = Boolean(game && game.test === "true");
   $("gVersion").value = nextVersion(game ? game.version : "");
   if (!game) $("gPlayers").value = "Tek oyunculu";
+  $("gTest").checked = Boolean(game && game.test === "true");
   $("gId").disabled = Boolean(game);
 }
 
@@ -512,11 +661,13 @@ async function loadRelease() {
   try { release = await api("/api/release"); } catch { return; }
   const current = release.launcher_version;
   $("launcherVersion").value = current ? nextVersion(current) : "";
-  $("launcherHint").textContent = (current ? `Şu anki sürüm ${current}. ` : "")
-    + "Kurulum dosyası üretilir ve yüklenir; arkadaşların PARDEX'i açınca kendiliğinden güncellenir.";
+  $("launcherLead").textContent = (current ? `Şu anki sürüm ${current}. ` : "")
+    + "Kurulum dosyası hazırlanır ve yüklenir; arkadaşların PARDEX'i açınca kendiliğinden güncellenir.";
   const picked = $("gamePick").value;
   const options = [new Option("Yeni oyun", "")];
-  for (const game of release.games) options.push(new Option(`${game.title || game.id} (sürüm ${game.version})`, game.id));
+  for (const game of release.games) {
+    options.push(new Option(`${game.title || game.id} — sürüm ${game.version}${game.test === "true" ? " (test)" : ""}`, game.id));
+  }
   $("gamePick").replaceChildren(...options);
   $("gamePick").value = release.games.some((game) => game.id === picked) ? picked : "";
   fillGameForm();
@@ -527,9 +678,11 @@ function renderJob(current) {
   document.querySelectorAll(".job-start").forEach((button) => { button.disabled = running; });
   if (!current || !current.kind) return;
   $("jobBox").hidden = false;
-  const status = $("jobStatus");
-  status.textContent = running ? `${current.title} sürüyor...` : current.ok ? `${current.title} tamamlandı.` : `${current.title} başarısız oldu; ayrıntı aşağıda.`;
-  status.className = running ? "busy" : current.ok ? "ok" : "fail";
+  const state = running ? "busy" : current.ok ? "ok" : "fail";
+  $("jobHead").className = "job-head " + state;
+  $("jobDot").className = "dot " + (running ? "busy" : current.ok ? "running" : "error");
+  $("jobStatus").textContent = running ? `${current.title} sürüyor... Bu birkaç dakika sürebilir.`
+    : current.ok ? `${current.title} tamamlandı.` : `${current.title} başarısız oldu. Aşağıdaki HATA satırına bak.`;
   const pre = $("jobLog");
   const text = current.lines.join("\n");
   if (pre.textContent !== text) {
@@ -545,6 +698,7 @@ async function runJob(body) {
   const result = await api("/api/job", body);
   if (result.error) { toast(result.error); return; }
   render(result);
+  $("jobBox").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 document.querySelectorAll(".tab").forEach((tab) => {
@@ -555,9 +709,6 @@ document.querySelectorAll(".tab").forEach((tab) => {
 });
 
 $("gamePick").addEventListener("change", fillGameForm);
-$("korsanSource").addEventListener("change", () => {
-  $("korsanPathRow").style.display = $("korsanSource").value === "project" ? "flex" : "none";
-});
 $("gProject").addEventListener("input", () => {
   if ($("gamePick").value) return;
   const folder = $("gProject").value.trim().replace(/[\\/]+$/, "").split(/[\\/]/).pop() || "";
@@ -583,17 +734,18 @@ $("gameBtn").onclick = () => {
 
 $("networkBtn").onclick = () => runJob({ kind: "network" });
 
-loadRelease();
-
+// ------------------------------------------------------------------ start
 refresh();
-setInterval(refresh, 1000);
+let savedPage = "home";
+try { savedPage = localStorage.getItem("pardex-panel-page") || "home"; } catch {}
+showPage(savedPage);
 $("userSearch").addEventListener("input", renderUsers);
+setInterval(refresh, 1000);
 refreshUsers();
 setInterval(refreshUsers, 5000);
 refreshReports();
 setInterval(refreshReports, 15000);
-refreshBugReports();
-setInterval(refreshBugReports, 15000);
+loadRelease();
 </script>
 </body>
 </html>

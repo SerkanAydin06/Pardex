@@ -897,7 +897,7 @@ function openBrowser(url) {
   if (process.env.PARDEX_NO_BROWSER) return;
   const appBrowser = IS_WINDOWS ? findAppBrowser() : "";
   if (appBrowser) {
-    spawn(appBrowser, [`--app=${url}`, "--window-size=1000,940"], { detached: true, stdio: "ignore" }).unref();
+    spawn(appBrowser, [`--app=${url}`, "--window-size=1200,900"], { detached: true, stdio: "ignore" }).unref();
   } else if (IS_WINDOWS) spawn("cmd", ["/c", "start", "", url], { detached: true, stdio: "ignore", windowsHide: true }).unref();
   else if (process.platform === "darwin") spawn("open", [url], { detached: true, stdio: "ignore" }).unref();
 }
