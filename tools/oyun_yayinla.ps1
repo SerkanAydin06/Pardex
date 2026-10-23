@@ -97,6 +97,8 @@ if ($id -notmatch '^[a-z][a-z0-9_-]{0,47}$') { Fail "Kimlik kucuk harfle baslama
 $title = Ask "Magazada gorunecek ad" $(if ($old) { $old.title } else { $folderName }) "title"
 $version = Ask "Surum" $(NextVersion $(if ($old) { $old.version } else { "" })) "version"
 if ($version -notmatch '^[0-9]{1,6}(\.[0-9]{1,6}){0,3}$') { Fail "Surum 1.2.3 biciminde olmali." }
+$testDefault = if ($old -and $old.test) { "e" } else { "h" }
+$isTest = (Ask "Test surumu mu? Magazada 'Test' olarak gorunur (e/h)" $testDefault "test") -match '^(e|evet|true|1)$'
 $description = Ask "Kisa tanitim cumlesi" $(if ($old) { $old.description } else { "" }) "description"
 $players = Ask "Oyuncu sayisi (or. Tek oyunculu, 1-4 oyuncu)" $(if ($old) { $old.players } else { "Tek oyunculu" }) "players"
 $genreText = Ask "Turler (virgulle, en cok 4)" $(if ($old -and $old.genres) { ($old.genres -join ", ") } else { "" }) "genres"
@@ -155,7 +157,7 @@ $entry = [ordered]@{
     id = $id; title = $title; version = $version; directory = $out; executable = $exe
     description = $description; players = $players; genres = $genres
     cover = $cover; banner = $banner; project = $project
-    screenshots = $screenshots
+    screenshots = $screenshots; test = $isTest
     long_description = $details.long_description; requirements = $details.requirements
     release_notes = $details.release_notes; connection_modes = $details.connection_modes
 }
@@ -187,6 +189,6 @@ try {
 Pop-Location
 
 Write-Host ""
-Write-Host "Yayinlandi: $title $version" -ForegroundColor Green
+Write-Host ("Yayinlandi: $title $version" + $(if ($isTest) { " (test surumu)" } else { "" })) -ForegroundColor Green
 Write-Host "Oyuncular PARDEX'i acinca (ya da 15 dakika icinde) magazada gorur; 'Indir' ya da 'Guncelle' ile kurar."
 if (-not $Panel) { Read-Host "Kapatmak icin Enter'a bas" }

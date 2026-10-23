@@ -37,18 +37,22 @@ async function run() {
   fs.writeFileSync(path.join(tools, "ag_testi.ps1"), 'param([switch]$Panel)\nStart-Sleep -Milliseconds 800\nWrite-Host "ag tamam"\n');
   // One game written as a single object with a BOM, as PowerShell 5 may write it.
   fs.writeFileSync(path.join(folder, "release.local.json"),
-    "\uFEFF" + JSON.stringify({ games: { id: "korsanlar", title: "Korsanlar", version: "1.2.0", genres: ["Macera", "Strateji"], screenshots: ["a.png", "b.png"] } }));
+    "\uFEFF" + JSON.stringify({ games: { id: "korsanlar", title: "Korsanlar", version: "1.2.0", test: true, genres: ["Macera", "Strateji"], screenshots: ["a.png", "b.png"] } }));
   host.setPublishPaths(folder);
   try {
     const release = host.releaseInfo();
     assert.equal(release.launcher_version, "0.4.2");
-    assert.deepEqual(release.games.map((game) => [game.id, game.genres, game.screenshots]), [["korsanlar", "Macera, Strateji", "a.png;b.png"]]);
+    assert.deepEqual(release.games.map((game) => [game.id, game.genres, game.screenshots, game.test]), [["korsanlar", "Macera, Strateji", "a.png;b.png", "true"]]);
 
     // Bad input is refused before anything runs.
     assert.match(host.startJob("launcher", { version: "1.x" }), /1\.2\.3/);
     assert.match(host.startJob("game", { game: { id: "oyun", version: "1.0.0" } }), /proje klasörünü/);
     assert.match(host.startJob("game", { game: { id: "Kötü Ad", version: "1.0.0", project: "C:\\oyun" } }), /kimliği/);
     assert.match(host.startJob("sil", {}), /Bilinmeyen/);
+    // The running table server uses the published Korsan build; do not replace it under it.
+    host.state.phase = "running";
+    assert.match(host.startJob("game", { game: { id: "korsanlar", version: "1.0.1", project: folder } }), /sunucuyu durdur/);
+    host.state.phase = "stopped";
     assert.equal(host.job.kind, "", "nothing started");
 
     assert.equal(host.startJob("launcher", { version: "0.4.3" }), "");
@@ -71,7 +75,7 @@ async function run() {
   } finally {
     fs.rmSync(folder, { recursive: true, force: true });
   }
-  console.log("Host publish job test passed: input checks, one job at a time, output and result shown, answers file removed, shared settings kept");
+  console.log("Host publish job test passed: input checks, running table server protected, one job at a time, output and result shown, answers file removed, shared settings kept");
 }
 
 run().then(() => process.exit(0)).catch((error) => {

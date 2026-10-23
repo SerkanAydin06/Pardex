@@ -143,6 +143,7 @@
         <div class="field"><label for="gReq">Sistem gereksinimleri</label><textarea id="gReq"></textarea></div>
         <div class="field"><label for="gNotes">Güncelleme notları</label><textarea id="gNotes"></textarea></div>
       </div>
+      <label class="check" style="margin:0 0 14px"><input type="checkbox" id="gTest"> Test sürümü: oyun henüz hazır değil; mağazada "Test" olarak görünür, arkadaşların isterse indirip dener.</label>
       <button class="primary job-start" id="gameBtn">Oyunu Yayınla</button>
       <div class="hint">Oyun Windows için dışa aktarılır ve mağazaya yüklenir; oyuncular "İndir" ya da "Güncelle" görür.</div>
     </div>
@@ -186,8 +187,13 @@
   <section class="card" id="settingsCard">
     <h2>Ayarlar</h2>
     <div class="field">
-      <label for="korsanPath">Korsanların Hazinesi</label>
-      <div class="row">
+      <label for="korsanSource">Masa sunucusu (Korsanların Hazinesi)</label>
+      <div class="row"><select id="korsanSource">
+        <option value="published">En son yayınlanan sürüm (önerilen)</option>
+        <option value="project">Geliştirme: proje klasörü</option>
+      </select></div>
+      <div class="hint">Çok oyunculu masalar bu bilgisayarda çalışır. Yayınlanan sürüm, arkadaşlarının mağazadan indirdiğiyle aynıdır.</div>
+      <div class="row" id="korsanPathRow" style="margin-top:8px">
         <input type="text" id="korsanPath" placeholder="Proje klasörü (project.godot olan) ya da KorsanlarinHazinesi.exe">
         <button class="small browse" data-kind="folder" data-target="korsanPath">Klasör Seç</button>
       </div>
@@ -396,6 +402,7 @@ function render(s) {
 
   if (!editing) {
     $("korsanPath").value = s.config.korsan_path;
+    $("korsanSource").value = s.config.korsan_source;
     $("publishUrl").value = s.config.publish_url;
     $("godotExe").value = s.config.godot_exe;
     $("tableCount").value = String(s.config.table_count);
@@ -408,6 +415,7 @@ function render(s) {
     ? "Sabit tünel kayıtlı: adresler her açılışta aynı kalır."
     : "Kayıtlı değil: geçici adresler kullanılır.";
   $("tunnelHint").className = "hint " + (s.config.has_tunnel_token && s.config.tunnel_online_host ? "ok" : "");
+  $("korsanPathRow").style.display = $("korsanSource").value === "project" ? "flex" : "none";
   $("gameHint").textContent = s.game.text;
   $("gameHint").className = "hint " + (s.game.ok ? "ok" : "warn");
   $("tokenHint").textContent = s.config.has_token ? "Anahtar kayıtlı. Değiştirmek için yenisini yapıştırıp Kaydet'e bas." : "Henüz yayın anahtarı kayıtlı değil.";
@@ -437,6 +445,7 @@ $("saveBtn").onclick = async () => {
   const body = {
     publish_url: $("publishUrl").value,
     korsan_path: $("korsanPath").value, godot_exe: $("godotExe").value,
+    korsan_source: $("korsanSource").value,
     table_count: Number($("tableCount").value),
     tunnel_online_host: $("tunnelOnline").value, tunnel_game_hosts: $("tunnelGames").value,
     cloudflare_account: $("cfAccount").value,
@@ -464,7 +473,7 @@ document.querySelectorAll(".browse").forEach((b) => {
   };
 });
 
-["korsanPath", "godotExe", "tableCount", "tunnelOnline", "tunnelGames", "cfAccount"].forEach((id) => $(id).addEventListener("input", () => { editing = true; }));
+["korsanPath", "korsanSource", "godotExe", "tableCount", "tunnelOnline", "tunnelGames", "cfAccount"].forEach((id) => $(id).addEventListener("input", () => { editing = true; }));
 
 $("quitBtn").onclick = async () => {
   if (!confirm("Sunucu kapatılıp panel sonlandırılsın mı?")) return;
@@ -493,6 +502,7 @@ function nextVersion(version) {
 function fillGameForm() {
   const game = release.games.find((item) => item.id === $("gamePick").value);
   for (const [field, id] of Object.entries(GAME_INPUTS)) $(id).value = game ? game[field] : "";
+  $("gTest").checked = Boolean(game && game.test === "true");
   $("gVersion").value = nextVersion(game ? game.version : "");
   if (!game) $("gPlayers").value = "Tek oyunculu";
   $("gId").disabled = Boolean(game);
@@ -545,6 +555,9 @@ document.querySelectorAll(".tab").forEach((tab) => {
 });
 
 $("gamePick").addEventListener("change", fillGameForm);
+$("korsanSource").addEventListener("change", () => {
+  $("korsanPathRow").style.display = $("korsanSource").value === "project" ? "flex" : "none";
+});
 $("gProject").addEventListener("input", () => {
   if ($("gamePick").value) return;
   const folder = $("gProject").value.trim().replace(/[\\/]+$/, "").split(/[\\/]/).pop() || "";
@@ -563,7 +576,8 @@ $("launcherBtn").onclick = () => {
 $("gameBtn").onclick = () => {
   const game = {};
   for (const [field, id] of Object.entries(GAME_INPUTS)) game[field] = $(id).value;
-  if (!confirm(`${game.title || game.id} ${game.version} yayınlansın mı?`)) return;
+  game.test = $("gTest").checked ? "true" : "false";
+  if (!confirm(`${game.title || game.id} ${game.version}${$("gTest").checked ? " (test sürümü)" : ""} yayınlansın mı?`)) return;
   runJob({ kind: "game", game });
 };
 

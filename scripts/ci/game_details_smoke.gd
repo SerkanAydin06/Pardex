@@ -1,6 +1,7 @@
 extends SceneTree
 
 const D := preload("res://scripts/data/pardex_distribution.gd")
+const Catalog := preload("res://scripts/data/pardex_catalog.gd")
 var failures := 0
 
 
@@ -83,8 +84,12 @@ func _run() -> void:
 	var output := OS.get_environment("PARDEX_VISUAL_OUTPUT")
 	if not output.is_empty():
 		root.get_texture().get_image().save_png(output.path_join("detail-bottom.png"))
-	detail.show_game("vex")
-	expect(detail.get_node("%ActionButton").disabled and not detail.get_node("%Gallery").visible, "upcoming game and empty gallery")
+	# A test build stays playable but is marked "Test" in the store.
+	D.manifest["games"][0]["test"] = true
+	expect(D.validate(D.manifest) and Catalog.game("detail_fixture")["badge"] == "Test", "test build marked Test")
+	D.manifest["games"][0]["test"] = "evet"
+	expect(not D.validate(D.manifest), "reject non-boolean test flag")
+	D.manifest["games"][0].erase("test")
 	# Render an installed card and list row; the regular library reference is empty.
 	var folder := ProjectSettings.globalize_path(D.ROOT.path_join("detail_fixture").path_join("fixture"))
 	DirAccess.make_dir_recursive_absolute(folder)

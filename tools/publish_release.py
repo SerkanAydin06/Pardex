@@ -75,6 +75,9 @@ def publish(spec, base, output):
             entry.update(version=version(game['version']), package=package(archive, '.zip'))
             for key in ('description','players'):
                 entry[key] = str(game.get(key,''))
+            # A test build: playable, but the store marks it "Test".
+            if game.get('test') is True:
+                entry['test'] = True
             genres = game.get('genres', [])
             if not isinstance(genres, list) or len(genres) > 4 or not all(isinstance(g, str) and 0 < len(g.strip()) <= 24 for g in genres):
                 raise ValueError('Genres must be up to 4 short names')
