@@ -26,6 +26,9 @@ const ROOT = path.resolve(__dirname, "..");
 const SERVER_DIR = path.join(ROOT, "server");
 const BIN_DIR = path.join(__dirname, "bin");
 const PANEL_PATH = path.join(__dirname, "panel.html");
+// Read once: after a git pull the still-running (old) panel keeps showing its
+// own page instead of a newer page whose buttons it does not understand.
+const PANEL_HTML = fs.readFileSync(PANEL_PATH);
 const CONFIG_PATH = path.join(__dirname, "pardex_host.local.json");
 const DATA_PATH = path.join(__dirname, "data", "social.json");
 const ONLINE_PORT = 8765;
@@ -356,10 +359,14 @@ function useNamedTunnel() {
   return Boolean(String(config.tunnel_token || "").trim() && namedTunnelHosts().online);
 }
 
+// QUIC (UDP 7844) times out on some networks ("failed to dial to edge with
+// quic"); HTTP/2 over TCP works everywhere and starts without that delay.
+const TUNNEL_PROTOCOL = "http2";
+
 function openNamedTunnel(cloudflared) {
   return new Promise((resolve, reject) => {
     const child = track("Sabit tünel", spawn(cloudflared, [
-      "tunnel", "--no-autoupdate", "run", "--token", String(config.tunnel_token).trim(),
+      "tunnel", "--no-autoupdate", "--protocol", TUNNEL_PROTOCOL, "run", "--token", String(config.tunnel_token).trim(),
     ], { stdio: ["ignore", "pipe", "pipe"], windowsHide: true }), true);
     const timer = setTimeout(() => reject(new Error("Sabit tünel 60 saniyede bağlanamadı. Tünel anahtarını kontrol et.")), 60_000);
     const onData = (chunk) => {
@@ -378,7 +385,7 @@ function openNamedTunnel(cloudflared) {
 function openTunnel(cloudflared, port, label) {
   return new Promise((resolve, reject) => {
     const child = track(label, spawn(cloudflared, [
-      "tunnel", "--no-autoupdate", "--url", `http://127.0.0.1:${port}`,
+      "tunnel", "--no-autoupdate", "--protocol", TUNNEL_PROTOCOL, "--url", `http://127.0.0.1:${port}`,
     ], { stdio: ["ignore", "pipe", "pipe"], windowsHide: true }), true);
     const timer = setTimeout(() => reject(new Error(`${label} 60 saniyede açılamadı.`)), 60_000);
     const onData = (chunk) => {
@@ -764,6 +771,8 @@ function readBody(request) {
   });
 }
 
+const OUTDATED_PANEL = "Panel güncellendi; Paneli Kapat'a basıp PARDEX-Sunucu-Paneli.vbs ile yeniden aç.";
+
 function sendJson(response, data, status = 200) {
   response.writeHead(status, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
   response.end(JSON.stringify(data));
@@ -783,7 +792,7 @@ async function handle(request, response) {
   }
   if (request.method === "GET" && url.pathname === "/") {
     response.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
-    return response.end(fs.readFileSync(PANEL_PATH));
+    return response.end(PANEL_HTML);
   }
   if (request.method === "GET" && url.pathname === "/api/state") {
     lastPanelPoll = Date.now();
@@ -808,7 +817,7 @@ async function handle(request, response) {
       token: config.admin_token, port: ONLINE_PORT,
     }));
   }
-  if (request.method !== "POST") return sendJson(response, { error: "not found" }, 404);
+  if (request.method !== "POST") return sendJson(response, { error: OUTDATED_PANEL }, 404);
 
   const body = await readBody(request);
   switch (url.pathname) {
@@ -869,7 +878,7 @@ async function handle(request, response) {
       setTimeout(() => process.exit(0), 200);
       return undefined;
     default:
-      return sendJson(response, { error: "not found" }, 404);
+      return sendJson(response, { error: OUTDATED_PANEL }, 404);
   }
 }
 
