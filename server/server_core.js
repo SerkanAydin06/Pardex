@@ -53,7 +53,7 @@ const gameLaunchTickets = new Map();
 // PARDEX launcher <-> server protocol. Bump PROTOCOL_VERSION when the server
 // gains requests a client may use; raise MIN_CLIENT_PROTOCOL only when old
 // clients can no longer work at all (they then get a clear "update" error).
-const PROTOCOL_VERSION = 4;
+const PROTOCOL_VERSION = 5;
 const MIN_CLIENT_PROTOCOL = 0;
 // Network protocol of each game's dedicated server, reported at start-up
 // (game_server_hello). Games compare theirs before hosting/joining a table.
@@ -82,7 +82,8 @@ function sendNotice(ws, code, message) {
 function sendVoice(ws, payload) {
   if (ws?.readyState !== WebSocket.OPEN) return;
   if (ws.bufferedAmount >= VOICE_RELAY_BUFFER_LIMIT_BYTES) return;
-  ws.send(JSON.stringify(payload));
+  if (Buffer.isBuffer(payload)) ws.send(payload, { binary: true });
+  else ws.send(JSON.stringify(payload));
 }
 
 function safeName(value) {
@@ -1195,14 +1196,41 @@ function callPeer(call, client) {
   return clients.get(peer.userId);
 }
 
+// Call audio travels as JSON (base64) or, between clients that announced
+// binary_voice, as a binary WebSocket message: [CALL_FRAME_BINARY, seq u16 LE,
+// audio...] (a third smaller, no JSON work). Each peer gets the form it knows.
+const CALL_FRAME_BINARY = 1;
+const MAX_CALL_AUDIO_BYTES = Math.floor(MAX_VOICE_BASE64_CHARS * 3 / 4);
+
 function relayCallFrame(client, message) {
-  const call = activeCallOf(client);
-  if (!call || call.state !== "active") return;
   const data = String(message.data || "");
   if (!data || data.length > MAX_VOICE_BASE64_CHARS) return;
   const sequence = Number.isFinite(Number(message.seq)) ? Math.max(0, Math.floor(Number(message.seq))) : 0;
+  relayCallAudio(client, sequence & 0xffff, Buffer.from(data, "base64"));
+}
+
+function handleBinaryMessage(client, raw) {
+  const bytes = Buffer.isBuffer(raw) ? raw : Buffer.from(raw);
+  if (bytes.length <= 3 || bytes[0] !== CALL_FRAME_BINARY) return;
+  if (!client.helloReceived || !allowVoiceFrame(client)) return;
+  relayCallAudio(client, bytes.readUInt16LE(1), bytes.subarray(3));
+}
+
+function relayCallAudio(client, sequence, audio) {
+  const call = activeCallOf(client);
+  if (!call || call.state !== "active") return;
+  if (!audio.length || audio.length > MAX_CALL_AUDIO_BYTES) return;
   const peer = callPeer(call, client);
-  if (peer?.ws) sendVoice(peer.ws, { type: "call_frame", seq: sequence, data });
+  if (!peer?.ws) return;
+  if (peer.binaryVoice) {
+    const packet = Buffer.allocUnsafe(3 + audio.length);
+    packet[0] = CALL_FRAME_BINARY;
+    packet.writeUInt16LE(sequence, 1);
+    audio.copy(packet, 3);
+    sendVoice(peer.ws, packet);
+  } else {
+    sendVoice(peer.ws, { type: "call_frame", seq: sequence, data: audio.toString("base64") });
+  }
 }
 
 function relayCallMute(client, muted) {
@@ -1515,6 +1543,7 @@ function handleMessage(client, raw) {
         return;
       }
       client.clientProtocol = clientProtocol;
+      client.binaryVoice = message.binary_voice === true;
       const recoveryCode = String(message.recovery_code || "").trim();
       let accountId = "";
       let recovered = false;
@@ -1579,6 +1608,7 @@ function handleMessage(client, raw) {
         secure_game_handoff_enabled: true,
         protocol_version: PROTOCOL_VERSION,
         min_client_protocol: MIN_CLIENT_PROTOCOL,
+        binary_voice: true,
       });
       syncClientNameToRoom(client);
       pushSocialState(client.accountId);
@@ -1876,7 +1906,7 @@ wss.on("connection", (ws) => {
   client.helloTimer.unref?.();
   clients.set(userId, client);
   resumeTokens.set(resumeToken, userId);
-  ws.on("message", (raw) => handleMessage(client, raw));
+  ws.on("message", (raw, isBinary) => (isBinary ? handleBinaryMessage(client, raw) : handleMessage(client, raw)));
   ws.on("close", () => {
     if (client.helloTimer) {
       clearTimeout(client.helloTimer);

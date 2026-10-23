@@ -108,6 +108,16 @@ theme_override_font_sizes/font_size = 12
 text = "Aranıyor…"
 text_overrun_behavior = 3
 
+[node name="Quality" type="Label" parent="Row/Info"]
+visible = false
+layout_mode = 2
+tooltip_text = "Gecikme: PARDEX sunucusuna gidip gelme süresi. Kayıp: arkadaşından gelmeyen ses paketleri."
+mouse_filter = 1
+theme_override_colors/font_color = Color(0.204, 0.827, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "● Bağlantı iyi • 45 ms"
+text_overrun_behavior = 3
+
 [node name="MicButton" type="Button" parent="Row"]
 custom_minimum_size = Vector2(38, 38)
 layout_mode = 2

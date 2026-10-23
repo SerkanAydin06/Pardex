@@ -5,6 +5,7 @@ extends Node
 # through a muted bus, reduced to 16 kHz mono and sent in 60 ms ADPCM
 # packets. "Ses algılama" sends only while you speak; "Bas-konuş" while the
 # push-to-talk key is held (only while the PARDEX window has focus).
+# Received audio goes through a jitter buffer (pardex_jitter_buffer.gd).
 
 signal local_speaking_changed(speaking: bool)
 signal remote_speaking_changed(speaking: bool)
@@ -12,8 +13,11 @@ signal mic_level_changed(level: float)
 # Nothing at all came from the microphone early in a call (permission or
 # wrong device); emitted once per call.
 signal microphone_silent
+# Share of the friend's audio packets lost (0..100) over the last few seconds.
+signal packet_loss_changed(percent: float)
 
 const Codec := preload("res://scripts/online/pardex_voice_codec.gd")
+const JitterBuffer := preload("res://scripts/online/pardex_jitter_buffer.gd")
 const MIC_BUS := "PardexMikrofon"
 const PUSH_TO_TALK_ACTION := "pardex_push_to_talk"
 # Speech keeps sending this long after the level drops (no cut-off words).
@@ -23,6 +27,9 @@ const SILENT_CHECK_SECONDS := 5.0
 const SILENT_LEVEL := 0.0005
 # The previous default threshold: saved values equal to it follow the new one.
 const OLD_DEFAULT_SENSITIVITY := 0.02
+# Keep about one packet queued in the speaker; the jitter buffer holds the rest.
+const SPEAKER_LOW_WATER_SECONDS := 0.07
+const LOSS_REPORT_SECONDS := 3.0
 const SETTINGS_PATH := "user://pardex.cfg"
 
 var mode := "voice" # "voice" (ses algılama) or "push" (bas-konuş)
@@ -46,6 +53,9 @@ var _remote_speaking := false
 var _in_call := false
 var _call_seconds := 0.0
 var _call_peak := 0.0
+var _jitter := JitterBuffer.new()
+var _speaker_capacity := 0
+var _loss_timer := 0.0
 
 
 func _ready() -> void:
@@ -151,10 +161,13 @@ func _set_in_call(active: bool) -> void:
 	_sequence = 0
 	_call_seconds = 0.0
 	_call_peak = 0.0
+	_jitter.clear()
+	_loss_timer = 0.0
 	_set_speaking(false)
 	if active:
 		_speaker.play()
 		_playback = _speaker.get_stream_playback() as AudioStreamGeneratorPlayback
+		_speaker_capacity = _playback.get_frames_available()
 	else:
 		_speaker.stop()
 		_playback = null
@@ -182,6 +195,14 @@ func _process(delta: float) -> void:
 		_remote_timer -= delta
 		if _remote_timer <= 0.0:
 			_set_remote_speaking(false)
+	_feed_speaker()
+	if _in_call:
+		_loss_timer += delta
+		if _loss_timer >= LOSS_REPORT_SECONDS:
+			_loss_timer = 0.0
+			var loss := _jitter.take_loss_percent()
+			if loss >= 0.0:
+				packet_loss_changed.emit(loss)
 	if not _mic_player.playing:
 		return
 	var available := _capture.get_frames_available()
@@ -211,25 +232,33 @@ func _handle_frame(frame: PackedFloat32Array, duration: float) -> void:
 	_set_speaking(talking)
 	if talking:
 		_sequence += 1
-		PardexOnline.send_call_frame(_sequence, Marshalls.raw_to_base64(Codec.encode(frame, _encoder_state)))
+		_sequence = _sequence & 0xFFFF
+		PardexOnline.send_call_frame(_sequence, Codec.encode(frame, _encoder_state))
 
 
-func _on_frame(_sequence_number: int, data: String) -> void:
+func _on_frame(sequence_number: int, data: PackedByteArray) -> void:
 	if _playback == null:
 		return
-	var samples := Codec.decode(Marshalls.base64_to_raw(data))
-	if samples.is_empty():
+	_jitter.push(sequence_number, Codec.decode(data), Time.get_ticks_msec())
+	_feed_speaker()
+
+
+# Moves audio from the jitter buffer to the speaker, one packet at a time,
+# keeping only a little queued there (low delay).
+func _feed_speaker() -> void:
+	if _playback == null:
 		return
-	_set_remote_speaking(true)
-	_remote_timer = REMOTE_SPEAKING_SECONDS
-	# Keep latency low: if the buffer is backed up, drop this packet.
-	if _playback.get_frames_available() < samples.size():
-		return
-	var frames := PackedVector2Array()
-	frames.resize(samples.size())
-	for i in samples.size():
-		frames[i] = Vector2(samples[i], samples[i])
-	_playback.push_buffer(frames)
+	while float(_speaker_capacity - _playback.get_frames_available()) / Codec.RATE < SPEAKER_LOW_WATER_SECONDS:
+		var samples := _jitter.pull(Time.get_ticks_msec())
+		if samples.is_empty() or _playback.get_frames_available() < samples.size():
+			return
+		_set_remote_speaking(true)
+		_remote_timer = REMOTE_SPEAKING_SECONDS
+		var frames := PackedVector2Array()
+		frames.resize(samples.size())
+		for i in samples.size():
+			frames[i] = Vector2(samples[i], samples[i])
+		_playback.push_buffer(frames)
 
 
 func _set_speaking(value: bool) -> void:
