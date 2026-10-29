@@ -6,6 +6,7 @@ const path = require("path");
 const { spawn } = require("child_process");
 const WebSocket = require("ws");
 
+const GAME_ID = process.env.PARDEX_TEST_GAME || "korsanlar";
 const PORT = 9890;
 const URL = `ws://127.0.0.1:${PORT}`;
 const GAME_SERVER_URL = "ws://127.0.0.1:9999";
@@ -86,19 +87,20 @@ async function admitToGame(launch) {
   const ticketOk = waitForMessage(ws, (message) => message.type === "game_ticket_ok");
   ws.send(JSON.stringify({
     type: "game_ticket_verify",
-    game_id: "korsanlar",
+    game_id: GAME_ID,
     match_id: launch.match_id,
     launch_ticket: launch.launch_ticket,
   }));
   const ok = await ticketOk;
+  assert.strictEqual(ok.role, launch.role, "owner role must come from the verified room");
   const admitted = waitForMessage(ws, (message) => message.type === "game_admitted_ok");
   ws.send(JSON.stringify({
     type: "game_admitted",
-    game_id: "korsanlar",
+    game_id: GAME_ID,
     match_id: launch.match_id,
     admission_token: ok.admission_token,
   }));
-  await admitted;
+  assert.strictEqual((await admitted).role, launch.role);
   await closeSocket(ws);
 }
 
@@ -111,7 +113,7 @@ async function closeSocket(ws) {
 
 async function linkGame(owner) {
   const sessionMessage = waitForMessage(owner.ws, (message) => message.type === "game_session");
-  owner.ws.send(JSON.stringify({ type: "get_game_session", game_id: "korsanlar" }));
+  owner.ws.send(JSON.stringify({ type: "get_game_session", game_id: GAME_ID }));
   const { token } = await sessionMessage;
   const ws = await connectSocket();
   const ok = waitForMessage(ws, (message) => message.type === "game_link_ok");
@@ -130,6 +132,7 @@ async function main() {
       HOST: "127.0.0.1",
       PORT: String(PORT),
       KORSAN_GAME_SERVER_URL: GAME_SERVER_URL,
+      HUKUM_GAME_SERVER_URL: GAME_SERVER_URL,
       PARDEX_GAME_SERVER_TOKEN: GAME_SERVER_TOKEN,
       PARDEX_SOCIAL_DATA_PATH: path.join(tempDir, "social.json"),
     },
@@ -160,10 +163,10 @@ async function main() {
     const serverHello = await connectSocket();
     sockets.push(serverHello);
     const helloOk = waitForMessage(serverHello, (message) => message.type === "game_server_hello_ok");
-    serverHello.send(JSON.stringify({ type: "game_server_hello", server_token: GAME_SERVER_TOKEN, game_id: "korsanlar", game_protocol: 2 }));
+    serverHello.send(JSON.stringify({ type: "game_server_hello", server_token: GAME_SERVER_TOKEN, game_id: GAME_ID, game_protocol: 2 }));
     await helloOk;
     const sessionMessage = waitForMessage(welcomeProbe.ws, (message) => message.type === "game_session");
-    welcomeProbe.ws.send(JSON.stringify({ type: "get_game_session", game_id: "korsanlar" }));
+    welcomeProbe.ws.send(JSON.stringify({ type: "get_game_session", game_id: GAME_ID }));
     const { token: probeToken } = await sessionMessage;
     const oldGame = await connectSocket();
     sockets.push(oldGame);
@@ -174,7 +177,7 @@ async function main() {
     oldGame.send(JSON.stringify({ type: "host_match" }));
     assert.ok((await mismatch).message.includes("Senin oyunun eski"));
     const helloAgain = waitForMessage(serverHello, (message) => message.type === "game_server_hello_ok");
-    serverHello.send(JSON.stringify({ type: "game_server_hello", server_token: GAME_SERVER_TOKEN, game_id: "korsanlar", game_protocol: 1 }));
+    serverHello.send(JSON.stringify({ type: "game_server_hello", server_token: GAME_SERVER_TOKEN, game_id: GAME_ID, game_protocol: 1 }));
     await helloAgain;
 
     // The game PARDEX opened hosts a table itself; the ticket goes to the game.
@@ -186,6 +189,7 @@ async function main() {
     hostGame.send(JSON.stringify({ type: "host_match" }));
     const hosted = await hostTicket;
     assert.ok(hosted.launch_ticket && hosted.room.code && hosted.role === "host");
+    assert.strictEqual(hosted.room.max_players, GAME_ID === "hukum" ? 6 : 4);
     const code = hosted.room.code;
     await admitToGame(hosted);
 
@@ -200,6 +204,7 @@ async function main() {
     const joined = await strangerTicket;
     assert.strictEqual(joined.match_id, hosted.match_id);
     assert.strictEqual(joined.role, "client");
+    await admitToGame(joined);
 
     // A friend whose game is closed presses "Katıl" in PARDEX: PARDEX gets
     // game_start and launches the game straight into the table.

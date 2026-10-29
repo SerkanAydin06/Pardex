@@ -67,6 +67,12 @@ jobs:
             exit 1
           fi
 
+      - name: Verify HUKUM launch and secure handoff
+        run: |
+          set -o pipefail
+          godot --headless --path . --script res://scripts/ci/hukum_launch_smoke.gd 2>&1 | tee hukum-launch.log
+          if grep -E 'SCRIPT ERROR:|ERROR:|Parse Error:' hukum-launch.log; then exit 1; fi
+
       - name: Verify independent distribution
         run: |
           set -o pipefail

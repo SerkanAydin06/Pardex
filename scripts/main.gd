@@ -699,7 +699,7 @@ func _play_game(game_id: String, skip_update := false) -> void:
 		dialog.dialog_text = "%s %s (%d MB) indirilsin mi? Kayıtların korunur." % [entry["title"], remote["version"], int(float(remote["package"]["size"]) / 1048576.0)]
 		dialog.popup_centered()
 		return
-	if game_id != "korsanlar":
+	if game_id not in ["korsanlar", "hukum"]:
 		var executable := Distribution.executable(game_id)
 		if not executable.is_empty():
 			var pid := OS.create_process(executable, PackedStringArray())
@@ -739,7 +739,7 @@ func _launch_private_game() -> void:
 
 func _on_game_session_ready(game_id: String, token: String) -> void:
 	_official_session_received = true
-	if game_id != "korsanlar" or token.is_empty() or _is_game_running(game_id):
+	if game_id not in ["korsanlar", "hukum"] or token.is_empty() or _is_game_running(game_id):
 		return
 	var args := PackedStringArray([
 		"--pardex-session-token=%s" % token,
@@ -750,25 +750,25 @@ func _on_game_session_ready(game_id: String, token: String) -> void:
 
 
 func _launch_game_menu(game_id: String, args: PackedStringArray, private_session := false) -> void:
-	if game_id != "korsanlar" or _is_game_running(game_id) or _updater.busy():
+	if game_id not in ["korsanlar", "hukum"] or _is_game_running(game_id) or _updater.busy():
 		return
 	var pid := 0
 	if OS.has_feature("editor") and Distribution.executable(game_id).is_empty():
-		var project_path := _find_korsan_project_path()
+		var project_path := _find_game_project_path(game_id)
 		if project_path.is_empty():
-			_show_toast("Korsanların Hazinesi geliştirme projesi PARDEX'in yan klasöründe bulunamadı.")
+			_show_toast("Oyun geliştirme projesi PARDEX'in yan klasöründe bulunamadı.")
 			return
 		var launch_args := PackedStringArray(["--path", project_path, "--"])
 		launch_args.append_array(args)
 		pid = OS.create_process(OS.get_executable_path(), launch_args)
 	else:
-		var executable_path := str(PardexGameLauncher.call("_find_korsan_executable"))
+		var executable_path := str(PardexGameLauncher.find_game_executable(game_id))
 		if executable_path.is_empty():
-			_show_toast("Korsanların Hazinesi yüklü değil. Kütüphaneden oyunu indir; indirme görünmüyorsa oyun paketi henüz yayınlanmamıştır.")
+			_show_toast("Oyun yüklü değil. Kütüphaneden oyunu indir; indirme görünmüyorsa oyun paketi henüz yayınlanmamıştır.")
 			return
 		pid = OS.create_process(executable_path, PardexGameLauncher.exported_process_args(args))
 	if pid <= 0:
-		_show_toast("Korsanların Hazinesi başlatılamadı.")
+		_show_toast("Oyun başlatılamadı.")
 		return
 	_track_session(game_id, pid, not private_session)
 
@@ -777,33 +777,33 @@ func _on_game_start_requested(payload: Dictionary) -> void:
 	var game_id := str(payload.get("game_id", ""))
 	if _game_launch_in_progress:
 		return
-	if game_id != "korsanlar":
+	if game_id not in ["korsanlar", "hukum"]:
 		_show_toast("Bu oyun için PARDEX launch desteği henüz hazır değil.")
 		return
 	if not PardexOnline.has_game_server_assignment():
-		_show_toast("Korsan oyun sunucusu atanamadı.")
+		_show_toast("Oyun sunucusu atanamadı.")
 		return
 	_game_launch_in_progress = true
-	_launch_korsan_development_project()
+	_launch_korsan_development_project(game_id)
 
 
-func _launch_korsan_development_project() -> void:
+func _launch_korsan_development_project(game_id := "korsanlar") -> void:
 	if not OS.has_feature("editor"):
 		_handle_game_launch_failure("Windows oyun paketi henüz hazır değil.")
 		return
-	var project_path := _find_korsan_project_path()
+	var project_path := _find_game_project_path(game_id)
 	if project_path.is_empty():
-		_handle_game_launch_failure("Korsanların Hazinesi geliştirme projesi PARDEX'in yan klasöründe bulunamadı.")
+		_handle_game_launch_failure("Oyun geliştirme projesi PARDEX'in yan klasöründe bulunamadı.")
 		return
 	var launch_args := PackedStringArray(["--path", project_path, "--"])
-	for argument in PardexOnline.build_game_launch_args("korsanlar"):
+	for argument in PardexOnline.build_game_launch_args(game_id):
 		launch_args.append(argument)
 	var pid := OS.create_process(OS.get_executable_path(), launch_args)
 	if pid <= 0:
-		_handle_game_launch_failure("Korsanların Hazinesi başlatılamadı.")
+		_handle_game_launch_failure("Oyun başlatılamadı.")
 		return
-	_track_session("korsanlar", pid)
-	_show_toast("Korsanların Hazinesi PARDEX oturumuyla başlatıldı.")
+	_track_session(game_id, pid)
+	_show_toast("Oyun PARDEX oturumuyla başlatıldı.")
 
 
 func _handle_game_launch_failure(message: String) -> void:
@@ -1053,3 +1053,19 @@ func _show_toast(message: String) -> void:
 		if revision == _toast_revision and is_instance_valid(toast_panel):
 			toast_panel.hide()
 	)
+
+
+func _find_game_project_path(game_id: String) -> String:
+	if game_id == "korsanlar":
+		return _find_korsan_project_path()
+	if game_id != "hukum":
+		return ""
+	var override_path := OS.get_environment("PARDEX_HUKUM_PROJECT").strip_edges()
+	if not override_path.is_empty() and FileAccess.file_exists(override_path.path_join("project.godot")):
+		return override_path
+	var parent := ProjectSettings.globalize_path("res://").trim_suffix("/").get_base_dir()
+	for folder in ["Hukum", "Hukum-main", "Hüküm"]:
+		var candidate := parent.path_join(folder)
+		if FileAccess.file_exists(candidate.path_join("project.godot")):
+			return candidate
+	return ""

@@ -18,7 +18,8 @@ func _on_game_start_requested(payload: Dictionary) -> void:
 	# In the editor, scripts/main.gd keeps the established sibling-project flow.
 	if OS.has_feature("editor"):
 		return
-	if str(payload.get("game_id", "")).strip_edges() != KORSAN_GAME_ID:
+	var game_id := str(payload.get("game_id", "")).strip_edges()
+	if game_id not in [KORSAN_GAME_ID, "hukum"]:
 		return
 
 	var main_scene := get_tree().current_scene
@@ -27,32 +28,32 @@ func _on_game_start_requested(payload: Dictionary) -> void:
 		PardexOnline.report_game_launch_failed()
 		_show_toast(main_scene, "Devam eden kurulumun bitmesini bekle.")
 		return
-	var executable_path := _find_korsan_executable()
+	var executable_path := find_game_executable(game_id)
 	if executable_path.is_empty():
 		_claim_launch(main_scene)
 		PardexOnline.report_game_launch_failed()
 		_show_toast(
 			main_scene,
-			"Korsanların Hazinesi yüklü değil. Kütüphaneden oyunu indir; indirme görünmüyorsa oyun paketi henüz yayınlanmamıştır."
+			"Oyun yüklü değil. Kütüphaneden oyunu indir; indirme görünmüyorsa oyun paketi henüz yayınlanmamıştır."
 		)
 		return
 
-	var launch_args := PardexOnline.build_game_launch_args(KORSAN_GAME_ID)
+	var launch_args := PardexOnline.build_game_launch_args(game_id)
 	if launch_args.is_empty():
 		_claim_launch(main_scene)
 		PardexOnline.report_game_launch_failed()
-		_show_toast(main_scene, "PARDEX güvenli oyun bileti hazırlanamadı; Korsan başlatılmadı.")
+		_show_toast(main_scene, "PARDEX güvenli oyun bileti hazırlanamadı; oyun başlatılmadı.")
 		return
 
 	var pid := OS.create_process(executable_path, exported_process_args(launch_args))
 	_claim_launch(main_scene)
 	if pid <= 0:
 		PardexOnline.report_game_launch_failed()
-		_show_toast(main_scene, "Korsanların Hazinesi paketi başlatılamadı.")
+		_show_toast(main_scene, "Oyun paketi başlatılamadı.")
 		return
 
-	game_process_started.emit(KORSAN_GAME_ID, pid)
-	_show_toast(main_scene, "Korsanların Hazinesi PARDEX oturumuyla başlatıldı.")
+	game_process_started.emit(game_id, pid)
+	_show_toast(main_scene, "Oyun PARDEX oturumuyla başlatıldı.")
 
 
 func exported_process_args(user_args: PackedStringArray) -> PackedStringArray:
@@ -94,3 +95,22 @@ func _claim_launch(main_scene: Node) -> void:
 func _show_toast(main_scene: Node, message: String) -> void:
 	if main_scene != null and main_scene.has_method("_show_toast"):
 		main_scene.call("_show_toast", message)
+
+
+func find_game_executable(game_id: String) -> String:
+	if game_id == KORSAN_GAME_ID:
+		return _find_korsan_executable()
+	if game_id != "hukum":
+		return ""
+	var managed := preload("res://scripts/data/pardex_distribution.gd").executable(game_id)
+	if not managed.is_empty():
+		return managed
+	var override_path := OS.get_environment("PARDEX_HUKUM_EXECUTABLE").strip_edges()
+	if not override_path.is_empty() and FileAccess.file_exists(override_path):
+		return override_path
+	var base := OS.get_executable_path().get_base_dir()
+	for candidate in ["games/hukum/Hukum.exe", "games/hukum/Hukum.x86_64", "games/hukum/Hukum", "Hukum.exe", "Hukum.x86_64"]:
+		var full_path := base.path_join(candidate)
+		if FileAccess.file_exists(full_path):
+			return full_path
+	return ""
