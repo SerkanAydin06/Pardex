@@ -12,6 +12,8 @@ const HOST = process.env.HOST || "0.0.0.0";
 // table, so several addresses (comma-separated) allow several tables at once.
 const KORSAN_GAME_SERVER_URLS = String(process.env.KORSAN_GAME_SERVER_URLS || process.env.KORSAN_GAME_SERVER_URL || "")
   .split(",").map((url) => url.trim()).filter(Boolean);
+const HUKUM_GAME_SERVER_URLS = String(process.env.HUKUM_GAME_SERVER_URLS || process.env.HUKUM_GAME_SERVER_URL || "")
+  .split(",").map((url) => url.trim()).filter(Boolean);
 const GAME_SERVER_TOKEN = String(process.env.PARDEX_GAME_SERVER_TOKEN || "").trim();
 const SESSION_GRACE_MS = Math.max(1000, Number(process.env.SESSION_GRACE_MS || 30_000));
 const ROOM_INVITE_TTL_MS = Math.max(15_000, Number(process.env.ROOM_INVITE_TTL_MS || 60_000));
@@ -138,7 +140,9 @@ function pruneGameLaunchTickets(now = Date.now()) {
 }
 
 function gameServerUrls(gameId) {
-  return gameId === "korsanlar" ? KORSAN_GAME_SERVER_URLS : [];
+  if (gameId === "korsanlar") return KORSAN_GAME_SERVER_URLS;
+  if (gameId === "hukum") return HUKUM_GAME_SERVER_URLS;
+  return [];
 }
 
 function gameServerUrl(gameId, room = null) {
@@ -164,6 +168,7 @@ function freeGameServerSlot(gameId, excludeCode = "") {
 
 function gameDisplayName(gameId) {
   if (gameId === "korsanlar") return "Korsanların Hazinesi";
+  if (gameId === "hukum") return "HÜKÜM";
   return gameId || "PARDEX Oyunu";
 }
 
@@ -911,7 +916,7 @@ function playGame(client, message, replyWs = client.ws) {
     code: roomCode(),
     gameId,
     hostId: client.userId,
-    maxPlayers: 4,
+    maxPlayers: gameId === "hukum" ? 6 : 4,
     quickPlay: true,
     matchStarted: false,
     state: "lobby",
@@ -1366,7 +1371,7 @@ function handleGameLinkMessage(link, message) {
     sendError(
       link.ws,
       "GAME_VERSION_MISMATCH",
-      `${older} eski sürüm (oyun ${link.gameProtocol}, sunucu ${serverProtocol}). Korsanların Hazinesi'ni güncelleyip yeniden dene.`
+      `${older} eski sürüm (oyun ${link.gameProtocol}, sunucu ${serverProtocol}). ${gameDisplayName(link.gameId)} oyununu güncelleyip yeniden dene.`
     );
     return;
   }
@@ -1856,6 +1861,7 @@ const httpServer = http.createServer((req, res) => {
       socialDataPathConfigured: Boolean(SOCIAL_DATA_PATH),
       korsanGameServerAssigned: KORSAN_GAME_SERVER_URLS.length > 0,
       korsanGameServers: KORSAN_GAME_SERVER_URLS.length,
+      hukumGameServers: HUKUM_GAME_SERVER_URLS.length,
       voiceRelay: VOICE_RELAY_ENABLED,
       voiceCalls: true,
       presence: true,

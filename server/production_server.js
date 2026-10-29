@@ -10,7 +10,7 @@ const serverPath = path.join(__dirname, "server.js");
 const serverSource = fs.readFileSync(serverPath, "utf8") + `
 
 (function installProductionGuards() {
-  const singleInstanceGameIds = new Set(["korsanlar"]);
+  const singleInstanceGameIds = new Set(["korsanlar", "hukum"]);
   const GAME_SERVER_RECYCLE_GUARD_MS = 5_000;
   const recycleGuardUntil = new Map();
 
@@ -59,8 +59,8 @@ const serverSource = fs.readFileSync(serverPath, "utf8") + `
       replyWs,
       "GAME_SERVER_BUSY",
       active
-        ? "Korsan oyun sunucularındaki tüm masalar dolu (ör. kod " + active.code + "). Bitince tekrar dene ya da bir masaya kodla katıl."
-        : "Korsan oyun sunucusu yeni masa için hazırlanıyor. Birkaç saniye sonra tekrar dene."
+        ? "Oyun sunucularındaki tüm masalar dolu (ör. kod " + active.code + "). Bitince tekrar dene ya da bir masaya kodla katıl."
+        : "Oyun sunucusu yeni masa için hazırlanıyor. Birkaç saniye sonra tekrar dene."
     );
     return true;
   };
@@ -96,7 +96,7 @@ const serverSource = fs.readFileSync(serverPath, "utf8") + `
             runtime.sendError(
               ws,
               "GAME_SERVER_BUSY",
-              "Korsan oyun sunucusu başka bir aktif maçı çalıştırıyor veya yeni maç için hazırlanıyor. Birkaç saniye sonra tekrar deneyin."
+              "Oyun sunucusu başka bir aktif maçı çalıştırıyor veya yeni maç için hazırlanıyor. Birkaç saniye sonra tekrar deneyin."
             );
             return;
           }

@@ -168,6 +168,7 @@ function handleTicketVerify(ws, message) {
     match_id: record.matchId,
     room_code: record.roomCode,
     user_id: record.userId,
+    role: room.hostId === record.userId ? "host" : "client",
     admission_token: admissionToken,
     admission_token_expires_at: expiresAt,
   });
@@ -218,6 +219,7 @@ function handleGameAdmitted(ws, message) {
     match_id: room.matchId,
     room_code: room.code,
     user_id: member.userId,
+    role: room.hostId === member.userId ? "host" : "client",
     game_connected_at: member.gameConnectedAt,
   });
 }
